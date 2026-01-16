@@ -1,0 +1,67 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--nav-height);
+    z-index: 1000;
+    transition: all var(--transition-normal);
+    background: transparent;
+    backdrop-filter: blur(0px);
+    border-bottom: 1px solid transparent;
+}
+
+.navbar.scrolled {
+    background: rgba(11, 12, 16, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    height: 70px;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.05em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    position: relative;
+    transition: color var(--transition-fast);
+}
+
+.nav-link:hover {
+    color: var(--accent-cyan);
+}
+
+.nav-link .hash {
+    color: var(--accent-cyan);
+    opacity: 0.5;
+    margin-right: 2px;
+    transition: opacity var(--transition-fast);
+}
+
+.nav-link:hover .hash {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        /* Mobile menu implementation TODO */
+    }
+}

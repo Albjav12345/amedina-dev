@@ -1,0 +1,57 @@
+.workflow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.workflow-node {
+    padding: 6px 12px;
+    background: rgba(31, 40, 51, 0.4);
+    border: 1px solid rgba(69, 162, 158, 0.3);
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.workflow-node::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--accent-cyan);
+    border-radius: 4px 0 0 4px;
+}
+
+.node-label {
+    font-size: 0.75rem;
+    color: #cadbee;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.workflow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.workflow-connector svg {
+    width: 18px;
+    height: 18px;
+}
+
+@media (max-width: 600px) {
+    .workflow-diagram {
+        gap: 0.4rem;
+    }
+
+    .node-label {
+        font-size: 0.65rem;
+    }
+}

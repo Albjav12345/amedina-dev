@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+    --color-electric-green: #00FF99;
+    --color-electric-cyan: #66fcf1;
+    --color-dark-void: #0b0c10;
+    --color-dark-slate: #1f2833;
+    --color-dark-high: #0d0e12;
+
+    --font-mono: "JetBrains Mono", monospace;
+    --font-sans: Inter, sans-serif;
+
+    --shadow-glow-green: 0 0 20px rgba(0, 255, 153, 0.2);
+    --shadow-glow-cyan: 0 0 20px rgba(102, 252, 241, 0.2);
+    --shadow-btn-glow: 0 0 15px rgba(0, 255, 153, 0.3);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-dark-void text-white font-sans antialiased;
+        background-image:
+            linear-gradient(rgba(0, 255, 153, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 153, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-attachment: fixed;
+        overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-mono;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden transition-all duration-300;
+    }
+
+    .btn-system {
+        @apply px-6 py-3 rounded-md font-mono font-bold transition-all duration-300 border border-electric-green text-electric-green hover:bg-electric-green/10 hover:shadow-btn-glow;
+    }
+
+    .status-pulse {
+        @apply w-2 h-2 rounded-full bg-electric-green;
+        animation: pulse 2s infinite;
+    }
+}
+
+@layer utilities {
+    .perspective-1000 {
+        perspective: 1000px;
+    }
+
+    .animate-scan {
+        animation: scan 4s linear infinite;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 153, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(0, 255, 153, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 153, 0);
+    }
+}
+
+@keyframes scan {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-dark-void;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-dark-slate rounded-full hover:bg-electric-green;
+}
