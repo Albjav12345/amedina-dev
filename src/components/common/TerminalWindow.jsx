@@ -29,11 +29,11 @@ export const AnimatedPipeline = () => {
     const [lineIdx, setLineIdx] = useState(0);
     const lines = [
         { text: ">>> Initializing System...", color: "white" },
-        { text: ">>> Loading AI Core (Groq-Llama-3)...", color: "electric-green" },
-        { text: ">>> Setting up Automation Hub...", color: "white" },
-        { text: ">>> [SUCCESS] All systems go.", color: "electric-green" },
-        { text: "$ python3 build_future.py", color: "gray" },
-        { text: "Optimizing everything...", color: "electric-cyan" }
+        { text: ">>> User authenticated: Albjav1235", color: "electric-green" },
+        { text: ">>> const developer = 'Alberto Medina';", color: "electric-cyan" },
+        { text: ">>> dev.focus = ['Automation', 'Full-Stack'];", color: "white" },
+        { text: ">>> [SUCCESS] Workspace ready.", color: "electric-green" },
+        { text: "$ python3 optimize_workflow.py", color: "gray" }
     ];
 
     useEffect(() => {

@@ -33,7 +33,7 @@ const Navbar = () => {
                         <Terminal className="w-5 h-5 text-electric-green" />
                     </div>
                     <span className="font-mono font-bold text-xl tracking-tighter">
-                        DEV<span className="text-electric-green">SYSTEM</span>
+                        ALBERTO<span className="text-electric-green">.M</span>
                     </span>
                 </motion.div>
 

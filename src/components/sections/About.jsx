@@ -20,7 +20,7 @@ const About = () => {
                         <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_01</span>
                         <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
-                    <h2 className="text-4xl font-bold font-mono tracking-tighter uppercase">About the Machine.</h2>
+                    <h2 className="text-4xl font-bold font-mono tracking-tighter uppercase">Identity Protocol.</h2>
                 </div>
 
                 {/* Bento Grid Layout */}
@@ -37,15 +37,13 @@ const About = () => {
                             <Zap className="w-40 h-40 text-electric-green" />
                         </div>
                         <div className="max-w-2xl space-y-6 relative z-10">
-                            <h3 className="text-2xl font-bold text-white tracking-tight">System Architect & Automation Engineer</h3>
+                            <h3 className="text-2xl font-bold text-white tracking-tight text-glow-green">Full-Stack Developer & Automation Pioneer</h3>
                             <div className="space-y-4 text-gray-400 leading-relaxed font-medium">
                                 <p>
-                                    I began interfacing with silicon at age 10, translating logic into execution. Today, I specialize in building
-                                    <span className="text-white"> high-frequency automation pipelines</span> and <span className="text-white">deterministic architectures</span>.
+                                    I started coding at age 10, turning lines of logic into functional reality. With <span className="text-white">8+ years of experience</span>, I've evolved from curiosity to building high-performance architectures.
                                 </p>
                                 <p>
-                                    My approach is strictly objective-driven. I don't just write scripts; I design resilient ecosystems that eliminate human latency.
-                                    From LLM-driven triage engines to high-fidelity Unity interfaces, every system is built for redundant stability and speed.
+                                    I don't just build for clients; I build because I love the art of optimization. Whether it's the <span className="text-electric-cyan">Padel Booking App</span>, the <span className="text-electric-cyan">Twitch Tracker</span>, or high-fidelity 3D interfaces, my focus is always on speed, reliability, and precision.
                                 </p>
                             </div>
                         </div>

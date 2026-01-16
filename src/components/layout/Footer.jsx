@@ -16,8 +16,8 @@ const Footer = () => {
                                 System Status: All Systems Operational
                             </span>
                         </div>
-                        <p className="text-gray-500 text-xs">
-                            © {new Date().getFullYear()} Systems & Automation Engineer. Built for Performance.
+                        <p className="text-gray-500 text-xs mt-1">
+                            © {new Date().getFullYear()} Designed & Engineered by <span className="text-white">Alberto Medina</span> (Albjav1235).
                         </p>
                     </div>
 

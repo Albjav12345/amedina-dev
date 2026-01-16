@@ -31,15 +31,20 @@ const Hero = () => {
                             transition={{ duration: 0.5, delay: 0.1 }}
                             className="space-y-4"
                         >
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
-                                BUILDING <br />
-                                <span className="text-electric-green drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]">
-                                    AUTONOMOUS
-                                </span> <br />
-                                SYSTEMS.
-                            </h1>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+                                    ALBERTO <br />
+                                    <span className="text-electric-green drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]">
+                                        MEDINA
+                                    </span>
+                                </h1>
+                            </div>
+                            <div className="flex items-center gap-2 font-mono text-xs text-secondary/60">
+                                <span className="opacity-50">@</span>
+                                <span className="text-electric-cyan">Albjav1235</span>
+                            </div>
                             <p className="text-gray-400 text-lg md:text-xl max-w-xl font-medium leading-relaxed">
-                                I engineer high-performance automation, AI pipelines, and deterministic systems that scale. Precision code for complex problems.
+                                Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions since age 10.
                             </p>
                         </motion.div>
 

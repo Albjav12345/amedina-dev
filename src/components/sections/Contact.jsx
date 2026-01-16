@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ExternalLink, Cpu, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, ExternalLink, Cpu, Loader2, CheckCircle2, Github, Linkedin, Copy, Check } from 'lucide-react';
 
 const Contact = () => {
     const [status, setStatus] = useState('idle'); // idle, sending, success
+    const [copied, setCopied] = useState(false);
+    const email = "amedina.amg.dev@gmail.com";
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(email);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const handleTransmission = (e) => {
         if (status !== 'idle') return;
 
-        // Prevent immediate mailto to show animation
-        e.preventDefault();
         setStatus('sending');
-
         setTimeout(() => {
             setStatus('success');
-            setTimeout(() => {
-                setStatus('idle');
-                // Optional: actually trigger the mailto after animation
-                // window.location.href = "mailto:contact@example.com";
-            }, 3000);
+            setTimeout(() => setStatus('idle'), 3000);
         }, 2000);
     };
 
@@ -37,22 +38,55 @@ const Contact = () => {
                         className="space-y-8"
                     >
                         <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]">
-                            Signal Transmission Ready
+                            Direct Communication Protocol
                         </div>
 
                         <h2 className="text-4xl md:text-6xl font-bold font-mono tracking-tighter uppercase leading-tight">
-                            LET’S BUILD <br />
-                            <span className="text-electric-green">SOMETHING EFFICIENT.</span>
+                            READY TO <br />
+                            <span className="text-electric-green">INTERFACE.</span>
                         </h2>
 
-                        <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium">
-                            Whether you need a complex automation architecture, a high-performance AI pipeline, or a high-fidelity interface, I'm ready to interface.
-                        </p>
+                        <div className="py-10 space-y-6">
+                            <div className="flex flex-col items-center gap-4">
+                                <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Primary_Endpoint</span>
+                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-4 rounded-xl group/email relative transition-all hover:border-electric-green/30">
+                                    <span className="text-xl md:text-2xl font-mono font-bold text-white tracking-tight">{email}</span>
+                                    <button
+                                        onClick={handleCopy}
+                                        className="p-2 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green transition-all"
+                                        title="Copy to clipboard"
+                                    >
+                                        {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center gap-6">
+                                <a
+                                    href="https://github.com/Albjav1235"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 font-mono text-xs uppercase"
+                                >
+                                    <Github className="w-5 h-5" />
+                                    GitHub
+                                </a>
+                                <a
+                                    href="#"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 font-mono text-xs uppercase"
+                                >
+                                    <Linkedin className="w-5 h-5" />
+                                    LinkedIn
+                                </a>
+                            </div>
+                        </div>
 
                         <div className="flex flex-wrap justify-center gap-6 pt-8">
                             <button
                                 onClick={handleTransmission}
-                                className={`group relative px-8 py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden min-w-[240px] justify-center`}
+                                className={`group relative px-10 py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden min-w-[280px] justify-center`}
                             >
                                 <AnimatePresence mode="wait">
                                     {status === 'idle' && (
@@ -63,7 +97,7 @@ const Contact = () => {
                                             exit={{ opacity: 0, y: -10 }}
                                             className="flex items-center gap-2"
                                         >
-                                            INIT_COMMUNICATION
+                                            INIT_SECURE_TRANSMISSION
                                             <Mail className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                                         </motion.div>
                                     )}
@@ -76,7 +110,7 @@ const Contact = () => {
                                             className="flex items-center gap-2"
                                         >
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            TRANSMITTING...
+                                            TRANSMITTING_DATA...
                                         </motion.div>
                                     )}
                                     {status === 'success' && (
@@ -88,7 +122,7 @@ const Contact = () => {
                                             className="flex items-center gap-2"
                                         >
                                             <CheckCircle2 className="w-4 h-4" />
-                                            SIGNAL_SENT
+                                            SIGNAL_RECEIVED
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -102,16 +136,6 @@ const Contact = () => {
                                     />
                                 )}
                             </button>
-
-                            <a
-                                href="https://upwork.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-3"
-                            >
-                                VIEW_UPWORK_PROFILE
-                                <ExternalLink className="w-4 h-4" />
-                            </a>
                         </div>
 
                         {/* Technical Meta info below buttons */}
