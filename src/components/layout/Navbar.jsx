@@ -5,19 +5,42 @@ import { Terminal, Menu, X } from 'lucide-react';
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('home');
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        // Intersection Observer for active sections
+        const sections = ['home', 'about', 'projects', 'tech-stack', 'contact'];
+        const observers = sections.map(id => {
+            const element = document.getElementById(id);
+            if (!element) return null;
+
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setActiveSection(id);
+                    }
+                },
+                { threshold: 0.5 }
+            );
+            observer.observe(element);
+            return observer;
+        });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            observers.forEach(obs => obs?.disconnect());
+        };
     }, []);
 
     const navLinks = [
-        { name: 'Start', href: '#home', id: '01' },
-        { name: 'About', href: '#about', id: '02' },
-        { name: 'Systems', href: '#projects', id: '03' },
-        { name: 'Stack', href: '#tech-stack', id: '04' },
-        { name: 'Contact', href: '#contact', id: '05' },
+        { name: 'Start', href: '#home', id: 'home', num: '01' },
+        { name: 'About', href: '#about', id: 'about', num: '02' },
+        { name: 'Systems', href: '#projects', id: 'projects', num: '03' },
+        { name: 'Stack', href: '#tech-stack', id: 'tech-stack', num: '04' },
+        { name: 'Contact', href: '#contact', id: 'contact', num: '05' },
     ];
 
     return (
@@ -38,20 +61,27 @@ const Navbar = () => {
                 </motion.div>
 
                 {/* Desktop Links */}
-                <div className="hidden md:flex items-center gap-8">
+                <div className="hidden md:flex items-center gap-4 lg:gap-8">
                     {navLinks.map((link, i) => (
                         <motion.a
-                            key={link.name}
+                            key={link.id}
                             href={link.href}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="group flex flex-col items-center"
+                            className="relative px-4 py-2 group flex flex-col items-center justify-center"
                         >
-                            <span className="font-mono text-[10px] text-electric-green opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                {link.id}
+                            {activeSection === link.id && (
+                                <motion.div
+                                    layoutId="nav-pill"
+                                    className="absolute inset-0 bg-white/5 border border-white/10 rounded-lg z-0 transition-all"
+                                    transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="relative z-10 font-mono text-[9px] text-electric-green opacity-70 mb-0.5">
+                                {link.num}
                             </span>
-                            <span className="text-sm font-medium text-gray-400 group-hover:text-white transition-colors">
+                            <span className={`relative z-10 text-sm font-medium transition-colors duration-300 ${activeSection === link.id ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
                                 {link.name}
                             </span>
                         </motion.a>
@@ -59,7 +89,7 @@ const Navbar = () => {
                     <motion.button
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="btn-system text-xs py-2 px-4"
+                        className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest ml-4"
                     >
                         SYS_INIT
                     </motion.button>
@@ -86,13 +116,15 @@ const Navbar = () => {
                         <div className="flex flex-col p-6 gap-4">
                             {navLinks.map((link) => (
                                 <a
-                                    key={link.name}
+                                    key={link.id}
                                     href={link.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="flex items-center gap-4 group"
                                 >
-                                    <span className="font-mono text-xs text-electric-green">{link.id}</span>
-                                    <span className="text-lg font-medium">{link.name}</span>
+                                    <span className="font-mono text-xs text-electric-green">{link.num}</span>
+                                    <span className={`text-lg font-medium ${activeSection === link.id ? 'text-white' : 'text-gray-400'}`}>
+                                        {link.name}
+                                    </span>
                                 </a>
                             ))}
                         </div>
