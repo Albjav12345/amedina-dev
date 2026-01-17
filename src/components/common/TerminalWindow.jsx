@@ -84,6 +84,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
 const InteractiveConsole = ({ onClose }) => {
     const [input, setInput] = useState("");
     const [history, setHistory] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const inputRef = useRef(null);
     const scrollRef = useRef(null);
 
@@ -95,41 +96,65 @@ const InteractiveConsole = ({ onClose }) => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [history, input]);
+    }, [history, input, isLoading]);
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = async (e) => {
         if (e.key === 'Enter') {
-            const cmd = input.trim().toLowerCase();
-            let response = "";
-            let action = null;
+            if (!input.trim()) return;
+            const cmd = input.trim();
 
-            switch (cmd) {
-                case 'help':
-                    response = "Available commands: help, clear, exit, whoami, contact";
-                    break;
-                case 'clear':
-                    setHistory([]);
-                    setInput("");
-                    return;
-                case 'exit':
-                    onClose();
-                    return;
-                case 'whoami':
-                    response = "visitor@automation-portfolio ~ guest_access_level_1";
-                    break;
-                case 'contact':
-                    response = "Opening contact protocol...";
-                    action = () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                    break;
-                case '':
-                    break;
-                default:
-                    response = `Command not found: ${cmd}. Type 'help' for available commands.`;
+            // Add user command to history
+            setHistory(prev => [...prev, { type: 'input', content: cmd }]);
+            setInput("");
+            setIsLoading(true);
+
+            // Local commands override
+            if (cmd.toLowerCase() === 'clear') {
+                setHistory([]);
+                setIsLoading(false);
+                return;
+            }
+            if (cmd.toLowerCase() === 'exit') {
+                onClose();
+                return;
             }
 
-            setHistory([...history, { type: 'input', content: input }, ...(response ? [{ type: 'output', content: response }] : [])]);
-            setInput("");
-            if (action) setTimeout(action, 500);
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: cmd })
+                });
+
+                const data = await res.json();
+
+                // Add AI response to history
+                setHistory(prev => [...prev, { type: 'output', content: data.text }]);
+
+                // Execute Action
+                if (data.action) {
+                    const sectionId = data.action.replace('SCROLL_TO_', '').toLowerCase().replace('_', '-');
+                    // Map generic names to specific IDs if needed
+                    const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
+
+                    setTimeout(() => {
+                        const element = document.getElementById(targetId);
+                        if (element) {
+                            // Use window.lenis if available for smooth consistency
+                            if (window.lenis) {
+                                window.lenis.scrollTo(element, { offset: -50, duration: 1.5 });
+                            } else {
+                                element.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }
+                    }, 500);
+                }
+
+            } catch (error) {
+                setHistory(prev => [...prev, { type: 'output', content: ">> ERROR: SERVER DISCONNECTED. PLEASE CHECK CONNECTION." }]);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -151,9 +176,16 @@ const InteractiveConsole = ({ onClose }) => {
                 {history.map((entry, i) => (
                     <div key={i} className={`flex gap-2 leading-relaxed ${entry.type === 'input' ? 'text-white' : 'text-gray-400'}`}>
                         <span className="shrink-0">{entry.type === 'input' ? <span className="text-electric-cyan font-bold">visitor@sys:~$</span> : ">"}</span>
-                        <span className="break-all">{entry.content}</span>
+                        <span className="break-all whitespace-pre-wrap">{entry.content}</span>
                     </div>
                 ))}
+
+                {isLoading && (
+                    <div className="flex gap-2 leading-relaxed text-gray-400 animate-pulse">
+                        <span className="shrink-0">{">"}</span>
+                        <span>SYSTEM_THINKING...</span>
+                    </div>
+                )}
 
                 <div className="flex items-center gap-2 text-white leading-relaxed">
                     <span className="text-electric-cyan font-bold shrink-0">visitor@sys:~$</span>
@@ -163,6 +195,7 @@ const InteractiveConsole = ({ onClose }) => {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        disabled={isLoading}
                         className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0"
                         autoComplete="off"
                         autoCapitalize="off"
