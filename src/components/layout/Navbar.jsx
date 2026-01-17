@@ -11,29 +11,51 @@ const Navbar = () => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
 
-        // Intersection Observer for active sections
-        const sections = ['home', 'about', 'projects', 'tech-stack', 'contact'];
-        const observers = sections.map(id => {
-            const element = document.getElementById(id);
-            if (!element) return null;
+        const observerOptions = {
+            root: null,
+            rootMargin: '-10% 0px -80% 0px',
+            threshold: 0
+        };
 
-            const observer = new IntersectionObserver(
-                ([entry]) => {
-                    if (entry.isIntersecting) {
-                        setActiveSection(id);
-                    }
-                },
-                { threshold: 0.5 }
-            );
-            observer.observe(element);
-            return observer;
+        const handleIntersect = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setActiveSection(entry.target.id);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+        const sections = ['home', 'about', 'projects', 'tech-stack', 'contact'];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
         });
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            observers.forEach(obs => obs?.disconnect());
+            observer.disconnect();
         };
     }, []);
+
+    const scrollToSection = (e, id) => {
+        e.preventDefault();
+        const element = document.getElementById(id);
+        if (!element) return;
+
+        const navHeight = isScrolled ? 65 : 88; // Height based on padding
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+
+        setIsMobileMenuOpen(false);
+        setActiveSection(id);
+    };
 
     const navLinks = [
         { name: 'Start', href: '#home', id: 'home', num: '01' },
@@ -50,6 +72,7 @@ const Navbar = () => {
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
+                    onClick={(e) => scrollToSection(e, 'home')}
                     className="flex items-center gap-2 group cursor-pointer"
                 >
                     <div className="w-10 h-10 rounded-lg bg-electric-green/10 border border-electric-green/30 flex items-center justify-center group-hover:bg-electric-green/20">
@@ -66,10 +89,11 @@ const Navbar = () => {
                         <motion.a
                             key={link.id}
                             href={link.href}
+                            onClick={(e) => scrollToSection(e, link.id)}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="relative px-4 py-2 group flex flex-col items-center justify-center"
+                            className="relative px-4 py-2 group flex flex-col items-center justify-center cursor-pointer"
                         >
                             {activeSection === link.id && (
                                 <motion.div
@@ -118,8 +142,8 @@ const Navbar = () => {
                                 <a
                                     key={link.id}
                                     href={link.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 group"
+                                    onClick={(e) => scrollToSection(e, link.id)}
+                                    className="flex items-center gap-4 group cursor-pointer p-2"
                                 >
                                     <span className="font-mono text-xs text-electric-green">{link.num}</span>
                                     <span className={`text-lg font-medium ${activeSection === link.id ? 'text-white' : 'text-gray-400'}`}>
