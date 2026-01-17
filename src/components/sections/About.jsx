@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn, containerVariants } from '../../utils/animations';
+import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 const About = () => {
     const stats = [
@@ -52,17 +52,15 @@ const About = () => {
                     </motion.div>
 
                     {/* Stats Card (Integrated) */}
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewportConfig}
-                        variants={containerVariants}
-                        className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-4"
-                    >
+                    <div className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-4">
                         {stats.map((stat, i) => (
                             <motion.div
                                 key={stat.label}
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={viewportConfig}
                                 variants={scaleIn}
+                                transition={{ delay: i * 0.1, duration: 0.4 }}
                                 className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 transition-all border-white/5 gpu-accelerated"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>
@@ -78,7 +76,7 @@ const About = () => {
                                 </div>
                             </motion.div>
                         ))}
-                    </motion.div>
+                    </div>
 
                     {/* Secondary Detail Card */}
                     <motion.div
@@ -86,6 +84,7 @@ const About = () => {
                         whileInView="visible"
                         viewport={viewportConfig}
                         variants={fadeInUp}
+                        transition={{ delay: 0.2 }}
                         className="md:col-span-12 lg:col-span-12 glass-card p-8 border-white/5 relative bg-gradient-to-br from-white/5 to-transparent gpu-accelerated"
                     >
                         <div className="flex flex-col md:flex-row items-center justify-between gap-8">

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Download, Cpu } from 'lucide-react';
 import TerminalWindow, { AnimatedPipeline } from '../common/TerminalWindow';
-import { fadeInUp, viewportConfig, containerVariants, cardVariants } from '../../utils/animations';
+import { fadeInUp, viewportConfig } from '../../utils/animations';
 
 const Hero = () => {
     return (
@@ -12,24 +12,26 @@ const Hero = () => {
                 <div className="grid lg:grid-cols-12 gap-16 items-center">
 
                     {/* Text Content */}
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewportConfig}
-                        variants={containerVariants}
-                        className="lg:col-span-6 space-y-8 gpu-accelerated"
-                    >
+                    <div className="lg:col-span-6 space-y-8">
                         <motion.div
-                            variants={cardVariants}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.1 }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em] gpu-accelerated"
                         >
                             <Cpu className="w-3 h-3" />
                             <span>Priority: Level 1 Alpha</span>
                         </motion.div>
 
                         <motion.div
-                            variants={cardVariants}
-                            className="space-y-4"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.2 }}
+                            className="space-y-4 gpu-accelerated"
                         >
                             <div className="flex items-center gap-3">
                                 <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
@@ -49,8 +51,12 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            variants={cardVariants}
-                            className="flex flex-wrap gap-4 pt-4"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.3 }}
+                            className="flex flex-wrap gap-4 pt-4 gpu-accelerated"
                         >
                             <button className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]">
                                 <span className="relative z-10 flex items-center gap-2">
@@ -68,8 +74,12 @@ const Hero = () => {
 
                         {/* Quick Metadata */}
                         <motion.div
-                            variants={cardVariants}
-                            className="pt-10 flex gap-8 border-t border-white/5"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.4 }}
+                            className="pt-10 flex gap-8 border-t border-white/5 gpu-accelerated"
                         >
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] text-gray-600 font-mono uppercase">Stack_Focus</span>
@@ -80,7 +90,7 @@ const Hero = () => {
                                 <span className="text-xs font-mono text-gray-300">10+ YEARS</span>
                             </div>
                         </motion.div>
-                    </motion.div>
+                    </div>
 
                     {/* Terminal Visual */}
                     <div className="lg:col-span-6 hidden lg:block">

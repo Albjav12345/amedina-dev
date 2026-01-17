@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
-import { containerVariants, cardVariants, viewportConfig, fadeInUp } from '../../utils/animations';
+import { fadeInUp, viewportConfig } from '../../utils/animations';
 
 const projects = [
     {
@@ -92,19 +92,17 @@ const FeaturedProjects = () => {
                     </h2>
                 </motion.div>
 
-                {/* Grid Layout with Staggered Entrance */}
-                <motion.div
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={viewportConfig}
-                    variants={containerVariants}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
-                    {projects.map((project) => (
+                {/* Grid Layout with Robust Manual Stagger */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
                             layoutId={`card-${project.id}`}
-                            variants={cardVariants}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={fadeInUp}
+                            transition={{ delay: index * 0.1, duration: 0.5 }}
                             onClick={() => setSelectedId(project.id)}
                             className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col min-h-[420px] relative overflow-hidden gpu-accelerated"
                         >
@@ -151,8 +149,9 @@ const FeaturedProjects = () => {
                             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-all"></div>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             </div>
+
 
             {/* Modal Overlay */}
             <AnimatePresence>

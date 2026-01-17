@@ -1,12 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Brain, Layers, Globe } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn, containerVariants } from '../../utils/animations';
+import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 const TechNode = ({ name, icon, index, color = "electric-green" }) => {
     return (
         <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
             variants={scaleIn}
+            transition={{ delay: index * 0.05 }}
             whileHover={{ y: -5, scale: 1.05 }}
             className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
@@ -31,6 +35,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             whileInView="visible"
             viewport={viewportConfig}
             variants={fadeInUp}
+            transition={{ delay: index * 0.1 }}
             className="glass-card p-8 border-white/5 relative overflow-hidden space-y-8 gpu-accelerated"
         >
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">
@@ -40,14 +45,11 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 <h3 className="font-mono text-sm font-bold uppercase tracking-widest">{title}</h3>
             </div>
 
-            <motion.div
-                variants={containerVariants}
-                className="flex flex-wrap gap-4 justify-center md:justify-start"
-            >
+            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 {items.map((item, i) => (
                     <TechNode key={item} name={item} index={i} color={color} />
                 ))}
-            </motion.div>
+            </div>
 
             {/* Decorative background number */}
             <span className="absolute bottom-4 right-4 text-6xl font-mono font-bold opacity-[0.02] pointer-events-none select-none">
