@@ -55,6 +55,19 @@ const projects = [
     }
 ];
 
+const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: i * 0.1,
+            duration: 0.5,
+            ease: "easeOut"
+        }
+    })
+};
+
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
 
@@ -98,10 +111,11 @@ const FeaturedProjects = () => {
                         <motion.div
                             key={project.id}
                             layoutId={`project-container-${project.id}`}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            custom={index}
+                            initial="hidden"
+                            whileInView="visible"
                             viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
+                            variants={cardVariants}
                             onClick={() => setSelectedId(project.id)}
                             className="gpu-accelerated cursor-pointer group relative flex flex-col min-h-[420px] overflow-hidden opacity-0"
                         >
