@@ -16,17 +16,17 @@ const Footer = () => {
                                 System Status: All Systems Operational
                             </span>
                         </div>
-                        <p className="text-gray-500 text-xs mt-1">
-                            © {new Date().getFullYear()} Designed & Engineered by <span className="text-white">Alberto Medina</span> (Albjav1235).
+                        <p className="text-gray-500 text-[8px] md:text-xs mt-1 whitespace-nowrap">
+                            © {new Date().getFullYear()} Engineered by <span className="text-white">Alberto Medina</span>.
                         </p>
                     </div>
 
-                    <div className="flex gap-6 font-mono text-[10px] text-gray-400">
-                        <div className="flex flex-col items-end">
+                    <div className="flex gap-4 md:gap-6 font-mono text-[8px] md:text-[10px] text-gray-400 whitespace-nowrap">
+                        <div className="flex flex-col items-center md:items-end">
                             <span className="text-gray-600">LOCATION</span>
                             <span>SPAIN / REMOTE</span>
                         </div>
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-center md:items-end">
                             <span className="text-gray-600">VESSEL_ID</span>
                             <span>AUTO_PORT_V2.0</span>
                         </div>

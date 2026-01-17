@@ -169,7 +169,7 @@ const FeaturedProjects = () => {
             {/* Modal Overlay */}
             <AnimatePresence>
                 {selectedId && activeProject && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-10 overflow-y-auto custom-scrollbar">
+                    <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-0 md:p-10 pt-4 md:pt-10 overflow-y-auto custom-scrollbar">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -257,28 +257,14 @@ const FeaturedProjects = () => {
                                     </a>
                                 </div>
                                 {/* Safe padding for mobile bottom */}
-                                <div className="h-10 lg:hidden" />
+                                {/* Safe padding for mobile bottom */}
+                                <div className="h-4 lg:hidden" />
                             </div>
 
-                            {/* LEFT COLUMN: Visuals - Now Order 1 for mobile (TOP) */}
+                            {/* LEFT COLUMN: Visuals - Reordered for Mobile Flow */}
                             <div className="w-full lg:w-1/2 bg-black/20 md:bg-black/40 border-b lg:border-b-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 md:gap-8 md:overflow-y-auto custom-scrollbar order-1 lg:order-2">
-                                {/* Workflow Section */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
-                                        <div className="flex gap-1">
-                                            <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
-                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
-                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
-                                        </div>
-                                    </div>
-                                    <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
-                                        <WorkflowDiagram steps={activeProject.arch} />
-                                    </div>
-                                </div>
-
-                                {/* Demo Visual Section */}
-                                <div className="space-y-4 flex-grow">
+                                {/* Demo Visual Section (TOP on Mobile) */}
+                                <div className="space-y-4 flex-grow order-1 lg:order-none">
                                     <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
                                         Live_Stream_Demo
                                         <ExternalLink className="w-3 h-3 opacity-50" />
@@ -292,6 +278,21 @@ const FeaturedProjects = () => {
                                         </div>
                                         {/* Scanline Effect */}
                                         <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
+                                    </div>
+                                </div>
+
+                                {/* Workflow Section (BOTTOM on Mobile) */}
+                                <div className="space-y-4 order-2 lg:order-none">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
+                                        <div className="flex gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
+                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
+                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
+                                        <WorkflowDiagram steps={activeProject.arch} />
                                     </div>
                                 </div>
                             </div>
