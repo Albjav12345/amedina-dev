@@ -75,22 +75,21 @@ const TechNode = ({ name, color = "electric-green" }) => {
         <motion.div
             variants={itemVariants}
             whileHover={{ y: -5, scale: 1.05 }}
-            className="group relative flex flex-col items-center gap-3 gpu-accelerated"
+            className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
-            <div className={`w-16 h-16 rounded-xl glass-card flex items-center justify-center border-white/5 relative overflow-hidden bg-white/[0.02] active:scale-95 transition-all duration-300`}>
+            <div className={`w-14 h-14 rounded-xl glass-card flex items-center justify-center border-white/5 relative overflow-hidden bg-white/[0.02] active:scale-95 transition-all duration-300`}>
                 {/* Glow Effect */}
                 <div className={`absolute inset-0 bg-${color}/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
                 <div className={`absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
 
                 <div className={`relative z-10 text-gray-400 group-hover:text-${color} transition-colors duration-300 transform group-hover:scale-110`}>
-                    {icon}
+                    {React.cloneElement(icon, { className: "w-4 h-4" })}
                 </div>
             </div>
-            <div className="flex flex-col items-center gap-1">
-                <span className="font-mono text-[9px] text-gray-500 group-hover:text-white uppercase tracking-widest transition-colors text-center px-1">
+            <div className="flex flex-col items-center gap-0.5">
+                <span className="font-mono text-[8px] text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors text-center px-1">
                     {name}
                 </span>
-                <div className={`w-0 h-[1px] bg-${color}/40 group-hover:w-full transition-all duration-500`}></div>
             </div>
         </motion.div>
     );
@@ -116,14 +115,14 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="flex flex-wrap gap-x-6 gap-y-8">
                 {items.map((item) => (
                     <TechNode key={item} name={item} color={color} />
                 ))}
             </div>
 
             {/* Decorative background number */}
-            <span className="absolute -bottom-6 -right-4 text-[120px] font-mono font-bold text-white/[0.02] pointer-events-none select-none">
+            <span className="absolute bottom-4 right-8 text-[100px] font-mono font-bold text-white/[0.02] pointer-events-none select-none">
                 0{index + 1}
             </span>
         </motion.div>
