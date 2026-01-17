@@ -97,54 +97,57 @@ const FeaturedProjects = () => {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
+                            layoutId={`project-container-${project.id}`}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                             onClick={() => setSelectedId(project.id)}
-                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 flex flex-col min-h-[420px] relative overflow-hidden gpu-accelerated opacity-0"
+                            className="gpu-accelerated cursor-pointer group relative flex flex-col min-h-[420px] overflow-hidden opacity-0"
                         >
-                            {/* GIF Thumbnail Preview */}
-                            <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                <img
-                                    src={project.thumbnail}
-                                    alt={project.title}
-                                    className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
-                                {/* Scanning Line Effect */}
-                                <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
+                            <div className="h-full w-full glass-card p-0 border-white/5 group-hover:border-electric-green/30 transition-colors duration-300 flex flex-col">
+                                {/* GIF Thumbnail Preview */}
+                                <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                    <img
+                                        src={project.thumbnail}
+                                        alt={project.title}
+                                        className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
+                                    {/* Scanning Line Effect */}
+                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
 
-                                <div className="absolute top-4 left-4 flex gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
-                                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-                                </div>
-                            </div>
-
-                            <div className="p-8 flex flex-col justify-between flex-grow relative z-10">
-                                <div className="relative">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                            <Code2 className="w-5 h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
-                                        </div>
-                                        <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                    <div className="absolute top-4 left-4 flex gap-1">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
                                     </div>
-                                    <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
-                                    <p className="text-gray-500 font-mono text-[9px] uppercase tracking-widest">{project.subtitle}</p>
                                 </div>
 
-                                <div className="mt-6 flex flex-wrap gap-2">
-                                    {project.stack.slice(0, 3).map(tech => (
-                                        <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
-                                            {tech}
-                                        </span>
-                                    ))}
+                                <div className="p-8 flex flex-col justify-between flex-grow relative z-10">
+                                    <div className="relative">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
+                                                <Code2 className="w-5 h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
+                                            </div>
+                                            <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
+                                        <p className="text-gray-500 font-mono text-[9px] uppercase tracking-widest">{project.subtitle}</p>
+                                    </div>
+
+                                    <div className="mt-6 flex flex-wrap gap-2">
+                                        {project.stack.slice(0, 3).map(tech => (
+                                            <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
+
+                                {/* Background Glow */}
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10"></div>
                             </div>
-
-                            {/* Background Glow */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10"></div>
                         </motion.div>
                     ))}
                 </div>
@@ -166,10 +169,9 @@ const FeaturedProjects = () => {
 
                         {/* Modal Content */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full max-h-[85vh] lg:max-h-[80vh]"
+                            layoutId={`project-container-${selectedId}`}
+                            transition={{ type: "spring", stiffness: 250, damping: 25 }}
+                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full max-h-[85vh] lg:max-h-[80vh] gpu-accelerated"
                         >
                             {/* Close Button */}
                             <button
