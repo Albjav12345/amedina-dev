@@ -103,26 +103,26 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             viewport={viewportConfig}
             variants={containerVariants}
             custom={index}
-            className="glass-card p-10 border-white/5 relative overflow-hidden space-y-10 gpu-accelerated"
+            className="glass-card p-6 md:p-10 border-white/5 relative overflow-hidden space-y-8 md:space-y-10 gpu-accelerated"
         >
-            <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
-                <div className={`p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
+            <div className="flex items-center gap-3 md:gap-4 border-l-2 border-white/5 pl-4 md:pl-6">
+                <div className={`p-2 md:p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
                     {icon}
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">{title}</h3>
-                    <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
+                    <h3 className="font-mono text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">{title}</h3>
+                    <span className="text-[8px] md:text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-0.5 md:mt-1">Classification_Level_{index + 1}</span>
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-8">
+            <div className="flex flex-wrap gap-x-4 md:gap-x-6 gap-y-6 md:gap-y-8">
                 {items.map((item) => (
                     <TechNode key={item} name={item} color={color} />
                 ))}
             </div>
 
             {/* Decorative background number */}
-            <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none">
+            <span className="absolute bottom-4 right-4 md:bottom-6 md:right-6 text-[60px] md:text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none">
                 0{index + 1}
             </span>
         </motion.div>
