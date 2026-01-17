@@ -169,7 +169,7 @@ const FeaturedProjects = () => {
             {/* Modal Overlay */}
             <AnimatePresence>
                 {selectedId && activeProject && (
-                    <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-0 md:p-10 pt-4 md:pt-10 overflow-y-auto custom-scrollbar">
+                    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -179,11 +179,10 @@ const FeaturedProjects = () => {
                             className="fixed inset-0 bg-dark-void/90 backdrop-blur-xl cursor-pointer"
                         />
 
-                        {/* Modal Content */}
                         <motion.div
                             layoutId={`project-container-${selectedId}`}
                             transition={{ type: "spring", stiffness: 250, damping: 25 }}
-                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-auto min-h-screen md:h-full md:max-h-[85vh] lg:max-h-[80vh] gpu-accelerated"
+                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0"
                         >
                             {/* Close Button - Fixed on top right for unified scroll feel */}
                             <button
@@ -193,8 +192,8 @@ const FeaturedProjects = () => {
                                 <X className="w-6 h-6" />
                             </button>
 
-                            {/* RIGHT COLUMN: Text Content & Actions (Appears first on mobile for unified flow if desired, but image first is standard) */}
-                            <div className="w-full lg:w-1/2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-1">
+                            {/* PART 2: Text Content & Actions */}
+                            <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
                                 <div className="space-y-8 flex-grow">
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3">
@@ -256,15 +255,12 @@ const FeaturedProjects = () => {
                                         <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                     </a>
                                 </div>
-                                {/* Safe padding for mobile bottom */}
-                                {/* Safe padding for mobile bottom */}
                                 <div className="h-4 lg:hidden" />
                             </div>
 
-                            {/* LEFT COLUMN: Visuals - Reordered for Mobile Flow */}
-                            <div className="w-full lg:w-1/2 bg-black/20 md:bg-black/40 border-b lg:border-b-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 md:gap-8 md:overflow-y-auto custom-scrollbar order-1 lg:order-2">
-                                {/* Demo Visual Section (TOP on Mobile) */}
-                                <div className="space-y-4 flex-grow order-1 lg:order-none">
+                            {/* PART 1: Media/Demo - TOP on Mobile */}
+                            <div className="w-full lg:col-start-2 lg:row-start-1 bg-black/40 border-b lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-1 lg:order-none">
+                                <div className="space-y-4 flex-grow">
                                     <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
                                         Live_Stream_Demo
                                         <ExternalLink className="w-3 h-3 opacity-50" />
@@ -276,13 +272,14 @@ const FeaturedProjects = () => {
                                             </div>
                                             <p className="font-mono text-[10px] text-gray-400">Payload: demo_preview.{activeProject.demoType}</p>
                                         </div>
-                                        {/* Scanline Effect */}
                                         <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Workflow Section (BOTTOM on Mobile) */}
-                                <div className="space-y-4 order-2 lg:order-none">
+                            {/* PART 3: Workflow/Diagram - BOTTOM on Mobile, Bottom-Right on Desktop */}
+                            <div className="w-full lg:col-start-2 lg:row-start-2 bg-black/60 lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-3 lg:order-none">
+                                <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
                                         <div className="flex gap-1">
