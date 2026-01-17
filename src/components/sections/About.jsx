@@ -12,7 +12,7 @@ const About = () => {
     ];
 
     return (
-        <section id="about" className="py-24 relative overflow-hidden">
+        <section id="about" className="py-12 md:py-24 relative overflow-hidden px-4 md:px-0">
             <div className="container mx-auto px-6">
 
                 {/* Section Header */}
@@ -61,10 +61,10 @@ const About = () => {
                                 viewport={viewportConfig}
                                 variants={scaleIn}
                                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 border-white/5 gpu-accelerated"
+                                className="glass-card p-4 md:p-6 flex flex-col items-center justify-center text-center gap-2 md:gap-3 group hover:border-electric-green/40 border-white/5 gpu-accelerated"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>
-                                    {stat.icon}
+                                    {React.cloneElement(stat.icon, { className: "w-4 h-4 md:w-5 md:h-5" })}
                                 </div>
                                 <div className="space-y-1">
                                     <span className="block text-2xl font-bold font-mono text-white leading-none tracking-tighter">
@@ -87,28 +87,28 @@ const About = () => {
                         transition={{ delay: 0.2 }}
                         className="md:col-span-12 lg:col-span-12 glass-card p-8 border-white/5 relative bg-gradient-to-br from-white/5 to-transparent gpu-accelerated"
                     >
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div className="flex gap-4 items-center">
-                                <div className="w-12 h-12 rounded-full border border-electric-green/30 flex items-center justify-center bg-electric-green/5">
-                                    <Shield className="w-6 h-6 text-electric-green" />
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left">
+                            <div className="flex flex-col md:flex-row gap-4 items-center">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-electric-green/30 flex items-center justify-center bg-electric-green/5">
+                                    <Shield className="w-5 h-5 md:w-6 md:h-6 text-electric-green" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-bold text-white uppercase tracking-widest">Protocol Override</h4>
-                                    <p className="text-xs text-gray-400">Security-first development lifecycle</p>
+                                    <h4 className="text-[10px] md:text-sm font-bold text-white uppercase tracking-widest">Protocol Override</h4>
+                                    <p className="text-[9px] md:text-xs text-gray-400">Security-first development</p>
                                 </div>
                             </div>
-                            <div className="h-px md:h-8 w-full md:w-px bg-white/10"></div>
-                            <div className="flex gap-4 items-center">
-                                <div className="w-12 h-12 rounded-full border border-electric-cyan/30 flex items-center justify-center bg-electric-cyan/5">
-                                    <Target className="w-6 h-6 text-electric-cyan" />
+                            <div className="hidden md:block h-8 w-px bg-white/10"></div>
+                            <div className="flex flex-col md:flex-row gap-4 items-center">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-electric-cyan/30 flex items-center justify-center bg-electric-cyan/5">
+                                    <Target className="w-5 h-5 md:w-6 md:h-6 text-electric-cyan" />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-bold text-white uppercase tracking-widest">Target Acquisition</h4>
-                                    <p className="text-xs text-gray-400">99.9% problem-resolution rate</p>
+                                    <h4 className="text-[10px] md:text-sm font-bold text-white uppercase tracking-widest">Target Acquisition</h4>
+                                    <p className="text-[9px] md:text-xs text-gray-400">99.9% resolution rate</p>
                                 </div>
                             </div>
-                            <div className="h-px md:h-8 w-full md:w-px bg-white/10"></div>
-                            <button className="btn-system text-[10px] py-3 px-8 uppercase tracking-[0.2em]">
+                            <div className="hidden md:block h-8 w-px bg-white/10"></div>
+                            <button className="w-full md:w-auto btn-system text-[9px] md:text-[10px] py-3 px-8 uppercase tracking-[0.2em]">
                                 Open_Manual.src
                             </button>
                         </div>

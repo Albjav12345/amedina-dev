@@ -25,12 +25,12 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="py-32 relative overflow-hidden">
+        <section id="contact" className="py-16 md:py-32 relative overflow-hidden px-4 md:px-0">
             {/* Background Decor */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-            <div className="container mx-auto px-6 relative z-10">
-                <div className="max-w-4xl mx-auto glass-card p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center gpu-accelerated">
+            <div className="container mx-auto px-0 md:px-6 relative z-10">
+                <div className="max-w-4xl mx-auto glass-card p-8 md:p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center gpu-accelerated">
 
                     <motion.div
                         initial="hidden"
@@ -63,23 +63,23 @@ const Contact = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-center gap-6">
+                            <div className="grid grid-cols-2 gap-4 justify-center">
                                 <a
                                     href="https://github.com/Albjav1235"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center gap-2 font-mono text-xs uppercase"
+                                    className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 font-mono text-[10px] md:text-xs uppercase transition-all"
                                 >
-                                    <Github className="w-5 h-5" />
+                                    <Github className="w-4 h-4 md:w-5 md:h-5" />
                                     GitHub
                                 </a>
                                 <a
                                     href="#"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center gap-2 font-mono text-xs uppercase"
+                                    className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 font-mono text-[10px] md:text-xs uppercase transition-all"
                                 >
-                                    <Linkedin className="w-5 h-5" />
+                                    <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
                                     LinkedIn
                                 </a>
                             </div>
@@ -88,7 +88,7 @@ const Contact = () => {
                         <div className="flex flex-wrap justify-center gap-6 pt-8">
                             <button
                                 onClick={handleTransmission}
-                                className={`group relative px-10 py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden min-w-[280px] justify-center`}
+                                className={`group relative px-6 md:px-10 py-3 md:py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden w-full md:min-w-[280px] justify-center text-sm md:text-base`}
                             >
                                 <AnimatePresence mode="wait">
                                     {status === 'idle' && (

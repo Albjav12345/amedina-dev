@@ -30,7 +30,7 @@ const Hero = () => {
                             className="space-y-4 gpu-accelerated"
                         >
                             <div className="flex items-center gap-3">
-                                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+                                <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none">
                                     ALBERTO <br />
                                     <span className="text-electric-green drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]">
                                         MEDINA
