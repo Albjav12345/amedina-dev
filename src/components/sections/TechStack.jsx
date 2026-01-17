@@ -10,38 +10,9 @@ import {
     Search, MousePointer2
 } from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
+import portfolioData from '../../../api/portfolio.js';
 
-const techIconMap = {
-    // Core Automation Engine
-    "Python": <Terminal className="w-5 h-5" />,
-    "C#": <Code2 className="w-5 h-5" />,
-    "SQL / NoSQL": <Database className="w-5 h-5" />,
-    "Node.js": <Zap className="w-5 h-5" />,
-    "Multithreading": <Layers className="w-5 h-5" />,
-    "API Design": <Share2 className="w-5 h-5" />,
-
-    // AI & Computer Vision
-    "Groq (Llama 3)": <Brain className="w-5 h-5" />,
-    "Tesseract OCR": <Search className="w-5 h-5" />,
-    "Selenium": <MousePointer2 className="w-5 h-5" />,
-    "Data Processing": <Cpu className="w-5 h-5" />,
-    "Inference": <Zap className="w-5 h-5" />,
-
-    // Visual & Interface Systems
-    "React": <Layout className="w-5 h-5" />,
-    "Unity 3D": <Box className="w-5 h-5" />,
-    "Tailwind CSS": <Wind className="w-5 h-5" />,
-    "Motion Design": <Flame className="w-5 h-5" />,
-    "HLSL Shaders": <Monitor className="w-5 h-5" />,
-
-    // Infrastructure & Tools
-    "Firebase": <Flame className="w-5 h-5" />,
-    "Supabase": <Database className="w-5 h-5" />,
-    "Git / GitHub": <GitBranch className="w-5 h-5" />,
-    "Vercel": <Cloud className="w-5 h-5" />,
-    "Vite": <Zap className="w-5 h-5" />,
-    "Postman": <Network className="w-5 h-5" />
-};
+const { categories: rawCategories } = portfolioData.skills;
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -68,9 +39,7 @@ const itemVariants = {
     }
 };
 
-const TechNode = ({ name, color = "electric-green" }) => {
-    const icon = techIconMap[name] || <Cpu className="w-5 h-5" />;
-
+const TechNode = ({ name, icon, color = "electric-green" }) => {
     return (
         <motion.div
             variants={itemVariants}
@@ -96,6 +65,7 @@ const TechNode = ({ name, color = "electric-green" }) => {
 };
 
 const NodeGroup = ({ title, icon, items, index, color }) => {
+    // Map of technology nodes with their sub-icons (if any) or generic
     return (
         <motion.div
             initial="hidden"
@@ -116,9 +86,16 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             </div>
 
             <div className="flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start">
-                {items.map((item) => (
-                    <TechNode key={item} name={item} color={color} />
-                ))}
+                {items.map((item) => {
+                    // Internal mapping for sub-icons
+                    const subIconMap = {
+                        "Python": <Terminal />, "C#": <Code2 />, "SQL / NoSQL": <Database />, "Node.js": <Zap />,
+                        "React": <Layout />, "Unity 3D": <Box />, "Tailwind CSS": <Wind />, "Motion Design": <Flame />,
+                        "Firebase": <Flame />, "Supabase": <Database />, "Vercel": <Cloud />, "Vite": <Zap />,
+                        "Groq (Llama 3)": <Brain />, "Tesseract OCR": <Search />, "Selenium": <MousePointer2 />
+                    };
+                    return <TechNode key={item} name={item} color={color} icon={subIconMap[item] || <Cpu />} />;
+                })}
             </div>
 
             {/* Decorative background number */}
@@ -130,32 +107,17 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
 }
 
 const TechStack = () => {
-    const categories = [
-        {
-            title: "Core Automation Engine",
-            icon: <Cpu className="w-5 h-5" />,
-            color: "electric-green",
-            items: ["Python", "C#", "SQL / NoSQL", "Node.js", "Multithreading", "API Design"]
-        },
-        {
-            title: "AI & Computer Vision",
-            icon: <Brain className="w-5 h-5" />,
-            color: "electric-cyan",
-            items: ["Groq (Llama 3)", "Tesseract OCR", "Selenium", "Data Processing", "Inference"]
-        },
-        {
-            title: "Visual & UI Systems",
-            icon: <Layers className="w-5 h-5" />,
-            color: "electric-green",
-            items: ["React", "Unity 3D", "Tailwind CSS", "Motion Design", "HLSL Shaders"]
-        },
-        {
-            title: "Infrastructure & Tools",
-            icon: <Globe className="w-5 h-5" />,
-            color: "electric-cyan",
-            items: ["Firebase", "Supabase", "Git / GitHub", "Vercel", "Vite", "Postman"]
-        }
-    ];
+    const iconMap = {
+        Cpu: <Cpu className="w-5 h-5" />,
+        Brain: <Brain className="w-5 h-5" />,
+        Layers: <Layers className="w-5 h-5" />,
+        Globe: <Globe className="w-5 h-5" />
+    };
+
+    const categories = rawCategories.map(cat => ({
+        ...cat,
+        icon: iconMap[cat.icon] || <Cpu className="w-5 h-5" />
+    }));
 
     return (
         <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden bg-dark-void">

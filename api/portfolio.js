@@ -1,18 +1,57 @@
+// -------------------------------------------------------------------------
+// PORTFOLIO MASTER MANIFEST
+// This is the SINGLE SOURCE OF TRUTH for both the Website UI and the AI.
+// Modify this file to update your content everywhere simultaneously.
+// -------------------------------------------------------------------------
+
 export const portfolioData = {
   "profile": {
     "name": "Alberto Medina",
     "role": "Full-Stack Developer & Automation Specialist",
     "tagline": "Engineering high-performance systems and deterministic solutions since age 10.",
+    "bio": [
+      "I started coding at age 10, turning lines of logic into functional reality. With 8+ years of experience, I've evolved from curiosity to building high-performance architectures.",
+      "I don't just build for clients; I build because I love the art of optimization. Whether it's the Padel Booking App, the Twitch Tracker, or high-fidelity 3D interfaces, my focus is always on speed, reliability, and precision."
+    ],
     "social": {
       "github": "https://github.com/Albjav1235",
+      "linkedin": "#",
       "email": "amedina.amg.dev@gmail.com"
-    }
+    },
+    "stats": [
+      { "label": "Years Runtime", "value": "8+", "id": "years" },
+      { "label": "Uptime Reliability", "value": "100%", "id": "uptime" },
+      { "label": "Systems Deployed", "value": "25+", "id": "systems" },
+      { "label": "Core Frameworks", "value": "4+", "id": "frameworks" }
+    ]
   },
   "skills": {
-    "core": ["Python", "C#", "SQL / NoSQL", "Node.js", "Multithreading", "API Design"],
-    "ai": ["Groq (Llama 3)", "Tesseract OCR", "Selenium", "Data Processing", "Inference"],
-    "visual": ["React", "Unity 3D", "Tailwind CSS", "Motion Design", "HLSL Shaders"],
-    "infrastructure": ["Firebase", "Supabase", "Git / GitHub", "Vercel", "Vite", "Postman"]
+    "categories": [
+      {
+        "title": "Core Automation Engine",
+        "icon": "Cpu",
+        "color": "electric-green",
+        "items": ["Python", "C#", "SQL / NoSQL", "Node.js", "Multithreading", "API Design"]
+      },
+      {
+        "title": "AI & Computer Vision",
+        "icon": "Brain",
+        "color": "electric-cyan",
+        "items": ["Groq (Llama 3)", "Tesseract OCR", "Selenium", "Data Processing", "Inference"]
+      },
+      {
+        "title": "Visual & UI Systems",
+        "icon": "Layers",
+        "color": "electric-green",
+        "items": ["React", "Unity 3D", "Tailwind CSS", "Motion Design", "HLSL Shaders"]
+      },
+      {
+        "title": "Infrastructure & Tools",
+        "icon": "Globe",
+        "color": "electric-cyan",
+        "items": ["Firebase", "Supabase", "Git / GitHub", "Vercel", "Vite", "Postman"]
+      }
+    ]
   },
   "projects": [
     {
@@ -25,7 +64,6 @@ export const portfolioData = {
       "arch": ["Outlook", "Python Backend", "Groq Llama 3", "Web UI"],
       "githubLink": "https://github.com/Albjav1235/zerotouch-ai",
       "demoType": "gif",
-      "demoUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjPQC1Q_Vv-Vq/giphy.gif",
       "thumbnail": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjPQC1Q_Vv-Vq/giphy.gif"
     },
     {
@@ -38,7 +76,6 @@ export const portfolioData = {
       "arch": ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
       "githubLink": "https://github.com/Albjav1235/padel-sync",
       "demoType": "gif",
-      "demoUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif",
       "thumbnail": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif"
     },
     {
@@ -51,7 +88,6 @@ export const portfolioData = {
       "arch": ["Screen Capture", "Tesseract OCR", "Twitch API", "Dashboard"],
       "githubLink": "https://github.com/Albjav1235/twitch-analytics",
       "demoType": "gif",
-      "demoUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif",
       "thumbnail": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif"
     },
     {

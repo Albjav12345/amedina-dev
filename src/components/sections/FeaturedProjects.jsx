@@ -4,7 +4,7 @@ import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } fro
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
 
-import portfolioData from '../../data/portfolio.js';
+import portfolioData from '../../../api/portfolio.js';
 const { projects } = portfolioData;
 
 const cardVariants = {

@@ -3,13 +3,26 @@ import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
+import portfolioData from '../../../api/portfolio.js';
+const { stats: rawStats, bio } = portfolioData.profile;
+
 const About = () => {
-    const stats = [
-        { label: 'Years Runtime', value: '8+', icon: <Zap className="w-5 h-5" />, color: 'text-electric-green' },
-        { label: 'Uptime Reliability', value: '100%', icon: <Shield className="w-5 h-5" />, color: 'text-electric-cyan' },
-        { label: 'Systems Deployed', value: '25+', icon: <Target className="w-5 h-5" />, color: 'text-electric-green' },
-        { label: 'Core Frameworks', value: '4+', icon: <Box className="w-5 h-5" />, color: 'text-electric-cyan' }
-    ];
+    const iconMap = {
+        Zap: <Zap className="w-5 h-5" />,
+        Shield: <Shield className="w-5 h-5" />,
+        Target: <Target className="w-5 h-5" />,
+        Box: <Box className="w-5 h-5" />
+    };
+
+    const stats = rawStats.map(s => {
+        let icon;
+        if (s.id === 'years') icon = <Zap className="w-5 h-5" />;
+        if (s.id === 'uptime') icon = <Shield className="w-5 h-5" />;
+        if (s.id === 'systems') icon = <Target className="w-5 h-5" />;
+        if (s.id === 'frameworks') icon = <Box className="w-5 h-5" />;
+
+        return { ...s, icon, color: s.id === 'uptime' || s.id === 'frameworks' ? 'text-electric-cyan' : 'text-electric-green' };
+    });
 
     return (
         <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
@@ -41,12 +54,17 @@ const About = () => {
                         <div className="max-w-2xl space-y-6 relative z-10">
                             <h3 className="text-2xl font-bold text-white tracking-tight text-glow-green">Full-Stack Developer & Automation Pioneer</h3>
                             <div className="space-y-4 text-gray-400 leading-relaxed font-medium text-justify md:text-left">
-                                <p>
-                                    I started coding at age 10, turning lines of logic into functional reality. With <span className="text-white">8+ years of experience</span>, I've evolved from curiosity to building high-performance architectures.
-                                </p>
-                                <p>
-                                    I don't just build for clients; I build because I love the art of optimization. Whether it's the <span className="text-electric-cyan">Padel Booking App</span>, the <span className="text-electric-cyan">Twitch Tracker</span>, or high-fidelity 3D interfaces, my focus is always on speed, reliability, and precision.
-                                </p>
+                                {bio.map((paragraph, i) => (
+                                    <p key={i}>
+                                        {paragraph.split(' ').map((word, j) => {
+                                            const cleanWord = word.replace(/[.,]/g, '');
+                                            if (['8+', 'experience', 'Padel', 'Booking', 'App', 'Twitch', 'Tracker', '3D'].includes(cleanWord)) {
+                                                return <React.Fragment key={j}><span className={cleanWord.match(/Padel|Twitch|3D/) ? "text-electric-cyan" : "text-white"}>{word}</span> </React.Fragment>;
+                                            }
+                                            return word + ' ';
+                                        })}
+                                    </p>
+                                ))}
                             </div>
                         </div>
                     </motion.div>
