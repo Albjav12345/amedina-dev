@@ -115,14 +115,14 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-8">
+            <div className="flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start">
                 {items.map((item) => (
                     <TechNode key={item} name={item} color={color} />
                 ))}
             </div>
 
             {/* Decorative background number */}
-            <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none">
+            <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none hidden md:block">
                 0{index + 1}
             </span>
         </motion.div>
@@ -144,7 +144,7 @@ const TechStack = () => {
             items: ["Groq (Llama 3)", "Tesseract OCR", "Selenium", "Data Processing", "Inference"]
         },
         {
-            title: "Visual & Interface Systems",
+            title: "Visual & UI Systems",
             icon: <Layers className="w-5 h-5" />,
             color: "electric-green",
             items: ["React", "Unity 3D", "Tailwind CSS", "Motion Design", "HLSL Shaders"]

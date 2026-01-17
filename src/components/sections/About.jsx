@@ -40,7 +40,7 @@ const About = () => {
                         </div>
                         <div className="max-w-2xl space-y-6 relative z-10">
                             <h3 className="text-2xl font-bold text-white tracking-tight text-glow-green">Full-Stack Developer & Automation Pioneer</h3>
-                            <div className="space-y-4 text-gray-400 leading-relaxed font-medium">
+                            <div className="space-y-4 text-gray-400 leading-relaxed font-medium text-justify md:text-left">
                                 <p>
                                     I started coding at age 10, turning lines of logic into functional reality. With <span className="text-white">8+ years of experience</span>, I've evolved from curiosity to building high-performance architectures.
                                 </p>
@@ -108,9 +108,12 @@ const About = () => {
                                 </div>
                             </div>
                             <div className="hidden md:block h-8 w-px bg-white/10"></div>
-                            <button className="w-full md:w-auto btn-system text-[9px] md:text-[10px] py-3 px-8 uppercase tracking-[0.2em]">
+                            <a
+                                href="#contact"
+                                className="w-full md:w-auto btn-system text-[9px] md:text-[10px] py-3 px-8 uppercase tracking-[0.2em] text-center"
+                            >
                                 Open_Manual.src
-                            </button>
+                            </a>
                         </div>
                     </motion.div>
 
