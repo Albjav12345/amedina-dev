@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Download, Cpu } from 'lucide-react';
 import TerminalWindow, { AnimatedPipeline } from '../common/TerminalWindow';
-import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { fadeInUp, viewportConfig, containerVariants, cardVariants } from '../../utils/animations';
 
 const Hero = () => {
     return (
@@ -12,10 +12,15 @@ const Hero = () => {
                 <div className="grid lg:grid-cols-12 gap-16 items-center">
 
                     {/* Text Content */}
-                    <div className="lg:col-span-6 space-y-8">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={viewportConfig}
+                        variants={containerVariants}
+                        className="lg:col-span-6 space-y-8 gpu-accelerated"
+                    >
                         <motion.div
-                            {...fadeInUp}
-                            viewport={viewportConfig}
+                            variants={cardVariants}
                             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]"
                         >
                             <Cpu className="w-3 h-3" />
@@ -23,9 +28,7 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            {...fadeInUp}
-                            viewport={viewportConfig}
-                            transition={{ delay: 0.1 }}
+                            variants={cardVariants}
                             className="space-y-4"
                         >
                             <div className="flex items-center gap-3">
@@ -46,9 +49,7 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            {...fadeInUp}
-                            viewport={viewportConfig}
-                            transition={{ delay: 0.2 }}
+                            variants={cardVariants}
                             className="flex flex-wrap gap-4 pt-4"
                         >
                             <button className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]">
@@ -67,9 +68,7 @@ const Hero = () => {
 
                         {/* Quick Metadata */}
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1 }}
+                            variants={cardVariants}
                             className="pt-10 flex gap-8 border-t border-white/5"
                         >
                             <div className="flex flex-col gap-1">
@@ -81,15 +80,24 @@ const Hero = () => {
                                 <span className="text-xs font-mono text-gray-300">10+ YEARS</span>
                             </div>
                         </motion.div>
-                    </div>
+                    </motion.div>
 
                     {/* Terminal Visual */}
                     <div className="lg:col-span-6 hidden lg:block">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
-                            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className="perspective-1000"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={viewportConfig}
+                            variants={{
+                                hidden: { opacity: 0, scale: 0.9, rotateY: 20 },
+                                visible: {
+                                    opacity: 1,
+                                    scale: 1,
+                                    rotateY: 0,
+                                    transition: { duration: 1, ease: "easeOut", delay: 0.4 }
+                                }
+                            }}
+                            className="perspective-1000 gpu-accelerated"
                         >
                             <TerminalWindow>
                                 <AnimatedPipeline />

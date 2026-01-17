@@ -1,16 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Brain, Layers, Globe } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
+import { fadeInUp, viewportConfig, scaleIn, containerVariants } from '../../utils/animations';
 
 const TechNode = ({ name, icon, index, color = "electric-green" }) => {
     return (
         <motion.div
-            {...scaleIn}
-            viewport={viewportConfig}
-            transition={{ delay: index * 0.05 }}
+            variants={scaleIn}
             whileHover={{ y: -5, scale: 1.05 }}
-            className="group relative flex flex-col items-center gap-2"
+            className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
             <div className={`w-14 h-14 rounded-lg glass-card flex items-center justify-center border-white/10 group-hover:border-${color}/50 transition-all duration-300 relative overflow-hidden bg-white/[0.03]`}>
                 <div className={`absolute inset-0 bg-${color}/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
@@ -29,10 +27,11 @@ const TechNode = ({ name, icon, index, color = "electric-green" }) => {
 const NodeGroup = ({ title, icon, items, index, color }) => {
     return (
         <motion.div
-            {...fadeInUp}
+            initial="hidden"
+            whileInView="visible"
             viewport={viewportConfig}
-            transition={{ delay: index * 0.1 }}
-            className="glass-card p-8 border-white/5 relative overflow-hidden space-y-8"
+            variants={fadeInUp}
+            className="glass-card p-8 border-white/5 relative overflow-hidden space-y-8 gpu-accelerated"
         >
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">
                 <div className={`p-2 rounded bg-${color}/10 text-${color}`}>
@@ -41,11 +40,14 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 <h3 className="font-mono text-sm font-bold uppercase tracking-widest">{title}</h3>
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+            <motion.div
+                variants={containerVariants}
+                className="flex flex-wrap gap-4 justify-center md:justify-start"
+            >
                 {items.map((item, i) => (
                     <TechNode key={item} name={item} index={i} color={color} />
                 ))}
-            </div>
+            </motion.div>
 
             {/* Decorative background number */}
             <span className="absolute bottom-4 right-4 text-6xl font-mono font-bold opacity-[0.02] pointer-events-none select-none">

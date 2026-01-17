@@ -1,54 +1,60 @@
 /**
  * Standardized Framer Motion animations for the Engineered UI.
- * Focuses on high-performance, physics-based transitions.
+ * Focuses on high-performance, physics-based transitions and strict inheritance.
  */
 
 export const viewportConfig = {
     once: true,
-    amount: 0.3, // Triggers when 30% of the element is visible
+    amount: 0.2, // Slightly lower threshold for faster response
+    margin: "-100px" // More robust margin for smooth scrolling
 };
 
-export const fadeInUp = {
-    initial: { opacity: 0, y: 40 },
-    whileInView: {
+// Orchestrator for staggered groups
+export const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
         opacity: 1,
-        y: 0,
         transition: {
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1]
-        }
-    },
-};
-
-export const staggerContainer = {
-    initial: {},
-    whileInView: {
-        transition: {
-            staggerChildren: 0.1,
+            staggerChildren: 0.15,
+            delayChildren: 0.2
         }
     }
 };
 
-export const scaleIn = {
-    initial: { opacity: 0, scale: 0.9 },
-    whileInView: {
+// Item variant for staggered children
+export const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
         opacity: 1,
-        scale: 1,
+        y: 0,
         transition: {
             duration: 0.6,
-            ease: [0.22, 1, 0.36, 1]
+            ease: "easeOut"
+        }
+    }
+};
+
+// Legacy support / Single item variants
+export const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            ease: "easeOut"
         }
     },
 };
 
-export const slideInLeft = {
-    initial: { opacity: 0, x: -40 },
-    whileInView: {
+export const scaleIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
         opacity: 1,
-        x: 0,
+        scale: 1,
         transition: {
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1]
+            duration: 0.5,
+            ease: "easeOut"
         }
     },
 };

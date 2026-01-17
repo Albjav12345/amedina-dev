@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
+import { fadeInUp, viewportConfig, scaleIn, containerVariants } from '../../utils/animations';
 
 const About = () => {
     const stats = [
@@ -29,9 +29,11 @@ const About = () => {
 
                     {/* Main Bio Card */}
                     <motion.div
-                        {...fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
                         viewport={viewportConfig}
-                        className="md:col-span-12 lg:col-span-8 glass-card p-10 relative group"
+                        variants={fadeInUp}
+                        className="md:col-span-12 lg:col-span-8 glass-card p-10 relative group gpu-accelerated"
                     >
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <Zap className="w-40 h-40 text-electric-green" />
@@ -50,14 +52,18 @@ const About = () => {
                     </motion.div>
 
                     {/* Stats Card (Integrated) */}
-                    <div className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-4">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={viewportConfig}
+                        variants={containerVariants}
+                        className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-4"
+                    >
                         {stats.map((stat, i) => (
                             <motion.div
                                 key={stat.label}
-                                {...scaleIn}
-                                viewport={viewportConfig}
-                                transition={{ delay: i * 0.1 }}
-                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 transition-all border-white/5"
+                                variants={scaleIn}
+                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 transition-all border-white/5 gpu-accelerated"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>
                                     {stat.icon}
@@ -72,14 +78,15 @@ const About = () => {
                                 </div>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
 
                     {/* Secondary Detail Card */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
-                        className="md:col-span-12 lg:col-span-12 glass-card p-8 border-white/5 relative bg-gradient-to-br from-white/5 to-transparent"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={viewportConfig}
+                        variants={fadeInUp}
+                        className="md:col-span-12 lg:col-span-12 glass-card p-8 border-white/5 relative bg-gradient-to-br from-white/5 to-transparent gpu-accelerated"
                     >
                         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="flex gap-4 items-center">

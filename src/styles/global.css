@@ -63,6 +63,11 @@
     .animate-scan {
         animation: scan 4s linear infinite;
     }
+
+    .gpu-accelerated {
+        will-change: transform, opacity;
+        transform: translateZ(0); /* Force hardware acceleration */
+    }
 }
 
 @keyframes pulse {

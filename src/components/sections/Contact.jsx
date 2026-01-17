@@ -30,11 +30,13 @@ const Contact = () => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
 
             <div className="container mx-auto px-6 relative z-10">
-                <div className="max-w-4xl mx-auto glass-card p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center">
+                <div className="max-w-4xl mx-auto glass-card p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center gpu-accelerated">
 
                     <motion.div
-                        {...scaleIn}
+                        initial="hidden"
+                        whileInView="visible"
                         viewport={viewportConfig}
+                        variants={scaleIn}
                         className="space-y-8"
                     >
                         <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]">

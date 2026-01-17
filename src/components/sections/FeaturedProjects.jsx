@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
-import { fadeInUp, viewportConfig, staggerContainer } from '../../utils/animations';
+import { containerVariants, cardVariants, viewportConfig, fadeInUp } from '../../utils/animations';
 
 const projects = [
     {
@@ -76,8 +76,10 @@ const FeaturedProjects = () => {
 
                 {/* Section Title */}
                 <motion.div
-                    {...fadeInUp}
+                    initial="hidden"
+                    whileInView="visible"
                     viewport={viewportConfig}
+                    variants={fadeInUp}
                     className="flex flex-col mb-20"
                 >
                     <div className="flex items-center gap-4 mb-4">
@@ -92,19 +94,19 @@ const FeaturedProjects = () => {
 
                 {/* Grid Layout with Staggered Entrance */}
                 <motion.div
-                    variants={staggerContainer}
-                    initial="initial"
-                    whileInView="whileInView"
+                    initial="hidden"
+                    whileInView="visible"
                     viewport={viewportConfig}
+                    variants={containerVariants}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     {projects.map((project) => (
                         <motion.div
                             key={project.id}
                             layoutId={`card-${project.id}`}
-                            variants={fadeInUp}
+                            variants={cardVariants}
                             onClick={() => setSelectedId(project.id)}
-                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col min-h-[420px] relative overflow-hidden"
+                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col min-h-[420px] relative overflow-hidden gpu-accelerated"
                         >
                             {/* GIF Thumbnail Preview */}
                             <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
