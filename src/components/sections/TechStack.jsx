@@ -1,29 +1,97 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Brain, Layers, Globe } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
+import {
+    Cpu, Brain, Layers, Globe,
+    Database, Terminal, Code2,
+    Zap, Share2, Box, Wind,
+    Flame, Monitor, Layout,
+    Smartphone, Network, Lock,
+    Server, Cloud, GitBranch,
+    Search, MousePointer2
+} from 'lucide-react';
+import { viewportConfig } from '../../utils/animations';
 
-const TechNode = ({ name, icon, index, color = "electric-green" }) => {
+const techIconMap = {
+    // Core Automation Engine
+    "Python": <Terminal className="w-5 h-5" />,
+    "C#": <Code2 className="w-5 h-5" />,
+    "SQL / NoSQL": <Database className="w-5 h-5" />,
+    "Node.js": <Zap className="w-5 h-5" />,
+    "Multithreading": <Layers className="w-5 h-5" />,
+    "API Design": <Share2 className="w-5 h-5" />,
+
+    // AI & Computer Vision
+    "Groq (Llama 3)": <Brain className="w-5 h-5" />,
+    "Tesseract OCR": <Search className="w-5 h-5" />,
+    "Selenium": <MousePointer2 className="w-5 h-5" />,
+    "Data Processing": <Cpu className="w-5 h-5" />,
+    "Inference": <Zap className="w-5 h-5" />,
+
+    // Visual & Interface Systems
+    "React": <Layout className="w-5 h-5" />,
+    "Unity 3D": <Box className="w-5 h-5" />,
+    "Tailwind CSS": <Wind className="w-5 h-5" />,
+    "Motion Design": <Flame className="w-5 h-5" />,
+    "HLSL Shaders": <Monitor className="w-5 h-5" />,
+
+    // Infrastructure & Tools
+    "Firebase": <Flame className="w-5 h-5" />,
+    "Supabase": <Database className="w-5 h-5" />,
+    "Git / GitHub": <GitBranch className="w-5 h-5" />,
+    "Vercel": <Cloud className="w-5 h-5" />,
+    "Vite": <Zap className="w-5 h-5" />,
+    "Postman": <Network className="w-5 h-5" />
+};
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.2
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 10 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: {
+            type: "spring",
+            stiffness: 260,
+            damping: 20
+        }
+    }
+};
+
+const TechNode = ({ name, color = "electric-green" }) => {
+    const icon = techIconMap[name] || <Cpu className="w-5 h-5" />;
+
     return (
         <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportConfig}
-            variants={scaleIn}
-            transition={{ delay: index * 0.05 }}
+            variants={itemVariants}
             whileHover={{ y: -5, scale: 1.05 }}
-            className="group relative flex flex-col items-center gap-2 gpu-accelerated"
+            className="group relative flex flex-col items-center gap-3 gpu-accelerated"
         >
-            <div className={`w-14 h-14 rounded-lg glass-card flex items-center justify-center border-white/10 group-hover:border-${color}/50 relative overflow-hidden bg-white/[0.03]`}>
-                <div className={`absolute inset-0 bg-${color}/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                {/* Placeholder for Icon - using name if icon not provided */}
-                <span className={`text-[10px] font-mono font-bold text-gray-500 group-hover:text-${color} transition-colors uppercase`}>
-                    {name.substring(0, 3)}
-                </span>
+            <div className={`w-16 h-16 rounded-xl glass-card flex items-center justify-center border-white/5 relative overflow-hidden bg-white/[0.02] active:scale-95 transition-all duration-300`}>
+                {/* Glow Effect */}
+                <div className={`absolute inset-0 bg-${color}/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
+                <div className={`absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+
+                <div className={`relative z-10 text-gray-400 group-hover:text-${color} transition-colors duration-300 transform group-hover:scale-110`}>
+                    {icon}
+                </div>
             </div>
-            <span className="font-mono text-[9px] text-gray-500 group-hover:text-white uppercase tracking-tighter transition-colors">
-                {name}
-            </span>
+            <div className="flex flex-col items-center gap-1">
+                <span className="font-mono text-[9px] text-gray-500 group-hover:text-white uppercase tracking-widest transition-colors text-center px-1">
+                    {name}
+                </span>
+                <div className={`w-0 h-[1px] bg-${color}/40 group-hover:w-full transition-all duration-500`}></div>
+            </div>
         </motion.div>
     );
 };
@@ -34,25 +102,28 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             initial="hidden"
             whileInView="visible"
             viewport={viewportConfig}
-            variants={fadeInUp}
-            transition={{ delay: index * 0.1 }}
-            className="glass-card p-8 border-white/5 relative overflow-hidden space-y-8 gpu-accelerated"
+            variants={containerVariants}
+            custom={index}
+            className="glass-card p-10 border-white/5 relative overflow-hidden space-y-10 gpu-accelerated"
         >
-            <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-                <div className={`p-2 rounded bg-${color}/10 text-${color}`}>
+            <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
+                <div className={`p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
                     {icon}
                 </div>
-                <h3 className="font-mono text-sm font-bold uppercase tracking-widest">{title}</h3>
+                <div className="flex flex-col">
+                    <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">{title}</h3>
+                    <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
+                </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                {items.map((item, i) => (
-                    <TechNode key={item} name={item} index={i} color={color} />
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {items.map((item) => (
+                    <TechNode key={item} name={item} color={color} />
                 ))}
             </div>
 
             {/* Decorative background number */}
-            <span className="absolute bottom-4 right-4 text-6xl font-mono font-bold opacity-[0.02] pointer-events-none select-none">
+            <span className="absolute -bottom-6 -right-4 text-[120px] font-mono font-bold text-white/[0.02] pointer-events-none select-none">
                 0{index + 1}
             </span>
         </motion.div>
@@ -88,19 +159,27 @@ const TechStack = () => {
     ];
 
     return (
-        <section id="tech-stack" className="py-24 relative overflow-hidden">
+        <section id="tech-stack" className="py-24 relative overflow-hidden bg-dark-void">
             <div className="container mx-auto px-6">
 
                 {/* Section Header */}
-                <div className="mb-16">
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={viewportConfig}
+                    className="mb-16"
+                >
                     <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-secondary bg-white/5 px-2 py-1 rounded">SYS_03</span>
-                        <div className="h-px flex-grow bg-gradient-to-r from-white/10 to-transparent"></div>
+                        <span className="font-mono text-xs text-electric-green bg-electric-green/5 border border-electric-green/20 px-3 py-1 rounded">SYS_03</span>
+                        <div className="h-[1px] w-20 bg-gradient-to-r from-electric-green/50 to-transparent"></div>
                     </div>
-                    <h2 className="text-4xl font-bold font-mono tracking-tighter uppercase">Technical Arsenal.</h2>
-                </div>
+                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
+                        Technical <br />
+                        <span className="text-electric-green">Arsenal.</span>
+                    </h2>
+                </motion.div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {categories.map((cat, i) => (
                         <NodeGroup
                             key={cat.title}
