@@ -122,7 +122,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             </div>
 
             {/* Decorative background number */}
-            <span className="absolute bottom-4 right-8 text-[100px] font-mono font-bold text-white/[0.02] pointer-events-none select-none">
+            <span className="absolute bottom-8 right-8 text-[80px] font-mono font-bold text-white/[0.02] pointer-events-none select-none">
                 0{index + 1}
             </span>
         </motion.div>
