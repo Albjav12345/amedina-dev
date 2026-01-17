@@ -52,7 +52,7 @@ const About = () => {
                     </motion.div>
 
                     {/* Stats Card (Integrated) */}
-                    <div className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-3 md:gap-4">
+                    <div className="md:col-span-12 lg:col-span-4 grid grid-cols-2 gap-4">
                         {stats.map((stat, i) => (
                             <motion.div
                                 key={stat.label}
@@ -61,16 +61,16 @@ const About = () => {
                                 viewport={viewportConfig}
                                 variants={scaleIn}
                                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                                className="glass-card p-4 md:p-6 flex flex-col items-center justify-center text-center gap-2 md:gap-3 group hover:border-electric-green/40 border-white/5 gpu-accelerated"
+                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 border-white/5 gpu-accelerated"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>
-                                    {React.cloneElement(stat.icon, { className: "w-4 h-4 md:w-5 h-5" })}
+                                    {stat.icon}
                                 </div>
-                                <div className="space-y-0.5 md:space-y-1">
-                                    <span className="block text-xl md:text-2xl font-bold font-mono text-white leading-none tracking-tighter">
+                                <div className="space-y-1">
+                                    <span className="block text-2xl font-bold font-mono text-white leading-none tracking-tighter">
                                         {stat.value}
                                     </span>
-                                    <span className="block text-[8px] md:text-[10px] text-gray-500 font-mono uppercase tracking-widest leading-none">
+                                    <span className="block text-[10px] text-gray-500 font-mono uppercase tracking-widest leading-none">
                                         {stat.label}
                                     </span>
                                 </div>

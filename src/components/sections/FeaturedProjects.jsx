@@ -117,11 +117,11 @@ const FeaturedProjects = () => {
                             viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
                             variants={cardVariants}
                             onClick={() => setSelectedId(project.id)}
-                            className="gpu-accelerated cursor-pointer group relative flex flex-col min-h-[280px] md:min-h-[420px] overflow-hidden opacity-0"
+                            className="gpu-accelerated cursor-pointer group relative flex flex-col min-h-[420px] overflow-hidden opacity-0"
                         >
                             <div className="h-full w-full glass-card p-0 border-white/5 group-hover:border-electric-green/30 transition-colors duration-300 flex flex-col">
                                 {/* GIF Thumbnail Preview */}
-                                <div className="relative w-full h-32 md:h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
                                     <img
                                         src={project.thumbnail}
                                         alt={project.title}
@@ -131,26 +131,26 @@ const FeaturedProjects = () => {
                                     {/* Scanning Line Effect */}
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
 
-                                    <div className="absolute top-3 left-3 flex gap-1">
+                                    <div className="absolute top-4 left-4 flex gap-1">
                                         <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
                                         <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
                                     </div>
                                 </div>
 
-                                <div className="p-4 md:p-8 flex flex-col justify-between flex-grow relative z-10">
+                                <div className="p-8 flex flex-col justify-between flex-grow relative z-10">
                                     <div className="relative">
-                                        <div className="flex justify-between items-start mb-3 md:mb-4">
-                                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                                <Code2 className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
+                                                <Code2 className="w-5 h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
                                             </div>
-                                            <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                            <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
                                         </div>
-                                        <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2 leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
-                                        <p className="text-gray-500 font-mono text-[8px] md:text-[9px] uppercase tracking-widest">{project.subtitle}</p>
+                                        <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
+                                        <p className="text-gray-500 font-mono text-[9px] uppercase tracking-widest">{project.subtitle}</p>
                                     </div>
 
-                                    <div className="mt-4 md:mt-6 flex flex-wrap gap-2">
+                                    <div className="mt-6 flex flex-wrap gap-2">
                                         {project.stack.slice(0, 3).map(tech => (
                                             <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
                                                 {tech}
@@ -185,7 +185,7 @@ const FeaturedProjects = () => {
                         <motion.div
                             layoutId={`project-container-${selectedId}`}
                             transition={{ type: "spring", stiffness: 250, damping: 25 }}
-                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full max-h-[90vh] lg:max-h-[80vh] gpu-accelerated"
+                            className="relative w-full max-w-6xl bg-dark-high border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full max-h-[85vh] lg:max-h-[80vh] gpu-accelerated"
                         >
                             {/* Close Button */}
                             <button
@@ -247,15 +247,15 @@ const FeaturedProjects = () => {
                                 </div>
 
                                 {/* Action Footer */}
-                                <div className="pt-8 md:pt-12 mt-auto">
+                                <div className="pt-12 mt-auto">
                                     <a
                                         href={activeProject.githubLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="btn-system inline-flex items-center gap-3 px-6 py-3 md:px-8 md:py-4 group w-full md:w-auto justify-center md:justify-start"
+                                        className="btn-system inline-flex items-center gap-3 px-8 py-4 group"
                                     >
-                                        <span className="font-mono text-xs md:text-sm tracking-widest">ACCESS_REPO</span>
-                                        <Github className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                                        <span className="font-mono text-sm tracking-widest">ACCESS_REPO</span>
+                                        <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                     </a>
                                 </div>
                             </div>
