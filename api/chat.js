@@ -1,14 +1,20 @@
-import Groq from 'groq-sdk';
-import portfolioData from '../src/data/portfolio.json';
-
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
+
+    // Initialize Groq inside handler to prevent cold-start crashes if env is missing
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+        console.error("CRITICAL: GROQ_API_KEY is missing in environment variables.");
+        return res.status(500).json({
+            type: "MESSAGE",
+            text: ">> SYSTEM ALERT: API KEY NOT FOUND. PLEASE CONFIGURE VERCEL ENV VARIABLES.",
+            action: null
+        });
+    }
+
+    const groq = new Groq({ apiKey });
 
     try {
         const { message } = req.body;
