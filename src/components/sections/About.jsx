@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box } from 'lucide-react';
+import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 const About = () => {
     const stats = [
-        { label: 'Years Runtime', value: '10+', icon: <Zap className="w-5 h-5" />, color: 'text-electric-green' },
+        { label: 'Years Runtime', value: '8+', icon: <Zap className="w-5 h-5" />, color: 'text-electric-green' },
         { label: 'Uptime Reliability', value: '100%', icon: <Shield className="w-5 h-5" />, color: 'text-electric-cyan' },
         { label: 'Systems Deployed', value: '25+', icon: <Target className="w-5 h-5" />, color: 'text-electric-green' },
         { label: 'Core Frameworks', value: '4+', icon: <Box className="w-5 h-5" />, color: 'text-electric-cyan' }
@@ -28,9 +29,8 @@ const About = () => {
 
                     {/* Main Bio Card */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
+                        {...fadeInUp}
+                        viewport={viewportConfig}
                         className="md:col-span-12 lg:col-span-8 glass-card p-10 relative group"
                     >
                         <div className="absolute top-0 right-0 p-8 opacity-5">
@@ -54,10 +54,9 @@ const About = () => {
                         {stats.map((stat, i) => (
                             <motion.div
                                 key={stat.label}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                {...scaleIn}
+                                viewport={viewportConfig}
                                 transition={{ delay: i * 0.1 }}
-                                viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
                                 className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 transition-all border-white/5"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>

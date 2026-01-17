@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ExternalLink, Cpu, Loader2, CheckCircle2, Github, Linkedin, Copy, Check } from 'lucide-react';
+import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 const Contact = () => {
     const [status, setStatus] = useState('idle'); // idle, sending, success
@@ -32,9 +33,8 @@ const Contact = () => {
                 <div className="max-w-4xl mx-auto glass-card p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center">
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
+                        {...scaleIn}
+                        viewport={viewportConfig}
                         className="space-y-8"
                     >
                         <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]">

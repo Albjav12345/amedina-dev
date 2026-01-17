@@ -2,23 +2,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Download, Cpu } from 'lucide-react';
 import TerminalWindow, { AnimatedPipeline } from '../common/TerminalWindow';
+import { fadeInUp, viewportConfig } from '../../utils/animations';
 
 const Hero = () => {
     return (
         <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
-            {/* Absolute Decorative Elements */}
-            <div className="absolute top-1/4 -left-20 w-80 h-80 bg-electric-green/5 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-electric-cyan/5 blur-[120px] rounded-full"></div>
-
+            {/* ... */}
             <div className="container mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-12 gap-16 items-center">
 
                     {/* Text Content */}
                     <div className="lg:col-span-6 space-y-8">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
+                            {...fadeInUp}
+                            viewport={viewportConfig}
                             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em]"
                         >
                             <Cpu className="w-3 h-3" />
@@ -26,9 +23,9 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.1 }}
+                            {...fadeInUp}
+                            viewport={viewportConfig}
+                            transition={{ delay: 0.1 }}
                             className="space-y-4"
                         >
                             <div className="flex items-center gap-3">
@@ -49,9 +46,9 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
+                            {...fadeInUp}
+                            viewport={viewportConfig}
+                            transition={{ delay: 0.2 }}
                             className="flex flex-wrap gap-4 pt-4"
                         >
                             <button className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]">

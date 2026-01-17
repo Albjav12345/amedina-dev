@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Brain, Layers, Globe } from 'lucide-react';
+import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 const TechNode = ({ name, icon, index, color = "electric-green" }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
+            {...scaleIn}
+            viewport={viewportConfig}
             transition={{ delay: index * 0.05 }}
             whileHover={{ y: -5, scale: 1.05 }}
             className="group relative flex flex-col items-center gap-2"
@@ -29,9 +29,9 @@ const TechNode = ({ name, icon, index, color = "electric-green" }) => {
 const NodeGroup = ({ title, icon, items, index, color }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
+            {...fadeInUp}
+            viewport={viewportConfig}
+            transition={{ delay: index * 0.1 }}
             className="glass-card p-8 border-white/5 relative overflow-hidden space-y-8"
         >
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">

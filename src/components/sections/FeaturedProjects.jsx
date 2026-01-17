@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
+import { fadeInUp, viewportConfig, staggerContainer } from '../../utils/animations';
 
 const projects = [
     {
@@ -13,7 +14,8 @@ const projects = [
         stack: ["Python", "Flask", "Llama 3", "Supabase"],
         arch: ["Outlook", "Python Backend", "Groq Llama 3", "Web UI"],
         githubLink: "https://github.com/Albjav1235/zerotouch-ai",
-        demoType: "gif"
+        demoType: "gif",
+        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjPQC1Q_Vv-Vq/giphy.gif"
     },
     {
         id: 2,
@@ -24,7 +26,8 @@ const projects = [
         stack: ["Android", "Firebase", "React", "Atomic Locking"],
         arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
-        demoType: "gif"
+        demoType: "gif",
+        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif"
     },
     {
         id: 3,
@@ -35,7 +38,8 @@ const projects = [
         stack: ["Python", "Tesseract OCR", "Twitch API", "Tkinter"],
         arch: ["Screen Capture", "Tesseract OCR", "Twitch API", "Dashboard"],
         githubLink: "https://github.com/Albjav1235/twitch-analytics",
-        demoType: "gif"
+        demoType: "gif",
+        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif"
     },
     {
         id: 4,
@@ -46,7 +50,8 @@ const projects = [
         stack: ["Unity 3D", "C#", "HLSL Shaders", "Motion Design"],
         arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
         githubLink: "https://github.com/Albjav1235/unity-interfaces",
-        demoType: "video"
+        demoType: "video",
+        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41lTfuxV5F66d6hO/giphy.gif"
     }
 ];
 
@@ -70,7 +75,11 @@ const FeaturedProjects = () => {
             <div className="container mx-auto px-6">
 
                 {/* Section Title */}
-                <div className="flex flex-col mb-20">
+                <motion.div
+                    {...fadeInUp}
+                    viewport={viewportConfig}
+                    className="flex flex-col mb-20"
+                >
                     <div className="flex items-center gap-4 mb-4">
                         <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_02</span>
                         <div className="h-px w-20 bg-electric-green/30"></div>
@@ -79,44 +88,68 @@ const FeaturedProjects = () => {
                         Project <br />
                         <span className="text-electric-green">Ecosystems.</span>
                     </h2>
-                </div>
+                </motion.div>
 
-                {/* Grid Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Grid Layout with Staggered Entrance */}
+                <motion.div
+                    variants={staggerContainer}
+                    initial="initial"
+                    whileInView="whileInView"
+                    viewport={viewportConfig}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
                     {projects.map((project) => (
                         <motion.div
                             key={project.id}
                             layoutId={`card-${project.id}`}
+                            variants={fadeInUp}
                             onClick={() => setSelectedId(project.id)}
-                            className="glass-card p-8 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col justify-between min-h-[320px] relative overflow-hidden"
+                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col min-h-[420px] relative overflow-hidden"
                         >
-                            <div className="relative z-10">
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                        <Code2 className="w-6 h-6 text-gray-400 group-hover:text-electric-green transition-colors" />
-                                    </div>
-                                    <ArrowUpRight className="w-5 h-5 text-gray-600 group-hover:text-electric-green transition-colors" />
+                            {/* GIF Thumbnail Preview */}
+                            <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                <img
+                                    src={project.thumbnail}
+                                    alt={project.title}
+                                    className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
+                                {/* Scanning Line Effect */}
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
+
+                                <div className="absolute top-4 left-4 flex gap-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
                                 </div>
-                                <h3 className="text-2xl font-bold text-white mb-2 leading-tight">{project.title}</h3>
-                                <p className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">{project.subtitle}</p>
                             </div>
 
-                            <div className="relative z-10 mt-8 flex flex-wrap gap-2">
-                                {project.stack.slice(0, 3).map(tech => (
-                                    <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-gray-400">
-                                        {tech}
-                                    </span>
-                                ))}
-                                {project.stack.length > 3 && (
-                                    <span className="px-2 py-0.5 text-[9px] font-mono text-gray-600">+{project.stack.length - 3}</span>
-                                )}
+                            <div className="p-8 flex flex-col justify-between flex-grow relative z-10">
+                                <div className="relative">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
+                                            <Code2 className="w-5 h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
+                                        </div>
+                                        <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
+                                    <p className="text-gray-500 font-mono text-[9px] uppercase tracking-widest">{project.subtitle}</p>
+                                </div>
+
+                                <div className="mt-6 flex flex-wrap gap-2">
+                                    {project.stack.slice(0, 3).map(tech => (
+                                        <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Background Glow */}
                             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-all"></div>
                         </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
 
             {/* Modal Overlay */}
