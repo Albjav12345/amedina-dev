@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import portfolioData from '../src/data/portfolio.js';
+import portfolioData from './portfolio.js';
 
 export default async function handler(req, res) {
     // 1. Validar Método
@@ -63,7 +63,8 @@ Response Logic:
         console.error('Groq API Error:', error);
         return res.status(500).json({
             type: "MESSAGE",
-            text: `>> ERROR: SYSTEM FAILURE. ${error.message}`,
+            text: `>> SYSTEM_CRASH: ${error.message}`,
+            internal_log: error.stack,
             action: null
         });
     }

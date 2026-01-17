@@ -128,8 +128,14 @@ const InteractiveConsole = ({ onClose }) => {
 
                 if (!res.ok) {
                     const errorText = await res.text();
+                    let errorMessage = `>> ERROR ${res.status}: NEURAL LINK FAILURE.`;
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        if (errorJson.text) errorMessage = errorJson.text;
+                    } catch (e) { }
+
                     console.error("API Error:", errorText);
-                    setHistory(prev => [...prev, { type: 'output', content: `>> ERROR ${res.status}: NEURAL LINK FAILURE.` }]);
+                    setHistory(prev => [...prev, { type: 'output', content: errorMessage }]);
                     setIsLoading(false);
                     return;
                 }
