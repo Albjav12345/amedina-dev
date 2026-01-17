@@ -15,6 +15,7 @@ const projects = [
         arch: ["Outlook", "Python Backend", "Groq Llama 3", "Web UI"],
         githubLink: "https://github.com/Albjav1235/zerotouch-ai",
         demoType: "gif",
+        demoUrl: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjPQC1Q_Vv-Vq/giphy.gif",
         thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjPQC1Q_Vv-Vq/giphy.gif"
     },
     {
@@ -27,6 +28,7 @@ const projects = [
         arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
         demoType: "gif",
+        demoUrl: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif",
         thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif"
     },
     {
@@ -39,6 +41,7 @@ const projects = [
         arch: ["Screen Capture", "Tesseract OCR", "Twitch API", "Dashboard"],
         githubLink: "https://github.com/Albjav1235/twitch-analytics",
         demoType: "gif",
+        demoUrl: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif",
         thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif"
     },
     {
@@ -51,7 +54,8 @@ const projects = [
         arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
         githubLink: "https://github.com/Albjav1235/unity-interfaces",
         demoType: "video",
-        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41lTfuxV5F66d6hO/giphy.gif"
+        demoUrl: "/assets/projects/visual-interfaces.mp4",
+        thumbnail: "https://media.giphy.com/media/v1.Y2LKPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41lTfuxV5F66d6hO/giphy.gif"
     }
 ];
 
@@ -265,14 +269,32 @@ const FeaturedProjects = () => {
                                         Live_Stream_Demo
                                         <ExternalLink className="w-3 h-3 opacity-50" />
                                     </span>
-                                    <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media">
-                                        <div className="absolute inset-0 bg-dark-high/50 flex flex-col items-center justify-center text-center p-6 md:p-8">
-                                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-electric-green/10 border border-electric-green/20 flex items-center justify-center mb-4 group-hover/media:scale-110 transition-transform">
-                                                <Play className="w-6 h-6 md:w-8 md:h-8 text-electric-green opacity-70 group-hover/media:opacity-100" />
-                                            </div>
-                                            <p className="font-mono text-[10px] text-gray-400">Payload: demo_preview.{activeProject.demoType}</p>
+                                    <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
+                                        {activeProject.demoType === 'video' ? (
+                                            <video
+                                                src={activeProject.demoUrl}
+                                                controls
+                                                playsInline
+                                                className="w-full h-full object-contain"
+                                            />
+                                        ) : (
+                                            <img
+                                                src={activeProject.demoUrl || activeProject.thumbnail}
+                                                alt="Demo Preview"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        )}
+
+                                        {/* Scanline Effect Overlay */}
+                                        <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
+
+                                        {/* Overlay Branding - Hidden when controls are active/hovered if possible, but standard controls handle it */}
+                                        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
+                                            <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
+                                            <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
+                                                HD_SOURCE_ACTIVE
+                                            </span>
                                         </div>
-                                        <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
                                     </div>
                                 </div>
                             </div>
