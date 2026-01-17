@@ -1,9 +1,13 @@
+import Groq from 'groq-sdk';
+import portfolioData from '../src/data/portfolio.json';
+
 export default async function handler(req, res) {
+    // 1. Validar Método
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    // Initialize Groq inside handler to prevent cold-start crashes if env is missing
+    // 2. Validar API Key (Evita crash inicial)
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
         console.error("CRITICAL: GROQ_API_KEY is missing in environment variables.");
@@ -14,6 +18,7 @@ export default async function handler(req, res) {
         });
     }
 
+    // 3. Inicializar Cliente
     const groq = new Groq({ apiKey });
 
     try {
@@ -52,14 +57,13 @@ Response Logic:
         });
 
         const responseContent = JSON.parse(completion.choices[0].message.content);
-
         return res.status(200).json(responseContent);
 
     } catch (error) {
         console.error('Groq API Error:', error);
         return res.status(500).json({
             type: "MESSAGE",
-            text: ">> ERROR: NEURAL LINK SEVERED. RETRYING CONNECTION...",
+            text: `>> ERROR: SYSTEM FAILURE. ${error.message}`,
             action: null
         });
     }
