@@ -25,7 +25,7 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="py-10 md:py-32 relative overflow-hidden px-14 md:px-0">
+        <section id="contact" className="py-10 md:py-32 relative overflow-hidden px-6 md:px-0">
             {/* Background Decor */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -37,7 +37,7 @@ const Contact = () => {
                         whileInView="visible"
                         viewport={viewportConfig}
                         variants={scaleIn}
-                        className="space-y-2 md:space-y-8"
+                        className="space-y-8"
                     >
                         <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[9px] md:text-[10px] font-mono uppercase tracking-[0.2em]">
                             Direct Communication Protocol
@@ -48,14 +48,14 @@ const Contact = () => {
                             <span className="text-electric-green">INTERFACE.</span>
                         </h2>
 
-                        <div className="py-2 md:py-10 space-y-2 md:space-y-6">
-                            <div className="flex flex-col items-center gap-1">
+                        <div className="py-8 md:py-10 space-y-6 md:space-y-8">
+                            <div className="flex flex-col items-center gap-4">
                                 <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Primary_Endpoint</span>
-                                <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-4 rounded-xl group/email relative hover:border-electric-green/30">
-                                    <span className="text-lg md:text-2xl font-mono font-bold text-white tracking-tight">{email}</span>
+                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 md:px-6 py-2.5 md:py-4 rounded-xl group/email relative hover:border-electric-green/30 w-full max-w-[90vw] md:w-auto">
+                                    <span className="text-base md:text-2xl font-mono font-bold text-white tracking-tight break-all md:break-normal">{email}</span>
                                     <button
                                         onClick={handleCopy}
-                                        className="p-1.5 md:p-2 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green"
+                                        className="shrink-0 p-1.5 md:p-2 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green"
                                         title="Copy to clipboard"
                                     >
                                         {copied ? <Check className="w-4 h-4 md:w-5 md:h-5" /> : <Copy className="w-4 h-4 md:w-5 md:h-5" />}
@@ -63,7 +63,7 @@ const Contact = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 justify-center">
+                            <div className="grid grid-cols-2 gap-4 justify-center">
                                 <a
                                     href="https://github.com/Albjav1235"
                                     target="_blank"
