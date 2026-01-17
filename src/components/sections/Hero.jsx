@@ -14,11 +14,9 @@ const Hero = () => {
                     {/* Text Content */}
                     <div className="lg:col-span-6 space-y-8">
                         <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={fadeInUp}
-                            transition={{ delay: 0.1 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1, duration: 0.5 }}
                             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em] gpu-accelerated"
                         >
                             <Cpu className="w-3 h-3" />
@@ -26,11 +24,9 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={fadeInUp}
-                            transition={{ delay: 0.2 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.5 }}
                             className="space-y-4 gpu-accelerated"
                         >
                             <div className="flex items-center gap-3">
@@ -51,11 +47,9 @@ const Hero = () => {
                         </motion.div>
 
                         <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={fadeInUp}
-                            transition={{ delay: 0.3 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3, duration: 0.5 }}
                             className="flex flex-wrap gap-4 pt-4 gpu-accelerated"
                         >
                             <button className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]">
@@ -74,11 +68,9 @@ const Hero = () => {
 
                         {/* Quick Metadata */}
                         <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={fadeInUp}
-                            transition={{ delay: 0.4 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.5 }}
                             className="pt-10 flex gap-8 border-t border-white/5 gpu-accelerated"
                         >
                             <div className="flex flex-col gap-1">
@@ -95,18 +87,9 @@ const Hero = () => {
                     {/* Terminal Visual */}
                     <div className="lg:col-span-6 hidden lg:block">
                         <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={{
-                                hidden: { opacity: 0, scale: 0.9, rotateY: 20 },
-                                visible: {
-                                    opacity: 1,
-                                    scale: 1,
-                                    rotateY: 0,
-                                    transition: { duration: 1, ease: "easeOut", delay: 0.4 }
-                                }
-                            }}
+                            initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
+                            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                            transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
                             className="perspective-1000 gpu-accelerated"
                         >
                             <TerminalWindow>

@@ -14,7 +14,7 @@ const TechNode = ({ name, icon, index, color = "electric-green" }) => {
             whileHover={{ y: -5, scale: 1.05 }}
             className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
-            <div className={`w-14 h-14 rounded-lg glass-card flex items-center justify-center border-white/10 group-hover:border-${color}/50 transition-all duration-300 relative overflow-hidden bg-white/[0.03]`}>
+            <div className={`w-14 h-14 rounded-lg glass-card flex items-center justify-center border-white/10 group-hover:border-${color}/50 relative overflow-hidden bg-white/[0.03]`}>
                 <div className={`absolute inset-0 bg-${color}/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
                 {/* Placeholder for Icon - using name if icon not provided */}
                 <span className={`text-[10px] font-mono font-bold text-gray-500 group-hover:text-${color} transition-colors uppercase`}>

@@ -97,14 +97,12 @@ const FeaturedProjects = () => {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            layoutId={`card-${project.id}`}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewportConfig}
-                            variants={fadeInUp}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                             onClick={() => setSelectedId(project.id)}
-                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 transition-all flex flex-col min-h-[420px] relative overflow-hidden gpu-accelerated"
+                            className="glass-card p-0 border-white/5 cursor-pointer group hover:border-electric-green/30 flex flex-col min-h-[420px] relative overflow-hidden gpu-accelerated opacity-0"
                         >
                             {/* GIF Thumbnail Preview */}
                             <div className="relative w-full h-48 overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
@@ -146,7 +144,7 @@ const FeaturedProjects = () => {
                             </div>
 
                             {/* Background Glow */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-all"></div>
+                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10"></div>
                         </motion.div>
                     ))}
                 </div>
@@ -168,7 +166,9 @@ const FeaturedProjects = () => {
 
                         {/* Modal Content */}
                         <motion.div
-                            layoutId={`card-${selectedId}`}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
                             className="relative w-full max-w-6xl bg-dark-high border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full max-h-[85vh] lg:max-h-[80vh]"
                         >
                             {/* Close Button */}
@@ -256,7 +256,7 @@ const FeaturedProjects = () => {
                                             <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
                                         </div>
                                     </div>
-                                    <div className="p-6 rounded-xl bg-white/5 border border-white/10 group-hover:border-electric-green/20 transition-all">
+                                    <div className="p-6 rounded-xl bg-white/5 border border-white/10 group-hover:border-electric-green/20">
                                         <WorkflowDiagram steps={activeProject.arch} />
                                     </div>
                                 </div>

@@ -42,11 +42,13 @@
 
 @layer components {
     .glass-card {
-        @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden transition-all duration-300;
+        @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden;
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .btn-system {
-        @apply px-6 py-3 rounded-md font-mono font-bold transition-all duration-300 border border-electric-green text-electric-green hover:bg-electric-green/10 hover:shadow-btn-glow;
+        @apply px-6 py-3 rounded-md font-mono font-bold border border-electric-green text-electric-green;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
     }
 
     .status-pulse {

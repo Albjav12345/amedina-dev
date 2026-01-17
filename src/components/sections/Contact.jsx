@@ -51,11 +51,11 @@ const Contact = () => {
                         <div className="py-10 space-y-6">
                             <div className="flex flex-col items-center gap-4">
                                 <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Primary_Endpoint</span>
-                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-4 rounded-xl group/email relative transition-all hover:border-electric-green/30">
+                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-4 rounded-xl group/email relative hover:border-electric-green/30">
                                     <span className="text-xl md:text-2xl font-mono font-bold text-white tracking-tight">{email}</span>
                                     <button
                                         onClick={handleCopy}
-                                        className="p-2 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green transition-all"
+                                        className="p-2 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green"
                                         title="Copy to clipboard"
                                     >
                                         {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -68,7 +68,7 @@ const Contact = () => {
                                     href="https://github.com/Albjav1235"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 font-mono text-xs uppercase"
+                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center gap-2 font-mono text-xs uppercase"
                                 >
                                     <Github className="w-5 h-5" />
                                     GitHub
@@ -77,7 +77,7 @@ const Contact = () => {
                                     href="#"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all flex items-center gap-2 font-mono text-xs uppercase"
+                                    className="p-4 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center gap-2 font-mono text-xs uppercase"
                                 >
                                     <Linkedin className="w-5 h-5" />
                                     LinkedIn
@@ -88,7 +88,7 @@ const Contact = () => {
                         <div className="flex flex-wrap justify-center gap-6 pt-8">
                             <button
                                 onClick={handleTransmission}
-                                className={`group relative px-10 py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden min-w-[280px] justify-center`}
+                                className={`group relative px-10 py-4 ${status === 'success' ? 'bg-green-500' : 'bg-electric-green'} text-dark-void font-mono font-bold rounded-lg hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3 overflow-hidden min-w-[280px] justify-center`}
                             >
                                 <AnimatePresence mode="wait">
                                     {status === 'idle' && (

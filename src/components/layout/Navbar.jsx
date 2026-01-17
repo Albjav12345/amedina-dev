@@ -52,7 +52,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex items-center gap-2 group cursor-pointer"
                 >
-                    <div className="w-10 h-10 rounded-lg bg-electric-green/10 border border-electric-green/30 flex items-center justify-center group-hover:bg-electric-green/20 transition-all">
+                    <div className="w-10 h-10 rounded-lg bg-electric-green/10 border border-electric-green/30 flex items-center justify-center group-hover:bg-electric-green/20">
                         <Terminal className="w-5 h-5 text-electric-green" />
                     </div>
                     <span className="font-mono font-bold text-xl tracking-tighter">
@@ -74,7 +74,7 @@ const Navbar = () => {
                             {activeSection === link.id && (
                                 <motion.div
                                     layoutId="nav-pill"
-                                    className="absolute inset-0 bg-white/5 border border-white/10 rounded-lg z-0 transition-all"
+                                    className="absolute inset-0 bg-white/5 border border-white/10 rounded-lg z-0"
                                     transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
                                 />
                             )}

@@ -61,7 +61,7 @@ const About = () => {
                                 viewport={viewportConfig}
                                 variants={scaleIn}
                                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 transition-all border-white/5 gpu-accelerated"
+                                className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-electric-green/40 border-white/5 gpu-accelerated"
                             >
                                 <div className={`${stat.color} opacity-80 group-hover:scale-110 transition-transform duration-300`}>
                                     {stat.icon}
