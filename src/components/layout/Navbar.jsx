@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Menu, X } from 'lucide-react';
 
@@ -6,6 +6,7 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
+    const isManualScroll = useRef(false);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -13,11 +14,13 @@ const Navbar = () => {
 
         const observerOptions = {
             root: null,
-            rootMargin: '-10% 0px -80% 0px',
+            rootMargin: '-10% 0px -60% 0px',
             threshold: 0
         };
 
         const handleIntersect = (entries) => {
+            if (isManualScroll.current) return;
+
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     setActiveSection(entry.target.id);
@@ -44,17 +47,35 @@ const Navbar = () => {
         const element = document.getElementById(id);
         if (!element) return;
 
-        const navHeight = isScrolled ? 65 : 88; // Height based on padding
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - navHeight;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-        });
-
-        setIsMobileMenuOpen(false);
+        isManualScroll.current = true;
         setActiveSection(id);
+        setIsMobileMenuOpen(false);
+
+        const navHeight = 80;
+
+        if (window.lenis) {
+            window.lenis.scrollTo(element, {
+                offset: -navHeight,
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+            });
+        } else {
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+
+        // Trigger a fake scroll event to help Lenis/Smoothscroll sync
+        window.dispatchEvent(new Event('scroll'));
+
+        // Release observer after scroll animation finishes
+        setTimeout(() => {
+            isManualScroll.current = false;
+        }, 1000);
     };
 
     const navLinks = [
