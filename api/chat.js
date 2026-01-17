@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import portfolioData from '../src/data/portfolio.json';
+import portfolioData from '../src/data/portfolio.js';
 
 export default async function handler(req, res) {
     // 1. Validar Método

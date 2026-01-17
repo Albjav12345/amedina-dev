@@ -126,6 +126,14 @@ const InteractiveConsole = ({ onClose }) => {
                     body: JSON.stringify({ message: cmd })
                 });
 
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("API Error:", errorText);
+                    setHistory(prev => [...prev, { type: 'output', content: `>> ERROR ${res.status}: NEURAL LINK FAILURE.` }]);
+                    setIsLoading(false);
+                    return;
+                }
+
                 const data = await res.json();
 
                 // Add AI response to history
