@@ -51,7 +51,7 @@ const Navbar = () => {
         setActiveSection(id);
         setIsMobileMenuOpen(false);
 
-        const navHeight = 80;
+        const navHeight = 50;
 
         if (window.lenis) {
             window.lenis.scrollTo(element, {

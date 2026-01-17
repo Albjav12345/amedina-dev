@@ -88,7 +88,7 @@ const FeaturedProjects = () => {
     const activeProject = projects.find(p => p.id === selectedId);
 
     return (
-        <section id="projects" className="py-32 relative">
+        <section id="projects" className="py-20 md:py-32 relative">
             <div className="container mx-auto px-6">
 
                 {/* Section Title */}

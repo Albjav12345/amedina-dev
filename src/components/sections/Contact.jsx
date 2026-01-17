@@ -25,11 +25,11 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="py-10 md:py-32 relative overflow-hidden px-6 md:px-0">
+        <section id="contact" className="py-20 md:py-32 relative overflow-hidden px-0">
             {/* Background Decor */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-            <div className="container mx-auto px-0 md:px-6 relative z-10">
+            <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-4xl mx-auto glass-card p-8 md:p-12 lg:p-20 border-white/5 relative bg-gradient-to-b from-white/[0.03] to-transparent text-center gpu-accelerated">
 
                     <motion.div

@@ -12,7 +12,7 @@ const About = () => {
     ];
 
     return (
-        <section id="about" className="py-12 md:py-24 relative overflow-hidden px-4 md:px-0">
+        <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
             <div className="container mx-auto px-6">
 
                 {/* Section Header */}
