@@ -25,7 +25,7 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="py-10 md:py-32 relative overflow-hidden px-8 md:px-0">
+        <section id="contact" className="py-10 md:py-32 relative overflow-hidden px-10 md:px-0">
             {/* Background Decor */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -141,20 +141,20 @@ const Contact = () => {
                         </div>
 
                         {/* Technical Meta info below buttons */}
-                        <div className="pt-16 flex justify-center gap-12 border-t border-white/5 opacity-40 grayscale group">
+                        <div className="pt-16 flex justify-center gap-4 md:gap-12 border-t border-white/5 opacity-40 grayscale group">
                             <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500">Latency</span>
-                                <span className="text-xs font-mono text-white">
+                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Latency</span>
+                                <span className="text-[10px] md:text-xs font-mono text-white">
                                     {status === 'sending' ? 'SIGNAL_CALC...' : '< 24H_RESP'}
                                 </span>
                             </div>
                             <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500">Encryption</span>
-                                <span className="text-xs font-mono text-white">TLS_1.3_AUTH</span>
+                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Encryption</span>
+                                <span className="text-[10px] md:text-xs font-mono text-white">TLS_1.3</span>
                             </div>
                             <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500">Uptime</span>
-                                <span className="text-xs font-mono text-white">99.99%_AVAIL</span>
+                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Uptime</span>
+                                <span className="text-[10px] md:text-xs font-mono text-white">99.9%_AVAIL</span>
                             </div>
                         </div>
                     </motion.div>
