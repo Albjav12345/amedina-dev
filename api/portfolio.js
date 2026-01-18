@@ -7,8 +7,8 @@
 // -> EDIT PROFILE HERE:  src/data/profile.js
 // -------------------------------------------------------------------------
 
-import { projects } from '../src/data/projects';
-import { profile, skills } from '../src/data/profile';
+import { projects } from '../src/data/projects.js';
+import { profile, skills } from '../src/data/profile.js';
 
 export const portfolioData = {
   profile,
