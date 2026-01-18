@@ -19,7 +19,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
             layout
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-visible relative cursor-default flex flex-col ${isExpanded ? 'h-80 md:h-96' : 'h-64 md:h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
+            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-visible relative cursor-default flex flex-col ${isExpanded ? 'h-96 md:h-96' : 'h-80 md:h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
                 }`}
         >
             {/* Window Header */}
@@ -92,10 +92,10 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="relative"
+                            className="relative h-full"
                         >
                             <AnimatedPipeline />
-                            <div className="mt-8 text-[10px] text-gray-600 animate-pulse">
+                            <div className="absolute bottom-6 left-6 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
                                 Click to access system...
                             </div>
                         </motion.div>
@@ -293,7 +293,7 @@ export const AnimatedPipeline = () => {
             <motion.span
                 animate={{ opacity: [0, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8 }}
-                className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle"
+                className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2"
             />
         </div>
     );

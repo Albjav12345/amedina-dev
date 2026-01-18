@@ -88,7 +88,20 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex items-center justify-center p-4 lg:p-8 mt-12 lg:mt-0">
+                    <div className="lg:col-span-6 flex flex-col items-center justify-center p-4 lg:p-8 mt-12 lg:mt-0">
+                        {/* Mobile Section Title */}
+                        <div className="w-full mb-6 block lg:hidden">
+                            <div className="flex items-center gap-4">
+                                <span className="text-electric-green font-mono text-sm font-bold tracking-widest">
+                                    SYS_01
+                                </span>
+                                <div className="h-px bg-electric-green/30 flex-1"></div>
+                                <span className="text-gray-400 font-mono text-xs uppercase tracking-widest">
+                                    Identity_Protocol
+                                </span>
+                            </div>
+                        </div>
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
                             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
