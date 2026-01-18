@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const ReactiveBackground = () => {
     const canvasRef = useRef(null);
     const mouseRef = useRef({ x: 0, y: 0 });
+    const quality = useHardwareQuality();
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -59,13 +61,23 @@ const ReactiveBackground = () => {
 
         const initParticles = () => {
             particles = [];
-            const count = Math.floor((canvas.width * canvas.height) / 25000);
-            for (let i = 0; i < count; i++) {
+            // Reduce density significantly on low tier
+            const divisor = quality.tier === 'low' ? 60000 : 25000;
+            const count = Math.floor((canvas.width * canvas.height) / divisor);
+
+            // Hard cap for low end to prevent O(N^2) explosion if they have massive screens but slow CPUs
+            const maxParticles = quality.tier === 'low' ? 30 : 150;
+            const finalCount = Math.min(count, maxParticles);
+
+            for (let i = 0; i < finalCount; i++) {
                 particles.push(new Particle());
             }
         };
 
         const drawLines = () => {
+            // Disable expensive line connections on low tier
+            if (quality.tier === 'low') return;
+
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
@@ -76,7 +88,9 @@ const ReactiveBackground = () => {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(0, 255, 153, ${0.05 * (1 - dist / 100)})`;
+                        // Optimize alpha calculation
+                        const alpha = 0.05 * (1 - dist * 0.01);
+                        ctx.strokeStyle = `rgba(0, 255, 153, ${alpha})`;
                         ctx.stroke();
                     }
                 }
@@ -96,6 +110,13 @@ const ReactiveBackground = () => {
         window.addEventListener('resize', resize);
         window.addEventListener('mousemove', (e) => {
             mouseRef.current = { x: e.clientX, y: e.clientY };
+        });
+
+        // Throttle resize for perf
+        let timeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(resize, 200);
         });
 
         resize();
