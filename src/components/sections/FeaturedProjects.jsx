@@ -94,7 +94,7 @@ const FeaturedProjects = () => {
                                     src={project.thumbnail}
                                     alt={project.title}
                                     loading="lazy"
-                                    className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                                    className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
                                 {/* Scanning Line Effect - DISABLED ON LOW TIER */}
