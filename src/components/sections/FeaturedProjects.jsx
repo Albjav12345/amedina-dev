@@ -151,19 +151,24 @@ const FeaturedProjects = () => {
                             className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                         />
 
+                        {/* Close Button - Moved OUTSIDE layoutId container to prevent 'stretching' */}
+                        <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2, delay: 0.1 }}
+                            onClick={() => setSelectedId(null)}
+                            className="fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer"
+                        >
+                            <X className="w-6 h-6" />
+                        </motion.button>
+
                         <motion.div
                             layoutId={`project-${selectedId}`}
                             transition={quality.spring}
                             onLayoutAnimationComplete={() => setContentReady(true)}
                             className={`relative w-full max-w-6xl border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
                         >
-                            {/* Close Button - Fixed on top right for unified scroll feel */}
-                            <button
-                                onClick={() => setSelectedId(null)}
-                                className="fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
 
                             {/* Orchestrated Content Fade-in - DEFERRED RENDER */}
                             {(isContentReady || quality.tier === 'high') && (
