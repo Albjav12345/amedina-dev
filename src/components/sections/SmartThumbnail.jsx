@@ -1,0 +1,84 @@
+import React, { useRef, useEffect, useState } from 'react';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+
+const SmartThumbnail = ({ project }) => {
+    const videoRef = useRef(null);
+    const containerRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const quality = useHardwareQuality();
+
+    // Determine media type: Prefer VIDEO if available (MP4 is hardware accelerated)
+    // Fallback to GIF if no video (Twitch project)
+    const hasVideo = project.demoType === 'video' || (project.demoUrl && project.demoUrl.endsWith('.mp4'));
+    const mediaSource = hasVideo ? project.demoUrl : project.thumbnail;
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+
+                // Hardware Optimization: Pause video when out of view
+                if (videoRef.current) {
+                    if (entry.isIntersecting) {
+                        videoRef.current.play().catch(() => { }); // Catch autoplay rejection
+                    } else {
+                        videoRef.current.pause();
+                    }
+                }
+            },
+            {
+                rootMargin: '50px', // Preload/Play slightly before entering viewport
+                threshold: 0.1
+            }
+        );
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        return () => {
+            if (containerRef.current) {
+                observer.unobserve(containerRef.current);
+            }
+        };
+    }, []);
+
+    // Optimized Video Player
+    if (hasVideo) {
+        return (
+            <div ref={containerRef} className="w-full h-full relative">
+                <video
+                    ref={videoRef}
+                    src={mediaSource}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata" // Don't download full file until needed
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                />
+            </div>
+        );
+    }
+
+    // Fallback GIF Player (Legacy or No Video)
+    // Optimizing purely GIF is hard, but we can lazy load it via 'loading="lazy"' 
+    // and rely on browser handling.
+    return (
+        <div ref={containerRef} className="w-full h-full relative">
+            {/* 
+               Advanced Optimization for Low-End using GIFs:
+               technically standard <img> GIFs play always. 
+               If performance is still bad on Twitch project, we might need a static placeholder.
+            */}
+            <img
+                src={mediaSource}
+                alt={project.title}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+            />
+        </div>
+    );
+};
+
+export default SmartThumbnail;

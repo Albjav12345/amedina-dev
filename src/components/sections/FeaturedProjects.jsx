@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
-import WorkflowDiagram from '../common/WorkflowDiagram';
-import { fadeInUp, viewportConfig } from '../../utils/animations';
-import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+import SmartThumbnail from './SmartThumbnail';
 
-import portfolioData from '../../../api/portfolio';
+// ... (in the FeaturedProjects component)
+
+{/* Project Thumbnail Area - 60% on mobile */ }
+<div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+    <SmartThumbnail project={project} />
+
+    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
+    {/* Scanning Line Effect - DISABLED ON LOW TIER */}
+    {!quality.simplePhysics && (
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
+    )}
+
+    <div className="absolute top-4 left-4 flex gap-1 z-20">
+        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
+    </div>
+</div>
 const { projects } = portfolioData;
 
 const cardVariants = {
