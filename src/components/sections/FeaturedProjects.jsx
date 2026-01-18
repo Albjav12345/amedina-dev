@@ -43,9 +43,8 @@ const FeaturedProjects = () => {
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
-                    viewport={viewportConfig}
                     variants={fadeInUp}
-                    className="flex flex-col mb-20"
+                    className="flex flex-col mb-16"
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_02</span>

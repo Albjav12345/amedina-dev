@@ -90,7 +90,7 @@ const Hero = () => {
                     {/* Terminal Visual */}
                     <div className="lg:col-span-6 flex flex-col items-center justify-center p-4 lg:p-8 mt-12 lg:mt-0">
                         {/* Mobile Section Title */}
-                        <div className="w-full mb-8 block lg:hidden text-left">
+                        <div className="w-full mb-16 block lg:hidden text-left">
                             <div className="flex items-center gap-4 mb-4">
                                 <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_00</span>
                                 <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
@@ -110,7 +110,7 @@ const Hero = () => {
 
                 </div>
             </div>
-        </section>
+        </section >
     );
 };
 

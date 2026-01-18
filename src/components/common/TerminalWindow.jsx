@@ -95,7 +95,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                             className="relative h-full"
                         >
                             <AnimatedPipeline />
-                            <div className="absolute bottom-6 left-6 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
+                            <div className="absolute bottom-3 left-4 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
                                 Click to access system...
                             </div>
                         </motion.div>
