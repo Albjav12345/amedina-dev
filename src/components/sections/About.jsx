@@ -138,8 +138,6 @@ const About = () => {
                 </div>
             </div>
 
-            {/* Ambient Background Detail */}
-            <div className="absolute bottom-0 right-0 w-1/2 h-px bg-gradient-to-l from-electric-green/20 to-transparent"></div>
         </section>
     );
 };

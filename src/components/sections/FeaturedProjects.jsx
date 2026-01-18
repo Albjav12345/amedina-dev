@@ -49,7 +49,7 @@ const FeaturedProjects = () => {
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_02</span>
-                        <div className="h-px w-20 bg-electric-green/30"></div>
+                        <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
                     <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase leading-none">
                         Project <br />
