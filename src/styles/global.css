@@ -18,6 +18,7 @@
 @layer base {
     html {
         scroll-behavior: smooth;
+        @apply bg-dark-void;
     }
 
     body {
