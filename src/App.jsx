@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import Lenis from 'lenis'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import Hero from './components/sections/Hero'
 import About from './components/sections/About'
 import FeaturedProjects from './components/sections/FeaturedProjects'
@@ -49,6 +50,7 @@ function App() {
                 <Contact />
             </main>
             <Footer />
+            <SpeedInsights />
         </div>
     )
 }
