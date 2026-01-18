@@ -96,16 +96,32 @@ export const ui = {
         label: "Direct Communication Protocol",
         titleLine1: "READY TO",
         titleLine2: "INTERFACE.",
+        description: "Ready to override standard boundaries? Whether you have a specific system in mind or just want to discuss automation protocols, the transmission line is open.",
         endpointLabel: "Primary_Endpoint",
         email: "amedina.amg.dev@gmail.com",
         social: [
             { name: "GitHub", url: "https://github.com/Albjav1235", icon: "Github" },
             { name: "LinkedIn", url: "#", icon: "Linkedin" }
         ],
-        button: {
-            idle: "INIT_SECURE_TRANSMISSION",
-            sending: "TRANSMITTING_DATA...",
-            success: "SIGNAL_RECEIVED"
+        form: {
+            name: {
+                label: "USER_IDENTITY.src",
+                placeholder: "Enter your name..."
+            },
+            email: {
+                label: "RETURN_PATH.void",
+                placeholder: "your@email.com"
+            },
+            message: {
+                label: "DATA_PAYLOAD.txt",
+                placeholder: "Describe your protocol or project..."
+            },
+            submit: {
+                idle: "EXECUTE_TRANSMISSION",
+                sending: "TRANSMITTING...",
+                success: "SUCCESS_CONFIRMED",
+                error: "PROTOCOL_FAILURE"
+            }
         },
         metadata: [
             { label: "Latency", value: "< 24H_RESP", activeValue: "SIGNAL_CALC..." },
