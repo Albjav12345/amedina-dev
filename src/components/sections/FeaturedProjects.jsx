@@ -197,7 +197,7 @@ const FeaturedProjects = () => {
                                                     </div>
 
                                                     {activeProject.icon && (
-                                                        <div className="shrink-0 w-14 h-14 md:w-24 md:h-24 -mr-2 md:mr-0 rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
+                                                        <div className="shrink-0 w-14 h-14 md:w-24 md:h-24 rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
                                                             {iconMap[activeProject.icon] ? (
                                                                 <div className="flex items-center justify-center w-full h-full p-3 md:p-5">
                                                                     {iconMap[activeProject.icon]}
