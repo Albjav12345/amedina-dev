@@ -7,9 +7,29 @@ const TerminalWindow = ({ title }) => {
     const { terminal } = portfolioData.ui;
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
     const containerRef = useRef(null);
 
     const toggleExpand = () => setIsExpanded(!isExpanded);
+
+    useEffect(() => {
+        const checkLayout = () => {
+            if (typeof window !== 'undefined') {
+                const isLandscape = window.innerWidth > window.innerHeight;
+                const isWide = window.innerWidth >= 768; // Md breakpoint
+                // Check for "Desktop-like" environment (Mouse + Hover) to exclude Mobile Landscape if needed, 
+                // but user said "only if computer", so hover check is good.
+                const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+                // Only allow auto-growth on Desktop Landscape
+                setIsDesktopLandscape(isLandscape && isWide && hasMouse);
+            }
+        };
+
+        checkLayout();
+        window.addEventListener('resize', checkLayout);
+        return () => window.removeEventListener('resize', checkLayout);
+    }, []);
 
     useEffect(() => {
         const handleToggle = () => setIsExpanded(prev => !prev);
@@ -21,7 +41,7 @@ const TerminalWindow = ({ title }) => {
         <motion.div
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (typeof window !== 'undefined' && window.innerWidth >= 768 ? 'auto' : 320)
+                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320)
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
