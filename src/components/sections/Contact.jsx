@@ -31,8 +31,8 @@ const Contact = () => {
         const formData = new FormData(e.target);
 
         try {
-            // NOTE: Replace the ID below with your actual Formspree ID to enable email delivery
-            const response = await fetch("https://formspree.io/f/mqakezql", {
+            // Updated with user's real Formspree ID: xreepwgw
+            const response = await fetch("https://formspree.io/f/xreepwgw", {
                 method: "POST",
                 body: formData,
                 headers: {
@@ -41,14 +41,19 @@ const Contact = () => {
             });
 
             if (response.ok) {
+                console.log("[Formspree] Success: Message sent correctly.");
                 setStatus('success');
                 e.target.reset();
                 setTimeout(() => setStatus('idle'), 5000);
             } else {
+                const errorData = await response.json();
+                console.error("[Formspree] Error Status:", response.status);
+                console.error("[Formspree] Error Details:", errorData);
                 setStatus('error');
                 setTimeout(() => setStatus('idle'), 3000);
             }
         } catch (error) {
+            console.error("[ContactForm] Critical Error:", error);
             setStatus('error');
             setTimeout(() => setStatus('idle'), 3000);
         }

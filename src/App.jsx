@@ -8,6 +8,7 @@ import Contact from './components/sections/Contact'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ReactiveBackground from './components/common/ReactiveBackground'
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 function App() {
     useEffect(() => {
@@ -49,6 +50,7 @@ function App() {
                 <Contact />
             </main>
             <Footer />
+            <SpeedInsights />
         </div>
     )
 }
