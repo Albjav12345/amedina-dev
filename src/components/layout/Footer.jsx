@@ -20,18 +20,18 @@ const Footer = () => {
                                 {footer.status}
                             </span>
                         </div>
-                        <p className="text-gray-500 text-[8px] md:text-xs mt-1 whitespace-nowrap">
+                        <p className="text-gray-400 text-[8px] md:text-xs mt-1 whitespace-nowrap">
                             © {new Date().getFullYear()} Engineered by <span className="text-white">{name}</span>.
                         </p>
                     </div>
 
                     <div className="flex gap-4 md:gap-6 font-mono text-[8px] md:text-[10px] text-gray-400 whitespace-nowrap">
                         <div className="flex flex-col items-center md:items-end">
-                            <span className="text-gray-600">LOCATION</span>
+                            <span className="text-gray-500">LOCATION</span>
                             <span>{footer.location}</span>
                         </div>
                         <div className="flex flex-col items-center md:items-end">
-                            <span className="text-gray-600">VESSEL_ID</span>
+                            <span className="text-gray-500">VESSEL_ID</span>
                             <span>{footer.vesselId}</span>
                         </div>
                     </div>

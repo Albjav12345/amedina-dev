@@ -31,7 +31,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://assets.vercel.com blob:; connect-src 'self' https://formspree.io https://identity.googleapis.com https://securetoken.googleapis.com; media-src 'self' https://commondatastorage.googleapis.com blob:; object-src 'none'; base-uri 'self';"
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://assets.vercel.com https://commondatastorage.googleapis.com https://*.googleapis.com blob:; connect-src 'self' https://formspree.io https://identity.googleapis.com https://securetoken.googleapis.com; media-src 'self' https://commondatastorage.googleapis.com blob:; object-src 'none'; base-uri 'self';"
                 }
             ]
         }
