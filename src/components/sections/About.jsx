@@ -29,13 +29,21 @@ const About = () => {
             <div className="container mx-auto px-6">
 
                 {/* Section Header */}
-                <div className="mb-16">
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={viewportConfig}
+                    className="mb-16"
+                >
                     <div className="flex items-center gap-4 mb-4">
                         <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_01</span>
                         <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
-                    <h2 className="text-4xl font-bold font-mono tracking-tighter uppercase">Identity Protocol.</h2>
-                </div>
+                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase">
+                        Identity <br />
+                        <span className="text-electric-green">Protocol.</span>
+                    </h2>
+                </motion.div>
 
                 {/* Bento Grid Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -138,7 +146,7 @@ const About = () => {
                 </div>
             </div>
 
-        </section>
+        </section >
     );
 };
 

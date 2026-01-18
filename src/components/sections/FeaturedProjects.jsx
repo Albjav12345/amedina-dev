@@ -41,9 +41,9 @@ const FeaturedProjects = () => {
 
                 {/* Section Title */}
                 <motion.div
-                    initial="hidden"
-                    whileInView="visible"
-                    variants={fadeInUp}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={viewportConfig}
                     className="flex flex-col mb-16"
                 >
                     <div className="flex items-center gap-4 mb-4">

@@ -88,25 +88,27 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full">
+                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full overflow-hidden">
                         {/* Mobile Section Title */}
-                        <div className="w-full mb-16 block lg:hidden text-left">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={viewportConfig}
+                            className="w-full mb-16 block lg:hidden text-left"
+                        >
                             <div className="flex items-center gap-4 mb-4">
                                 <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_00</span>
                                 <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                             </div>
-                            <h2 className="text-4xl font-bold font-mono tracking-tighter uppercase text-white">CONSOLE</h2>
-                        </div>
-
-                        <motion.div
-                            layout="size"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-                            className="w-full flex justify-center"
-                        >
-                            <TerminalWindow />
+                            <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
+                                SYSTEM <br />
+                                <span className="text-electric-green">CONSOLE</span>
+                            </h2>
                         </motion.div>
+
+                        <div className="w-full flex justify-center">
+                            <TerminalWindow />
+                        </div>
                     </div>
 
                 </div>

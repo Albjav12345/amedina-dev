@@ -16,11 +16,9 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
 
     return (
         <motion.div
-            layout="size"
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (typeof window !== 'undefined' && window.innerWidth >= 768 ? 'auto' : 320),
-                width: '100%'
+                height: isExpanded ? 384 : (typeof window !== 'undefined' && window.innerWidth >= 768 ? 'auto' : 320)
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -29,7 +27,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
             style={{ clipPath: 'inset(-200px -100px -100px -100px)' }}
         >
             {/* Window Header */}
-            <motion.div layout="position" className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
+            <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
                 <div className="flex gap-1.5 w-16">
                     <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -82,7 +80,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                         </>
                     )}
                 </div>
-            </motion.div>
+            </div>
 
             {/* Window Body */}
             <div
@@ -117,7 +115,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                     )}
                 </AnimatePresence>
             </div>
-        </motion.div>
+        </motion.div >
     );
 };
 
