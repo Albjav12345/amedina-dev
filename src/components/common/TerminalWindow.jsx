@@ -19,7 +19,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
             layout
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-visible relative cursor-default flex flex-col ${isExpanded ? 'h-80 md:h-96' : 'h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
+            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-visible relative cursor-default flex flex-col ${isExpanded ? 'h-80 md:h-96' : 'h-64 md:h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
                 }`}
         >
             {/* Window Header */}

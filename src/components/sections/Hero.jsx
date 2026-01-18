@@ -88,7 +88,7 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 hidden lg:flex items-center justify-center p-8">
+                    <div className="lg:col-span-6 flex items-center justify-center p-4 lg:p-8 mt-12 lg:mt-0">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
                             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
