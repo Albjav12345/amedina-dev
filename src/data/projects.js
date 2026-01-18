@@ -65,8 +65,9 @@ export const projects = [
         stack: ["Android", "Firebase", "React", "Atomic Locking"],
         arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
-        demoType: "gif",
-        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif",
+        demoType: "video",
+        demoUrl: "/assets/projects/padel-booking.mp4",
+        thumbnail: "/assets/projects/padel-booking.gif",
         icon: "/assets/projects/padel-booking-logo.png"
     },
     {
