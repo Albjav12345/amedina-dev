@@ -4,7 +4,7 @@ import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } fro
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
 
-import portfolioData from '../../../api/portfolio.js';
+import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {
@@ -22,6 +22,8 @@ const cardVariants = {
 
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
+    const { projects: projectsHeader } = portfolioData.ui.sections;
+    // Data from projects.js
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -47,12 +49,12 @@ const FeaturedProjects = () => {
                     className="flex flex-col mb-16"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_02</span>
+                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{projectsHeader.id}</span>
                         <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase leading-none">
-                        Project <br />
-                        <span className="text-electric-green">Ecosystems.</span>
+                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
+                        {projectsHeader.line1} <br />
+                        <span className="text-electric-green">{projectsHeader.line2}</span>
                     </h2>
                 </motion.div>
 

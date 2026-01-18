@@ -107,6 +107,9 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
 }
 
 const TechStack = () => {
+    const { tech } = portfolioData.ui.sections;
+    const { categories } = portfolioData.skills;
+
     const iconMap = {
         Cpu: <Cpu className="w-5 h-5" />,
         Brain: <Brain className="w-5 h-5" />,
@@ -114,14 +117,14 @@ const TechStack = () => {
         Globe: <Globe className="w-5 h-5" />
     };
 
-    const categories = rawCategories.map(cat => ({
+    const mappedCategories = categories.map(cat => ({
         ...cat,
         icon: iconMap[cat.icon] || <Cpu className="w-5 h-5" />
     }));
 
     return (
-        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden bg-dark-void">
-            <div className="container mx-auto px-6">
+        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden bg-dark-void section-padding">
+            <div className="container mx-auto px-6 relative z-10">
 
                 {/* Section Header */}
                 <motion.div
@@ -131,17 +134,17 @@ const TechStack = () => {
                     className="mb-16"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/5 border border-electric-green/20 px-3 py-1 rounded">SYS_03</span>
-                        <div className="h-[1px] flex-grow bg-gradient-to-r from-electric-green/50 to-transparent"></div>
+                        <span className="font-mono text-xs text-electric-green bg-electric-green/5 border border-electric-green/20 px-3 py-1 rounded">{tech.id}</span>
+                        <div className="h-[1px] flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
                     <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                        Technical <br />
-                        <span className="text-electric-green">Arsenal.</span>
+                        {tech.line1} <br />
+                        <span className="text-electric-green">{tech.line2}</span>
                     </h2>
                 </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {categories.map((cat, i) => (
+                    {mappedCategories.map((cat, i) => (
                         <NodeGroup
                             key={cat.title}
                             title={cat.title}

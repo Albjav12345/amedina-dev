@@ -1,7 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import portfolioData from '../../../api/portfolio';
 
 const Footer = () => {
+    const { footer } = portfolioData.ui;
+    const { name } = portfolioData.profile;
+
     return (
         <footer className="py-12 border-t border-white/5 bg-dark-high/50">
             <div className="container mx-auto px-10 md:px-6">
@@ -13,22 +17,22 @@ const Footer = () => {
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-electric-green"></span>
                             </span>
                             <span className="font-mono text-[10px] tracking-widest text-electric-green uppercase">
-                                System Status: All Systems Operational
+                                {footer.status}
                             </span>
                         </div>
                         <p className="text-gray-500 text-[8px] md:text-xs mt-1 whitespace-nowrap">
-                            © {new Date().getFullYear()} Engineered by <span className="text-white">Alberto Medina</span>.
+                            © {new Date().getFullYear()} Engineered by <span className="text-white">{name}</span>.
                         </p>
                     </div>
 
                     <div className="flex gap-4 md:gap-6 font-mono text-[8px] md:text-[10px] text-gray-400 whitespace-nowrap">
                         <div className="flex flex-col items-center md:items-end">
                             <span className="text-gray-600">LOCATION</span>
-                            <span>SPAIN / REMOTE</span>
+                            <span>{footer.location}</span>
                         </div>
                         <div className="flex flex-col items-center md:items-end">
                             <span className="text-gray-600">VESSEL_ID</span>
-                            <span>AUTO_PORT_V2.0</span>
+                            <span>{footer.vesselId}</span>
                         </div>
                     </div>
                 </div>

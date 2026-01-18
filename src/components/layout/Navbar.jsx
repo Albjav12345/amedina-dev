@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Menu, X } from 'lucide-react';
+import portfolioData from '../../../api/portfolio';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -78,13 +79,8 @@ const Navbar = () => {
         }, 1000);
     };
 
-    const navLinks = [
-        { name: 'Start', href: '#home', id: 'home', num: '01' },
-        { name: 'About', href: '#about', id: 'about', num: '02' },
-        { name: 'Systems', href: '#projects', id: 'projects', num: '03' },
-        { name: 'Stack', href: '#tech-stack', id: 'tech-stack', num: '04' },
-        { name: 'Contact', href: '#contact', id: 'contact', num: '05' },
-    ];
+    const { navigation } = portfolioData.ui;
+    const navLinks = navigation.links;
 
     return (
         <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-dark-void/80 backdrop-blur-lg border-b border-white/10 py-3' : 'bg-transparent py-6'
@@ -100,7 +96,7 @@ const Navbar = () => {
                         <Terminal className="w-5 h-5 text-electric-green" />
                     </div>
                     <span className="font-mono font-bold text-xl tracking-tighter">
-                        ALBERTO<span className="text-electric-green">.M</span>
+                        {navigation.brand.first}<span className="text-electric-green">{navigation.brand.last}</span>
                     </span>
                 </motion.div>
 
@@ -142,7 +138,7 @@ const Navbar = () => {
                         animate={{ opacity: 1, scale: 1 }}
                     >
                         <Terminal className="w-3 h-3" />
-                        TERM_ACCESS
+                        {navigation.terminalButton}
                     </motion.button>
                 </div>
 

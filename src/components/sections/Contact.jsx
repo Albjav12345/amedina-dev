@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, ExternalLink, Cpu, Loader2, CheckCircle2, Github, Linkedin, Copy, Check } from 'lucide-react';
+import { Mail, ExternalLink, Cpu, Loader2, CheckCircle2, Github, Linkedin, Copy, Check, Twitter } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
+import portfolioData from '../../../api/portfolio';
 
 const Contact = () => {
+    const { contact } = portfolioData.ui;
     const [status, setStatus] = useState('idle'); // idle, sending, success
     const [copied, setCopied] = useState(false);
-    const email = "amedina.amg.dev@gmail.com";
+    const { email } = contact;
+
+    const iconMap = {
+        Github: <Github className="w-4 h-4 md:w-5 md:h-5" />,
+        Linkedin: <Linkedin className="w-4 h-4 md:w-5 md:h-5" />,
+        Twitter: <Twitter className="w-4 h-4 md:w-5 md:h-5" />
+    };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(email);
@@ -40,17 +48,17 @@ const Contact = () => {
                         className="space-y-8"
                     >
                         <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[9px] md:text-[10px] font-mono uppercase tracking-[0.2em]">
-                            Direct Communication Protocol
+                            {contact.label}
                         </div>
 
                         <h2 className="text-4xl md:text-6xl font-bold font-mono tracking-tighter uppercase leading-tight">
-                            READY TO <br />
-                            <span className="text-electric-green">INTERFACE.</span>
+                            {contact.titleLine1} <br />
+                            <span className="text-electric-green">{contact.titleLine2}</span>
                         </h2>
 
                         <div className="py-8 md:py-10 space-y-6 md:space-y-8">
                             <div className="flex flex-col items-center gap-4">
-                                <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">Primary_Endpoint</span>
+                                <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">{contact.endpointLabel}</span>
                                 <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 md:px-6 py-2.5 md:py-4 rounded-xl group/email relative hover:border-electric-green/30 w-full max-w-[90vw] md:w-auto">
                                     <span className="text-base md:text-2xl font-mono font-bold text-white tracking-tight break-all md:break-normal">{email}</span>
                                     <button
@@ -64,24 +72,18 @@ const Contact = () => {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 justify-center">
-                                <a
-                                    href="https://github.com/Albjav1235"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 font-mono text-[10px] md:text-xs uppercase transition-all"
-                                >
-                                    <Github className="w-4 h-4 md:w-5 md:h-5" />
-                                    GitHub
-                                </a>
-                                <a
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 font-mono text-[10px] md:text-xs uppercase transition-all"
-                                >
-                                    <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
-                                    LinkedIn
-                                </a>
+                                {contact.social.map((s, i) => (
+                                    <a
+                                        key={i}
+                                        href={s.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-3 md:p-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 font-mono text-[10px] md:text-xs uppercase transition-all"
+                                    >
+                                        {iconMap[s.icon] || <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />}
+                                        {s.name}
+                                    </a>
+                                ))}
                             </div>
                         </div>
 
@@ -99,7 +101,7 @@ const Contact = () => {
                                             exit={{ opacity: 0, y: -10 }}
                                             className="flex items-center gap-2"
                                         >
-                                            INIT_SECURE_TRANSMISSION
+                                            {contact.button.idle}
                                             <Mail className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                                         </motion.div>
                                     )}
@@ -112,7 +114,7 @@ const Contact = () => {
                                             className="flex items-center gap-2"
                                         >
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            TRANSMITTING_DATA...
+                                            {contact.button.sending}
                                         </motion.div>
                                     )}
                                     {status === 'success' && (
@@ -124,7 +126,7 @@ const Contact = () => {
                                             className="flex items-center gap-2"
                                         >
                                             <CheckCircle2 className="w-4 h-4" />
-                                            SIGNAL_RECEIVED
+                                            {contact.button.success}
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -142,20 +144,14 @@ const Contact = () => {
 
                         {/* Technical Meta info below buttons */}
                         <div className="pt-16 flex justify-center gap-4 md:gap-12 border-t border-white/5 opacity-40 grayscale group">
-                            <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Latency</span>
-                                <span className="text-[10px] md:text-xs font-mono text-white">
-                                    {status === 'sending' ? 'SIGNAL_CALC...' : '< 24H_RESP'}
-                                </span>
-                            </div>
-                            <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Encryption</span>
-                                <span className="text-[10px] md:text-xs font-mono text-white">TLS_1.3</span>
-                            </div>
-                            <div className="flex flex-col gap-1 items-center">
-                                <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">Uptime</span>
-                                <span className="text-[10px] md:text-xs font-mono text-white">99.9%_AVAIL</span>
-                            </div>
+                            {contact.metadata.map((item, i) => (
+                                <div key={i} className="flex flex-col gap-1 items-center">
+                                    <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-gray-500">{item.label}</span>
+                                    <span className="text-[10px] md:text-xs font-mono text-white">
+                                        {status === 'sending' && item.activeValue ? item.activeValue : item.value}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
                 </div>

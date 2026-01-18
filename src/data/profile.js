@@ -12,8 +12,7 @@ export const profile = {
     ],
     social: {
         github: "https://github.com/Albjav1235",
-        linkedin: "#",
-        email: "amedina.amg.dev@gmail.com"
+        linkedin: "#"
     },
     stats: [
         { label: "Years Runtime", value: "8+", id: "years" },

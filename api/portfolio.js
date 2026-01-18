@@ -9,11 +9,13 @@
 
 import { projects } from '../src/data/projects.js';
 import { profile, skills } from '../src/data/profile.js';
+import { ui } from '../src/data/ui.js';
 
 export const portfolioData = {
   profile,
   skills,
-  projects
+  projects,
+  ui
 };
 
 export default portfolioData;

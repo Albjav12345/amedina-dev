@@ -7,6 +7,8 @@ import portfolioData from '../../../api/portfolio.js';
 const { stats: rawStats, bio } = portfolioData.profile;
 
 const About = () => {
+    const { about } = portfolioData.ui.sections;
+
     const iconMap = {
         Zap: <Zap className="w-5 h-5" />,
         Shield: <Shield className="w-5 h-5" />,
@@ -26,6 +28,9 @@ const About = () => {
 
     return (
         <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
+            {/* Background Decor */}
+            <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-electric-cyan/5 blur-[120px] rounded-full pointer-events-none"></div>
+
             <div className="container mx-auto px-6">
 
                 {/* Section Header */}
@@ -36,12 +41,12 @@ const About = () => {
                     className="mb-16"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">SYS_01</span>
+                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{about.id}</span>
                         <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
                     </div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase">
-                        Identity <br />
-                        <span className="text-electric-green">Protocol.</span>
+                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
+                        {about.line1} <br />
+                        <span className="text-electric-green">{about.line2}</span>
                     </h2>
                 </motion.div>
 

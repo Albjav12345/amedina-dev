@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minimize2, Maximize2, Info } from 'lucide-react';
+import portfolioData from '../../../api/portfolio';
 
-const TerminalWindow = ({ title = "zsh — port-folio" }) => {
+const TerminalWindow = ({ title }) => {
+    const { terminal } = portfolioData.ui;
+    const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
     const containerRef = useRef(null);
 
@@ -34,7 +37,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                     <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{title}</span>
+                    <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{windowTitle}</span>
                 </div>
                 <div className="flex items-center justify-end gap-2 w-16">
                     {isExpanded && (
@@ -51,17 +54,17 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2 text-electric-cyan text-[10px] font-bold tracking-widest uppercase">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse"></div>
-                                                System Architecture
+                                                {terminal.tooltip.title}
                                             </div>
                                             <p className="text-[10px] text-gray-300 font-mono leading-relaxed">
-                                                Powered by <span className="text-white">Llama-3-70b</span> via Groq Cloud.
+                                                {terminal.tooltip.description}
                                                 <br /><br />
                                                 <span className="text-electric-green">{" >> REAL-TIME CAPABILITIES:"}</span><br />
-                                                • Accesses live website content & GitHub repos.<br />
-                                                • Performs autonomous navigation.<br />
-                                                • Controls system interface.
-                                                <br /><br />
-                                                <span className="opacity-60">USAGE:</span> Try asking about "projects" or type "help".
+                                                {terminal.tooltip.capabilities.map((cap, i) => (
+                                                    <React.Fragment key={i}>• {cap}<br /></React.Fragment>
+                                                ))}
+                                                <br />
+                                                <span className="opacity-60">USAGE:</span> {terminal.tooltip.usage}
                                             </p>
                                         </div>
                                     </div>
@@ -98,7 +101,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                         >
                             <AnimatedPipeline />
                             <div className="absolute bottom-3 left-4 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
-                                Click to access system...
+                                {terminal.welcomeMessage}
                             </div>
                         </motion.div>
                     ) : (
@@ -120,6 +123,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
 };
 
 const InteractiveConsole = ({ onClose }) => {
+    const { terminal } = portfolioData.ui;
     const [input, setInput] = useState("");
     const [history, setHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -218,12 +222,11 @@ const InteractiveConsole = ({ onClose }) => {
             data-lenis-prevent
         >
             <div className="flex flex-col gap-2 text-gray-300">
-                <div className="text-electric-green shrink-0">
-                    {">"} INITIALIZING GUEST SESSION...
-                </div>
-                <div className="text-electric-green mb-2 shrink-0">
-                    {">"} ACCESS GRANTED. AWAITING INPUT...
-                </div>
+                {terminal.consoleGretting.map((line, i) => (
+                    <div key={i} className={`text-electric-green shrink-0 ${i === terminal.consoleGretting.length - 1 ? 'mb-2' : ''}`}>
+                        {line.text}
+                    </div>
+                ))}
 
                 {history.map((entry, i) => (
                     <div key={i} className={`flex gap-2 leading-relaxed ${entry.type === 'input' ? 'text-white' : 'text-gray-400'}`}>
@@ -260,15 +263,9 @@ const InteractiveConsole = ({ onClose }) => {
 };
 
 export const AnimatedPipeline = () => {
+    const { terminal } = portfolioData.ui;
     const [lineIdx, setLineIdx] = useState(0);
-    const lines = [
-        { text: ">>> Initializing System...", color: "white" },
-        { text: ">>> User authenticated: Albjav1235", color: "electric-green" },
-        { text: ">>> const developer = 'Alberto Medina';", color: "electric-cyan" },
-        { text: ">>> dev.focus = ['Automation', 'Full-Stack'];", color: "white" },
-        { text: ">>> [SUCCESS] Workspace ready.", color: "electric-green" },
-        { text: "$ python3 optimize_workflow.py", color: "gray" }
-    ];
+    const lines = terminal.initialLines;
 
     useEffect(() => {
         const interval = setInterval(() => {
