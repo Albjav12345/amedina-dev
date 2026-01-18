@@ -8,9 +8,15 @@ const SmartThumbnail = ({ project }) => {
     const quality = useHardwareQuality();
 
     // Determine media type: Prefer VIDEO if available (MP4 is hardware accelerated)
-    // Fallback to GIF if no video (Twitch project)
-    const hasVideo = project.demoType === 'video' || (project.demoUrl && project.demoUrl.endsWith('.mp4'));
-    const mediaSource = hasVideo ? project.demoUrl : project.thumbnail;
+    // Priority: previewUrl (New) -> demoUrl (Legacy Video) -> thumbnail (GIF/Img)
+    const previewVideo = project.previewUrl && project.previewUrl.endsWith('.mp4') ? project.previewUrl : null;
+    const legacyVideo = project.demoType === 'video' || (project.demoUrl && project.demoUrl.endsWith('.mp4')) ? project.demoUrl : null;
+
+    // If we have a dedicated preview, use it. Else fall back to legacy video.
+    const activeVideoUrl = previewVideo || legacyVideo;
+    const hasVideo = !!activeVideoUrl;
+
+    const mediaSource = hasVideo ? activeVideoUrl : project.thumbnail;
 
     useEffect(() => {
         const observer = new IntersectionObserver(

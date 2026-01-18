@@ -53,6 +53,7 @@ export const projects = [
         arch: ["Outlook", "Python Backend", "Groq Llama 3", "Web UI"],
         githubLink: "https://github.com/Albjav1235/zerotouch-ai",
         demoType: "video",
+        previewUrl: "/assets/projects/zero-touch-ai.mp4",
         demoUrl: "/assets/projects/zero-touch-ai.mp4",
         thumbnail: "/assets/projects/zero-touch-ai.gif"
     },
@@ -66,6 +67,7 @@ export const projects = [
         arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
         demoType: "video",
+        previewUrl: "/assets/projects/padel-booking.mp4",
         demoUrl: "/assets/projects/padel-booking.mp4",
         thumbnail: "/assets/projects/padel-booking.gif",
         icon: "/assets/projects/padel-booking-logo.png"
@@ -79,8 +81,10 @@ export const projects = [
         stack: ["Python", "Tesseract OCR", "Twitch API", "Tkinter"],
         arch: ["Screen Capture", "Tesseract OCR", "Twitch API", "Dashboard"],
         githubLink: "https://github.com/Albjav1235/twitch-analytics",
-        demoType: "gif",
-        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8Krcdov0cE1V2UveY/giphy.gif"
+        demoType: "video",
+        previewUrl: "/assets/projects/twitch-live.mp4",
+        demoUrl: "/assets/projects/twitch-live.mp4",
+        thumbnail: "/assets/projects/twitch-live.mp4"
     },
     {
         id: 4,
@@ -92,6 +96,7 @@ export const projects = [
         arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
         githubLink: "https://github.com/Albjav1235/unity-interfaces",
         demoType: "video",
+        previewUrl: "/assets/projects/visual-interfaces-short.mp4",
         demoUrl: "/assets/projects/visual-interfaces.mp4",
         thumbnail: "/assets/projects/visual-interfaces.gif"
     }
