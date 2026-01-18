@@ -161,21 +161,24 @@ const FeaturedProjects = () => {
                             <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
                                 <div className="space-y-8 flex-grow">
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
-                                                Active_Module
-                                            </span>
-                                            <div className="h-px w-8 bg-white/10"></div>
-                                        </div>
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="space-y-4 flex-grow">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
+                                                        Active_Module
+                                                    </span>
+                                                    <div className="h-px w-8 bg-white/10 hidden md:block"></div>
+                                                </div>
 
-                                        <div className="flex items-center justify-between gap-4">
-                                            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight flex-grow">
-                                                {activeProject.title}
-                                            </h2>
+                                                <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight">
+                                                    {activeProject.title}
+                                                </h2>
+                                            </div>
+
                                             {activeProject.icon && (
-                                                <div className="shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center">
+                                                <div className="shrink-0 w-12 h-12 md:w-24 md:h-24 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
                                                     {iconMap[activeProject.icon] ? (
-                                                        <div className="flex items-center justify-center w-full h-full p-2 md:p-3">
+                                                        <div className="flex items-center justify-center w-full h-full p-2 md:p-5">
                                                             {iconMap[activeProject.icon]}
                                                         </div>
                                                     ) : (
