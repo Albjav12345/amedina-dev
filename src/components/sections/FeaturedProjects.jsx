@@ -90,12 +90,23 @@ const FeaturedProjects = () => {
                         >
                             {/* Project Thumbnail Area - 60% on mobile */}
                             <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                <img
-                                    src={project.thumbnail}
-                                    alt={project.title}
-                                    loading="lazy"
-                                    className="w-full h-full object-cover opacity-65 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
-                                />
+                                {quality.loadHeavyMedia ? (
+                                    <img
+                                        src={project.thumbnail}
+                                        alt={project.title}
+                                        loading="lazy"
+                                        className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                                    />
+                                ) : (
+                                    /* Lite Mode Placeholder - No Heavy GIFs */
+                                    <div className="w-full h-full bg-dark-high/50 flex items-center justify-center p-10 relative overflow-hidden opacity-80 group-hover:opacity-100 transition-opacity">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-electric-green/5 to-transparent"></div>
+                                        {/* Large Background Icon */}
+                                        <div className="w-20 h-20 text-electric-green/20 transform scale-125 group-hover:scale-110 transition-transform duration-500">
+                                            {iconMap[project.icon] || <Code2 className="w-full h-full" />}
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
                                 {/* Scanning Line Effect - DISABLED ON LOW TIER */}
                                 {!quality.simplePhysics && (
