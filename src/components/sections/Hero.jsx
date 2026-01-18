@@ -52,18 +52,18 @@ const Hero = () => {
                             transition={{ delay: 0.3, duration: 0.5 }}
                             className="flex flex-wrap gap-4 pt-4 gpu-accelerated"
                         >
-                            <a
-                                href="#projects"
-                                className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            <button
+                                onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
+                                className="relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
                             >
                                 <span className="relative z-10 flex items-center gap-2">
-                                    INIT_SEQUENCE
+                                    ACCESS_TERMINAL
                                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                            </a>
+                            </button>
 
-                            <button className="px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-2">
+                            <button className="px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer">
                                 <Download className="w-4 h-4" />
                                 GET_MANIFEST.PDF
                             </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minimize2, Maximize2 } from 'lucide-react';
+import { X, Minimize2, Maximize2, Info } from 'lucide-react';
 
 const TerminalWindow = ({ title = "zsh — port-folio" }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -8,16 +8,22 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
 
     const toggleExpand = () => setIsExpanded(!isExpanded);
 
+    useEffect(() => {
+        const handleToggle = () => setIsExpanded(prev => !prev);
+        window.addEventListener('toggle-terminal', handleToggle);
+        return () => window.removeEventListener('toggle-terminal', handleToggle);
+    }, []);
+
     return (
         <motion.div
             layout
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-hidden relative cursor-default flex flex-col ${isExpanded ? 'h-80 md:h-96' : 'h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
+            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl overflow-visible relative cursor-default flex flex-col ${isExpanded ? 'h-80 md:h-96' : 'h-auto cursor-pointer hover:border-electric-green/30 transition-colors'
                 }`}
         >
             {/* Window Header */}
-            <motion.div layout="position" className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10">
+            <motion.div layout="position" className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
                 <div className="flex gap-1.5 w-16">
                     <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -28,15 +34,46 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                 </div>
                 <div className="flex items-center justify-end gap-2 w-16">
                     {isExpanded && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsExpanded(false);
-                            }}
-                            className="text-gray-500 hover:text-white transition-colors cursor-pointer p-1"
-                        >
-                            <X size={14} />
-                        </button>
+                        <>
+                            {/* Info Tooltip Trigger */}
+                            <div className="relative group">
+                                <button className="text-gray-500 hover:text-electric-cyan transition-colors cursor-pointer p-1">
+                                    <Info size={14} />
+                                </button>
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full right-0 mb-5 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
+                                    <div className="glass-card p-4 border-electric-cyan/20 bg-dark-deep/95 backdrop-blur-2xl relative shadow-2xl">
+                                        <div className="absolute -bottom-1 right-2 w-2 h-2 bg-dark-deep border-r border-b border-white/10 transform rotate-45"></div>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-electric-cyan text-[10px] font-bold tracking-widest uppercase">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse"></div>
+                                                System Architecture
+                                            </div>
+                                            <p className="text-[10px] text-gray-300 font-mono leading-relaxed">
+                                                Powered by <span className="text-white">Llama-3-70b</span> via Groq Cloud.
+                                                <br /><br />
+                                                <span className="text-electric-green">>> REAL-TIME CAPABILITIES:</span><br />
+                                                • Accesses live website content & GitHub repos.<br />
+                                                • Performs autonomous navigation.<br />
+                                                • Controls system interface.
+                                                <br /><br />
+                                                <span className="opacity-60">USAGE:</span> Try asking about "projects" or type "help".
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(false);
+                                }}
+                                className="text-gray-500 hover:text-white transition-colors cursor-pointer p-1"
+                            >
+                                <X size={14} />
+                            </button>
+                        </>
                     )}
                 </div>
             </motion.div>

@@ -131,12 +131,18 @@ const Navbar = () => {
                             </span>
                         </motion.a>
                     ))}
+                    {/* Terminal Toggle Button */}
+                    {/* Terminal Toggle Button */}
                     <motion.button
+                        onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
+                        className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest flex items-center gap-2 ml-4 cursor-pointer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest ml-4"
                     >
-                        SYS_INIT
+                        <Terminal className="w-3 h-3" />
+                        TERM_ACCESS
                     </motion.button>
                 </div>
 
