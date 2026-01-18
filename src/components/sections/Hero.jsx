@@ -88,7 +88,7 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col items-center justify-center p-4 lg:p-8 mt-12 lg:mt-0">
+                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full">
                         {/* Mobile Section Title */}
                         <div className="w-full mb-16 block lg:hidden text-left">
                             <div className="flex items-center gap-4 mb-4">
@@ -99,9 +99,10 @@ const Hero = () => {
                         </div>
 
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
-                            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                            transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
+                            layout="size"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
                             className="w-full flex justify-center"
                         >
                             <TerminalWindow />

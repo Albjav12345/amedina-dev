@@ -16,18 +16,20 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
 
     return (
         <motion.div
+            layout="size"
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (typeof window !== 'undefined' && window.innerWidth >= 768 ? 'auto' : 320)
+                height: isExpanded ? 384 : (typeof window !== 'undefined' && window.innerWidth >= 768 ? 'auto' : 320),
+                width: '100%'
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl relative cursor-default flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
-            style={{ clipPath: 'inset(-200px 0px 0px 0px)' }}
+            style={{ clipPath: 'inset(-200px -100px -100px -100px)' }}
         >
             {/* Window Header */}
-            <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
+            <motion.div layout="position" className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
                 <div className="flex gap-1.5 w-16">
                     <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -80,7 +82,7 @@ const TerminalWindow = ({ title = "zsh — port-folio" }) => {
                         </>
                     )}
                 </div>
-            </div>
+            </motion.div>
 
             {/* Window Body */}
             <div
