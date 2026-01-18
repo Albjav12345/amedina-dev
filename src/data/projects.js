@@ -12,19 +12,33 @@
 // -------------------------------------------------------------------------
 
 /*
-    --- PROJECT TEMPLATE (Copy this) ---
+    --- 💡 GUÍA DE CAMPOS ---
+    id:          Número único (ej: 5, 6, 7...).
+    title:       Nombre del proyecto (se resalta en verde al pasar el ratón).
+    subtitle:    Frase corta descriptiva (aparece debajo del título).
+    problem:     Contexto: ¿Qué reto técnico resolviste?
+    solution:    Implementación: ¿Cómo lo solucionaste con ingeniería?
+    stack:       Etiquetas de lenguajes (ej: ["Python", "React"]).
+    arch:        Pasos del flujo de datos (se muestran en el diagrama del modal).
+    githubLink:  Enlace a tu repositorio.
+    demoType:    Tipo de medio: 'video' (local .mp4) o 'gif' (enlace externo).
+    thumbnail:   Imagen de portada (obligatoria).
+    icon:        Logo pequeño del proyecto (ej: 'Zap' de Lucide o un SVG/enlace).
+    demoUrl:     Vídeo de alta calidad (opcional, solo si demoType es 'video').
+
+    --- 🚀 MASTER TEMPLATE (Copiar y pegar al final del array 'projects') ---
     {
-        id: 99,                                     // Unique number
-        title: "Project Name",                      // Main title
-        subtitle: "Short tagline",                  // Appears below title
-        problem: "What problem did you solve?",     // Description part 1
-        solution: "How did you solve it?",          // Description part 2
-        stack: ["React", "Node", "Python"],         // Tech tags
-        arch: ["Frontend", "Backend", "AI"],        // Architecture tags (for the list view)
-        githubLink: "https://github.com/...",       // Button link
-        demoType: "gif",                            // 'gif' or 'video'
-        thumbnail: "https://url-to-gif.gif"         // The visual media URL
-        // demoUrl: "/assets/projects/video.mp4"    // OPTIONAL: Use if demoType is 'video'
+        id: 5,
+        title: "NOMBRE_DEL_SISTEMA",
+        subtitle: "TAGLINE_CORTO_Y_POTENTE",
+        problem: "DESCRIPCIÓN_DEL_RETO_TÉCNICO",
+        solution: "DESCRIPCIÓN_DE_TU_INGENIERÍA",
+        stack: ["TECNOLOGÍA_1", "TECNOLOGÍA_2"],
+        arch: ["FLUJO_1", "FLUJO_2", "FLUJO_3"],
+        githubLink: "https://github.com/Albjav1235/REPO",
+        demoType: "gif",
+        thumbnail: "URL_A_IMAGEN_O_GIF",
+        icon: "Box"
     },
 */
 
@@ -52,7 +66,8 @@ export const projects = [
         arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
         demoType: "gif",
-        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif"
+        thumbnail: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHNoMTF5ZW5yNjd6YmJ6M3B0bDZ6ZXZ4ZXV4ZXV4ZXV4ZXV4ZXV4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tn33aiTi1jkl6H6/giphy.gif",
+        icon: "/assets/projects/padel-booking-logo.png"
     },
     {
         id: 3,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink } from 'lucide-react';
+import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
 
@@ -23,6 +23,15 @@ const cardVariants = {
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const { projects: projectsHeader } = portfolioData.ui.sections;
+
+    const iconMap = {
+        Zap: <Zap className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
+        Box: <Box className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
+        Cpu: <Cpu className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
+        Brain: <Brain className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />,
+        Layers: <Layers className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
+        Globe: <Globe className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />
+    };
     // Data from projects.js
 
     // Lock body scroll when modal is open
@@ -148,6 +157,7 @@ const FeaturedProjects = () => {
                             </button>
 
                             {/* PART 2: Text Content & Actions */}
+
                             <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
                                 <div className="space-y-8 flex-grow">
                                     <div className="space-y-4">
@@ -157,9 +167,24 @@ const FeaturedProjects = () => {
                                             </span>
                                             <div className="h-px w-8 bg-white/10"></div>
                                         </div>
-                                        <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight">
-                                            {activeProject.title}
-                                        </h2>
+
+                                        <div className="flex items-center justify-between gap-4">
+                                            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight flex-grow">
+                                                {activeProject.title}
+                                            </h2>
+                                            {activeProject.icon && (
+                                                <div className="shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center">
+                                                    {iconMap[activeProject.icon] ? (
+                                                        <div className="flex items-center justify-center w-full h-full p-2 md:p-3">
+                                                            {iconMap[activeProject.icon]}
+                                                        </div>
+                                                    ) : (
+                                                        <img src={activeProject.icon} alt="icon" className="w-full h-full object-cover" />
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <p className="text-base md:text-lg text-gray-400 font-medium leading-relaxed">
                                             {activeProject.subtitle}
                                         </p>
