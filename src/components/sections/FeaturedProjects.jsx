@@ -63,11 +63,10 @@ const FeaturedProjects = () => {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            layoutId={`project-container-${project.id}`}
                             custom={index}
                             initial="hidden"
                             whileInView="visible"
-                            viewport={{ once: true, amount: 0.2, margin: "0px 0px -100px 0px" }}
+                            viewport={{ once: true, amount: 0.1, margin: "0px 0px -50px 0px" }}
                             variants={cardVariants}
                             onClick={() => setSelectedId(project.id)}
                             className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
@@ -77,11 +76,12 @@ const FeaturedProjects = () => {
                                 <img
                                     src={project.thumbnail}
                                     alt={project.title}
+                                    loading="lazy"
                                     className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
                                 {/* Scanning Line Effect */}
-                                <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none"></div>
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
 
                                 <div className="absolute top-4 left-4 flex gap-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
@@ -133,8 +133,10 @@ const FeaturedProjects = () => {
                         />
 
                         <motion.div
-                            layoutId={`project-container-${selectedId}`}
-                            transition={{ type: "spring", stiffness: 250, damping: 25 }}
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="relative w-full max-w-6xl bg-dark-high border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0"
                         >
                             {/* Close Button - Fixed on top right for unified scroll feel */}

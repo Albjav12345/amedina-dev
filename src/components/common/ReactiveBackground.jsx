@@ -59,7 +59,7 @@ const ReactiveBackground = () => {
 
         const initParticles = () => {
             particles = [];
-            const count = Math.floor((canvas.width * canvas.height) / 15000);
+            const count = Math.floor((canvas.width * canvas.height) / 25000);
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
             }
