@@ -1,23 +1,12 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
+import WorkflowDiagram from '../common/WorkflowDiagram';
+import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import SmartThumbnail from './SmartThumbnail';
 
-// ... (in the FeaturedProjects component)
-
-{/* Project Thumbnail Area - 60% on mobile */ }
-<div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-    <SmartThumbnail project={project} />
-
-    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
-    {/* Scanning Line Effect - DISABLED ON LOW TIER */}
-    {!quality.simplePhysics && (
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
-    )}
-
-    <div className="absolute top-4 left-4 flex gap-1 z-20">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-    </div>
-</div>
+import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {
@@ -100,32 +89,16 @@ const FeaturedProjects = () => {
                             onClick={() => setSelectedId(project.id)}
                             className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
                         >
-                            {/* Project Thumbnail Area - 60% on mobile */}
                             <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                {quality.loadHeavyMedia ? (
-                                    <img
-                                        src={project.thumbnail}
-                                        alt={project.title}
-                                        loading="lazy"
-                                        className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
-                                    />
-                                ) : (
-                                    /* Lite Mode Placeholder - No Heavy GIFs */
-                                    <div className="w-full h-full bg-dark-high/50 flex items-center justify-center p-10 relative overflow-hidden opacity-80 group-hover:opacity-100 transition-opacity">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-electric-green/5 to-transparent"></div>
-                                        {/* Large Background Icon */}
-                                        <div className="w-20 h-20 text-electric-green/20 transform scale-125 group-hover:scale-110 transition-transform duration-500">
-                                            {iconMap[project.icon] || <Code2 className="w-full h-full" />}
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent"></div>
+                                <SmartThumbnail project={project} />
+
+                                <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
                                 {/* Scanning Line Effect - DISABLED ON LOW TIER */}
                                 {!quality.simplePhysics && (
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
                                 )}
 
-                                <div className="absolute top-4 left-4 flex gap-1">
+                                <div className="absolute top-4 left-4 flex gap-1 z-20">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
                                     <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
