@@ -167,7 +167,7 @@ const FeaturedProjects = () => {
                             layoutId={`project-${selectedId}`}
                             transition={quality.spring}
                             onLayoutAnimationComplete={() => setContentReady(true)}
-                            className={`relative w-full max-w-6xl border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
+                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
                         >
 
                             {/* Orchestrated Content Fade-in - DEFERRED RENDER */}
@@ -182,8 +182,8 @@ const FeaturedProjects = () => {
                                     <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
                                         <div className="space-y-8 flex-grow">
                                             <div className="space-y-4">
-                                                <div className="flex items-center md:items-start justify-between gap-4">
-                                                    <div className="space-y-2 md:space-y-4 flex-grow">
+                                                <div className="flex items-center md:items-start justify-start md:justify-between gap-6 md:gap-4">
+                                                    <div className="space-y-2 md:space-y-4 md:flex-grow">
                                                         <div className="flex items-center gap-3">
                                                             <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
                                                                 Active_Module
