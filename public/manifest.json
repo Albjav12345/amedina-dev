@@ -1,0 +1,17 @@
+{
+    "name": "Alberto Medina | System",
+    "short_name": "AM_SYSTEM",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0b0c10",
+    "theme_color": "#0b0c10",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/assets/logo.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
