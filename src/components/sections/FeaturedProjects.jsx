@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
@@ -13,8 +14,8 @@ const cardVariants = {
         opacity: 1,
         y: 0,
         transition: {
-            delay: i * 0.1,
-            duration: 0.5,
+            delay: i * 0.05,
+            duration: 0.4,
             ease: "easeOut"
         }
     })
@@ -22,6 +23,8 @@ const cardVariants = {
 
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
+    const [showModalContent, setShowModalContent] = useState(false);
+    const { tier, allowBlur, autoplayVideos, physics } = useHardwareQuality();
     const { projects: projectsHeader } = portfolioData.ui.sections;
 
     const iconMap = {
@@ -32,12 +35,12 @@ const FeaturedProjects = () => {
         Layers: <Layers className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
         Globe: <Globe className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />
     };
-    // Data from projects.js
 
     // Lock body scroll when modal is open
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
+            setShowModalContent(false);
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -139,12 +142,13 @@ const FeaturedProjects = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedId(null)}
-                            className="fixed inset-0 bg-dark-void/90 backdrop-blur-xl cursor-pointer"
+                            className={`fixed inset-0 cursor-pointer ${allowBlur ? 'bg-dark-void/90 backdrop-blur-xl' : 'bg-dark-void/98'}`}
                         />
 
                         <motion.div
                             layoutId={`project-${selectedId}`}
-                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                            onLayoutAnimationComplete={() => setShowModalContent(true)}
+                            transition={{ type: "spring", ...physics }}
                             className="relative w-full max-w-6xl bg-dark-high border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0"
                         >
                             {/* Close Button - Fixed on top right for unified scroll feel */}
@@ -155,11 +159,11 @@ const FeaturedProjects = () => {
                                 <X className="w-6 h-6" />
                             </button>
 
-                            {/* Orchestrated Content Fade-in */}
+                            {/* Orchestrated Content Fade-in - DEFERRED to end of expansion */}
                             <motion.div
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.15, duration: 0.4 }}
+                                animate={{ opacity: showModalContent ? 1 : 0 }}
+                                transition={{ duration: 0.3 }}
                                 className="contents"
                             >
                                 {/* PART 2: Text Content & Actions */}
@@ -254,11 +258,14 @@ const FeaturedProjects = () => {
                                             <ExternalLink className="w-3 h-3 opacity-50" />
                                         </span>
                                         <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
-                                            {activeProject.demoType === 'video' ? (
+                                            {activeProject.demoType === 'video' && autoplayVideos ? (
                                                 <video
                                                     src={activeProject.demoUrl}
                                                     controls
                                                     playsInline
+                                                    autoPlay
+                                                    muted
+                                                    loop
                                                     className="w-full h-full object-contain"
                                                 />
                                             ) : (
