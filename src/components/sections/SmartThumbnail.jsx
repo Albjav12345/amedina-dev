@@ -73,49 +73,48 @@ const SmartThumbnail = ({ project }) => {
         };
     }, []);
 
-    // Optimized Video Player
-    if (hasVideo) {
-        return (
-            <div ref={containerRef} className="w-full h-full relative">
-                <video
-                    ref={videoRef}
-                    src={currentSrc}
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata" // Don't download full file until needed
-                    onError={(e) => {
-                        // Fallback: If _mobile.mp4 doesn't exist, revert to standard file
-                        if (currentSrc !== baseVideoUrl) {
-                            console.log(`Mobile optimized video not found for ${project.title}, reverting to HQ.`);
-                            setCurrentSrc(baseVideoUrl);
-                        }
-                    }}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
-                />
-            </div>
-        );
-    }
-
-    // Fallback GIF Player (Legacy or No Video)
-    // Optimizing purely GIF is hard, but we can lazy load it via 'loading="lazy"' 
-    // and rely on browser handling.
     return (
-        <div ref={containerRef} className="w-full h-full relative">
-            {/* 
-               Advanced Optimization for Low-End using GIFs:
-               technically standard <img> GIFs play always. 
-               If performance is still bad on Twitch project, we might need a static placeholder.
-            */}
+        <div ref={containerRef} className="w-full h-full relative group bg-dark-high/50">
+            {/* 1. LAYER 0: Static Facade (Always visible initially) */}
             <img
-                src={mediaSource}
+                src={project.thumbnail}
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                className={`w-full h-full object-cover transition-opacity duration-700 ${isVisible && hasVideo ? 'opacity-0' : 'opacity-80 group-hover:opacity-100'}`}
             />
+
+            {/* 2. LAYER 1: Dynamic Video (Only mounts when looking at it) */}
+            {hasVideo && isVisible && (
+                <video
+                    ref={videoRef}
+                    src={currentSrc}
+                    poster={project.thumbnail} // Extra fallback
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="none" // Aggressive bandwidth saving
+                    className="absolute inset-0 w-full h-full object-cover animate-fadeIn"
+                    onLoadedData={() => {
+                        // Optional: Fade in logic could go here
+                    }}
+                    onError={(e) => {
+                        if (currentSrc !== baseVideoUrl) {
+                            console.log(`[SmartThumbnail] Mobile video missing, reverting to HQ: ${baseVideoUrl}`);
+                            setCurrentSrc(baseVideoUrl);
+                        }
+                    }}
+                >
+                    <track kind="captions" src="" label="English" default />
+                </video>
+            )}
+
+            {/* Overlay Gradient for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-void/90 via-dark-void/20 to-transparent opacity-60 pointer-events-none" />
         </div>
     );
 };
+
 
 export default SmartThumbnail;
