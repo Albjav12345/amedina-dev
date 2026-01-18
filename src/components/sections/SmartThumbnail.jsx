@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const SmartThumbnail = ({ project }) => {
-    const videoRef = useRef(null);
     const containerRef = useRef(null);
     const [isVisible, setIsVisible] = useState(false);
     const quality = useHardwareQuality();
@@ -26,39 +25,21 @@ const SmartThumbnail = ({ project }) => {
 
     const [currentSrc, setCurrentSrc] = useState(mobileVideoUrl);
 
-    // DEBUG: Verify Quality Tier and Video Source
-    useEffect(() => {
-        if (hasVideo) {
-            console.log(`[SmartThumbnail] Project: ${project.title}`);
-            console.log(`[SmartThumbnail] Tier: ${quality.tier}, IsMobile: ${isMobileTier}`);
-            console.log(`[SmartThumbnail] Loading: ${currentSrc}`);
-        }
-    }, [quality.tier, currentSrc, project.title]);
-
     // If base url changes (unlikely but possible), reset source
     useEffect(() => {
         setCurrentSrc(isMobileTier && hasVideo ? baseVideoUrl.replace('.mp4', '_mobile.mp4') : baseVideoUrl);
     }, [baseVideoUrl, isMobileTier, hasVideo]);
 
-    const mediaSource = hasVideo ? currentSrc : project.thumbnail;
-
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 setIsVisible(entry.isIntersecting);
-
-                // Hardware Optimization: Pause video when out of view
-                if (videoRef.current) {
-                    if (entry.isIntersecting) {
-                        videoRef.current.play().catch(() => { }); // Catch autoplay rejection
-                    } else {
-                        videoRef.current.pause();
-                    }
-                }
+                // Note: We don't need manual play/pause anymore because we unmount the video tag when off-screen.
+                // This releases the GPU video decoder immediately.
             },
             {
-                rootMargin: '50px', // Preload/Play slightly before entering viewport
-                threshold: 0.1
+                rootMargin: '200px', // Pre-load video 200px before it enters viewport
+                threshold: 0.01      // Trigger as soon as 1% is visible (virtually)
             }
         );
 
@@ -73,47 +54,35 @@ const SmartThumbnail = ({ project }) => {
         };
     }, []);
 
-    // Optimized Video Player
-    if (hasVideo) {
-        return (
-            <div ref={containerRef} className="w-full h-full relative">
+    return (
+        <div ref={containerRef} className="w-full h-full relative bg-dark-high/50">
+            {/* Always render Static Thumbnail (Placeholder) - Instant Load */}
+            <img
+                src={project.thumbnail}
+                alt={project.title}
+                loading="lazy"
+                decoding="async"
+                className={`w-full h-full object-cover transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform ${isVisible && hasVideo ? 'opacity-0' : 'opacity-60 group-hover:opacity-90'}`}
+            />
+
+            {/* Lazy Video Mount - Only exists in DOM when visible */}
+            {hasVideo && isVisible && (
                 <video
-                    ref={videoRef}
                     src={currentSrc}
+                    poster={project.thumbnail}
+                    autoPlay
                     muted
                     loop
                     playsInline
-                    preload="metadata" // Don't download full file until needed
                     onError={(e) => {
-                        // Fallback: If _mobile.mp4 doesn't exist, revert to standard file
                         if (currentSrc !== baseVideoUrl) {
                             console.log(`Mobile optimized video not found for ${project.title}, reverting to HQ.`);
                             setCurrentSrc(baseVideoUrl);
                         }
                     }}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
+                    className="absolute inset-0 w-full h-full object-cover animate-fadeIn"
                 />
-            </div>
-        );
-    }
-
-    // Fallback GIF Player (Legacy or No Video)
-    // Optimizing purely GIF is hard, but we can lazy load it via 'loading="lazy"' 
-    // and rely on browser handling.
-    return (
-        <div ref={containerRef} className="w-full h-full relative">
-            {/* 
-               Advanced Optimization for Low-End using GIFs:
-               technically standard <img> GIFs play always. 
-               If performance is still bad on Twitch project, we might need a static placeholder.
-            */}
-            <img
-                src={mediaSource}
-                alt={project.title}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity duration-500 scale-105 group-hover:scale-100 transition-transform"
-            />
+            )}
         </div>
     );
 };
