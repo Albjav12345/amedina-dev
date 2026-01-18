@@ -102,7 +102,7 @@ const Hero = () => {
                             initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
                             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-                            className="perspective-1000 w-full flex justify-center gpu-accelerated"
+                            className="w-full flex justify-center"
                         >
                             <TerminalWindow />
                         </motion.div>
