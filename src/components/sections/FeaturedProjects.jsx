@@ -72,6 +72,7 @@ const FeaturedProjects = () => {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
+                            layoutId={`project-${project.id}`}
                             custom={index}
                             initial="hidden"
                             whileInView="visible"
@@ -131,7 +132,7 @@ const FeaturedProjects = () => {
             {/* Modal Overlay */}
             <AnimatePresence>
                 {selectedId && activeProject && (
-                    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8">
+                    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -142,10 +143,8 @@ const FeaturedProjects = () => {
                         />
 
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            layoutId={`project-${selectedId}`}
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
                             className="relative w-full max-w-6xl bg-dark-high border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0"
                         >
                             {/* Close Button - Fixed on top right for unified scroll feel */}
@@ -156,144 +155,149 @@ const FeaturedProjects = () => {
                                 <X className="w-6 h-6" />
                             </button>
 
-                            {/* PART 2: Text Content & Actions */}
+                            {/* Orchestrated Content Fade-in */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.15, duration: 0.4 }}
+                                className="contents"
+                            >
+                                {/* PART 2: Text Content & Actions */}
+                                <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
+                                    <div className="space-y-8 flex-grow">
+                                        <div className="space-y-4">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="space-y-4 flex-grow">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
+                                                            Active_Module
+                                                        </span>
+                                                        <div className="h-px w-8 bg-white/10 hidden md:block"></div>
+                                                    </div>
 
-                            <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
-                                <div className="space-y-8 flex-grow">
-                                    <div className="space-y-4">
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="space-y-4 flex-grow">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
-                                                        Active_Module
+                                                    <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight">
+                                                        {activeProject.title}
+                                                    </h2>
+                                                </div>
+
+                                                {activeProject.icon && (
+                                                    <div className="shrink-0 w-12 h-12 md:w-24 md:h-24 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
+                                                        {iconMap[activeProject.icon] ? (
+                                                            <div className="flex items-center justify-center w-full h-full p-2 md:p-5">
+                                                                {iconMap[activeProject.icon]}
+                                                            </div>
+                                                        ) : (
+                                                            <img src={activeProject.icon} alt="icon" className="w-full h-full object-cover" />
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <p className="text-base md:text-lg text-gray-400 font-medium leading-relaxed">
+                                                {activeProject.subtitle}
+                                            </p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2">
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] uppercase tracking-widest">
+                                                    <Cpu className="w-3 h-3 text-electric-cyan" />
+                                                    Context_Problem
+                                                </div>
+                                                <p className="text-sm text-gray-400 leading-relaxed">
+                                                    {activeProject.problem}
+                                                </p>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-2 text-electric-green font-mono text-[10px] uppercase tracking-widest">
+                                                    <Terminal className="w-3 h-3" />
+                                                    Engineered_Solution
+                                                </div>
+                                                <p className="text-sm text-gray-400 leading-relaxed border-l border-electric-green/20 pl-4 py-1">
+                                                    {activeProject.solution}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest block pb-2 border-b border-white/5">Tech_Arsenal</span>
+                                            <div className="flex flex-wrap gap-2">
+                                                {activeProject.stack.map(tech => (
+                                                    <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px] text-gray-300">
+                                                        {tech}
                                                     </span>
-                                                    <div className="h-px w-8 bg-white/10 hidden md:block"></div>
-                                                </div>
-
-                                                <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight">
-                                                    {activeProject.title}
-                                                </h2>
+                                                ))}
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            {activeProject.icon && (
-                                                <div className="shrink-0 w-12 h-12 md:w-24 md:h-24 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
-                                                    {iconMap[activeProject.icon] ? (
-                                                        <div className="flex items-center justify-center w-full h-full p-2 md:p-5">
-                                                            {iconMap[activeProject.icon]}
-                                                        </div>
-                                                    ) : (
-                                                        <img src={activeProject.icon} alt="icon" className="w-full h-full object-cover" />
-                                                    )}
-                                                </div>
+                                    {/* Action Footer */}
+                                    <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
+                                        <a
+                                            href={activeProject.githubLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-grow btn-system inline-flex items-center justify-center gap-3 px-8 py-4 group"
+                                        >
+                                            <span className="font-mono text-sm tracking-widest uppercase">Access_Repo</span>
+                                            <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                        </a>
+                                    </div>
+                                    <div className="h-4 lg:hidden" />
+                                </div>
+
+                                {/* PART 1: Media/Demo - TOP on Mobile */}
+                                <div className="w-full lg:col-start-2 lg:row-start-1 bg-black/40 border-b lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-1 lg:order-none">
+                                    <div className="space-y-4 flex-grow">
+                                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
+                                            Live_Stream_Demo
+                                            <ExternalLink className="w-3 h-3 opacity-50" />
+                                        </span>
+                                        <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
+                                            {activeProject.demoType === 'video' ? (
+                                                <video
+                                                    src={activeProject.demoUrl}
+                                                    controls
+                                                    playsInline
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={activeProject.demoUrl || activeProject.thumbnail}
+                                                    alt="Demo Preview"
+                                                    className="w-full h-full object-cover"
+                                                />
                                             )}
-                                        </div>
 
-                                        <p className="text-base md:text-lg text-gray-400 font-medium leading-relaxed">
-                                            {activeProject.subtitle}
-                                        </p>
-                                    </div>
+                                            <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2">
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] uppercase tracking-widest">
-                                                <Cpu className="w-3 h-3 text-electric-cyan" />
-                                                Context_Problem
-                                            </div>
-                                            <p className="text-sm text-gray-400 leading-relaxed">
-                                                {activeProject.problem}
-                                            </p>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-2 text-electric-green font-mono text-[10px] uppercase tracking-widest">
-                                                <Terminal className="w-3 h-3" />
-                                                Engineered_Solution
-                                            </div>
-                                            <p className="text-sm text-gray-400 leading-relaxed border-l border-electric-green/20 pl-4 py-1">
-                                                {activeProject.solution}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest block pb-2 border-b border-white/5">Tech_Arsenal</span>
-                                        <div className="flex flex-wrap gap-2">
-                                            {activeProject.stack.map(tech => (
-                                                <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px] text-gray-300">
-                                                    {tech}
+                                            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
+                                                <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
+                                                <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
+                                                    HD_SOURCE_ACTIVE
                                                 </span>
-                                            ))}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Action Footer */}
-                                <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
-                                    <a
-                                        href={activeProject.githubLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-grow btn-system inline-flex items-center justify-center gap-3 px-8 py-4 group"
-                                    >
-                                        <span className="font-mono text-sm tracking-widest uppercase">Access_Repo</span>
-                                        <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                    </a>
-                                </div>
-                                <div className="h-4 lg:hidden" />
-                            </div>
-
-                            {/* PART 1: Media/Demo - TOP on Mobile */}
-                            <div className="w-full lg:col-start-2 lg:row-start-1 bg-black/40 border-b lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-1 lg:order-none">
-                                <div className="space-y-4 flex-grow">
-                                    <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
-                                        Live_Stream_Demo
-                                        <ExternalLink className="w-3 h-3 opacity-50" />
-                                    </span>
-                                    <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
-                                        {activeProject.demoType === 'video' ? (
-                                            <video
-                                                src={activeProject.demoUrl}
-                                                controls
-                                                playsInline
-                                                className="w-full h-full object-contain"
-                                            />
-                                        ) : (
-                                            <img
-                                                src={activeProject.demoUrl || activeProject.thumbnail}
-                                                alt="Demo Preview"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        )}
-
-                                        {/* Scanline Effect Overlay */}
-                                        <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
-
-                                        {/* Overlay Branding - Hidden when controls are active/hovered if possible, but standard controls handle it */}
-                                        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
-                                            <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
-                                            <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
-                                                HD_SOURCE_ACTIVE
-                                            </span>
+                                {/* PART 3: Workflow/Diagram - BOTTOM on Mobile */}
+                                <div className="w-full lg:col-start-2 lg:row-start-2 bg-black/60 lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-3 lg:order-none">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
+                                            <div className="flex gap-1">
+                                                <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
+                                                <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
+                                                <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
+                                            <WorkflowDiagram steps={activeProject.arch} />
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* PART 3: Workflow/Diagram - BOTTOM on Mobile, Bottom-Right on Desktop */}
-                            <div className="w-full lg:col-start-2 lg:row-start-2 bg-black/60 lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-3 lg:order-none">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
-                                        <div className="flex gap-1">
-                                            <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
-                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
-                                            <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
-                                        </div>
-                                    </div>
-                                    <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
-                                        <WorkflowDiagram steps={activeProject.arch} />
-                                    </div>
-                                </div>
-                            </div>
+                            </motion.div>
                         </motion.div>
                     </div>
                 )}
