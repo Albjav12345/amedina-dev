@@ -17,14 +17,23 @@ const SmartThumbnail = ({ project }) => {
     const hasVideo = !!baseVideoUrl;
 
     // Automatic Mobile Optimization Logic
-    // If on a lower-tier device, try to load the '_mobile' version first.
-    // Example: 'project.mp4' -> 'project_mobile.mp4'
-    const isMobileTier = quality.tier === 'low' || quality.tier === 'mid';
+    // If on a lower-tier device OR small screen, try to load the '_mobile' version first.
+    // robust check: Tier is low/mid OR width < 768px (Mobile Breakpoint)
+    const isMobileTier = quality.tier === 'low' || quality.tier === 'mid' || (typeof window !== 'undefined' && window.innerWidth < 768);
     const mobileVideoUrl = (isMobileTier && hasVideo)
         ? baseVideoUrl.replace('.mp4', '_mobile.mp4')
         : baseVideoUrl;
 
     const [currentSrc, setCurrentSrc] = useState(mobileVideoUrl);
+
+    // DEBUG: Verify Quality Tier and Video Source
+    useEffect(() => {
+        if (hasVideo) {
+            console.log(`[SmartThumbnail] Project: ${project.title}`);
+            console.log(`[SmartThumbnail] Tier: ${quality.tier}, IsMobile: ${isMobileTier}`);
+            console.log(`[SmartThumbnail] Loading: ${currentSrc}`);
+        }
+    }, [quality.tier, currentSrc, project.title]);
 
     // If base url changes (unlikely but possible), reset source
     useEffect(() => {
