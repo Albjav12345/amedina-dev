@@ -18,31 +18,30 @@ export const useHardwareQuality = () => {
         // We calculate a score based on raw technical metadata
         let perfScore = 0;
 
-        // Core Contribution (Scale: 0-50)
-        if (cores >= 12) perfScore += 50;
-        else if (cores >= 8) perfScore += 40;
-        else if (cores >= 6) perfScore += 30;
-        else if (cores >= 4) perfScore += 20;
-        else perfScore += 10;
+        // Core Contribution (Scale: 0-40) - Lowered as cores are often "weak" in budget phones
+        if (cores >= 12) perfScore += 40;
+        else if (cores >= 8) perfScore += 30;
+        else if (cores >= 6) perfScore += 25;
+        else if (cores >= 4) perfScore += 15;
+        else perfScore += 5;
 
-        // Memory Contribution (Scale: 0-50)
+        // Memory Contribution (Scale: 0-60) - Memory is a better indicator of throughput
         if (memory !== undefined) {
-            if (memory >= 12) perfScore += 50;
-            else if (memory >= 8) perfScore += 40;
-            else if (memory >= 4) perfScore += 25;
+            if (memory >= 12) perfScore += 60;
+            else if (memory >= 8) perfScore += 50;
+            else if (memory >= 4) perfScore += 35;
             else perfScore += 10;
         } else {
-            // Safari/iOS Compensation: Since we can't see memory, 
-            // we rely on cores with a conservative "modernity" boost.
-            if (cores >= 6) perfScore += 35; // Probable high-end iPhone/Mac
-            else if (cores >= 4) perfScore += 25; // Probable mid-range mobile
-            else perfScore += 10;
+            // Safari/iOS Compensation: Stronger boost for high core counts on Safari
+            if (cores >= 6) perfScore += 40; // High-end Apple Silicon
+            else if (cores >= 4) perfScore += 30; // Mid-range mobile
+            else perfScore += 5;
         }
 
-        // TIER ASSIGNMENT (Purely based on Score)
+        // TIER ASSIGNMENT (Tightened Thresholds)
         let tier = 'low';
-        if (perfScore >= 70) tier = 'high';
-        else if (perfScore >= 35) tier = 'mid';
+        if (perfScore >= 85) tier = 'high';
+        else if (perfScore >= 65) tier = 'mid';
 
         const ua = navigator.userAgent;
         const isAndroid = /Android/i.test(ua);
