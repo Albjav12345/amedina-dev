@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
@@ -10,22 +10,58 @@ import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i) => ({
+    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    visible: {
         opacity: 1,
         y: 0,
+        scale: 1,
         transition: {
-            delay: i * 0.1,
-            duration: 0.5,
-            ease: "easeOut"
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1]
         }
-    })
+    },
+    exit: {
+        opacity: 0,
+        y: 20,
+        scale: 0.98,
+        transition: { duration: 0.4 }
+    }
 };
 
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
     const quality = useHardwareQuality();
+
+    // ORCHESTRATOR STATE
+    const [inViewIds, setInViewIds] = useState([]);
+    const [allowedVideoIds, setAllowedVideoIds] = useState([]);
+    const dwellTimeoutRef = useRef(null);
+
+    // VIDEO BUDGETING & DWELL LOGIC
+    useEffect(() => {
+        if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
+
+        // If hardware is low or too many items, or performance is bad, restrict budget
+        const maxVideos = quality.tier === 'low' ? 0 : 6;
+
+        dwellTimeoutRef.current = setTimeout(() => {
+            // Take the first 6 projects currently in view
+            const budget = inViewIds.slice(0, maxVideos);
+            setAllowedVideoIds(budget);
+        }, 150); // 150ms Dwell time
+
+        return () => {
+            if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
+        };
+    }, [inViewIds, quality.tier]);
+
+    const handleInView = (id, inView) => {
+        setInViewIds(prev => {
+            if (inView) return [...new Set([...prev, id])];
+            return prev.filter(vId => vId !== id);
+        });
+    };
 
     const { projects: projectsHeader } = portfolioData.ui.sections;
 
@@ -37,13 +73,11 @@ const FeaturedProjects = () => {
         Layers: <Layers className="w-6 h-6 md:w-10 md:h-10 text-electric-green" />,
         Globe: <Globe className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />
     };
-    // Data from projects.js
 
     // Lock body scroll when modal is open
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
-            // Reset content ready state on open to ensure smooth expansion first
             setContentReady(false);
         } else {
             document.body.style.overflow = 'unset';
@@ -75,61 +109,74 @@ const FeaturedProjects = () => {
                     </h2>
                 </motion.div>
 
-                {/* Grid Layout with Robust Manual Stagger */}
+                {/* Grid Layout with Bi-Directional Animations */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
-                    {projects.map((project, index) => (
-                        <motion.div
-                            key={project.id}
-                            layoutId={`project-${project.id}`}
-                            custom={index}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, amount: 0.1, margin: "0px 0px -50px 0px" }}
-                            variants={cardVariants}
-                            onClick={() => setSelectedId(project.id)}
-                            className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
-                        >
-                            <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                <SmartThumbnail project={project} />
+                    {projects.map((project, index) => {
+                        const isSelected = selectedId === project.id;
+                        const isAllowedToPlay = allowedVideoIds.includes(project.id);
 
-                                <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
-                                {/* Scanning Line Effect - DISABLED ON LOW TIER */}
-                                {!quality.simplePhysics && (
-                                    <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
-                                )}
+                        return (
+                            <motion.div
+                                key={project.id}
+                                layoutId={`project-${project.id}`}
+                                initial="hidden"
+                                whileInView="visible"
+                                exit="exit"
+                                // CRITICAL SAFETY: Force visibility if selected to avoid layoutId glitch
+                                animate={isSelected ? "visible" : undefined}
+                                viewport={{ once: false, amount: 0.2, margin: "0px 0px -50px 0px" }}
+                                onViewportEnter={() => handleInView(project.id, true)}
+                                onViewportLeave={() => handleInView(project.id, false)}
+                                variants={cardVariants}
+                                onClick={() => setSelectedId(project.id)}
+                                className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
+                            >
+                                <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                    <SmartThumbnail
+                                        project={project}
+                                        isAllowedToPlay={isAllowedToPlay}
+                                        stagger={allowedVideoIds.indexOf(project.id)}
+                                    />
 
-                                <div className="absolute top-4 left-4 flex gap-1 z-20">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
-                                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-                                </div>
-                            </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
+                                    {/* Scanning Line Effect - DISABLED ON LOW TIER */}
+                                    {!quality.simplePhysics && (
+                                        <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
+                                    )}
 
-                            <div className="p-3 md:p-8 flex flex-col justify-between flex-grow relative z-10">
-                                <div className="relative">
-                                    <div className="flex justify-between items-start mb-1 md:mb-4">
-                                        <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                            <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
-                                        </div>
-                                        <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                    <div className="absolute top-4 left-4 flex gap-1 z-20">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
                                     </div>
-                                    <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
-                                    <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
                                 </div>
 
-                                <div className="hidden md:flex mt-6 flex-wrap gap-2">
-                                    {project.stack.slice(0, 3).map(tech => (
-                                        <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
-                                            {tech}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                                <div className="p-3 md:p-8 flex flex-col justify-between flex-grow relative z-10">
+                                    <div className="relative">
+                                        <div className="flex justify-between items-start mb-1 md:mb-4">
+                                            <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
+                                                <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
+                                            </div>
+                                            <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                        </div>
+                                        <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
+                                        <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
+                                    </div>
 
-                            {/* Background Glow - Simple opacity fade on low tier */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
-                        </motion.div>
-                    ))}
+                                    <div className="hidden md:flex mt-6 flex-wrap gap-2">
+                                        {project.stack.slice(0, 3).map(tech => (
+                                            <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Background Glow - Simple opacity fade on low tier */}
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </div>
 
