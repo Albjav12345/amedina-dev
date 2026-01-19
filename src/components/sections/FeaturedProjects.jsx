@@ -45,21 +45,61 @@ const FeaturedProjects = () => {
     const [cardStatus, setCardStatus] = useState({}); // { id: 'visible' | 'above' | 'below' }
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const dwellTimeoutRef = useRef(null);
+    const cardRefs = useRef({});
 
-    // VIDEO BUDGETING & DWELL LOGIC
+    // PROXIMITY-BASED VIDEO ORCHESTRATOR
     useEffect(() => {
-        if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
+        const updateOrchestration = () => {
+            if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
 
-        const maxVideos = quality.tier === 'low' ? 0 : 6;
-        const visibleIds = Object.entries(cardStatus)
-            .filter(([_, status]) => status === 'visible')
-            .map(([id]) => id);
+            const maxVideos = quality.tier === 'low' ? 0 : 6;
 
-        dwellTimeoutRef.current = setTimeout(() => {
-            setAllowedVideoIds(visibleIds.slice(0, maxVideos));
-        }, 150);
+            dwellTimeoutRef.current = setTimeout(() => {
+                // Focus Line: 65% of viewport height (Center + 15% shift)
+                const targetLine = window.innerHeight * 0.65;
+
+                // 1. Identify IDs that the Viewport Observer says are currently 'visible'
+                const visibleIds = Object.entries(cardStatus)
+                    .filter(([_, status]) => status === 'visible')
+                    .map(([id]) => Number(id));
+
+                console.log("[Orchestrator] Visible Cards:", visibleIds.length, "| Tier:", quality.tier);
+
+                if (visibleIds.length === 0) {
+                    setAllowedVideoIds([]);
+                    return;
+                }
+
+                // 2. Measure physical distance for all 'visible' cards
+                const measured = visibleIds.map(id => {
+                    const el = cardRefs.current[id];
+                    if (!el) {
+                        console.warn(`[Orchestrator] Missing ref for card: ${id}`);
+                        return null;
+                    }
+                    const rect = el.getBoundingClientRect();
+                    const centerY = rect.top + rect.height / 2;
+                    return { id, distance: Math.abs(centerY - targetLine) };
+                }).filter(Boolean);
+
+                // 3. Sort by proximity (Closest to the focus line wins the priority queue)
+                const sorted = measured.sort((a, b) => a.distance - b.distance);
+                const winningIds = sorted.slice(0, maxVideos).map(entry => entry.id);
+
+                console.log("[Orchestrator] Winning Video IDs:", winningIds);
+                setAllowedVideoIds(winningIds);
+            }, 150); // Dwell time: 150ms
+        };
+
+        // Trigger on card entry/exit OR on mount
+        updateOrchestration();
+
+        // Also trigger on scroll-stop for precise proximity re-evaluation
+        const handleScroll = () => updateOrchestration();
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
+            window.removeEventListener('scroll', handleScroll);
             if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
         };
     }, [cardStatus, quality.tier]);
@@ -128,11 +168,12 @@ const FeaturedProjects = () => {
 
                         return (
                             <motion.div
+                                ref={el => cardRefs.current[project.id] = el}
                                 key={project.id}
                                 layoutId={`project-${project.id}`}
                                 initial="below"
                                 animate={currentStatus}
-                                viewport={{ once: false, amount: 0.1, margin: "-20% 0px 5% 0px" }}
+                                viewport={{ once: false, amount: 0.1, margin: "-10% 0px 5% 0px" }}
                                 onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
