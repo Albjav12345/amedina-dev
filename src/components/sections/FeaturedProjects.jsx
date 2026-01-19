@@ -10,20 +10,28 @@ import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
     visible: {
         opacity: 1,
         y: 0,
         scale: 1,
+        pointerEvents: "auto",
         transition: {
             duration: 0.6,
             ease: [0.22, 1, 0.36, 1]
         }
     },
-    exit: {
+    below: {
         opacity: 0,
-        y: 20,
-        scale: 0.98,
+        y: 80,
+        scale: 0.95,
+        pointerEvents: "none",
+        transition: { duration: 0.4 }
+    },
+    above: {
+        opacity: 0,
+        y: -150,
+        scale: 0.95,
+        pointerEvents: "none",
         transition: { duration: 0.4 }
     }
 };
@@ -33,8 +41,8 @@ const FeaturedProjects = () => {
     const [isContentReady, setContentReady] = useState(false);
     const quality = useHardwareQuality();
 
-    // ORCHESTRATOR STATE
-    const [inViewIds, setInViewIds] = useState([]);
+    // ORCHESTRATOR & DIRECTIONAL STATE
+    const [cardStatus, setCardStatus] = useState({}); // { id: 'visible' | 'above' | 'below' }
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const dwellTimeoutRef = useRef(null);
 
@@ -42,25 +50,27 @@ const FeaturedProjects = () => {
     useEffect(() => {
         if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
 
-        // If hardware is low or too many items, or performance is bad, restrict budget
         const maxVideos = quality.tier === 'low' ? 0 : 6;
+        const visibleIds = Object.entries(cardStatus)
+            .filter(([_, status]) => status === 'visible')
+            .map(([id]) => id);
 
         dwellTimeoutRef.current = setTimeout(() => {
-            // Take the first 6 projects currently in view
-            const budget = inViewIds.slice(0, maxVideos);
-            setAllowedVideoIds(budget);
-        }, 150); // 150ms Dwell time
+            setAllowedVideoIds(visibleIds.slice(0, maxVideos));
+        }, 150);
 
         return () => {
             if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
         };
-    }, [inViewIds, quality.tier]);
+    }, [cardStatus, quality.tier]);
 
-    const handleInView = (id, inView) => {
-        setInViewIds(prev => {
-            if (inView) return [...new Set([...prev, id])];
-            return prev.filter(vId => vId !== id);
-        });
+    const handleViewportAction = (id, inView, entry) => {
+        if (inView) {
+            setCardStatus(prev => ({ ...prev, [id]: 'visible' }));
+        } else if (entry) {
+            const isAbove = entry.boundingClientRect.top < 0;
+            setCardStatus(prev => ({ ...prev, [id]: isAbove ? 'above' : 'below' }));
+        }
     };
 
     const { projects: projectsHeader } = portfolioData.ui.sections;
@@ -109,24 +119,22 @@ const FeaturedProjects = () => {
                     </h2>
                 </motion.div>
 
-                {/* Grid Layout with Bi-Directional Animations */}
+                {/* Grid Layout with Directional System */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                     {projects.map((project, index) => {
                         const isSelected = selectedId === project.id;
                         const isAllowedToPlay = allowedVideoIds.includes(project.id);
+                        const currentStatus = isSelected ? "visible" : (cardStatus[project.id] || "below");
 
                         return (
                             <motion.div
                                 key={project.id}
                                 layoutId={`project-${project.id}`}
-                                initial="hidden"
-                                whileInView="visible"
-                                exit="exit"
-                                // CRITICAL SAFETY: Force visibility if selected to avoid layoutId glitch
-                                animate={isSelected ? "visible" : undefined}
-                                viewport={{ once: false, amount: 0.2, margin: "0px 0px -50px 0px" }}
-                                onViewportEnter={() => handleInView(project.id, true)}
-                                onViewportLeave={() => handleInView(project.id, false)}
+                                initial="below"
+                                animate={currentStatus}
+                                viewport={{ once: false, amount: 0.1, margin: "-20% 0px 5% 0px" }}
+                                onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
+                                onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
                                 onClick={() => setSelectedId(project.id)}
                                 className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
