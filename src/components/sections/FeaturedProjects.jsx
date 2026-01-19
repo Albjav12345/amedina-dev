@@ -4,7 +4,6 @@ import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap,
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
-import { useFPSGuard } from '../../hooks/useFPSGuard';
 import SmartThumbnail from './SmartThumbnail';
 
 import portfolioData from '../../../api/portfolio';
@@ -41,7 +40,6 @@ const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
     const quality = useHardwareQuality();
-    const isStruggling = useFPSGuard(quality.tier !== 'low');
 
     // ORCHESTRATOR & DIRECTIONAL STATE
     const [cardStatus, setCardStatus] = useState({}); // { id: 'visible' | 'above' | 'below' }
@@ -54,8 +52,7 @@ const FeaturedProjects = () => {
         const updateOrchestration = () => {
             if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
 
-            // Performance Gate: Force 0 videos if tier is low OR if device is currently struggling
-            const maxVideos = (quality.tier === 'low' || isStruggling) ? 0 : 6;
+            const maxVideos = quality.tier === 'low' ? 0 : 6;
 
             dwellTimeoutRef.current = setTimeout(() => {
                 // Focus Line: 65% of viewport height (Center + 15% shift)
