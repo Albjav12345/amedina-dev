@@ -63,8 +63,6 @@ const FeaturedProjects = () => {
                     .filter(([_, status]) => status === 'visible')
                     .map(([id]) => Number(id));
 
-                console.log("[Orchestrator] Visible Cards:", visibleIds.length, "| Tier:", quality.tier);
-
                 if (visibleIds.length === 0) {
                     setAllowedVideoIds([]);
                     return;
@@ -73,10 +71,7 @@ const FeaturedProjects = () => {
                 // 2. Measure physical distance for all 'visible' cards
                 const measured = visibleIds.map(id => {
                     const el = cardRefs.current[id];
-                    if (!el) {
-                        console.warn(`[Orchestrator] Missing ref for card: ${id}`);
-                        return null;
-                    }
+                    if (!el) return null;
                     const rect = el.getBoundingClientRect();
                     const centerY = rect.top + rect.height / 2;
                     return { id, distance: Math.abs(centerY - targetLine) };
@@ -86,7 +81,6 @@ const FeaturedProjects = () => {
                 const sorted = measured.sort((a, b) => a.distance - b.distance);
                 const winningIds = sorted.slice(0, maxVideos).map(entry => entry.id);
 
-                console.log("[Orchestrator] Winning Video IDs:", winningIds);
                 setAllowedVideoIds(winningIds);
             }, 150); // Dwell time: 150ms
         };
@@ -173,7 +167,7 @@ const FeaturedProjects = () => {
                                 layoutId={`project-${project.id}`}
                                 initial="below"
                                 animate={currentStatus}
-                                viewport={{ once: false, amount: 0.1, margin: "-10% 0px 5% 0px" }}
+                                viewport={{ once: false, amount: 0.1, margin: "15% 0px 15% 0px" }}
                                 onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}

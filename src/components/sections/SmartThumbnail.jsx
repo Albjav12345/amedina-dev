@@ -23,14 +23,11 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
     useEffect(() => {
         let timeout;
         if (isAllowedToPlay) {
-            console.log(`[SmartThumbnail] ${project.title} - Allowed to play. Status: Stagger ${stagger}`);
             const delay = stagger * 150;
             timeout = setTimeout(() => {
-                console.log(`[SmartThumbnail] ${project.title} - Mounting video tag...`);
                 setShouldMount(true);
             }, delay);
         } else {
-            if (shouldMount) console.log(`[SmartThumbnail] ${project.title} - Unmounting video tag (off-screen/out-of-budget)`);
             setShouldMount(false);
             setIsLoaded(false);
         }
@@ -65,14 +62,11 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                     playsInline
                     preload="auto"
                     onLoadedData={() => {
-                        console.log(`[SmartThumbnail] ${project.title} - Video loaded successfully`);
                         setIsLoaded(true);
                     }}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-70' : 'opacity-0'}`}
-                    onError={(e) => {
-                        console.error(`[SmartThumbnail] ${project.title} - Video Error:`, e);
+                    onError={() => {
                         if (currentSrc !== baseVideoUrl) {
-                            console.log(`[SmartThumbnail] ${project.title} - Falling back to base video...`);
                             setCurrentSrc(baseVideoUrl);
                         }
                     }}
