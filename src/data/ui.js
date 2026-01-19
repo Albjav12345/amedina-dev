@@ -100,7 +100,7 @@ export const ui = {
         endpointLabel: "Primary_Endpoint",
         email: "amedina.amg.dev@gmail.com",
         social: [
-            { name: "GitHub", url: "https://github.com/Albjav1235", icon: "Github" },
+            { name: "GitHub", url: "https://github.com/Albjav12345", icon: "Github" },
             { name: "LinkedIn", url: "#", icon: "Linkedin" }
         ],
         form: {

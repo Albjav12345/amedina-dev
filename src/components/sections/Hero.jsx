@@ -9,7 +9,7 @@ const Hero = () => {
     const { hero, sections } = portfolioData.ui;
 
     return (
-        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
+        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative">
             {/* Background Decor */}
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,rgba(0,255,153,0.05)_0%,transparent_50%)]"></div>
 
@@ -91,7 +91,7 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full overflow-hidden">
+                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full">
                         {/* Mobile Section Title */}
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}

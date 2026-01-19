@@ -45,12 +45,12 @@ const TerminalWindow = ({ title }) => {
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl relative cursor-default flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
+            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl relative cursor-default flex flex-col !overflow-visible ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
-            style={{ clipPath: 'inset(-200px -100px -100px -100px)' }}
+            style={{ clipPath: 'inset(-500px -100px -100px -100px)' }}
         >
             {/* Window Header */}
-            <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-10 rounded-t-xl">
+            <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-50 rounded-t-xl">
                 <div className="flex gap-1.5 w-16">
                     <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -68,7 +68,7 @@ const TerminalWindow = ({ title }) => {
                                     <Info size={14} />
                                 </button>
                                 {/* Tooltip */}
-                                <div className="absolute bottom-full right-0 mb-5 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none z-[100]">
+                                <div className="absolute bottom-full right-0 mb-5 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none z-[1000]">
                                     <div className="glass-card p-4 border-electric-cyan/20 bg-dark-deep/95 backdrop-blur-2xl relative shadow-2xl">
                                         <div className="absolute -bottom-1 right-2 w-2 h-2 bg-dark-deep border-r border-b border-white/10 transform rotate-45"></div>
                                         <div className="space-y-2">
@@ -107,7 +107,7 @@ const TerminalWindow = ({ title }) => {
 
             {/* Window Body */}
             <div
-                className="flex-1 min-h-0 p-6 font-mono text-xs sm:text-sm leading-relaxed relative overflow-hidden"
+                className="flex-1 min-h-0 p-6 font-mono text-xs sm:text-sm leading-relaxed relative overflow-hidden rounded-b-xl"
             >
                 <AnimatePresence mode="popLayout" initial={false}>
                     {!isExpanded ? (
