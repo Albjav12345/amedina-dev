@@ -1,13 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { usePerformance } from '../../context/PerformanceContext';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const ReactiveBackground = () => {
     const canvasRef = useRef(null);
     const mouseRef = useRef({ x: 0, y: 0 });
-    const { config } = usePerformance();
-
-    // TIER 1 (Potato): Disable canvas entirely
-    if (config.particles === 0) return null;
+    const quality = useHardwareQuality();
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -64,9 +61,13 @@ const ReactiveBackground = () => {
 
         const initParticles = () => {
             particles = [];
-            // Use tier-based particle count from config
-            const count = Math.floor((canvas.width * canvas.height) / 30000);
-            const finalCount = Math.min(count, config.particles);
+            // Reduce density significantly on low tier
+            const divisor = quality.tier === 'low' ? 60000 : 25000;
+            const count = Math.floor((canvas.width * canvas.height) / divisor);
+
+            // Hard cap for low end to prevent O(N^2) explosion if they have massive screens but slow CPUs
+            const maxParticles = quality.tier === 'low' ? 30 : 150;
+            const finalCount = Math.min(count, maxParticles);
 
             for (let i = 0; i < finalCount; i++) {
                 particles.push(new Particle());
@@ -74,8 +75,8 @@ const ReactiveBackground = () => {
         };
 
         const drawLines = () => {
-            // Disable expensive line connections based on tier config
-            if (!config.enableParticleLines) return;
+            // Disable expensive line connections on low tier
+            if (quality.tier === 'low') return;
 
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {

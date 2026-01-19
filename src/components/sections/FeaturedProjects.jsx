@@ -3,38 +3,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
-import { usePerformance } from '../../context/PerformanceContext';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import SmartThumbnail from './SmartThumbnail';
 
 import portfolioData from '../../../api/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: 30 },
-    visible: {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
         opacity: 1,
-        scale: 1,
         y: 0,
         transition: {
-            duration: 0.6,
-            ease: [0.22, 1, 0.36, 1] // Custom quint ease for premium feel
+            delay: i * 0.1,
+            duration: 0.5,
+            ease: "easeOut"
         }
-    },
-    exit: {
-        opacity: 0,
-        scale: 0.95,
-        y: 20,
-        transition: {
-            duration: 0.4,
-            ease: "easeIn"
-        }
-    }
+    })
 };
 
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
-    const { tier, config } = usePerformance();
+    const quality = useHardwareQuality();
 
     const { projects: projectsHeader } = portfolioData.ui.sections;
 
@@ -52,18 +43,14 @@ const FeaturedProjects = () => {
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
-            // If layout animations are disabled (Tier 1-3), content should be ready immediately
-            if (!config.enableLayoutAnimations) {
-                setContentReady(true);
-            } else {
-                setContentReady(false);
-            }
+            // Reset content ready state on open to ensure smooth expansion first
+            setContentReady(false);
         } else {
             document.body.style.overflow = 'unset';
             setContentReady(false);
         }
         return () => { document.body.style.overflow = 'unset'; };
-    }, [selectedId, config.enableLayoutAnimations]);
+    }, [selectedId]);
 
     const activeProject = projects.find(p => p.id === selectedId);
 
@@ -93,21 +80,21 @@ const FeaturedProjects = () => {
                     {projects.map((project, index) => (
                         <motion.div
                             key={project.id}
-                            layoutId={config.enableLayoutAnimations ? `project-${project.id}` : undefined}
+                            layoutId={`project-${project.id}`}
+                            custom={index}
                             initial="hidden"
                             whileInView="visible"
-                            exit="exit"
-                            viewport={{ once: false, amount: 0.2, margin: "-50px" }}
+                            viewport={{ once: true, amount: 0.1, margin: "0px 0px -50px 0px" }}
                             variants={cardVariants}
                             onClick={() => setSelectedId(project.id)}
                             className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
                         >
                             <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                <SmartThumbnail project={project} index={index} />
+                                <SmartThumbnail project={project} />
 
                                 <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
-                                {/* Scanning Line Effect - DISABLED ON LOW TIERS */}
-                                {config.enableScanLines && (
+                                {/* Scanning Line Effect - DISABLED ON LOW TIER */}
+                                {!quality.simplePhysics && (
                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
                                 )}
 
@@ -157,7 +144,7 @@ const FeaturedProjects = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedId(null)}
-                            className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${config.enableBlur ? 'backdrop-blur-xl' : ''}`}
+                            className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                         />
 
                         {/* Close Button - Moved OUTSIDE layoutId container to prevent 'stretching' */}
@@ -173,17 +160,14 @@ const FeaturedProjects = () => {
                         </motion.button>
 
                         <motion.div
-                            layoutId={config.enableLayoutAnimations ? `project-${selectedId}` : undefined}
-                            transition={config.spring}
+                            layoutId={`project-${selectedId}`}
+                            transition={quality.spring}
                             onLayoutAnimationComplete={() => setContentReady(true)}
-                            initial={!config.enableLayoutAnimations ? { opacity: 0, scale: 0.95 } : undefined}
-                            animate={!config.enableLayoutAnimations ? { opacity: 1, scale: 1 } : undefined}
-                            exit={!config.enableLayoutAnimations ? { opacity: 0, scale: 0.95 } : { opacity: 0 }}
-                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${config.glassClass}`}
+                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
                         >
 
                             {/* Orchestrated Content Fade-in - DEFERRED RENDER */}
-                            {(isContentReady || tier >= 4) && (
+                            {(isContentReady || quality.tier === 'high') && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}

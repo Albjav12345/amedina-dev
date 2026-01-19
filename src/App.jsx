@@ -10,8 +10,6 @@ import Contact from './components/sections/Contact'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ReactiveBackground from './components/common/ReactiveBackground'
-import { PerformanceProvider } from './context/PerformanceContext'
-import PerformanceControls from './components/dev/PerformanceControls'
 
 function App() {
     useEffect(() => {
@@ -42,23 +40,20 @@ function App() {
     }, [])
 
     return (
-        <PerformanceProvider>
-            <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void">
-                <ReactiveBackground />
-                <Navbar />
-                <main>
-                    <Hero />
-                    <About />
-                    <FeaturedProjects />
-                    <TechStack />
-                    <Contact />
-                </main>
-                <Footer />
-                <Analytics />
-                <SpeedInsights />
-                <PerformanceControls />
-            </div>
-        </PerformanceProvider>
+        <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void">
+            <ReactiveBackground />
+            <Navbar />
+            <main>
+                <Hero />
+                <About />
+                <FeaturedProjects />
+                <TechStack />
+                <Contact />
+            </main>
+            <Footer />
+            <Analytics />
+            <SpeedInsights />
+        </div>
     )
 }
 

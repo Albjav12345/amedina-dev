@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { usePerformance } from '../../context/PerformanceContext';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
-const SmartThumbnail = ({ project, index = 0 }) => {
+const SmartThumbnail = ({ project }) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
     const [isVisible, setIsVisible] = useState(false);
-    const { config } = usePerformance();
+    const quality = useHardwareQuality();
 
     // Determine media type: Prefer VIDEO if available (MP4 is hardware accelerated)
     // Priority: previewUrl (New) -> demoUrl (Legacy Video) -> thumbnail (GIF/Img)
@@ -18,48 +18,29 @@ const SmartThumbnail = ({ project, index = 0 }) => {
 
     // Automatic Mobile Optimization Logic
     // If on a lower-tier device OR small screen, try to load the '_mobile' version first.
-    // For new tier system: Tier 1-3 should use mobile versions
-    const isMobileTier = (typeof window !== 'undefined' && window.innerWidth < 768);
+    // robust check: Tier is low/mid OR width < 768px (Mobile Breakpoint)
+    const isMobileTier = quality.tier === 'low' || quality.tier === 'mid' || (typeof window !== 'undefined' && window.innerWidth < 768);
     const mobileVideoUrl = (isMobileTier && hasVideo)
         ? baseVideoUrl.replace('.mp4', '_mobile.mp4')
         : baseVideoUrl;
 
     const [currentSrc, setCurrentSrc] = useState(mobileVideoUrl);
 
-    // DEBUG: Verify Tier and Video Source
+    // DEBUG: Verify Quality Tier and Video Source
     useEffect(() => {
-        if (hasVideo && config.enableVideos) {
+        if (hasVideo) {
             console.log(`[SmartThumbnail] Project: ${project.title}`);
-            console.log(`[SmartThumbnail] Tier: ${config.name}, IsMobile: ${isMobileTier}`);
+            console.log(`[SmartThumbnail] Tier: ${quality.tier}, IsMobile: ${isMobileTier}`);
             console.log(`[SmartThumbnail] Loading: ${currentSrc}`);
         }
-    }, [config, currentSrc, project.title, hasVideo, isMobileTier]);
+    }, [quality.tier, currentSrc, project.title]);
 
     // If base url changes (unlikely but possible), reset source
     useEffect(() => {
         setCurrentSrc(isMobileTier && hasVideo ? baseVideoUrl.replace('.mp4', '_mobile.mp4') : baseVideoUrl);
     }, [baseVideoUrl, isMobileTier, hasVideo]);
 
-    const [shouldMount, setShouldMount] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    useEffect(() => {
-        let timer;
-        if (isVisible && config.enableVideos) {
-            // STAGGERED DWELL PLAY: Cascade video loading to prevent simultaneous CPU spikes
-            // More pronounced delay (250ms per index) for a visible "one-by-one" cascade
-            const staggerDelay = Math.min(index * 250, 1500);
-            const totalDelay = 500 + staggerDelay;
-
-            timer = setTimeout(() => {
-                setShouldMount(true);
-            }, totalDelay);
-        } else {
-            setShouldMount(false);
-            setIsLoaded(false);
-        }
-        return () => clearTimeout(timer);
-    }, [isVisible, config.enableVideos, index]);
+    const mediaSource = hasVideo ? currentSrc : project.thumbnail;
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -69,14 +50,14 @@ const SmartThumbnail = ({ project, index = 0 }) => {
                 // Hardware Optimization: Pause video when out of view
                 if (videoRef.current) {
                     if (entry.isIntersecting) {
-                        videoRef.current.play().catch(() => { });
+                        videoRef.current.play().catch(() => { }); // Catch autoplay rejection
                     } else {
                         videoRef.current.pause();
                     }
                 }
             },
             {
-                rootMargin: '100px', // Increased margin for smoother transitions
+                rootMargin: '50px', // Preload/Play slightly before entering viewport
                 threshold: 0.1
             }
         );
@@ -94,30 +75,33 @@ const SmartThumbnail = ({ project, index = 0 }) => {
 
     return (
         <div ref={containerRef} className="w-full h-full relative group bg-dark-high/50">
-            {/* 1. LAYER 0: Static Facade (Visible until video is READY) */}
+            {/* 1. LAYER 0: Static Facade (Always visible initially) */}
             <img
                 src={project.thumbnail}
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
-                className={`w-full h-full object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-0' : 'opacity-80 group-hover:opacity-100'}`}
+                className={`w-full h-full object-cover transition-opacity duration-700 ${isVisible && hasVideo ? 'opacity-0' : 'opacity-80 group-hover:opacity-100'}`}
             />
 
-            {/* 2. LAYER 1: Dynamic Video (Mounts ONLY after dwell delay) */}
-            {hasVideo && shouldMount && (
+            {/* 2. LAYER 1: Dynamic Video (Only mounts when looking at it) */}
+            {hasVideo && isVisible && (
                 <video
                     ref={videoRef}
                     src={currentSrc}
-                    poster={project.thumbnail}
+                    poster={project.thumbnail} // Extra fallback
                     autoPlay
                     muted
                     loop
                     playsInline
-                    preload="auto" // Preload for faster transition once mounted
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    onLoadedData={() => setIsLoaded(true)}
+                    preload="none" // Aggressive bandwidth saving
+                    className="absolute inset-0 w-full h-full object-cover animate-fadeIn"
+                    onLoadedData={() => {
+                        // Optional: Fade in logic could go here
+                    }}
                     onError={(e) => {
                         if (currentSrc !== baseVideoUrl) {
+                            console.log(`[SmartThumbnail] Mobile video missing, reverting to HQ: ${baseVideoUrl}`);
                             setCurrentSrc(baseVideoUrl);
                         }
                     }}
