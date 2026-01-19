@@ -12,40 +12,30 @@ export const useHardwareQuality = () => {
         if (typeof window === 'undefined') return { tier: 'mid', allowBlur: true };
 
         const cores = navigator.hardwareConcurrency || 4;
-        const memory = (navigator).deviceMemory; // Can be undefined (Safari/Firefox)
-
-        // 1. BRAND-AGNOSTIC PERFORMANCE SCORING
-        // We calculate a score based on raw technical metadata
-        let perfScore = 0;
-
-        // Core Contribution (Scale: 0-50)
-        if (cores >= 12) perfScore += 50;
-        else if (cores >= 8) perfScore += 40;
-        else if (cores >= 6) perfScore += 30;
-        else if (cores >= 4) perfScore += 20;
-        else perfScore += 10;
-
-        // Memory Contribution (Scale: 0-50)
-        if (memory !== undefined) {
-            if (memory >= 12) perfScore += 50;
-            else if (memory >= 8) perfScore += 40;
-            else if (memory >= 4) perfScore += 25;
-            else perfScore += 10;
-        } else {
-            // Safari/iOS Compensation: Since we can't see memory, 
-            // we rely on cores with a conservative "modernity" boost.
-            if (cores >= 6) perfScore += 35; // Probable high-end iPhone/Mac
-            else if (cores >= 4) perfScore += 25; // Probable mid-range mobile
-            else perfScore += 10;
-        }
-
-        // TIER ASSIGNMENT (Purely based on Score)
-        let tier = 'low';
-        if (perfScore >= 70) tier = 'high';
-        else if (perfScore >= 35) tier = 'mid';
-
+        // navigator.deviceMemory is generic, often 8 for high end, 4 or 2 for low.
+        // It's non-standard, but supported in Chrome/Android.
+        const memory = (navigator).deviceMemory || 4;
         const ua = navigator.userAgent;
+        const isMobile = /Android|iPhone|iPad/i.test(ua);
         const isAndroid = /Android/i.test(ua);
+
+        // Strict check for "Low End"
+        // Most < 2023 mid-range Androids have < 6GB usable heap or limited GPU bandwidth.
+        // We treat any Android with <= 4GB RAM or <= 6 cores as 'low'.
+        // Also, if deviceMemory is unknown, we assume 'mid' unless cores are low.
+
+        let tier = 'high';
+
+        if (isAndroid) {
+            if (memory <= 4 || cores <= 6) {
+                tier = 'low';
+            } else {
+                tier = 'mid'; // Even high-end Androids struggle with massive blur + scroll
+            }
+        } else if (isMobile) {
+            // iOS usually handles blur better, but older iPhones might struggle
+            if (cores <= 2) tier = 'mid';
+        }
 
         // Tier characteristics
         return {
@@ -56,8 +46,8 @@ export const useHardwareQuality = () => {
             // Low tier gets simple opacity fades instead of complex layout projection
             simplePhysics: tier === 'low',
 
-            // Load HQ videos vs Static Images - ALLOWED ON MID/HIGH TIERS
-            loadHeavyMedia: tier !== 'low',
+            // Load HQ videos vs Static Images - STRICT: Only High tier gets heavy GIFs
+            loadHeavyMedia: tier === 'high',
 
             // CSS Classes for dynamic usage
             glassClass: (tier === 'low' || (tier === 'mid' && isAndroid))
