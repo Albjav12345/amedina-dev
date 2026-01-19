@@ -47,7 +47,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
-                className={`w-full h-full object-cover transition-all duration-700 ${isLoaded ? 'opacity-0 scale-105' : 'opacity-80 scale-100 group-hover:opacity-100'}`}
+                className={`w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-0 scale-110' : 'opacity-80 scale-100 group-hover:opacity-100 group-hover:scale-105'}`}
             />
 
             {/* 2. LAYER 1: Dynamic Video (Only mounts when allowed by Orchestrator) */}
@@ -64,7 +64,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                     onLoadedData={() => {
                         setIsLoaded(true);
                     }}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-70' : 'opacity-0'}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-70 group-hover:opacity-100 group-hover:scale-105' : 'opacity-0 scale-100'}`}
                     onError={() => {
                         if (currentSrc !== baseVideoUrl) {
                             setCurrentSrc(baseVideoUrl);
@@ -75,7 +75,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                 </video>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-dark-void/90 via-dark-void/20 to-transparent opacity-60 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-void/90 via-dark-void/20 to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none" />
         </div>
     );
 };

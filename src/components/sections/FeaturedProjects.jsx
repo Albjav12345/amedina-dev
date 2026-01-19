@@ -181,7 +181,7 @@ const FeaturedProjects = () => {
                                         stagger={allowedVideoIds.indexOf(project.id)}
                                     />
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
                                     {/* Scanning Line Effect - DISABLED ON LOW TIER */}
                                     {!quality.simplePhysics && (
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
