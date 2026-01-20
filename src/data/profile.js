@@ -7,7 +7,7 @@ export const profile = {
     role: "Solutions Engineer (Unity + AI + Automation)",
     tagline: "Engineering high-performance systems and deterministic solutions.",
     about: {
-        avatarUrl: "https://github.com/Albjav1235.png",
+        avatarUrl: "/assets/logo.svg",
         title: "Engineering Logic. Artistic Vision.",
         bio: [
             "I don't just write code; I engineer digital ecosystems. My journey started with game development, mastering the intricacies of Unity and C#, but my curiosity didn't stop at rendering frames.",
@@ -17,7 +17,7 @@ export const profile = {
         stats: [
             { label: "Projects Delivered", value: "25+", id: "projects" },
             { label: "On-Time Delivery", value: "100%", id: "delivery" },
-            { label: "Average Rating", value: "4.9/5", id: "rating" },
+            { label: "Global Clients", value: "12+", id: "global" },
             { label: "Years Experience", value: "5+", id: "years" }
         ],
         testimonials: [

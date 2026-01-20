@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Target, Box, Star, Quote } from 'lucide-react';
+import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 
 import portfolioData from '../../../api/portfolio.js';
@@ -15,6 +15,7 @@ const About = () => {
         if (s.id === 'delivery') icon = <Shield className="w-5 h-5" />;
         if (s.id === 'rating') icon = <Star className="w-5 h-5" />;
         if (s.id === 'projects') icon = <Target className="w-5 h-5" />;
+        if (s.id === 'global') icon = <Globe className="w-5 h-5" />;
 
         return { ...s, icon, color: s.id === 'rating' ? 'text-electric-cyan' : 'text-electric-green' };
     });
@@ -57,11 +58,11 @@ const About = () => {
                         <div className="glass-card p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center">
                             {/* Avatar */}
                             <div className="relative mb-6">
-                                <div className="w-40 h-40 rounded-full border-2 border-electric-green p-1 relative z-10 shadow-lg shadow-electric-green/20 ring-2 ring-electric-green/20">
+                                <div className="w-40 h-40 rounded-full border-2 border-electric-green relative z-10 shadow-lg shadow-electric-green/20 ring-2 ring-electric-green/20 flex items-center justify-center bg-black overflow-hidden">
                                     <img
                                         src={profileAbout.avatarUrl}
                                         alt="Alberto Medina"
-                                        className="w-full h-full rounded-full object-cover"
+                                        className="w-full h-full object-cover object-center scale-110 transform"
                                     />
                                 </div>
                                 <div className="absolute inset-0 bg-electric-green/20 blur-3xl rounded-full"></div>
@@ -155,7 +156,7 @@ const About = () => {
                     className="w-full relative"
                 >
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="h-px flex-shrink w-12 bg-electric-green/50"></div>
+                        <div className="h-px flex-shrink w-12 bg-white/10"></div>
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Verified Client Feedback</h4>
                         <div className="h-px flex-grow bg-white/10"></div>
                     </div>
