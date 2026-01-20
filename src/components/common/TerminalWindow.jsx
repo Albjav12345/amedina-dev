@@ -3,10 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minimize2, Maximize2, Info } from 'lucide-react';
 import portfolioData from '../../../api/portfolio';
 
-const TerminalWindow = ({ title }) => {
+const TerminalWindow = ({ title, onStateChange }) => {
     const { terminal } = portfolioData.ui;
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        onStateChange?.(isExpanded);
+    }, [isExpanded, onStateChange]);
     const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
     const containerRef = useRef(null);
 
