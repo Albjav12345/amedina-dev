@@ -120,7 +120,7 @@ const About = () => {
 
                             <div className="space-y-6 text-gray-400 leading-relaxed font-medium text-lg relative z-10">
                                 {profileAbout.bio.map((paragraph, i) => (
-                                    <p key={i}>
+                                    <p key={i} className="text-justify">
                                         {paragraph.split(' ').map((word, j) => {
                                             const cleanWord = word.replace(/[.,]/g, '');
                                             if (['Unity', 'C#', 'AI-driven', 'full-stack', 'automated', 'ecosystems', 'optimization'].includes(cleanWord)) {
