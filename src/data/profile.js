@@ -4,22 +4,49 @@
 
 export const profile = {
     name: "Alberto Medina",
-    role: "Full-Stack Developer & Automation Specialist",
-    tagline: "Engineering high-performance systems and deterministic solutions since age 10.",
-    bio: [
-        "I started coding at age 10, turning lines of logic into functional reality. With 8+ years of experience, I've evolved from curiosity to building high-performance architectures.",
-        "I don't just build for clients; I build because I love the art of optimization. Whether it's the Padel Booking App, the Twitch Tracker, or high-fidelity 3D interfaces, my focus is always on speed, reliability, and precision."
-    ],
+    role: "Solutions Engineer (Unity + AI + Automation)",
+    tagline: "Engineering high-performance systems and deterministic solutions.",
+    about: {
+        avatarUrl: "https://github.com/Albjav1235.png",
+        title: "Engineering Logic. Artistic Vision.",
+        bio: [
+            "I don't just write code; I engineer digital ecosystems. My journey started with game development, mastering the intricacies of Unity and C#, but my curiosity didn't stop at rendering frames.",
+            "Today, I leverage that visual expertise to build full-stack automated systems, bridging the gap between immersive user interfaces and intelligent backend logic. Whether it's a custom Unity Editor tool or an AI-driven workflow, I build for efficiency."
+        ],
+        // "Verified Platform" Metrics
+        stats: [
+            { label: "Projects Delivered", value: "25+", id: "projects" },
+            { label: "On-Time Delivery", value: "100%", id: "delivery" },
+            { label: "Average Rating", value: "4.9/5", id: "rating" },
+            { label: "Years Experience", value: "5+", id: "years" }
+        ],
+        testimonials: [
+            {
+                text: "Alberto created a professional Unity Editor window that saved us hours of workflow. His understanding of UI Toolkit is top-tier.",
+                author: "Unity Client (USA)",
+                project: "Custom Tooling Architecture"
+            },
+            {
+                text: "Fast, efficient, and technically precise. He handled the complex metadata automation perfectly.",
+                author: "Automation Client",
+                project: "Python Automation Pipeline"
+            },
+            {
+                text: "Great communication and high-quality game assets. He solved a complex C# bug no one else could fix.",
+                author: "Indie Game Studio",
+                project: "Unity Game Systems"
+            },
+            {
+                text: "The delivery was exactly what we needed. Clean code, well documented, and delivered ahead of schedule.",
+                author: "Tech Startup",
+                project: "Backend Optimization"
+            }
+        ]
+    },
     social: {
         github: "https://github.com/Albjav1235",
         linkedin: "#"
-    },
-    stats: [
-        { label: "Years Runtime", value: "8+", id: "years" },
-        { label: "Uptime Reliability", value: "100%", id: "uptime" },
-        { label: "Systems Deployed", value: "25+", id: "systems" },
-        { label: "Core Frameworks", value: "4+", id: "frameworks" }
-    ]
+    }
 };
 
 export const skills = {

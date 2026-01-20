@@ -76,8 +76,8 @@ export const ui = {
         },
         projects: {
             id: "SYS_02",
-            line1: "Project",
-            line2: "Ecosystems."
+            line1: "Personal",
+            line2: "Projects."
         },
         tech: {
             id: "SYS_03",
