@@ -45,7 +45,21 @@
 export const projects = [
     {
         id: 1,
-        title: "ZeroTouch AI",
+        title: "Unity Developer",
+        subtitle: "High-Fidelity Unity UX",
+        problem: "Demonstrating capability to build complex, non-standard visual interfaces.",
+        solution: "Polished, interactive mini-interfaces built with Unity Engine demonstrating shader prowess.",
+        stack: ["Unity 3D", "C#", "HLSL Shaders", "Motion Design"],
+        arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
+        githubLink: "https://github.com/Albjav1235/unity-interfaces",
+        demoType: "video",
+        previewUrl: "/assets/projects/visual-interfaces-short.mp4",
+        demoUrl: "/assets/projects/visual-interfaces.mp4",
+        thumbnail: "/assets/projects/visual-interfaces.png"
+    },
+    {
+        id: 2,
+        title: "Smart Inbox Manager",
         subtitle: "Autonomous Corporate Email Triage",
         problem: "Corporate email management consumes 30% of work hours, causing bottlenecks.",
         solution: "Full Stack AI platform using Groq (Llama 3) to semantically analyze and draft responses.",
@@ -58,13 +72,13 @@ export const projects = [
         thumbnail: "/assets/projects/zero-touch-ai.png"
     },
     {
-        id: 2,
-        title: "Padel Sync",
-        subtitle: "Atomic Booking Engine & Native UI",
-        problem: "Race conditions between legacy web and new mobile app caused double-bookings.",
-        solution: "Engineered a 'Double-Lock' Transaction Protocol with Firestore and Deterministic IDs.",
-        stack: ["Android", "Firebase", "React", "Atomic Locking"],
-        arch: ["Firebase Store", "Kotlin Logic", "Double-Lock", "React Hub"],
+        id: 3,
+        title: "Booking App",
+        subtitle: "Reactive State & Live Synchronization",
+	problem: "Asynchronous manual booking led to concurrency conflicts and lack of instant availability feedback.",
+ 	solution: "Deployed a serverless PWA with Firestore listeners for sub-second state synchronization and dynamic validation rules.",
+   	stack: ["React + Vite", "Firebase", "Tailwind", "Framer Motion"],
+  	arch: ["Serverless", "Event Listeners", "PWA Cache", "Reactive State"],
         githubLink: "https://github.com/Albjav1235/padel-sync",
         demoType: "video",
         previewUrl: "/assets/projects/padel-booking.mp4",
@@ -73,7 +87,7 @@ export const projects = [
         icon: "/assets/projects/padel-booking-logo.png"
     },
     {
-        id: 3,
+        id: 4,
         title: "Twitch Live Analytics",
         subtitle: "Real-time Streamer Detection",
         problem: "Manual detection of live streamers in Fortnite matches is slow and error-prone.",
@@ -85,19 +99,5 @@ export const projects = [
         previewUrl: "/assets/projects/twitch-live.mp4",
         demoUrl: "/assets/projects/twitch-live.mp4",
         thumbnail: "/assets/projects/twitch-live.png"
-    },
-    {
-        id: 4,
-        title: "Visual Interfaces",
-        subtitle: "High-Fidelity Unity UX",
-        problem: "Demonstrating capability to build complex, non-standard visual interfaces.",
-        solution: "Polished, interactive mini-interfaces built with Unity Engine demonstrating shader prowess.",
-        stack: ["Unity 3D", "C#", "HLSL Shaders", "Motion Design"],
-        arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
-        githubLink: "https://github.com/Albjav1235/unity-interfaces",
-        demoType: "video",
-        previewUrl: "/assets/projects/visual-interfaces-short.mp4",
-        demoUrl: "/assets/projects/visual-interfaces.mp4",
-        thumbnail: "/assets/projects/visual-interfaces.png"
     }
 ];
