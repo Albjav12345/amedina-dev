@@ -44,12 +44,12 @@ export const ui = {
         headerTitle: "zsh — port-folio",
         welcomeMessage: "Click to access system...",
         initialLines: [
-            { text: ">>> Initializing System...", color: "white" },
-            { text: ">>> User authenticated: Albjav1235", color: "electric-green" },
-            { text: ">>> const developer = 'Alberto Medina';", color: "electric-cyan" },
-            { text: ">>> dev.focus = ['Automation', 'Full-Stack'];", color: "white" },
-            { text: ">>> [SUCCESS] Workspace ready.", color: "electric-green" },
-            { text: "$ python3 optimize_workflow.py", color: "gray" }
+            { text: ">>> SYSTEM_CHECK: OPTIMAL", color: "electric-green" },
+            { text: ">>> DETECTED_VISITOR: AUTH_PENDING...", color: "white" },
+            { text: ">>> HINT: This is an interactive neural interface.", color: "electric-cyan" },
+            { text: ">>> COMMANDS_AVAILABLE: ['chat', 'explore', 'connect']", color: "gray" },
+            { text: ">>> STATUS: WAITING_FOR_INPUT...", color: "electric-green" },
+            { text: "$ ./init_session.sh --interactive", color: "white" }
         ],
         consoleGretting: [
             { text: "> INITIALIZING GUEST SESSION...", color: "electric-green" },

@@ -14,7 +14,62 @@ const Hero = () => {
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,rgba(0,255,153,0.05)_0%,transparent_50%)]"></div>
 
             <div className="container mx-auto px-6 relative z-10">
-                <div className="grid lg:grid-cols-12 gap-16 items-center">
+                <div className="grid lg:grid-cols-12 gap-16 items-center relative">
+                    {/* Hand-Drawn Arrow Pointer - ABSOLUTELY POSITIONED & INDEPENDENT */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            y: [0, 10, 0],
+                            x: [0, 5, 0]
+                        }}
+                        transition={{
+                            delay: 1.5,
+                            duration: 0.8,
+                            y: {
+                                repeat: Infinity,
+                                duration: 3,
+                                ease: "easeInOut",
+                            },
+                            x: {
+                                repeat: Infinity,
+                                duration: 3,
+                                ease: "easeInOut",
+                            }
+                        }}
+                        className="hidden lg:flex absolute left-1/2 top-1/2 -ml-32 -mt-44 z-30 flex-col items-center pointer-events-none"
+                    >
+                        <span className="font-handwriting text-sm text-electric-green mb-1 -rotate-6 w-max drop-shadow-md">
+                            CLICK_TO_INIT_SHELL
+                        </span>
+                        <svg
+                            width="60"
+                            height="60"
+                            viewBox="0 0 100 100"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="text-electric-green translate-x-4"
+                        >
+                            {/* Natural curve path without CSS rotation hacks */}
+                            <path
+                                d="M20 20 C 50 10, 80 40, 80 80"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                className="drop-shadow-[0_0_5px_rgba(0,255,153,0.5)]"
+                            />
+                            {/* Arrowhead */}
+                            <path
+                                d="M65 65 L 80 80 L 90 60"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="drop-shadow-[0_0_5px_rgba(0,255,153,0.5)]"
+                            />
+                        </svg>
+                    </motion.div>
 
                     {/* Text Content */}
                     <div className="lg:col-span-6 space-y-8">
@@ -91,7 +146,10 @@ const Hero = () => {
                     </div>
 
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full">
+                    {/* Terminal Visual */}
+                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full relative">
+                        {/* Hand-Drawn Arrow Pointer - Independent Layout Layer */}
+
                         {/* Mobile Section Title */}
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -109,7 +167,7 @@ const Hero = () => {
                             </h2>
                         </motion.div>
 
-                        <div className="w-full flex justify-center">
+                        <div className="w-full flex justify-center relative">
                             <TerminalWindow />
                         </div>
                     </div>
