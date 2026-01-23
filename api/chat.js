@@ -2,7 +2,7 @@ import Groq from 'groq-sdk';
 import portfolioData from './portfolio.js';
 import { getGitHubActivity } from './lib/github.js';
 
-// Configuration: Model Rotation Fallback List
+// Configuration: Model Rotation Fallback List (Latest Verified Groq Production Models)
 const MODELS = [
     'llama-3.3-70b-versatile', // Tier 1: Best Quality (300K TPM)
     'llama-3.1-8b-instant'     // Tier 2: High Reliability (250K TPM)
@@ -30,50 +30,67 @@ export default async function handler(req, res) {
     try {
         const { message } = req.body;
 
-        // Fetch Live Data (GitHub)
+        // 1. Fetch Live Data (GitHub) with error handling
         let githubData = null;
         let githubStatus = "ONLINE";
         try {
             githubData = await getGitHubActivity('Albjav12345');
-            if (!githubData) githubStatus = "OFFLINE: API_DATA_NULL";
+            if (!githubData) {
+                githubStatus = "OFFLINE: API_DATA_NULL";
+                console.warn("[SYS] GitHub fetch returned null.");
+            }
         } catch (e) {
             githubStatus = "OFFLINE: SYNC_ERROR";
+            console.error("[SYS] GitHub Sync Error:", e.message);
         }
 
+        // 2. Define the Strategic Persona & Navigation Protocol
         const SYSTEM_PROMPT = `
-You are SYS_TERMINAL, Alberto Medina's intelligent portfolio assistant with live GitHub access.
-Represent Alberto Medina: Solutions Engineer (Unity + AI + Backend).
-Tone: Professional, senior-level, technically precise. Concisely highlight his rare Unity + AI + Backend combo.
+You are SYS_TERMINAL, Alberto Medina's elite Technical Agent. Your mission is to convert visitors into leads by demonstrating his unique expertise: the fusion of Unity (Creative Tech) + AI + Backend Automation.
 
-IMPORTANT: You MUST always respond in a strictly valid JSON format according to the OUTPUT_FORMAT.
+PERSONALITY & TONE:
+- Persona: Senior Solutions Engineer. Authoritative, technically precise, and brief.
+- Tone: High-status, professional, helpful but focused on performance.
+- Language: Strictly mirror the user's language (ES/EN). Respond in the SAME language they use.
 
-LIVE DATA:
+KNOWLEDGE_BASE:
+${JSON.stringify(portfolioData)}
+
+LIVE ACTIVITY:
 GITHUB_STATUS: ${githubStatus}
 LIVE_GITHUB_DATA: ${githubData ? JSON.stringify(githubData) : "null"}
-KNOWLEDGE_BASE: ${JSON.stringify(portfolioData)}
 
-RESPONSE STRATEGY:
-- Mirror user language (ES/EN).
-- Clarify: 4 featured projects here vs 25+ delivered total in career.
-- GitHub questions: Use live data to show commits/repos.
-- Action CTAs: Guide toward "SCROLL_TO_STACK" or "SCROLL_TO_CONTACT".
+NAVIGATIONAL PROTOCOL (MANDATORY ACTIONS):
+You MUST provide the correct "action" string in your JSON response if the user's query relates to these areas:
+- [PROJECTS]: If they ask about projects, work, what he has done, or total count. -> "SCROLL_TO_PROJECTS"
+- [STACK]: If they ask about skills, tools, languages, or "what he uses". -> "SCROLL_TO_STACK"
+- [CONTACT]: If they ask for email, how to hire him, or "connect". -> "SCROLL_TO_CONTACT"
+- [ABOUT]: If they ask who he is, his background, or bio. -> "SCROLL_TO_ABOUT"
+
+STRATEGIC NARRATIVE:
+1. On Project Quantity: If asked "how many projects", reply: "Alberto has delivered 25+ industrial projects across his career (Social Proof). On this page, he showcases 4 high-fidelity systems that demonstrate his architecture skills." -> ACTION: "SCROLL_TO_PROJECTS"
+2. On Unique Combo: Always frame Alberto as a rare hybrid engineer. "He bridges the gap between immersive Unity interfaces and intelligent Python/AI backends. It's deterministic engineering with artistic vision."
+3. On GitHub: Use the live data to prove he is active RIGHT NOW. "Beyond his portfolio, his GitHub shows real-time engineering activity, including his latest commit: '${githubData?.recentCommits?.[0]?.message || 'Routine update'}'. View his latest work?"
+4. No Data: If you don't have specific data (like visitor counts), redirect to his technical strengths. "I don't track visitor metrics, but I can show you his high-performance project demos. Interested?" -> ACTION: "SCROLL_TO_PROJECTS"
+
+IMPORTANT: You MUST always respond in a strictly valid JSON format according to the OUTPUT_FORMAT.
 
 OUTPUT_FORMAT (JSON ONLY):
 {
 "type": "MESSAGE" | "ACTION",
-"text": "Your response here...",
+"text": "Your persuasive response here...",
 "action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | null
 }
 `;
 
+        // 3. Model Rotation logic (Handle Rate Limits)
         let response = null;
         let lastError = null;
 
         for (let i = 0; i < MODELS.length; i++) {
             const modelId = MODELS[i];
             try {
-                console.log(`[SYS] Inference attempt ${i + 1}/${MODELS.length} with: ${modelId}`);
-
+                console.log(`[SYS] Attempting inference with model: ${modelId}`);
                 const completion = await groq.chat.completions.create({
                     messages: [
                         { role: 'system', content: SYSTEM_PROMPT },
@@ -84,26 +101,17 @@ OUTPUT_FORMAT (JSON ONLY):
                 });
 
                 response = JSON.parse(completion.choices[0].message.content);
-                console.log(`[SYS] Success using: ${modelId}`);
+                console.log(`[SYS] Success using model: ${modelId}`);
                 break;
             } catch (error) {
                 lastError = error;
-
-                // Aggressive Rate Limit check (Status 429 or strings in message/code)
-                const isRateLimit =
-                    error.status === 429 ||
-                    String(error).includes('429') ||
-                    (error.error && String(error.error).includes('rate_limit')) ||
-                    (error.message && error.message.includes('429'));
+                const isRateLimit = error.status === 429 || String(error).includes('429') || String(error).includes('rate_limit');
 
                 if (isRateLimit && i < MODELS.length - 1) {
-                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating to ${MODELS[i + 1]}...`);
-                    await sleep(200); // Give it a tiny bit of breathing room
+                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating...`);
+                    await sleep(200);
                     continue;
                 }
-
-                // If it's not a rate limit, or it was our last model, throw it.
-                console.error(`[SYS] Fatal model error (${modelId}):`, error.message);
                 throw error;
             }
         }
@@ -116,7 +124,6 @@ OUTPUT_FORMAT (JSON ONLY):
         return res.status(error.status || 500).json({
             type: "MESSAGE",
             text: `>> SYSTEM_CRASH: ${error.status || 'ERROR'} - ${error.message || 'INTERNAL_FAILURE'}`,
-            internal_log: error.stack,
             action: null
         });
     }
