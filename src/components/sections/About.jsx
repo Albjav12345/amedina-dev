@@ -2,12 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
-
 import portfolioData from '../../../api/portfolio.js';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+
 const { about: profileAbout } = portfolioData.profile;
 
 const About = () => {
     const { about } = portfolioData.ui.sections;
+    const quality = useHardwareQuality();
+    const isLow = quality.tier === 'low';
 
     const stats = profileAbout.stats.map(s => {
         let icon;
@@ -22,8 +25,10 @@ const About = () => {
 
     return (
         <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
-            {/* Background Decor */}
-            <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-electric-cyan/5 blur-[120px] rounded-full pointer-events-none"></div>
+            {/* Background Decor - Hide on Low Tier */}
+            {!isLow && (
+                <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-electric-cyan/5 blur-[120px] rounded-full pointer-events-none"></div>
+            )}
 
             <div className="container mx-auto px-6">
 
@@ -55,7 +60,7 @@ const About = () => {
                         variants={fadeInUp}
                         className="lg:col-span-4 h-full"
                     >
-                        <div className="glass-card p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center">
+                        <div className={`p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center rounded-xl border border-white/10 transition-colors duration-300 ${quality.glassClass}`}>
                             {/* Avatar */}
                             <div className="relative mb-6">
                                 <div className="w-40 h-40 rounded-full border-2 border-electric-green relative z-10 shadow-lg shadow-electric-green/20 ring-2 ring-electric-green/20 flex items-center justify-center bg-black overflow-hidden">
@@ -65,7 +70,8 @@ const About = () => {
                                         className="w-full h-full object-cover object-center scale-110 transform"
                                     />
                                 </div>
-                                <div className="absolute inset-0 bg-electric-green/20 blur-3xl rounded-full"></div>
+                                {/* Avatar Glow - Hide on Low Tier */}
+                                {!isLow && <div className="absolute inset-0 bg-electric-green/20 blur-3xl rounded-full"></div>}
                             </div>
 
                             {/* Identity Info */}
@@ -109,7 +115,7 @@ const About = () => {
                         transition={{ delay: 0.1 }}
                         className="lg:col-span-8 h-full"
                     >
-                        <div className="glass-card p-8 md:p-12 h-full relative gpu-accelerated flex flex-col justify-center">
+                        <div className={`p-8 md:p-12 h-full relative gpu-accelerated flex flex-col justify-center rounded-xl border border-white/10 ${quality.glassClass}`}>
                             <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
                                 <Zap className="w-64 h-64 text-electric-green" />
                             </div>
@@ -161,25 +167,33 @@ const About = () => {
                         <div className="h-px flex-grow bg-white/10"></div>
                     </div>
 
-                    <div className="relative w-full overflow-hidden mask-linear-fade">
-                        {/* Gradient Masks for edges */}
-                        <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-dark-void to-transparent"></div>
-                        <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-dark-void to-transparent"></div>
+                    <div className={`relative w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}>
+                        {/* Gradient Masks for edges - Hide on Low Tier */}
+                        {!isLow && (
+                            <>
+                                <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-dark-void to-transparent"></div>
+                                <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-dark-void to-transparent"></div>
+                            </>
+                        )}
 
                         {/* Scrolling Container */}
                         <motion.div
-                            className="flex gap-6 w-max"
+                            className="flex gap-6 w-max will-change-transform transform-gpu"
                             animate={{ x: ["0%", "-50%"] }}
                             transition={{
                                 repeat: Infinity,
                                 ease: "linear",
-                                duration: 40 // Slow, smooth scroll
+                                duration: isLow ? 50 : 40 // Slower on low end for visuals, or same? 40 is fine.
                             }}
                         >
                             {/* Duplicate list 4 times for seamless loop */}
                             {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
-                                <div key={i} className="w-[350px] md:w-[400px] bg-white/5 border border-white/5 p-6 rounded-xl flex flex-col justify-between hover:bg-white/10 transition-colors cursor-default group">
-                                    <div className="flex gap-1 mb-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <div
+                                    key={i}
+                                    className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                        }`}
+                                >
+                                    <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
                                         {[...Array(5)].map((_, j) => (
                                             <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
                                         ))}

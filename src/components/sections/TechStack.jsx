@@ -11,47 +11,33 @@ import {
 } from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../../api/portfolio.js';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const { categories: rawCategories } = portfolioData.skills;
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2
-        }
-    }
-};
+const TechNode = ({ name, icon, color = "electric-green", quality }) => {
+    // Low Tier: No hover scale, no heavy glows, simple opacity transition
+    const isLow = quality.tier === 'low';
 
-const itemVariants = {
-    hidden: { opacity: 0, scale: 0.8, y: 10 },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        transition: {
-            type: "spring",
-            stiffness: 260,
-            damping: 20
-        }
-    }
-};
-
-const TechNode = ({ name, icon, color = "electric-green" }) => {
     return (
         <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -5, scale: 1.05 }}
+            variants={isLow ? { hidden: { opacity: 0 }, visible: { opacity: 1 } } : {
+                hidden: { opacity: 0, scale: 0.8, y: 10 },
+                visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } }
+            }}
+            whileHover={!isLow ? { y: -5, scale: 1.05 } : {}}
             className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
-            <div className={`w-14 h-14 rounded-xl glass-card flex items-center justify-center border-white/5 relative overflow-hidden bg-white/[0.02] active:scale-95 transition-all duration-300`}>
-                {/* Glow Effect */}
-                <div className={`absolute inset-0 bg-${color}/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
-                <div className={`absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center border-white/5 relative overflow-hidden transition-all duration-300 ${quality.glassClass}`}>
+                {/* Glow Effect - Only for Mid/High Tier */}
+                {quality.tier !== 'low' && (
+                    <>
+                        <div className={`absolute inset-0 bg-${color}/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
+                        <div className={`absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                    </>
+                )}
 
-                <div className={`relative z-10 text-gray-400 group-hover:text-${color} transition-colors duration-300 transform group-hover:scale-110`}>
+                <div className={`relative z-10 text-gray-400 group-hover:text-${color} transition-colors duration-300 transform ${quality.tier !== 'low' ? 'group-hover:scale-110' : ''}`}>
                     {React.cloneElement(icon, { className: "w-4 h-4" })}
                 </div>
             </div>
@@ -65,15 +51,25 @@ const TechNode = ({ name, icon, color = "electric-green" }) => {
 };
 
 const NodeGroup = ({ title, icon, items, index, color }) => {
-    // Map of technology nodes with their sub-icons (if any) or generic
+    const quality = useHardwareQuality();
+
+    // Low Tier: Faster staggered animations or no stagger
+    const activeContainerVariants = quality.tier === 'low' ? {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+    } : {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+    };
+
     return (
         <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={viewportConfig}
-            variants={containerVariants}
+            variants={activeContainerVariants}
             custom={index}
-            className="glass-card p-10 border-white/5 relative overflow-hidden space-y-10 gpu-accelerated"
+            className={`p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl ${quality.glassClass}`}
         >
             <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
                 <div className={`p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
@@ -85,16 +81,15 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start">
+            <div className={`flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
                 {items.map((item) => {
-                    // Internal mapping for sub-icons
                     const subIconMap = {
                         "Python": <Terminal />, "C#": <Code2 />, "SQL / NoSQL": <Database />, "Node.js": <Zap />,
                         "React": <Layout />, "Unity 3D": <Box />, "Tailwind CSS": <Wind />, "Motion Design": <Flame />,
                         "Firebase": <Flame />, "Supabase": <Database />, "Vercel": <Cloud />, "Vite": <Zap />,
                         "Groq (Llama 3)": <Brain />, "Tesseract OCR": <Search />, "Selenium": <MousePointer2 />
                     };
-                    return <TechNode key={item} name={item} color={color} icon={subIconMap[item] || <Cpu />} />;
+                    return <TechNode key={item} name={item} color={color} icon={subIconMap[item] || <Cpu />} quality={quality} />;
                 })}
             </div>
 
