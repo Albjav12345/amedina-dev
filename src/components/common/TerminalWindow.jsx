@@ -255,7 +255,7 @@ const InteractiveConsole = ({ onClose }) => {
                 {history.map((entry, i) => (
                     <div key={i} className={`flex gap-2 leading-relaxed ${entry.type === 'input' ? 'text-white' : 'text-gray-400'}`}>
                         <span className="shrink-0">{entry.type === 'input' ? <span className="text-electric-cyan font-bold">visitor@sys:~$</span> : ">"}</span>
-                        <span className="break-all whitespace-pre-wrap">{entry.content}</span>
+                        <span className="break-words whitespace-pre-wrap">{entry.content}</span>
                     </div>
                 ))}
 
