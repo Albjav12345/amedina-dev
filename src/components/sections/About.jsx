@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
-import portfolioData from '../../../api/portfolio.js';
+import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const { about: profileAbout } = portfolioData.profile;

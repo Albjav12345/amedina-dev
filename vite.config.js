@@ -11,6 +11,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://amedina-dev.vercel.app', // Tu web desplegada
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+  },
   build: {
     rollupOptions: {
       output: {

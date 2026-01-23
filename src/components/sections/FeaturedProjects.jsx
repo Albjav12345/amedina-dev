@@ -6,7 +6,7 @@ import { fadeInUp, viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import SmartThumbnail from './SmartThumbnail';
 
-import portfolioData from '../../../api/portfolio';
+import portfolioData from '../../data/portfolio';
 const { projects } = portfolioData;
 
 const cardVariants = {

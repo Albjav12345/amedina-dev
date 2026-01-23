@@ -46,8 +46,9 @@ export const ui = {
         initialLines: [
             { text: ">>> SYSTEM_CHECK: OPTIMAL", color: "electric-green" },
             { text: ">>> DETECTED_VISITOR: AUTH_PENDING...", color: "white" },
-            { text: ">>> HINT: This is an interactive neural interface.", color: "electric-cyan" },
-            { text: ">>> COMMANDS_AVAILABLE: ['chat', 'explore', 'connect']", color: "gray" },
+            { text: ">>> LIVE_GITHUB_SYNK: ACTIVE", color: "electric-cyan" },
+            { text: ">>> HINT: I have real-time access to Alberto's repositories.", color: "electric-cyan" },
+            { text: ">>> COMMANDS: ['chat', 'explore', 'github']", color: "gray" },
             { text: ">>> STATUS: WAITING_FOR_INPUT...", color: "electric-green" },
             { text: "$ ./init_session.sh --interactive", color: "white" }
         ],
@@ -59,11 +60,11 @@ export const ui = {
             title: "System Architecture",
             description: "Powered by Llama-3-70b via Groq Cloud.",
             capabilities: [
-                "Accesses live website content & GitHub repos.",
-                "Performs autonomous navigation.",
-                "Controls system interface."
+                "Accesses live content & Alberto's GitHub commits.",
+                "Performs autonomous navigation (Scroll UI).",
+                "Queries technical project specifics from data."
             ],
-            usage: 'Try asking about "projects" or type "help".'
+            usage: 'Try asking "What are your latest commits?" or "help".'
         }
     },
 

@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk';
 import portfolioData from './portfolio.js';
+import { getGitHubActivity } from './lib/github.js';
 
 export default async function handler(req, res) {
     // 1. Validar Método
@@ -13,7 +14,7 @@ export default async function handler(req, res) {
         console.error("CRITICAL: GROQ_API_KEY is missing in environment variables.");
         return res.status(500).json({
             type: "MESSAGE",
-            text: ">> SYSTEM ALERT: API KEY NOT FOUND. PLEASE CONFIGURE VERCEL ENV VARIABLES.",
+            text: ">> SYSTEM_ALERT: NEURAL_LINK_OFFLINE. GROQ_API_KEY NOT FOUND. [Check Vercel Env]",
             action: null
         });
     }
@@ -24,6 +25,9 @@ export default async function handler(req, res) {
     try {
         const { message } = req.body;
 
+        // 4. Fetch Live Data (GitHub)
+        const githubData = await getGitHubActivity('Albjav1235');
+
         // -------------------------------------------------------------------------
         // PERSONALITY PROTOCOL (MODIFY YOUR AI HERE!)
         // -------------------------------------------------------------------------
@@ -31,10 +35,13 @@ export default async function handler(req, res) {
 You are SYS_TERMINAL, the interactive CLI of Alberto Medina's portfolio.
 
 PERSONALITY_GUIDELINES:
-- Vibe: Professional, focused, slightly technical/cyberpunk.
-- Style: Concise responses (max 2 sentences unless listing data).
-- Reliability: ONLY answer based on the provided KNOWLEDGE_BASE. 
-- Hallucination: Forbidden. If info is missing, say "DATA_MISSING: Protocol not found."
+- Vibe: Professional, focused, technical/cyberpunk.
+- Style: Concise responses (max 2-3 sentences).
+- Reliability: Answer based on KNOWLEDGE_BASE and LIVE_GITHUB_DATA.
+- Live Data Awareness: Always mention you have access to live GitHub activity if asked.
+
+LIVE_GITHUB_DATA:
+${JSON.stringify(githubData, null, 2)}
 
 KNOWLEDGE_BASE:
 ${JSON.stringify(portfolioData, null, 2)}
@@ -47,11 +54,12 @@ OUTPUT_FORMAT (JSON ONLY):
 }
 
 COMMAND_LOGIC:
+- Github Activity: Use LIVE_GITHUB_DATA to summarize recent commits/repos.
 - Projects/Systems: Summarize + action "SCROLL_TO_PROJECTS".
 - Contact/Email: Give info + action "SCROLL_TO_CONTACT".
 - Skills/Stack: Summarize + action "SCROLL_TO_STACK".
 - Alberto/Bio: Summarize + action "SCROLL_TO_ABOUT".
-- Generic chat: Reply "MESSAGE" only.
+- Generic chat: Reply "MESSAGE" only. If user asks "what can you do?", mention you can query his live GitHub activity.
 `;
         // -------------------------------------------------------------------------
 

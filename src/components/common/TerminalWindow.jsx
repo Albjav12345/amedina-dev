@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minimize2, Maximize2, Info } from 'lucide-react';
-import portfolioData from '../../../api/portfolio';
+import portfolioData from '../../data/portfolio';
 
 const TerminalWindow = ({ title, onStateChange }) => {
     const { terminal } = portfolioData.ui;

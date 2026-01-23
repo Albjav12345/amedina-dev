@@ -10,7 +10,7 @@ import {
     Search, MousePointer2
 } from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
-import portfolioData from '../../../api/portfolio.js';
+import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const { categories: rawCategories } = portfolioData.skills;

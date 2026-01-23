@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import portfolioData from '../../../api/portfolio';
+import portfolioData from '../../data/portfolio';
 
 const Footer = () => {
     const { footer } = portfolioData.ui;

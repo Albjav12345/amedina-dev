@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Download, Cpu } from 'lucide-react';
 import TerminalWindow, { AnimatedPipeline } from '../common/TerminalWindow';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
-import portfolioData from '../../../api/portfolio';
+import portfolioData from '../../data/portfolio';
 
 const Hero = () => {
     const { hero, sections } = portfolioData.ui;

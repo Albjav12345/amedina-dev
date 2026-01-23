@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ExternalLink, Loader2, CheckCircle2, Github, Linkedin, Copy, Check, Twitter, MessageSquare, User, Send } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
-import portfolioData from '../../../api/portfolio';
+import portfolioData from '../../data/portfolio';
 
 const Contact = () => {
     const { contact } = portfolioData.ui;
