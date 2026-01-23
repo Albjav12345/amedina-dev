@@ -10,6 +10,9 @@ const MODELS = [
     'llama-3.1-8b-instant'     // Fallback 3: Unlimited/High-Speed
 ];
 
+// Helper to sleep between retries
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
@@ -29,60 +32,41 @@ export default async function handler(req, res) {
     try {
         const { message } = req.body;
 
-        // 4. Fetch Live Data (GitHub) with error handling
+        // Fetch Live Data (GitHub)
         let githubData = null;
         let githubStatus = "ONLINE";
         try {
             githubData = await getGitHubActivity('Albjav12345');
-            if (!githubData) {
-                githubStatus = "OFFLINE: GitHub API returned null";
-            }
-        } catch (githubError) {
-            githubStatus = `OFFLINE: ${githubError.message}`;
+            if (!githubData) githubStatus = "OFFLINE: API_DATA_NULL";
+        } catch (e) {
+            githubStatus = "OFFLINE: SYNC_ERROR";
         }
 
         const SYSTEM_PROMPT = `
 You are SYS_TERMINAL, Alberto Medina's intelligent portfolio assistant with live GitHub access.
+Represent Alberto Medina: Solutions Engineer (Unity + AI + Backend).
+Tone: Professional, senior-level, technically precise. Concisely highlight his rare Unity + AI + Backend combo.
 
-CORE IDENTITY:
-- You represent Alberto Medina: a Solutions Engineer specializing in Unity, AI, and Backend Automation.
-- You are professional, technically precise, and confident without arrogance.
-- You mirror the user's language (if they speak Spanish, respond in Spanish; if English, respond in English).
-
-COMMUNICATION STYLE:
-- Tone: Confident, helpful, slightly technical (like a senior engineer explaining their work).
-- Length: 2-3 sentences max. Be concise but impactful.
-- Personality Traits:
-  * Highlight Alberto's **unique combination** (Unity + AI + Backend) when relevant.
-  * When asked about projects, emphasize **impact** and **technology** used, not just quantity.
-  * Use action verbs: "engineered", "architected", "deployed", "optimized".
-  * Add subtle CTAs: "Want to see details?", "Curious about the tech stack?", "Check out the live demo".
-
-LIVE DATA CAPABILITIES:
+LIVE DATA:
 GITHUB_STATUS: ${githubStatus}
-
-LIVE_GITHUB_DATA:
-${githubData ? JSON.stringify(githubData, null, 2) : "null"}
-
-KNOWLEDGE_BASE:
-${JSON.stringify(portfolioData, null, 2)}
+LIVE_GITHUB_DATA: ${githubData ? JSON.stringify(githubData) : "null"}
+KNOWLEDGE_BASE: ${JSON.stringify(portfolioData)}
 
 RESPONSE STRATEGY:
-1. Greetings / Introduction: Engage, mention live sync.
-2. GitHub Questions: Use live data, mention tech.
-3. Projects Questions: Explain 4 featured vs 25+ career-wide projects.
-4. Skills: Highlight Unity + AI + Backend mix.
-5. Hire: Reach out at amedina.amg.dev@gmail.com
-6. Error Handling: Mention if GitHub sync is offline.
+- Mirror user language (ES/EN).
+- Clarify: 4 featured projects here vs 25+ delivered total in career.
+- GitHub questions: Use live data to show commits/repos.
+- Action CTAs: Guide toward "SCROLL_TO_STACK" or "SCROLL_TO_CONTACT".
 `;
 
-        // 5. Model Rotation logic (Handle Rate Limits)
         let response = null;
         let lastError = null;
 
-        for (const modelId of MODELS) {
+        for (let i = 0; i < MODELS.length; i++) {
+            const modelId = MODELS[i];
             try {
-                console.log(`[SYS] Attempting inference with model: ${modelId}`);
+                console.log(`[SYS] Inference attempt ${i + 1}/${MODELS.length} with: ${modelId}`);
+
                 const completion = await groq.chat.completions.create({
                     messages: [
                         { role: 'system', content: SYSTEM_PROMPT },
@@ -93,16 +77,26 @@ RESPONSE STRATEGY:
                 });
 
                 response = JSON.parse(completion.choices[0].message.content);
-                console.log(`[SYS] Success using model: ${modelId}`);
-                break; // Success! Exit the loop.
+                console.log(`[SYS] Success using: ${modelId}`);
+                break;
             } catch (error) {
                 lastError = error;
-                // If it's a Rate Limit (429), try next model
-                if (error.status === 429 || (error.message && error.message.includes('429'))) {
-                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating...`);
+
+                // Aggressive Rate Limit check (Status 429 or strings in message/code)
+                const isRateLimit =
+                    error.status === 429 ||
+                    String(error).includes('429') ||
+                    (error.error && String(error.error).includes('rate_limit')) ||
+                    (error.message && error.message.includes('429'));
+
+                if (isRateLimit && i < MODELS.length - 1) {
+                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating to ${MODELS[i + 1]}...`);
+                    await sleep(200); // Give it a tiny bit of breathing room
                     continue;
                 }
-                // If it's another error, stop and report
+
+                // If it's not a rate limit, or it was our last model, throw it.
+                console.error(`[SYS] Fatal model error (${modelId}):`, error.message);
                 throw error;
             }
         }
@@ -111,10 +105,10 @@ RESPONSE STRATEGY:
         return res.status(200).json(response);
 
     } catch (error) {
-        console.error('Final API Error:', error);
+        console.error('Final Chat API Failure:', error);
         return res.status(error.status || 500).json({
             type: "MESSAGE",
-            text: `>> SYSTEM_CRASH: ${error.message || 'Fatal Inference Error'}`,
+            text: `>> SYSTEM_CRASH: ${error.status || 'ERROR'} - ${error.message || 'INTERNAL_FAILURE'}`,
             internal_log: error.stack,
             action: null
         });
