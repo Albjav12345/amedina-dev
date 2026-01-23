@@ -40,7 +40,7 @@ function App() {
     }, [])
 
     return (
-        <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void">
+        <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
             <ReactiveBackground />
             <Navbar />
             <main>
