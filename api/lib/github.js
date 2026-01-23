@@ -6,9 +6,6 @@
 export async function getGitHubActivity(username = 'Albjav12345') {
     const token = process.env.GITHUB_TOKEN;
 
-    console.log('[GitHub] Starting fetch for user:', username);
-    console.log('[GitHub] Token present:', !!token);
-
     const headers = {
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'AmedinaDev-Portfolio'
@@ -19,57 +16,63 @@ export async function getGitHubActivity(username = 'Albjav12345') {
     }
 
     try {
-        // Fetch Public Events (Commits, Pushes, etc.)
-        console.log('[GitHub] Fetching events...');
-        const eventsRes = await fetch(`https://api.github.com/users/${username}/events/public`, { headers });
-        console.log('[GitHub] Events response status:', eventsRes.status);
+        console.log(`[GitHub] Fetching full profile for ${username}...`);
 
-        // Fetch Top Repositories
-        console.log('[GitHub] Fetching repos...');
-        const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`, { headers });
-        console.log('[GitHub] Repos response status:', reposRes.status);
+        // Parallel fetches for efficiency
+        const [userRes, eventsRes, reposRes] = await Promise.all([
+            fetch(`https://api.github.com/users/${username}`, { headers }),
+            fetch(`https://api.github.com/users/${username}/events/public`, { headers }),
+            fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, { headers })
+        ]);
 
-        if (!eventsRes.ok || !reposRes.ok) {
-            const eventsError = !eventsRes.ok ? await eventsRes.text() : null;
-            const reposError = !reposRes.ok ? await reposRes.text() : null;
-            console.error('[GitHub] API Error Details:', { eventsError, reposError });
-            throw new Error(`GitHub API Error: ${eventsRes.status} / ${reposRes.status}`);
+        if (!userRes.ok || !eventsRes.ok || !reposRes.ok) {
+            throw new Error(`GitHub API Error: ${userRes.status} / ${eventsRes.status} / ${reposRes.status}`);
         }
 
-        const events = await eventsRes.json();
-        const repos = await reposRes.json();
+        const [user, events, repos] = await Promise.all([
+            userRes.json(),
+            eventsRes.json(),
+            reposRes.json()
+        ]);
 
-        console.log('[GitHub] Successfully fetched', events.length, 'events and', repos.length, 'repos');
-
-        // Process latest 5 commits/push events
+        // Process latest commits accurately
         const recentCommits = events
-            .filter(e => e.type === 'PushEvent')
-            .slice(0, 5)
-            .map(e => ({
+            .filter(e => e.type === 'PushEvent' && e.payload.commits)
+            .flatMap(e => e.payload.commits.map(c => ({
                 repo: e.repo.name.replace(`${username}/`, ''),
-                message: e.payload.commits?.[0]?.message || 'Routine update',
+                message: c.message,
                 date: new Date(e.created_at).toLocaleDateString()
-            }));
+            })))
+            .slice(0, 5); // Keep top 5 latest commits across all repos
 
-        // Process top repos summary
+        // Process top repos meticulously
         const topRepos = repos.map(r => ({
             name: r.name,
             lang: r.language,
             stars: r.stargazers_count,
-            description: r.description
+            description: r.description,
+            url: r.html_url
         }));
 
-        console.log('[GitHub] Processed', recentCommits.length, 'recent commits');
+        console.log(`[GitHub] Success. Public Repos: ${user.public_repos}, Followers: ${user.followers}`);
 
         return {
-            username,
+            username: user.login,
+            name: user.name,
+            bio: user.bio,
+            stats: {
+                totalPublicRepos: user.public_repos,
+                followers: user.followers,
+                following: user.following,
+                publicGists: user.public_gists
+            },
             recentCommits,
             topRepos,
             lastUpdated: new Date().toISOString()
         };
 
     } catch (error) {
-        console.error("[GitHub] Fetch Failure:", error.message, error.stack);
-        throw error; // Re-throw para que chat.js lo capture
+        console.error("[GitHub] Fetch Failure:", error.message);
+        throw error;
     }
 }
