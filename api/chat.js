@@ -4,10 +4,10 @@ import { getGitHubActivity } from './lib/github.js';
 
 // Configuration: Model Rotation Fallback List
 const MODELS = [
-    'llama-3.3-70b-versatile', // Tier 1: Best Quality
-    'llama-3.1-70b-versatile', // Fallback 1: High Quality
-    'mixtral-8x7b-32768',      // Fallback 2: Fast & Reliable
-    'llama-3.1-8b-instant'     // Fallback 3: Unlimited/High-Speed
+    'llama-3.3-70b-versatile', // Tier 1: Best Quality (70B)
+    'mixtral-8x7b-32768',      // Fallback 1: High Reliability
+    'llama-3-70b-8192',        // Fallback 2: Legacy Stable 70B
+    'llama-3.1-8b-instant'     // Fallback 3: High Speed / High Limits
 ];
 
 // Helper to sleep between retries
