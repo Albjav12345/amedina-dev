@@ -25,8 +25,19 @@ export default async function handler(req, res) {
     try {
         const { message } = req.body;
 
-        // 4. Fetch Live Data (GitHub)
-        const githubData = await getGitHubActivity('Albjav1235');
+        // 4. Fetch Live Data (GitHub) with error handling
+        let githubData = null;
+        let githubStatus = "ONLINE";
+        try {
+            githubData = await getGitHubActivity('Albjav1235');
+            if (!githubData) {
+                githubStatus = "OFFLINE: GitHub API returned null";
+                console.warn("GitHub fetch returned null - check token or username");
+            }
+        } catch (githubError) {
+            githubStatus = `OFFLINE: ${githubError.message}`;
+            console.error("GitHub API Error:", githubError);
+        }
 
         // -------------------------------------------------------------------------
         // PERSONALITY PROTOCOL (MODIFY YOUR AI HERE!)
@@ -39,9 +50,13 @@ PERSONALITY_GUIDELINES:
 - Style: Concise responses (max 2-3 sentences).
 - Reliability: Answer based on KNOWLEDGE_BASE and LIVE_GITHUB_DATA.
 - Live Data Awareness: Always mention you have access to live GitHub activity if asked.
+- Error Transparency: If GITHUB_STATUS is not "ONLINE", inform the user github sync is temporarily offline.
+
+GITHUB_STATUS: ${githubStatus}
 
 LIVE_GITHUB_DATA:
-${JSON.stringify(githubData, null, 2)}
+${githubData ? JSON.stringify(githubData, null, 2) : "null"}
+
 
 KNOWLEDGE_BASE:
 ${JSON.stringify(portfolioData, null, 2)}
