@@ -24,10 +24,10 @@ const About = () => {
     });
 
     return (
-        <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
+        <section id="about" className="py-20 md:py-32 relative overflow-visible px-0">
             {/* Background Decor - Hide on Low Tier */}
             {!isLow && (
-                <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-electric-cyan/5 blur-[120px] rounded-full pointer-events-none"></div>
+                <div className="absolute top-1/4 right-0 w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] min-w-[400px] min-h-[400px] bg-electric-cyan/10 blur-[12vw] rounded-full pointer-events-none translate-x-1/2 opacity-70"></div>
             )}
 
             <div className="container mx-auto px-6">

@@ -118,7 +118,7 @@ const TechStack = () => {
     }));
 
     return (
-        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden bg-dark-void section-padding">
+        <section id="tech-stack" className="py-20 md:py-32 relative overflow-visible bg-dark-void section-padding">
             <div className="container mx-auto px-6 relative z-10">
 
                 {/* Section Header */}

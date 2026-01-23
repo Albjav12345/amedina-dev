@@ -10,9 +10,9 @@ const Hero = () => {
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
 
     return (
-        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative">
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,rgba(0,255,153,0.05)_0%,transparent_50%)]"></div>
+        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-visible">
+            {/* Background Decor - Naturally Scaling Glow (Balanced Mobile Presence) */}
+            <div className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] min-w-[500px] min-h-[500px] bg-electric-green/10 blur-[15vw] rounded-full pointer-events-none opacity-80"></div>
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-12 gap-16 items-center relative">
