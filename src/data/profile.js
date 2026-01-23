@@ -44,7 +44,7 @@ export const profile = {
         ]
     },
     social: {
-        github: "https://github.com/Albjav1235",
+        github: "https://github.com/Albjav12345",
         linkedin: "#"
     }
 };

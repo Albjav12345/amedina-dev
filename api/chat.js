@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         let githubData = null;
         let githubStatus = "ONLINE";
         try {
-            githubData = await getGitHubActivity('Albjav1235');
+            githubData = await getGitHubActivity('Albjav12345');
             if (!githubData) {
                 githubStatus = "OFFLINE: GitHub API returned null";
                 console.warn("GitHub fetch returned null - check token or username");

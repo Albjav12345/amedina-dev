@@ -3,7 +3,7 @@
  * Utility to fetch and process public GitHub data for Alberto's AI Terminal.
  */
 
-export async function getGitHubActivity(username = 'Albjav1235') {
+export async function getGitHubActivity(username = 'Albjav12345') {
     const token = process.env.GITHUB_TOKEN;
 
     console.log('[GitHub] Starting fetch for user:', username);

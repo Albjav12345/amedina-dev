@@ -27,7 +27,7 @@ export const ui = {
             white: "ALBERTO",
             green: "MEDINA"
         },
-        handle: "@Albjav1235",
+        handle: "@Albjav12345",
         description: "Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions since age 10.",
         buttons: {
             terminal: "ACCESS_TERMINAL",
