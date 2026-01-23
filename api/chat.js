@@ -2,24 +2,28 @@ import Groq from 'groq-sdk';
 import portfolioData from './portfolio.js';
 import { getGitHubActivity } from './lib/github.js';
 
+// Configuration: Model Rotation Fallback List
+const MODELS = [
+    'llama-3.3-70b-versatile', // Tier 1: Best Quality
+    'llama-3.1-70b-versatile', // Fallback 1: High Quality
+    'mixtral-8x7b-32768',      // Fallback 2: Fast & Reliable
+    'llama-3.1-8b-instant'     // Fallback 3: Unlimited/High-Speed
+];
+
 export default async function handler(req, res) {
-    // 1. Validar Método
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    // 2. Validar API Key (Evita crash inicial)
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-        console.error("CRITICAL: GROQ_API_KEY is missing in environment variables.");
         return res.status(500).json({
             type: "MESSAGE",
-            text: ">> SYSTEM_ALERT: NEURAL_LINK_OFFLINE. GROQ_API_KEY NOT FOUND. [Check Vercel Env]",
+            text: ">> SYSTEM_ALERT: NEURAL_LINK_OFFLINE. GROQ_API_KEY NOT FOUND.",
             action: null
         });
     }
 
-    // 3. Inicializar Cliente
     const groq = new Groq({ apiKey });
 
     try {
@@ -32,16 +36,11 @@ export default async function handler(req, res) {
             githubData = await getGitHubActivity('Albjav12345');
             if (!githubData) {
                 githubStatus = "OFFLINE: GitHub API returned null";
-                console.warn("GitHub fetch returned null - check token or username");
             }
         } catch (githubError) {
             githubStatus = `OFFLINE: ${githubError.message}`;
-            console.error("GitHub API Error:", githubError);
         }
 
-        // -------------------------------------------------------------------------
-        // PERSONALITY PROTOCOL (MODIFY YOUR AI HERE!)
-        // -------------------------------------------------------------------------
         const SYSTEM_PROMPT = `
 You are SYS_TERMINAL, Alberto Medina's intelligent portfolio assistant with live GitHub access.
 
@@ -69,79 +68,53 @@ KNOWLEDGE_BASE:
 ${JSON.stringify(portfolioData, null, 2)}
 
 RESPONSE STRATEGY:
-
-1. **Greetings / Introduction**:
-   - Don't just say "I'm here to assist". Be more engaging.
-   - Example: "Hey! I'm Alberto's portfolio AI with live GitHub sync. Ask me about his projects, latest commits, or tech stack."
-   
-2. **GitHub Questions** (commits, repos, activity):
-   - Use LIVE_GITHUB_DATA to give real-time answers.
-   - Add context: mention the tech or purpose if available.
-   - Example: "His latest commit was 'feat: add live GitHub integration' on amedina-dev (1/23/2026). Want to explore his repos?"
-
-3. **Projects Questions**:
-   - Differentiate between:
-     * Portfolio showcase (4 curated projects on THIS site)
-     * Total career projects (25+ delivered across freelance platforms)
-     * GitHub repositories (from LIVE_GITHUB_DATA)
-   - When asked "how many projects", clarify: "He has 4 featured projects here, but has delivered 25+ total across his career. Which interests you?"
-   
-4. **Skills / Stack Questions**:
-   - Emphasize the **unique combo**: Unity (game dev) + Python (automation) + React (modern web).
-   - Example: "He's specialized in bridging creative tech (Unity, HLSL) with intelligent automation (Python, AI). It's a rare mix."
-   - Use action "SCROLL_TO_STACK" if appropriate.
-
-5. **Contact / Hiring Questions**:
-   - Be proactive: "He's open to freelance and full-time. Best way to reach him: amedina.amg.dev@gmail.com"
-   - Use action "SCROLL_TO_CONTACT".
-
-6. **What Can I Ask?** / Help:
-   - Be specific and exciting:
-   - Example: "You can ask about his latest GitHub commits (live data!), explore his 4 featured projects, dive into his tech stack, or get his contact info. What catches your eye?"
-
-7. **Data Not Available**:
-   - Don't just say "no info". Redirect intelligently.
-   - Example: "I don't track visitor stats, but I can show you his project demos and GitHub activity. Want a tour?"
-
-ERROR HANDLING:
-- If GITHUB_STATUS is not "ONLINE", say: "GitHub sync is temporarily offline, but I can still answer questions about his portfolio and skills."
-
-OUTPUT_FORMAT (JSON ONLY):
-{
-"type": "MESSAGE" | "ACTION",
-"text": "Your response here...",
-"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | null
-}
-
-COMMAND_LOGIC:
-- GitHub Activity: Use LIVE_GITHUB_DATA. Mention tech/context when possible.
-- Projects (Portfolio): Describe the 4 featured ones. Highlight impact + tech.
-- Projects (Career): Mention 25+ delivered. Offer to show featured ones.
-- Projects (GitHub): Use LIVE_GITHUB_DATA repos. Suggest exploring the live ones.
-- Skills/Stack: Emphasize Unity + AI + Backend combo. Action "SCROLL_TO_STACK".
-- Contact: Give email + action "SCROLL_TO_CONTACT".
-- About/Bio: Summarize background. Action "SCROLL_TO_ABOUT".
-- Generic chat: Be helpful, subtly guide toward exploring the portfolio.
+1. Greetings / Introduction: Engage, mention live sync.
+2. GitHub Questions: Use live data, mention tech.
+3. Projects Questions: Explain 4 featured vs 25+ career-wide projects.
+4. Skills: Highlight Unity + AI + Backend mix.
+5. Hire: Reach out at amedina.amg.dev@gmail.com
+6. Error Handling: Mention if GitHub sync is offline.
 `;
-        // -------------------------------------------------------------------------
 
-        const completion = await groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: SYSTEM_PROMPT },
-                { role: 'user', content: message }
-            ],
-            model: 'llama-3.3-70b-versatile',
-            response_format: { type: 'json_object' }
-        });
+        // 5. Model Rotation logic (Handle Rate Limits)
+        let response = null;
+        let lastError = null;
 
-        const responseContent = JSON.parse(completion.choices[0].message.content);
-        return res.status(200).json(responseContent);
+        for (const modelId of MODELS) {
+            try {
+                console.log(`[SYS] Attempting inference with model: ${modelId}`);
+                const completion = await groq.chat.completions.create({
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        { role: 'user', content: message }
+                    ],
+                    model: modelId,
+                    response_format: { type: 'json_object' }
+                });
+
+                response = JSON.parse(completion.choices[0].message.content);
+                console.log(`[SYS] Success using model: ${modelId}`);
+                break; // Success! Exit the loop.
+            } catch (error) {
+                lastError = error;
+                // If it's a Rate Limit (429), try next model
+                if (error.status === 429 || (error.message && error.message.includes('429'))) {
+                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating...`);
+                    continue;
+                }
+                // If it's another error, stop and report
+                throw error;
+            }
+        }
+
+        if (!response) throw lastError;
+        return res.status(200).json(response);
 
     } catch (error) {
-        console.error('Groq API Error:', error);
-        return res.status(500).json({
+        console.error('Final API Error:', error);
+        return res.status(error.status || 500).json({
             type: "MESSAGE",
-            text: `>> SYSTEM_CRASH: ${error.message}`,
+            text: `>> SYSTEM_CRASH: ${error.message || 'Fatal Inference Error'}`,
             internal_log: error.stack,
             action: null
         });
