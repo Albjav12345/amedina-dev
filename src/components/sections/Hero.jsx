@@ -10,9 +10,12 @@ const Hero = () => {
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
 
     return (
-        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-visible">
-            {/* Background Decor - Naturally Scaling Glow (Balanced Mobile Presence) */}
-            <div className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] min-w-[500px] min-h-[500px] bg-electric-green/20 blur-[15vw] rounded-full pointer-events-none opacity-100"></div>
+        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
+            {/* Background Decor - GPU-Friendly Radial Gradient */}
+            <div
+                className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] pointer-events-none opacity-40"
+                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.2) 0%, transparent 70%)" }}
+            />
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-12 gap-16 items-center relative">

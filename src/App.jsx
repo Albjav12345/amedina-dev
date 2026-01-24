@@ -13,29 +13,42 @@ import ReactiveBackground from './components/common/ReactiveBackground'
 
 function App() {
     useEffect(() => {
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: 'vertical',
-            gestureOrientation: 'vertical',
-            smoothWheel: true,
-            wheelMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        })
+        // Detect iOS devices (iPhone, iPad, iPod) including iPads masquerading as desktop
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+            || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-        window.lenis = lenis;
+        // ONLY initialize Lenis on Non-iOS devices (Desktop, Android)
+        if (!isIOS) {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                orientation: 'vertical',
+                gestureOrientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            })
 
-        function raf(time) {
-            lenis.raf(time)
+            window.lenis = lenis;
+
+            function raf(time) {
+                lenis.raf(time)
+                requestAnimationFrame(raf)
+            }
+
             requestAnimationFrame(raf)
-        }
 
-        requestAnimationFrame(raf)
-
-        return () => {
-            lenis.destroy()
+            return () => {
+                lenis.destroy()
+                window.lenis = null;
+            }
+        } else {
+            // iOS: Force native hardware-accelerated scroll
+            document.documentElement.style.overflowY = 'auto';
+            document.documentElement.style.webkitOverflowScrolling = 'touch';
+            window.lenis = null; // Ensure lenis is not available
         }
     }, [])
 

@@ -118,9 +118,12 @@ const TechStack = () => {
     }));
 
     return (
-        <section id="tech-stack" className="py-20 md:py-32 relative overflow-visible section-padding">
-            {/* Background Decor */}
-            <div className="absolute bottom-[10%] left-[-5%] w-[40vw] h-[40vw] bg-electric-green/20 blur-[10vw] rounded-full pointer-events-none opacity-60"></div>
+        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden section-padding render-optimize">
+            {/* Background Decor - GPU-Friendly Radial Gradient */}
+            <div
+                className="absolute bottom-[10%] left-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none opacity-40"
+                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.2) 0%, transparent 70%)" }}
+            />
 
             <div className="container mx-auto px-6 relative z-10">
 

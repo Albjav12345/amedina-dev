@@ -60,10 +60,13 @@ const About = () => {
     });
 
     return (
-        <section id="about" className="py-20 md:py-32 relative overflow-visible px-0">
-            {/* Background Decor - Hide on Low Tier */}
+        <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
+            {/* Background Decor - GPU-Friendly Radial Gradient */}
             {!isLow && (
-                <div className="absolute top-1/4 right-0 w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] min-w-[400px] min-h-[400px] bg-electric-cyan/10 blur-[12vw] rounded-full pointer-events-none translate-x-1/2 opacity-70"></div>
+                <div
+                    className="absolute top-1/4 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none opacity-40 translate-x-1/2"
+                    style={{ background: "radial-gradient(circle, rgba(102, 252, 241, 0.12) 0%, transparent 70%)" }}
+                />
             )}
 
             <div className="container mx-auto px-6">
