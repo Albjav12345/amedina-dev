@@ -315,32 +315,33 @@ const TypewriterEffect = ({ text, speed = 20 }) => {
 
 export const AnimatedPipeline = () => {
     const { terminal } = portfolioData.ui;
-    const [visibleLines, setVisibleLines] = useState(0);
+    const [lineIdx, setLineIdx] = useState(0);
     const lines = terminal.initialLines;
 
-    // Line-by-line reveal for smooth performance (5 re-renders vs 500+)
+    // Cyclic idle animation with original timing
     useEffect(() => {
-        if (visibleLines < lines.length) {
-            const timeout = setTimeout(() => {
-                setVisibleLines(prev => prev + 1);
-            }, 150); // One line every 150ms
-            return () => clearTimeout(timeout);
-        }
-    }, [visibleLines, lines.length]);
+        const interval = setInterval(() => {
+            setLineIdx(prev => (prev + 1) % (lines.length + 1));
+        }, 2500); // Original slow timing for idle effect
+        return () => clearInterval(interval);
+    }, [lines.length]);
 
     return (
         <div className="flex flex-col gap-1">
-            {lines.slice(0, visibleLines).map((line, i) => (
+            {lines.slice(0, lineIdx).map((line, i) => (
                 <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
                     className={line.color === 'electric-green' ? 'text-electric-green' :
                         line.color === 'electric-cyan' ? 'text-electric-cyan' :
                             line.color === 'gray' ? 'text-gray-500' : 'text-white'}
                 >
-                    {line.text} {/* Instant render - NO TypewriterEffect character animation */}
+                    {i === lineIdx - 1 ? (
+                        <TypewriterEffect text={line.text} speed={15} />
+                    ) : (
+                        <span>{line.text}</span>
+                    )}
                 </motion.div>
             ))}
             <motion.span
