@@ -71,7 +71,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                         }
                     }}
                 >
-                    <track kind="captions" src="" label="English" default />
+
                 </video>
             )}
 
