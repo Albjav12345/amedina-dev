@@ -257,7 +257,7 @@ const InteractiveConsole = ({ onClose }) => {
                         <span className="shrink-0">{entry.type === 'input' ? <span className="text-electric-cyan font-bold">visitor@sys:~$</span> : ">"}</span>
                         <span className="break-words whitespace-pre-wrap">
                             {entry.type === 'output' ? (
-                                <TypewriterEffect text={entry.content} speed={40} />
+                                <TypewriterEffect text={entry.content} speed={20} />
                             ) : entry.content}
                         </span>
                     </div>
@@ -315,9 +315,9 @@ export const AnimatedPipeline = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setLineIdx(prev => (prev + 1) % (lines.length + 1));
-        }, 1200); // Slower initial lines
+        }, 2500); // Much more time to read each line
         return () => clearInterval(interval);
-    }, []);
+    }, [lines.length]);
 
     return (
         <div className="flex flex-col gap-1">
@@ -330,7 +330,11 @@ export const AnimatedPipeline = () => {
                         line.color === 'electric-cyan' ? 'text-electric-cyan' :
                             line.color === 'gray' ? 'text-gray-500' : 'text-white'}
                 >
-                    {line.text}
+                    {i === lineIdx - 1 ? (
+                        <TypewriterEffect text={line.text} speed={15} />
+                    ) : (
+                        <span>{line.text}</span>
+                    )}
                 </motion.div>
             ))}
             <motion.span
