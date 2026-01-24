@@ -62,7 +62,7 @@ const Contact = () => {
     return (
         <section id="contact" className="py-20 md:py-32 relative overflow-visible px-0">
             {/* Background Decor */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/5 blur-[120px] rounded-full pointer-events-none"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-electric-green/15 blur-[120px] rounded-full pointer-events-none"></div>
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">

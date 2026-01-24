@@ -71,7 +71,7 @@ const About = () => {
                                     />
                                 </div>
                                 {/* Avatar Glow - Hide on Low Tier */}
-                                {!isLow && <div className="absolute inset-0 bg-electric-green/20 blur-3xl rounded-full"></div>}
+                                {!isLow && <div className="absolute inset-0 bg-electric-green/40 blur-3xl rounded-full"></div>}
                             </div>
 
                             {/* Identity Info */}

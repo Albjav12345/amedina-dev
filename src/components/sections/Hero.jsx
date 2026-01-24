@@ -12,7 +12,7 @@ const Hero = () => {
     return (
         <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-visible">
             {/* Background Decor - Naturally Scaling Glow (Balanced Mobile Presence) */}
-            <div className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] min-w-[500px] min-h-[500px] bg-electric-green/10 blur-[15vw] rounded-full pointer-events-none opacity-80"></div>
+            <div className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[900px] max-h-[900px] min-w-[500px] min-h-[500px] bg-electric-green/20 blur-[15vw] rounded-full pointer-events-none opacity-100"></div>
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-12 gap-16 items-center relative">

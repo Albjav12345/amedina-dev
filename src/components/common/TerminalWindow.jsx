@@ -255,7 +255,11 @@ const InteractiveConsole = ({ onClose }) => {
                 {history.map((entry, i) => (
                     <div key={i} className={`flex gap-2 leading-relaxed ${entry.type === 'input' ? 'text-white' : 'text-gray-400'}`}>
                         <span className="shrink-0">{entry.type === 'input' ? <span className="text-electric-cyan font-bold">visitor@sys:~$</span> : ">"}</span>
-                        <span className="break-words whitespace-pre-wrap">{entry.content}</span>
+                        <span className="break-words whitespace-pre-wrap">
+                            {entry.type === 'output' ? (
+                                <TypewriterEffect text={entry.content} speed={40} />
+                            ) : entry.content}
+                        </span>
                     </div>
                 ))}
 
@@ -286,6 +290,23 @@ const InteractiveConsole = ({ onClose }) => {
     );
 };
 
+const TypewriterEffect = ({ text, speed = 20 }) => {
+    const [displayedText, setDisplayedText] = useState("");
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        if (index < text.length) {
+            const timeout = setTimeout(() => {
+                setDisplayedText((prev) => prev + text.charAt(index));
+                setIndex((prev) => prev + 1);
+            }, speed);
+            return () => clearTimeout(timeout);
+        }
+    }, [index, text, speed]);
+
+    return <span>{displayedText}</span>;
+};
+
 export const AnimatedPipeline = () => {
     const { terminal } = portfolioData.ui;
     const [lineIdx, setLineIdx] = useState(0);
@@ -294,7 +315,7 @@ export const AnimatedPipeline = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setLineIdx(prev => (prev + 1) % (lines.length + 1));
-        }, 800);
+        }, 1200); // Slower initial lines
         return () => clearInterval(interval);
     }, []);
 

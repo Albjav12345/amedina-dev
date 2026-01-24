@@ -134,6 +134,9 @@ const FeaturedProjects = () => {
 
     return (
         <section id="projects" className="py-20 md:py-32 relative overflow-visible">
+            {/* Background Decor */}
+            <div className="absolute top-[20%] right-[-10%] w-[50vw] h-[50vw] bg-electric-green/10 blur-[12vw] rounded-full pointer-events-none opacity-50"></div>
+
             <div className="container mx-auto px-6">
 
                 {/* Section Title */}
