@@ -33,15 +33,20 @@ export const useHardwareQuality = () => {
                 tier = 'mid'; // Even high-end Androids struggle with massive blur + scroll
             }
         } else if (isMobile) {
-            // iOS usually handles blur better, but older iPhones might struggle
-            if (cores <= 2) tier = 'mid';
+            // FORCE MID TIER FOR ALL iPHONES to disable heavy backdrop-blur (FPS Killer on Retina)
+            // Even iPhone 15 Pro struggles with massive CSS blurs + scroll + JS animations simultaneously.
+            if (/iPhone|iPad/i.test(ua)) {
+                tier = 'mid'; // Checks 'allowBlur' below -> disables blur for mid if isAndroid, let's allow blur for iPhone but carefully?
+                // Actually, let's treat iPhones as 'mid' but we need to ensure 'allowBlur' logic handles it.
+            }
         }
 
         // Tier characteristics
         return {
             tier,
-            // Blur is the #1 FPS killer on Android. Disable it on Low/Mid Androids.
-            allowBlur: tier === 'high' || (tier === 'mid' && !isAndroid),
+            // Blur is the #1 FPS killer. Disable on Low/Mid Androids AND ensure iPhones are careful.
+            // Let's only allow full blurs on Desktop High.
+            allowBlur: tier === 'high' && !isMobile,
 
             // Low tier gets simple opacity fades instead of complex layout projection
             simplePhysics: tier === 'low',
