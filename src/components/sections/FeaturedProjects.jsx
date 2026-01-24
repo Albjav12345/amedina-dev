@@ -136,8 +136,8 @@ const FeaturedProjects = () => {
         <section id="projects" className="py-20 md:py-32 relative overflow-hidden render-optimize">
             {/* Background Decor - GPU-Friendly Radial Gradient */}
             <div
-                className="absolute top-[20%] right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none opacity-30"
-                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.12) 0%, transparent 70%)" }}
+                className="absolute top-[20%] right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2"
+                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.13) 0%, transparent 70%)" }}
             />
 
             <div className="container mx-auto px-6">

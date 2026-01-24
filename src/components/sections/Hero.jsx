@@ -13,8 +13,8 @@ const Hero = () => {
         <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
             {/* Background Decor - GPU-Friendly Radial Gradient */}
             <div
-                className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] pointer-events-none opacity-40"
-                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.2) 0%, transparent 70%)" }}
+                className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] pointer-events-none opacity-45"
+                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)" }}
             />
 
             <div className="container mx-auto px-6 relative z-10">

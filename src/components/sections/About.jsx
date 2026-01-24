@@ -64,8 +64,8 @@ const About = () => {
             {/* Background Decor - GPU-Friendly Radial Gradient */}
             {!isLow && (
                 <div
-                    className="absolute top-1/4 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none opacity-40 translate-x-1/2"
-                    style={{ background: "radial-gradient(circle, rgba(102, 252, 241, 0.12) 0%, transparent 70%)" }}
+                    className="absolute top-1/4 right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2"
+                    style={{ background: "radial-gradient(circle, rgba(102, 252, 241, 0.13) 0%, transparent 70%)" }}
                 />
             )}
 

@@ -64,7 +64,7 @@ const Contact = () => {
             {/* Background Decor - Standardized GPU-Friendly Glow */}
             <div
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] pointer-events-none opacity-40"
-                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.2) 0%, transparent 50%)" }}
+                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.2) 0%, transparent 55%)" }}
             />
 
             <div className="container mx-auto px-6 relative z-10">
