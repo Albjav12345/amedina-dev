@@ -130,7 +130,10 @@ const Navbar = () => {
                     {/* Terminal Toggle Button */}
                     {/* Terminal Toggle Button */}
                     <motion.button
-                        onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
+                        onClick={(e) => {
+                            window.dispatchEvent(new CustomEvent('toggle-terminal'));
+                            scrollToSection(e, 'home');
+                        }}
                         className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest flex items-center gap-2 ml-4 cursor-pointer"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -175,6 +178,17 @@ const Navbar = () => {
                                     </span>
                                 </a>
                             ))}
+                            {/* Mobile Terminal Button */}
+                            <motion.button
+                                onClick={(e) => {
+                                    window.dispatchEvent(new CustomEvent('toggle-terminal'));
+                                    scrollToSection(e, 'home');
+                                }}
+                                className="btn-system text-[10px] py-3 px-3 uppercase tracking-widest flex items-center justify-center gap-2 mt-4 cursor-pointer w-full"
+                            >
+                                <Terminal className="w-4 h-4" />
+                                {navigation.terminalButton}
+                            </motion.button>
                         </div>
                     </motion.div>
                 )}
