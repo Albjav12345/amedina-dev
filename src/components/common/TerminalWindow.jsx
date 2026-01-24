@@ -299,10 +299,10 @@ const InteractiveConsole = ({ onClose }) => {
 const TypewriterEffect = ({ text, speed = 20 }) => {
     const [displayedText, setDisplayedText] = useState("");
     const [index, setIndex] = useState(0);
-    const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const isMobileOS = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     // Instant render on mobile to prevent main-thread blocking/saturation
-    if (isTouch) return <span>{text}</span>;
+    if (isMobileOS) return <span>{text}</span>;
 
     useEffect(() => {
         if (index < text.length) {
