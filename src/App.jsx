@@ -15,10 +15,9 @@ const Contact = lazy(() => import('./components/sections/Contact'))
 
 function App() {
     useEffect(() => {
-        // Check if device is strictly a Mobile/Tablet OS (Android/iOS)
-        // We use User Agent here because we WANT smooth scroll on Touch-enabled Laptops, 
-        // but NOT on Phones/Tablets where native scroll is preferred for performance.
-        const isMobileOS = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // Check if device is strictly a Mobile/Tablet OS (Android/iOS) or iPad masquerading as Desktop
+        const isMobileOS = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPad Pro check
 
         // Only initialize Lenis on Desktop (including touch laptops)
         if (!isMobileOS) {
