@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     const groq = new Groq({ apiKey });
 
     try {
-        const { message } = req.body;
+        const { message, history } = req.body;
 
         // 1. Fetch Live Data (GitHub) with error handling
         let githubData = null;
@@ -67,13 +67,17 @@ You MUST provide the correct "action" string in your JSON response if the user's
 - [CONTACT]: If they ask for email, how to hire him, or "connect". -> "SCROLL_TO_CONTACT"
 - [ABOUT]: If they ask who he is, his background, or bio. -> "SCROLL_TO_ABOUT"
 
+INTERACTIVE PROTOCOL (GITHUB & LINKS):
+- If the user asks about a specific commit, repo, or GitHub activity:
+  1. Answer with the specific data (commit message, repo name, etc.).
+  2. ALWAYS append a proposal to visit the link. Format: "Would you like to view this repository? [y/n]"
+  3. If the user replies 'y', 'yes', 'si' to a previous proposal, return action: "OPEN_LINK" and the URL in the 'url' field.
+
 STRATEGIC NARRATIVE:
-1. On Introduction & Capability: If asked "who are you?", "HOLA", or "what can you do?", introduce yourself as Alberto's Technical Agent. Explain that this terminal is a unique engineering feat by Alberto: It uses Llama 3.3 via Groq for sub-second inference, is synced live with his GitHub activity, and can autonomously control the website's UI. Invite them to test it: "Ask me to show you his projects or latest commits."
-2. On System Excellence: If the user asks about how this works or its uniqueness, explain: "This is a Neural-to-UI bridge. Alberto engineered a custom backend that allows an AI (that's me!) to process his real-time GitHub data and physically navigate this portfolio using specialized ACTION protocols. It's a demonstration of full-stack orchestration."
-3. On Project Quantity: If asked "how many projects", reply: "Alberto has delivered 25+ industrial projects across his career (Social Proof). On this page, he showcases 4 high-fidelity systems. Additionally, his GitHub currently hosts ${githubData?.stats?.totalPublicRepos || 'many'} public repositories demonstrating his active development cycle." -> ACTION: "SCROLL_TO_PROJECTS"
-4. On Unique Combo: Always frame Alberto as a rare hybrid engineer. "He bridges the gap between immersive Unity interfaces and intelligent Python/AI backends. It's deterministic engineering with artistic vision."
-5. On GitHub: Use the live data to prove he is active RIGHT NOW. "His GitHub shows ${githubData?.stats?.totalPublicRepos || 'multiple'} repositories with ${githubData?.stats?.followers || '0'} followers. His latest commit was '${githubData?.recentCommits?.[0]?.message || 'Routine update'}' on the '${githubData?.recentCommits?.[0]?.repo || 'portfolio'}' repository. View his latest work?"
-6. No Data: If you don't have specific data (like visitor counts), redirect to his technical strengths. "I don't track visitor metrics, but I can show you his high-performance project demos. Interested?" -> ACTION: "SCROLL_TO_PROJECTS"
+1. On Introduction & Capability: "I am Alberto's Technical Agent. I bridge Neural AI with this UI. Ask me to show you his projects or latest commits."
+2. On System Excellence: "This is a Neural-to-UI bridge. Alberto engineered a custom backend that allows an AI (that's me!) to process his real-time GitHub data."
+3. On Project Quantity: "Alberto has delivered 25+ industrial projects. On this page, he showcases 4 high-fidelity systems." -> ACTION: "SCROLL_TO_PROJECTS"
+4. On GitHub: "His GitHub shows ${githubData?.stats?.totalPublicRepos || 'multiple'} repositories. His latest commit was '${githubData?.recentCommits?.[0]?.message || 'Routine update'}' on '${githubData?.recentCommits?.[0]?.repo || 'portfolio'}'. View it? [y/n]"
 
 IMPORTANT: You MUST always respond in a strictly valid JSON format according to the OUTPUT_FORMAT.
 
@@ -81,7 +85,8 @@ OUTPUT_FORMAT (JSON ONLY):
 {
 "type": "MESSAGE" | "ACTION",
 "text": "Your persuasive response here...",
-"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | null
+"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "OPEN_LINK" | null,
+"url": "https://github.com/..." (Only if action is OPEN_LINK)
 }
 `;
 
@@ -89,15 +94,22 @@ OUTPUT_FORMAT (JSON ONLY):
         let response = null;
         let lastError = null;
 
+        // Construct conversation context (last 2 turns + current)
+        const contextMessages = [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...(history || []).slice(-4).map(h => ({
+                role: h.type === 'input' ? 'user' : 'assistant',
+                content: h.content
+            })),
+            { role: 'user', content: message }
+        ];
+
         for (let i = 0; i < MODELS.length; i++) {
             const modelId = MODELS[i];
             try {
                 console.log(`[SYS] Attempting inference with model: ${modelId}`);
                 const completion = await groq.chat.completions.create({
-                    messages: [
-                        { role: 'system', content: SYSTEM_PROMPT },
-                        { role: 'user', content: message }
-                    ],
+                    messages: contextMessages,
                     model: modelId,
                     response_format: { type: 'json_object' }
                 });

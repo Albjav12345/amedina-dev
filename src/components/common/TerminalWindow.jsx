@@ -186,10 +186,14 @@ const InteractiveConsole = ({ onClose }) => {
             }
 
             try {
+                // Send history along with message for context
                 const res = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: cmd })
+                    body: JSON.stringify({
+                        message: cmd,
+                        history: history.slice(-5) // Send last 5 entries for context
+                    })
                 });
 
                 if (!res.ok) {
@@ -213,21 +217,23 @@ const InteractiveConsole = ({ onClose }) => {
 
                 // Execute Action
                 if (data.action) {
-                    const sectionId = data.action.replace('SCROLL_TO_', '').toLowerCase().replace('_', '-');
-                    // Map generic names to specific IDs if needed
-                    const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
+                    if (data.action === 'OPEN_LINK' && data.url) {
+                        window.open(data.url, '_blank');
+                    } else {
+                        const sectionId = data.action.replace('SCROLL_TO_', '').toLowerCase().replace('_', '-');
+                        const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
 
-                    setTimeout(() => {
-                        const element = document.getElementById(targetId);
-                        if (element) {
-                            // Use window.lenis if available for smooth consistency
-                            if (window.lenis) {
-                                window.lenis.scrollTo(element, { offset: -50, duration: 1.5 });
-                            } else {
-                                element.scrollIntoView({ behavior: 'smooth' });
+                        setTimeout(() => {
+                            const element = document.getElementById(targetId);
+                            if (element) {
+                                if (window.lenis) {
+                                    window.lenis.scrollTo(element, { offset: -50, duration: 1.5 });
+                                } else {
+                                    element.scrollIntoView({ behavior: 'smooth' });
+                                }
                             }
-                        }
-                    }, 500);
+                        }, 500);
+                    }
                 }
 
             } catch (error) {
