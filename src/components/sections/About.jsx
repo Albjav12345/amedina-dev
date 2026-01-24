@@ -1,11 +1,47 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect } from 'react';
+import { motion, useInView, useSpring, useTransform } from 'framer-motion';
 import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const { about: profileAbout } = portfolioData.profile;
+
+const Counter = ({ value }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    const strValue = String(value || "0");
+    const numericValue = parseInt(strValue) || 0;
+    const suffix = strValue.replace(numericValue.toString(), '');
+
+    const springValue = useSpring(0, {
+        stiffness: 30,
+        damping: 15,
+    });
+
+    const displayValue = useTransform(springValue, (latest) =>
+        Math.floor(latest) + suffix
+    );
+
+    useEffect(() => {
+        if (isInView) {
+            springValue.set(numericValue);
+        }
+    }, [isInView, numericValue, springValue]);
+
+    return (
+        <motion.span
+            ref={ref}
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            className="tabular-nums block"
+        >
+            {displayValue}
+        </motion.span>
+    );
+};
 
 const About = () => {
     const { about } = portfolioData.ui.sections;
@@ -98,7 +134,9 @@ const About = () => {
                             <div className="w-full grid grid-cols-2 gap-y-6 gap-x-4">
                                 {stats.filter(s => s.id !== 'rating').map((stat) => (
                                     <div key={stat.id} className="flex flex-col items-center group/stat">
-                                        <span className="text-2xl font-bold text-white font-mono group-hover/stat:text-electric-green transition-colors">{stat.value}</span>
+                                        <span className="text-2xl font-bold text-white font-mono group-hover/stat:text-electric-green transition-colors">
+                                            <Counter value={stat.value} />
+                                        </span>
                                         <span className="text-[9px] text-gray-500 uppercase tracking-widest">{stat.label.replace(' ', '_')}</span>
                                     </div>
                                 ))}
