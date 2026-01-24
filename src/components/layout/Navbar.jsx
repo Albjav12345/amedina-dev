@@ -101,7 +101,7 @@ const Navbar = () => {
                 </motion.div>
 
                 {/* Desktop Links */}
-                <div className="hidden md:flex items-center gap-4 lg:gap-8">
+                <div className="hidden lg:flex items-center gap-4 lg:gap-8">
                     {navLinks.map((link, i) => (
                         <motion.a
                             key={link.id}
@@ -147,7 +147,7 @@ const Navbar = () => {
 
                 {/* Mobile Toggle */}
                 <button
-                    className="md:hidden text-white focus:outline-none"
+                    className="lg:hidden text-white focus:outline-none"
                     aria-label="Toggle navigation menu"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
@@ -162,7 +162,7 @@ const Navbar = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-dark-high border-b border-white/10 overflow-hidden"
+                        className="lg:hidden bg-dark-high border-b border-white/10 overflow-hidden"
                     >
                         <div className="flex flex-col p-6 gap-4">
                             {navLinks.map((link) => (
