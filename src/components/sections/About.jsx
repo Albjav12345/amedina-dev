@@ -89,7 +89,7 @@ const About = () => {
                 </motion.div>
 
                 {/* Split Layout: Identity (Left) & Narrative (Right) */}
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 mb-20">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
 
                     {/* Left Column: Identity Card */}
                     <motion.div

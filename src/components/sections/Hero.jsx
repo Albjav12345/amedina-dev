@@ -18,7 +18,7 @@ const Hero = () => {
             />
 
             <div className="container mx-auto px-6 relative z-10">
-                <div className="grid xl:grid-cols-12 gap-16 items-center relative">
+                <div className="grid lg:grid-cols-12 gap-16 items-center relative">
                     {/* Hand-Drawn Arrow Pointer - ABSOLUTELY POSITIONED & INDEPENDENT */}
                     <AnimatePresence>
                         {!isTerminalExpanded && (
