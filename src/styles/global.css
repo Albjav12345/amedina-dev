@@ -34,7 +34,7 @@
     /* iOS Landscape: Subtle zoom-out effect for more spacious feel */
     @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1) {
         html {
-            font-size: 85%;
+            font-size: 80%;
             /* 10% zoom-out effect */
         }
     }
