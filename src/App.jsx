@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, Suspense, lazy } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
 import Hero from './components/sections/Hero'
-import About from './components/sections/About'
-import FeaturedProjects from './components/sections/FeaturedProjects'
-import TechStack from './components/sections/TechStack'
-import Contact from './components/sections/Contact'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ReactiveBackground from './components/common/ReactiveBackground'
+
+// Lazy Load Heavy Sections to optimize Initial Load (LCP)
+const About = lazy(() => import('./components/sections/About'))
+const FeaturedProjects = lazy(() => import('./components/sections/FeaturedProjects'))
+const TechStack = lazy(() => import('./components/sections/TechStack'))
+const Contact = lazy(() => import('./components/sections/Contact'))
 
 function App() {
     useEffect(() => {
@@ -45,10 +47,13 @@ function App() {
             <Navbar />
             <main>
                 <Hero />
-                <About />
-                <FeaturedProjects />
-                <TechStack />
-                <Contact />
+                {/* Defer loading of below-fold content */}
+                <Suspense fallback={<div className="h-screen w-full bg-dark-void"></div>}>
+                    <About />
+                    <FeaturedProjects />
+                    <TechStack />
+                    <Contact />
+                </Suspense>
             </main>
             <Footer />
             <Analytics />

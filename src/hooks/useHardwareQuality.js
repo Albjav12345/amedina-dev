@@ -46,8 +46,8 @@ export const useHardwareQuality = () => {
             // Low tier gets simple opacity fades instead of complex layout projection
             simplePhysics: tier === 'low',
 
-            // Load HQ videos vs Static Images - STRICT: Only High tier gets heavy GIFs
-            loadHeavyMedia: tier === 'high',
+            // Load HQ videos vs Static Images - STRICT: Only Desktop gets heavy GIFs/Videos by default
+            loadHeavyMedia: tier === 'high' && !isMobile,
 
             // CSS Classes for dynamic usage
             glassClass: (tier === 'low' || (tier === 'mid' && isAndroid))
