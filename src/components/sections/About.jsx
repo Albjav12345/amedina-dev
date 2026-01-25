@@ -206,30 +206,32 @@ const About = () => {
                         <div className="h-px flex-grow bg-white/10"></div>
                     </div>
 
-                    <div className={`relative w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}>
-                        {/* Gradient Masks for edges - Hide on Low Tier */}
-                        {!isLow && (
+                    <div className={`relative w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
+                        style={!isLow ? { maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' } : {}}
+                    >
+                        {/* Gradient Masks for edges - Fallback for non-mask browsers or Low Tier */}
+                        {isLow && (
                             <>
-                                <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-dark-void to-transparent"></div>
-                                <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-dark-void to-transparent"></div>
+                                <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-dark-void to-transparent"></div>
+                                <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-dark-void to-transparent"></div>
                             </>
                         )}
 
                         {/* Scrolling Container */}
                         <motion.div
-                            className="flex gap-6 w-max will-change-transform transform-gpu"
+                            className="flex gap-4 md:gap-6 w-max will-change-transform transform-gpu"
                             animate={{ x: ["0%", "-50%"] }}
                             transition={{
                                 repeat: Infinity,
                                 ease: "linear",
-                                duration: isLow ? 50 : 40 // Slower on low end for visuals, or same? 40 is fine.
+                                duration: isLow ? 50 : 40
                             }}
                         >
                             {/* Duplicate list 4 times for seamless loop */}
                             {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
                                 <div
                                     key={i}
-                                    className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                    className={`w-[85vw] max-w-[320px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
                                         }`}
                                 >
                                     <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
@@ -237,7 +239,7 @@ const About = () => {
                                             <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
                                         ))}
                                     </div>
-                                    <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
+                                    <p className="text-xs md:text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
                                     <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
                                         <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
                                             {t.avatarUrl ? (
