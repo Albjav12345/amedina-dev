@@ -86,7 +86,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
             style={{
                 clipPath: 'inset(-50px -50px -50px -50px)',
                 width: '100%',
-                maxWidth: '1152px',
+                maxWidth: isDesktopLandscape ? '672px' : '1052px',
                 margin: '0 auto',
                 boxSizing: 'border-box'
             }}
