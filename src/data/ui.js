@@ -102,7 +102,8 @@ export const ui = {
         email: "amedina.amg.dev@gmail.com",
         social: [
             { name: "GitHub", url: "https://github.com/Albjav12345", icon: "Github" },
-            { name: "LinkedIn", url: "#", icon: "Linkedin" }
+            { name: "LinkedIn", url: "https://www.linkedin.com/in/alberto-medina-dev/", icon: "Linkedin" },
+            { name: "X", url: "https://x.com/Albjav12345", icon: "Twitter" }
         ],
         form: {
             name: {
