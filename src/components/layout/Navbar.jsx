@@ -95,7 +95,7 @@ const Navbar = () => {
                     <div className="w-10 h-10 rounded-lg bg-electric-green/10 border border-electric-green/30 flex items-center justify-center group-hover:bg-electric-green/20">
                         <Terminal className="w-5 h-5 text-electric-green" />
                     </div>
-                    <span className="font-mono font-bold text-xl tracking-tighter">
+                    <span className="font-mono font-bold text-xl tracking-tighter min-w-[200px]">
                         {navigation.brand.first}<span className="text-electric-green">{navigation.brand.last}</span>
                     </span>
                 </motion.div>

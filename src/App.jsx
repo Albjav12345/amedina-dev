@@ -1,15 +1,21 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, Suspense } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
+
+// Components
 import Hero from './components/sections/Hero'
+import Navbar from './components/layout/Navbar'
 import About from './components/sections/About'
 import FeaturedProjects from './components/sections/FeaturedProjects'
 import TechStack from './components/sections/TechStack'
 import Contact from './components/sections/Contact'
-import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
-import ReactiveBackground from './components/common/ReactiveBackground'
+
+// Keep Background Lazy to unblock initial paint if possible, or revert if causing issues. 
+// User instruction said "Keep: You can keep ReactiveBackground as lazy/suspense IF it works".
+// I will keep it lazy for now as it wasn't reported as missing, but checking imports.
+const ReactiveBackground = React.lazy(() => import('./components/common/ReactiveBackground'))
 
 function App() {
     useEffect(() => {
@@ -54,7 +60,9 @@ function App() {
 
     return (
         <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
-            <ReactiveBackground />
+            <Suspense fallback={null}>
+                <ReactiveBackground />
+            </Suspense>
             <Navbar />
             <main>
                 <Hero />
