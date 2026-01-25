@@ -59,7 +59,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
                 touch-action: pan-y;
             }
             input::placeholder {
-                font-size: 16px !important;
+                opacity: 0.5;
             }
         `;
         document.head.appendChild(style);
@@ -359,7 +359,7 @@ const InteractiveConsole = ({ onClose }) => {
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
-                        placeholder="Type 'help' for commands..."
+                        placeholder="Type 'help'..."
                         style={{ minWidth: '0px' }}
                     />
                 </div>
