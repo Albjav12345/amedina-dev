@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles/global.css'
 
-// ALLOW BROWSER TO HANDLE SCROLL RESTORATION
+// DISABLE BROWSER SCROLL RESTORATION -> We force scroll to top in App.jsx
 if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'auto';
+    history.scrollRestoration = 'manual';
 }
 
 ReactDOM.createRoot(document.getElementById('app')).render(

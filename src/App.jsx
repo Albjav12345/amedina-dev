@@ -37,6 +37,9 @@ const Footer = React.lazy(() =>
 
 function App() {
     useEffect(() => {
+        // Force scroll to top on mount (refresh)
+        window.scrollTo(0, 0);
+
         // Detect iOS devices (iPhone, iPad, iPod) including iPads masquerading as desktop
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
