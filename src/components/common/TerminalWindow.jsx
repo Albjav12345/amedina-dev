@@ -355,10 +355,11 @@ const InteractiveConsole = ({ onClose }) => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={isLoading}
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full text-xs md:text-sm"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full text-xs md:text-sm placeholder:text-gray-600 focus:placeholder-transparent"
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
+                        placeholder="Type 'help' for commands..."
                         style={{ minWidth: '0px' }}
                     />
                 </div>
