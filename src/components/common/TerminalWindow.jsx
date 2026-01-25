@@ -297,10 +297,20 @@ const InteractiveConsole = ({ onClose }) => {
 };
 
 const TypewriterEffect = ({ text, speed = 20 }) => {
-    const [displayedText, setDisplayedText] = useState("");
+    // Mobile Detection: If < 768px, render instantly for LCP Optimization
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+    // Initial state: If mobile, show full text. If desktop, start empty.
+    const [displayedText, setDisplayedText] = useState(isMobile ? text : "");
     const [index, setIndex] = useState(0);
 
+    // Effect: Only run typing animation if NOT mobile
     useEffect(() => {
+        if (isMobile) {
+            setDisplayedText(text); // Ensure sync if prop changes
+            return;
+        }
+
         if (index < text.length) {
             const timeout = setTimeout(() => {
                 setDisplayedText((prev) => prev + text.charAt(index));
@@ -308,7 +318,7 @@ const TypewriterEffect = ({ text, speed = 20 }) => {
             }, speed);
             return () => clearTimeout(timeout);
         }
-    }, [index, text, speed]);
+    }, [index, text, speed, isMobile]);
 
     return <span>{displayedText}</span>;
 };
