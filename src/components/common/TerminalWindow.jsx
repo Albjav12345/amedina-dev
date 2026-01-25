@@ -149,7 +149,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
 
             {/* Window Body */}
             <div
-                className="flex-1 min-h-0 p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed relative overflow-hidden rounded-b-xl"
+                className="flex-1 min-h-0 p-6 font-mono text-xs sm:text-sm leading-relaxed relative overflow-hidden rounded-b-xl"
             >
                 <AnimatePresence mode="popLayout" initial={false}>
                     {!isExpanded ? (
@@ -289,7 +289,7 @@ const InteractiveConsole = ({ onClose }) => {
             onClick={() => inputRef.current?.focus()}
             data-lenis-prevent
         >
-            <div className="flex flex-col gap-1.5 text-gray-300 text-sm md:text-sm lg:text-sm" style={{ fontSize: window.innerWidth < 768 ? '16px' : undefined }}>
+            <div className="flex flex-col gap-2 text-gray-300">
                 {terminal.consoleGretting.map((line, i) => (
                     <div key={i} className={`text-electric-green shrink-0 ${i === terminal.consoleGretting.length - 1 ? 'mb-2' : ''}`}>
                         {line.text}
