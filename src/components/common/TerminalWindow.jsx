@@ -191,16 +191,40 @@ const InteractiveConsole = ({ onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const inputRef = useRef(null);
     const scrollRef = useRef(null);
+    const isAutoScrollRef = useRef(true);
 
     useEffect(() => {
         if (inputRef.current) inputRef.current.focus();
     }, []);
 
+    // MutationObserver Logic: Scroll to bottom whenever DOM changes (text streaming)
     useEffect(() => {
+        const container = scrollRef.current;
+        if (!container) return;
+
+        const observer = new MutationObserver(() => {
+            if (isAutoScrollRef.current) {
+                container.scrollTop = container.scrollHeight;
+            }
+        });
+
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Detect if user scrolled up to disable auto-scroll
+    const handleScroll = () => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+            const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+            isAutoScrollRef.current = isNearBottom;
         }
-    }, [history, input, isLoading]);
+    };
 
     const handleKeyDown = async (e) => {
         if (e.key === 'Enter') {
@@ -284,8 +308,9 @@ const InteractiveConsole = ({ onClose }) => {
 
     return (
         <div
-            className="h-full overflow-y-auto pb-4 custom-terminal-scroll pr-1"
+            className="h-full overflow-y-auto pb-4 custom-terminal-scroll pr-1 pb-4"
             ref={scrollRef}
+            onScroll={handleScroll}
             onClick={() => inputRef.current?.focus()}
             data-lenis-prevent
         >
