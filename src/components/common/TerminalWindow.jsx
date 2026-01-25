@@ -30,8 +30,8 @@ const TerminalWindow = ({ title, onStateChange }) => {
                 setIsMobile(!hasMouse && window.innerWidth < 768);
                 setHasCursor(hasMouse);
 
-                // Only allow auto-growth on Desktop Landscape
-                setIsDesktopLandscape(isLandscape && isWide && hasMouse);
+                // Allow auto-growth on any wide landscape screen (Desktop & Tablets)
+                setIsDesktopLandscape(isLandscape && isWide);
             }
         };
 

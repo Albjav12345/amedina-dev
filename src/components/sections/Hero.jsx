@@ -45,7 +45,7 @@ const Hero = () => {
                                         ease: "easeInOut",
                                     }
                                 }}
-                                className="hidden lg:flex absolute left-1/2 top-1/2 -ml-16 -mt-65 z-30 flex-col items-center pointer-events-none"
+                                className="hidden lg:flex absolute left-1/2 top-1/2 -ml-24 -mt-65 z-30 flex-col items-center pointer-events-none"
                             >
                                 <span className="font-handwriting text-sm text-electric-green mb-1 -rotate-6 w-max drop-shadow-md">
                                     CLICK_TO_INIT_SHELL
