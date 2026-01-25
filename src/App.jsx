@@ -3,21 +3,42 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
 
-// Components
+// Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
 import Navbar from './components/layout/Navbar'
-import About from './components/sections/About'
-import FeaturedProjects from './components/sections/FeaturedProjects'
-import TechStack from './components/sections/TechStack'
-import Contact from './components/sections/Contact'
-import Footer from './components/layout/Footer'
 
-// Keep Background Lazy to unblock initial paint if possible, or revert if causing issues. 
-// User instruction said "Keep: You can keep ReactiveBackground as lazy/suspense IF it works".
-// I will keep it lazy for now as it wasn't reported as missing, but checking imports.
-const ReactiveBackground = React.lazy(() => import('./components/common/ReactiveBackground'))
+// Safe Lazy Loading for Named Exports
+// Pattern: React.lazy(() => import('path').then(module => ({ default: module.ComponentByName })))
+
+const ReactiveBackground = React.lazy(() =>
+    import('./components/common/ReactiveBackground').then(module => ({ default: module.ReactiveBackground }))
+)
+
+const About = React.lazy(() =>
+    import('./components/sections/About').then(module => ({ default: module.About }))
+)
+
+const FeaturedProjects = React.lazy(() =>
+    import('./components/sections/FeaturedProjects').then(module => ({ default: module.FeaturedProjects }))
+)
+
+const TechStack = React.lazy(() =>
+    import('./components/sections/TechStack').then(module => ({ default: module.TechStack }))
+)
+
+const Contact = React.lazy(() =>
+    import('./components/sections/Contact').then(module => ({ default: module.Contact }))
+)
+
+const Footer = React.lazy(() =>
+    import('./components/layout/Footer').then(module => ({ default: module.Footer }))
+)
+
+import { useScrollRestoration } from './hooks/useScrollRestoration'
 
 function App() {
+    useScrollRestoration(); // Activate Global Scroll Manager
+
     useEffect(() => {
         // Detect iOS devices (iPhone, iPad, iPod) including iPads masquerading as desktop
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -66,12 +87,35 @@ function App() {
             <Navbar />
             <main>
                 <Hero />
-                <About />
-                <FeaturedProjects />
-                <TechStack />
-                <Contact />
+
+                {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
+                <div id="about-wrapper" style={{ minHeight: '80vh' }}>
+                    <Suspense fallback={null}>
+                        <About />
+                    </Suspense>
+                </div>
+
+                <div id="projects-wrapper" style={{ minHeight: '100vh' }}>
+                    <Suspense fallback={null}>
+                        <FeaturedProjects />
+                    </Suspense>
+                </div>
+
+                <div id="tech-stack-wrapper" style={{ minHeight: '60vh' }}>
+                    <Suspense fallback={null}>
+                        <TechStack />
+                    </Suspense>
+                </div>
+
+                <div id="contact-wrapper" style={{ minHeight: '50vh' }}>
+                    <Suspense fallback={null}>
+                        <Contact />
+                    </Suspense>
+                </div>
             </main>
-            <Footer />
+            <Suspense fallback={null}>
+                <Footer />
+            </Suspense>
             <Analytics />
             <SpeedInsights />
         </div>
