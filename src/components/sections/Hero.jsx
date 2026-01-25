@@ -176,7 +176,7 @@ const Hero = () => {
                             </h2>
                         </motion.div>
 
-                        <div className="w-full flex justify-center relative">
+                        <div className="w-full max-w-2xl mx-auto flex justify-center relative px-4 md:px-0">
                             <TerminalWindow onStateChange={setIsTerminalExpanded} />
                         </div>
                     </div>

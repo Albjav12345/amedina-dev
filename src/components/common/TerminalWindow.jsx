@@ -73,17 +73,16 @@ const TerminalWindow = ({ title, onStateChange }) => {
         <motion.div
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320)
+                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320),
+                width: '100%'
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden touch-none ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
+            className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
             style={{
-                clipPath: 'inset(-500px -100px -100px -100px)',
-                maxWidth: isMobile ? 'calc(100vw - 2rem)' : '672px',
+                clipPath: 'inset(-50px -50px -50px -50px)',
                 width: '100%',
-                overflowX: 'hidden',
                 boxSizing: 'border-box'
             }}
         >
@@ -280,7 +279,7 @@ const InteractiveConsole = ({ onClose }) => {
 
     return (
         <div
-            className="h-full overflow-y-auto pb-4 custom-scrollbar"
+            className="h-full overflow-y-auto pb-4 custom-terminal-scroll pr-1"
             ref={scrollRef}
             onClick={() => inputRef.current?.focus()}
             data-lenis-prevent
@@ -323,6 +322,7 @@ const InteractiveConsole = ({ onClose }) => {
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
+                        style={{ fontSize: '16px' }}
                     />
                 </div>
             </div>
