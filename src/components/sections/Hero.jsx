@@ -156,7 +156,7 @@ const Hero = () => {
 
                     {/* Terminal Visual */}
                     {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col p-4 lg:p-8 mt-12 lg:mt-0 w-full relative">
+                    <div className="lg:col-span-6 flex flex-col mt-12 lg:mt-0 w-full relative">
                         {/* Hand-Drawn Arrow Pointer - Independent Layout Layer */}
 
                         {/* Mobile Section Title */}
@@ -176,7 +176,7 @@ const Hero = () => {
                             </h2>
                         </motion.div>
 
-                        <div className="w-full max-w-2xl mx-auto flex justify-center relative px-4 md:px-0">
+                        <div className="w-full flex justify-center relative">
                             <TerminalWindow onStateChange={setIsTerminalExpanded} />
                         </div>
                     </div>
