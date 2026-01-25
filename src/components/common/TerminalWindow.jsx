@@ -51,10 +51,11 @@ const TerminalWindow = ({ title, onStateChange }) => {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
-            html, body {
+            html, body, #root, #app {
                 max-width: 100vw !important;
                 overflow-x: hidden !important;
                 width: 100% !important;
+                position: relative;
                 touch-action: pan-y;
             }
             input::placeholder {
@@ -73,8 +74,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
         <motion.div
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320),
-                width: '100%'
+                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320)
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -83,6 +83,8 @@ const TerminalWindow = ({ title, onStateChange }) => {
             style={{
                 clipPath: 'inset(-50px -50px -50px -50px)',
                 width: '100%',
+                maxWidth: isMobile ? 'calc(100vw - 2rem)' : '672px',
+                margin: '0 auto',
                 boxSizing: 'border-box'
             }}
         >
@@ -309,8 +311,8 @@ const InteractiveConsole = ({ onClose }) => {
                     </div>
                 )}
 
-                <div className="flex items-center gap-2 text-white leading-relaxed">
-                    <span className="text-electric-cyan font-bold shrink-0">visitor@sys:~$</span>
+                <div className="flex items-center gap-2 text-white leading-relaxed w-full overflow-hidden min-w-0">
+                    <span className="text-electric-cyan font-bold shrink-0 whitespace-nowrap">visitor@sys:~$</span>
                     <input
                         ref={inputRef}
                         type="text"
@@ -318,11 +320,11 @@ const InteractiveConsole = ({ onClose }) => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={isLoading}
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full"
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
-                        style={{ fontSize: '16px' }}
+                        style={{ fontSize: '16px', minWidth: '0px' }}
                     />
                 </div>
             </div>
