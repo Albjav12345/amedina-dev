@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles/global.css'
 
-// DISABLE NATIVE RESTORATION -> We handle it manually in App.jsx
+// ALLOW BROWSER TO HANDLE SCROLL RESTORATION
 if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
+    history.scrollRestoration = 'auto';
 }
 
 ReactDOM.createRoot(document.getElementById('app')).render(

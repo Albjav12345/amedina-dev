@@ -34,11 +34,8 @@ const Footer = React.lazy(() =>
     import('./components/layout/Footer').then(module => ({ default: module.Footer }))
 )
 
-import { useScrollRestoration } from './hooks/useScrollRestoration'
 
 function App() {
-    useScrollRestoration(); // Activate Global Scroll Manager
-
     useEffect(() => {
         // Detect iOS devices (iPhone, iPad, iPod) including iPads masquerading as desktop
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
