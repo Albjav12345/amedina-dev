@@ -289,7 +289,7 @@ const InteractiveConsole = ({ onClose }) => {
             onClick={() => inputRef.current?.focus()}
             data-lenis-prevent
         >
-            <div className="flex flex-col gap-2 text-gray-300">
+            <div className="flex flex-col gap-2 text-gray-300 text-[16px] md:text-sm font-mono leading-relaxed">
                 {terminal.consoleGretting.map((line, i) => (
                     <div key={i} className={`text-electric-green shrink-0 ${i === terminal.consoleGretting.length - 1 ? 'mb-2' : ''}`}>
                         {line.text}
@@ -323,11 +323,11 @@ const InteractiveConsole = ({ onClose }) => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={isLoading}
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full text-[16px] md:text-sm"
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
-                        style={{ fontSize: '16px', minWidth: '0px' }}
+                        style={{ minWidth: '0px' }}
                     />
                 </div>
             </div>
