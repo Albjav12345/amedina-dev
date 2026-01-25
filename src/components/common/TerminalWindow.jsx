@@ -12,6 +12,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
         onStateChange?.(isExpanded);
     }, [isExpanded, onStateChange]);
     const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef(null);
 
     const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -20,10 +21,11 @@ const TerminalWindow = ({ title, onStateChange }) => {
         const checkLayout = () => {
             if (typeof window !== 'undefined') {
                 const isLandscape = window.innerWidth > window.innerHeight;
-                const isWide = window.innerWidth >= 768; // Md breakpoint
-                // Check for "Desktop-like" environment (Mouse + Hover) to exclude Mobile Landscape if needed, 
-                // but user said "only if computer", so hover check is good.
+                const isWide = window.innerWidth >= 768;
                 const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+                // Detect real mobile (not narrow desktop)
+                setIsMobile(!hasMouse && window.innerWidth < 768);
 
                 // Only allow auto-growth on Desktop Landscape
                 setIsDesktopLandscape(isLandscape && isWide && hasMouse);
@@ -41,6 +43,32 @@ const TerminalWindow = ({ title, onStateChange }) => {
         return () => window.removeEventListener('toggle-terminal', handleToggle);
     }, []);
 
+    // Inject safety CSS to prevent horizontal overflow on mobile
+    useEffect(() => {
+        const styleId = 'terminal-mobile-safety';
+        if (document.getElementById(styleId)) return;
+
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            html, body {
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+                width: 100% !important;
+                touch-action: pan-y;
+            }
+            input::placeholder {
+                font-size: 16px !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            const el = document.getElementById(styleId);
+            if (el) el.remove();
+        };
+    }, []);
+
     return (
         <motion.div
             initial={false}
@@ -49,9 +77,15 @@ const TerminalWindow = ({ title, onStateChange }) => {
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full max-w-2xl glass-card border-white/20 shadow-2xl relative cursor-default flex flex-col !overflow-visible ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
+            className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden touch-none ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
-            style={{ clipPath: 'inset(-500px -100px -100px -100px)' }}
+            style={{
+                clipPath: 'inset(-500px -100px -100px -100px)',
+                maxWidth: isMobile ? 'calc(100vw - 2rem)' : '672px',
+                width: '100%',
+                overflowX: 'hidden',
+                boxSizing: 'border-box'
+            }}
         >
             {/* Window Header */}
             <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-50 rounded-t-xl">
