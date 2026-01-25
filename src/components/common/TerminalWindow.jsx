@@ -74,7 +74,10 @@ const TerminalWindow = ({ title, onStateChange }) => {
         <motion.div
             initial={false}
             animate={{
-                height: isExpanded ? 384 : (isDesktopLandscape ? 'auto' : 320)
+                // PC Landscape: auto | Mobile: 350->450 | PC Portrait/Others: 320->384
+                height: isExpanded
+                    ? (isMobile ? 450 : 384)
+                    : (isDesktopLandscape ? 'auto' : (isMobile ? 350 : 320))
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -83,7 +86,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
             style={{
                 clipPath: 'inset(-50px -50px -50px -50px)',
                 width: '100%',
-                maxWidth: isMobile ? 'calc(100vw - 2rem)' : '672px',
+                maxWidth: isMobile ? 'calc(100vw - 1rem)' : '672px',
                 margin: '0 auto',
                 boxSizing: 'border-box'
             }}
