@@ -24,22 +24,26 @@ export const profile = {
             {
                 text: "Alberto created a professional Unity Editor window that saved us hours of workflow. His understanding of UI Toolkit is top-tier.",
                 author: "Unity Client (USA)",
-                project: "Custom Tooling Architecture"
+                project: "Custom Tooling Architecture",
+                avatarUrl: "/assets/testimonials/client1.png"
             },
             {
                 text: "Fast, efficient, and technically precise. He handled the complex metadata automation perfectly.",
                 author: "Automation Client",
-                project: "Python Automation Pipeline"
+                project: "Python Automation Pipeline",
+                avatarUrl: "/assets/testimonials/client2.png"
             },
             {
                 text: "Great communication and high-quality game assets. He solved a complex C# bug no one else could fix.",
                 author: "Indie Game Studio",
-                project: "Unity Game Systems"
+                project: "Unity Game Systems",
+                avatarUrl: "/assets/testimonials/client3.png"
             },
             {
                 text: "The delivery was exactly what we needed. Clean code, well documented, and delivered ahead of schedule.",
                 author: "Tech Startup",
-                project: "Backend Optimization"
+                project: "Backend Optimization",
+                avatarUrl: "/assets/testimonials/client4.png"
             }
         ]
     },

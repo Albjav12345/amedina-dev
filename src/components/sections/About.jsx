@@ -239,8 +239,19 @@ const About = () => {
                                     </div>
                                     <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
                                     <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                            {t.author.charAt(0)}
+                                        <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
+                                            {t.avatarUrl ? (
+                                                <img
+                                                    src={t.avatarUrl}
+                                                    alt={t.author}
+                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                                    onLoad={(e) => e.target.classList.remove('opacity-0')}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
+                                                    {t.author.charAt(0)}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-xs font-bold text-white">{t.author}</span>
