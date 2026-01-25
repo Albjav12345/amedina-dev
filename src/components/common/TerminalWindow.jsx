@@ -221,8 +221,9 @@ const InteractiveConsole = ({ onClose }) => {
     const handleScroll = () => {
         if (scrollRef.current) {
             const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-            const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
-            isAutoScrollRef.current = isNearBottom;
+            // Strict threshold (10px) to consider "at the bottom"
+            const isActuallyAtBottom = scrollHeight - scrollTop - clientHeight < 10;
+            isAutoScrollRef.current = isActuallyAtBottom;
         }
     };
 
@@ -235,6 +236,12 @@ const InteractiveConsole = ({ onClose }) => {
             setHistory(prev => [...prev, { type: 'input', content: cmd }]);
             setInput("");
             setIsLoading(true);
+
+            // Re-engage auto-scroll on new message
+            isAutoScrollRef.current = true;
+            if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
 
             // Local commands override
             if (cmd.toLowerCase() === 'clear') {
