@@ -7,12 +7,14 @@ const TerminalWindow = ({ title, onStateChange }) => {
     const { terminal } = portfolioData.ui;
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
         onStateChange?.(isExpanded);
     }, [isExpanded, onStateChange]);
     const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [hasCursor, setHasCursor] = useState(true);
     const containerRef = useRef(null);
 
     const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -26,6 +28,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
 
                 // Detect real mobile (not narrow desktop)
                 setIsMobile(!hasMouse && window.innerWidth < 768);
+                setHasCursor(hasMouse);
 
                 // Only allow auto-growth on Desktop Landscape
                 setIsDesktopLandscape(isLandscape && isWide && hasMouse);
@@ -39,36 +42,18 @@ const TerminalWindow = ({ title, onStateChange }) => {
 
     useEffect(() => {
         const handleToggle = () => setIsExpanded(prev => !prev);
+        const handleClickOutside = () => setShowTooltip(false);
+
         window.addEventListener('toggle-terminal', handleToggle);
-        return () => window.removeEventListener('toggle-terminal', handleToggle);
-    }, []);
-
-    // Inject safety CSS to prevent horizontal overflow on mobile
-    useEffect(() => {
-        const styleId = 'terminal-mobile-safety';
-        if (document.getElementById(styleId)) return;
-
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = `
-            html, body, #root, #app {
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-                width: 100% !important;
-                position: relative;
-                touch-action: pan-y;
-            }
-            input::placeholder {
-                opacity: 0.5;
-            }
-        `;
-        document.head.appendChild(style);
+        window.addEventListener('click', handleClickOutside);
 
         return () => {
-            const el = document.getElementById(styleId);
-            if (el) el.remove();
+            window.removeEventListener('toggle-terminal', handleToggle);
+            window.removeEventListener('click', handleClickOutside);
         };
     }, []);
+
+    // Placeholder for global safety CSS removed (now in global.css)
 
     return (
         <motion.div
@@ -81,7 +66,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
+            className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden gpu-accelerated ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
             style={{
                 clipPath: 'inset(-50px -50px -50px -50px)',
@@ -106,13 +91,19 @@ const TerminalWindow = ({ title, onStateChange }) => {
                         <>
                             {/* Info Tooltip Trigger */}
                             <div className="relative group">
-                                <button className="text-gray-500 hover:text-electric-cyan transition-colors cursor-pointer p-1">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!hasCursor) setShowTooltip(!showTooltip);
+                                    }}
+                                    className="text-gray-500 hover:text-electric-cyan transition-colors cursor-pointer p-1"
+                                >
                                     <Info size={14} />
                                 </button>
                                 {/* Tooltip */}
-                                <div className="absolute bottom-full right-0 mb-5 w-72 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none z-[1000]">
+                                <div className={`absolute top-full right-0 mt-2 w-72 transition-all duration-300 transform ${showTooltip ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto'} z-[1001]`}>
                                     <div className="glass-card p-4 border-electric-cyan/20 bg-dark-deep/95 backdrop-blur-2xl relative shadow-2xl">
-                                        <div className="absolute -bottom-1 right-2 w-2 h-2 bg-dark-deep border-r border-b border-white/10 transform rotate-45"></div>
+                                        <div className="absolute -top-1 right-2 w-2 h-2 bg-dark-deep border-l border-t border-white/10 transform rotate-45"></div>
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2 text-electric-cyan text-[10px] font-bold tracking-widest uppercase">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse"></div>
@@ -180,7 +171,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
                     )}
                 </AnimatePresence>
             </div>
-        </motion.div >
+        </motion.div>
     );
 };
 
@@ -355,7 +346,7 @@ const InteractiveConsole = ({ onClose }) => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={isLoading}
-                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full text-xs md:text-sm placeholder:text-gray-600 focus:placeholder-transparent"
+                        className="flex-1 bg-transparent border-none outline-none text-white font-mono p-0 m-0 min-w-0 w-full text-xs md:text-sm"
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
