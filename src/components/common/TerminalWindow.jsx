@@ -100,10 +100,11 @@ const TerminalWindow = ({ title, onStateChange }) => {
                                 >
                                     <Info size={14} />
                                 </button>
-                                {/* Tooltip */}
-                                <div className={`absolute top-full right-0 mt-2 w-72 transition-all duration-300 transform ${showTooltip ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto'} z-[1001]`}>
-                                    <div className="glass-card p-4 border-electric-cyan/20 bg-dark-deep/95 backdrop-blur-2xl relative shadow-2xl">
-                                        <div className="absolute -top-1 right-2 w-2 h-2 bg-dark-deep border-l border-t border-white/10 transform rotate-45"></div>
+                                {/* Tooltip Container */}
+                                <div className={`absolute top-full right-0 mt-2 w-72 transition-all duration-300 transform ${showTooltip ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto'} z-[2000]`}>
+                                    {/* Opaque solid container (No glass/blur) */}
+                                    <div className="p-4 border border-electric-cyan/20 bg-[#0d0e12] rounded-xl relative shadow-[0_20px_50px_rgba(0,0,0,1)]">
+                                        <div className="absolute -top-1 right-2 w-2 h-2 bg-[#0d0e12] border-l border-t border-white/10 transform rotate-45"></div>
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2 text-electric-cyan text-[10px] font-bold tracking-widest uppercase">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-electric-cyan animate-pulse"></div>
