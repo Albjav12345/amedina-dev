@@ -19,20 +19,31 @@ const Navbar = () => {
             threshold: 0
         };
 
+        // Map base ID -> Wrapper ID (for observation)
+        const targetMap = {
+            'home': 'home',
+            'about': 'about-wrapper',
+            'projects': 'projects-wrapper',
+            'tech-stack': 'tech-stack-wrapper',
+            'contact': 'contact-wrapper'
+        };
+
         const handleIntersect = (entries) => {
             if (isManualScroll.current) return;
 
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    setActiveSection(entry.target.id);
+                    // Reverse Lookup: Find base ID from wrapper ID
+                    const baseId = Object.keys(targetMap).find(key => targetMap[key] === entry.target.id);
+                    if (baseId) setActiveSection(baseId);
                 }
             });
         };
 
         const observer = new IntersectionObserver(handleIntersect, observerOptions);
 
-        const sections = ['home', 'about', 'projects', 'tech-stack', 'contact'];
-        sections.forEach(id => {
+        // Observe the WRAPPERS instead of the lazy sections
+        Object.values(targetMap).forEach(id => {
             const el = document.getElementById(id);
             if (el) observer.observe(el);
         });

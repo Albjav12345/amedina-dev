@@ -41,4 +41,5 @@ const Footer = () => {
     );
 };
 
-export default Footer;
+// Footer component is now a named export for optimized lazy loading
+export { Footer };

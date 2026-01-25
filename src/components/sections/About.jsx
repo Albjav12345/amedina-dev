@@ -271,4 +271,5 @@ const About = () => {
     );
 };
 
-export default About;
+// About component is now a named export for optimized lazy loading
+export { About };

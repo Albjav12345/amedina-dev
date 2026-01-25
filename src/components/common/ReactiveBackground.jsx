@@ -136,4 +136,5 @@ const ReactiveBackground = () => {
     );
 };
 
-export default ReactiveBackground;
+// ReactiveBackground component is now a named export for optimized lazy loading
+export { ReactiveBackground };

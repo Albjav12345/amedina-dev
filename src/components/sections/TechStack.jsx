@@ -162,4 +162,5 @@ const TechStack = () => {
     );
 };
 
-export default TechStack;
+// TechStack component is now a named export for optimized lazy loading
+export { TechStack };

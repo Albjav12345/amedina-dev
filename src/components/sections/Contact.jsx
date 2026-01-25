@@ -238,4 +238,5 @@ const Contact = () => {
     );
 };
 
-export default Contact;
+// Contact component is now a named export for optimized lazy loading
+export { Contact };

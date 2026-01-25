@@ -415,4 +415,5 @@ const FeaturedProjects = () => {
     );
 };
 
-export default FeaturedProjects;
+// FeaturedProjects component is now a named export for optimized lazy loading
+export { FeaturedProjects };
