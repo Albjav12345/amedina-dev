@@ -28,7 +28,7 @@ export const ui = {
             green: "MEDINA"
         },
         handle: "@Albjav12345",
-        description: "Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions since age 10.",
+        description: "Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions.",
         buttons: {
             terminal: "ACCESS_TERMINAL",
             cv: "GET_MANIFEST.PDF"
@@ -103,7 +103,8 @@ export const ui = {
         social: [
             { name: "GitHub", url: "https://github.com/Albjav12345", icon: "Github" },
             { name: "LinkedIn", url: "https://www.linkedin.com/in/alberto-medina-dev/", icon: "Linkedin" },
-            { name: "X", url: "https://x.com/Albjav12345", icon: "Twitter" }
+            { name: "X", url: "https://x.com/Albjav12345", icon: "Twitter" },
+            { name: "Upwork", url: "https://www.upwork.com/freelancers/~0177774c838e1e7798", icon: "Upwork" }
         ],
         form: {
             name: {
@@ -134,6 +135,7 @@ export const ui = {
 
     // Footer
     footer: {
+        name: "Alberto Medina García",
         status: "System Status: All Systems Operational",
         location: "SPAIN / REMOTE",
         vesselId: "AUTO_PORT_V2.0"

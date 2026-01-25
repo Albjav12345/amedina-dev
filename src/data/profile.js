@@ -3,8 +3,8 @@
 // -------------------------------------------------------------------------
 
 export const profile = {
-    name: "Alberto Medina",
-    role: "Solutions Engineer (Unity + AI + Automation)",
+    name: "Alberto Medina García",
+    role: "Full-Stack Developer & Automation Specialist",
     tagline: "Engineering high-performance systems and deterministic solutions.",
     about: {
         avatarUrl: "/assets/logo.svg",

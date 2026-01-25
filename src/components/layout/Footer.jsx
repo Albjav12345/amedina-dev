@@ -21,7 +21,7 @@ const Footer = () => {
                             </span>
                         </div>
                         <p className="text-gray-400 text-[8px] md:text-xs mt-1 whitespace-nowrap">
-                            © {new Date().getFullYear()} Engineered by <span className="text-white">{name}</span>.
+                            © {new Date().getFullYear()} Engineered by <span className="text-white">{footer.name || name}</span>.
                         </p>
                     </div>
 
