@@ -69,7 +69,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             viewport={viewportConfig}
             variants={activeContainerVariants}
             custom={index}
-            className={`p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl ${quality.glassClass}`}
+            className={`p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl bg-dark-high/90`}
         >
             <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
                 <div className={`p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>

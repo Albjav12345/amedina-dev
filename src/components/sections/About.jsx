@@ -99,7 +99,7 @@ const About = () => {
                         variants={fadeInUp}
                         className="lg:col-span-4 h-full"
                     >
-                        <div className={`p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center rounded-xl border border-white/10 transition-colors duration-300 overflow-hidden ${quality.glassClass}`}>
+                        <div className={`p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center rounded-xl border border-white/10 transition-colors duration-300 overflow-hidden bg-dark-high/90`}>
                             {/* Avatar */}
                             <div className="relative mb-6">
                                 <div className="w-40 h-40 rounded-full border-2 border-electric-green relative z-10 shadow-lg shadow-electric-green/20 ring-2 ring-electric-green/20 flex items-center justify-center bg-black overflow-hidden">
@@ -156,7 +156,7 @@ const About = () => {
                         transition={{ delay: 0.1 }}
                         className="lg:col-span-8 h-full"
                     >
-                        <div className={`p-8 md:p-12 h-full relative gpu-accelerated flex flex-col justify-center rounded-xl border border-white/10 ${quality.glassClass}`}>
+                        <div className={`p-8 md:p-12 h-full relative gpu-accelerated flex flex-col justify-center rounded-xl border border-white/10 bg-dark-high/90`}>
 
 
                             <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-8 text-glow-green relative z-10 leading-tight">

@@ -178,7 +178,7 @@ const FeaturedProjects = () => {
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
                                 onClick={() => setSelectedId(project.id)}
-                                className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/50"
+                                className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/90"
                             >
                                 <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
                                     <SmartThumbnail

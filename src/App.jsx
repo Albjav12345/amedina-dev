@@ -10,9 +10,7 @@ import Navbar from './components/layout/Navbar'
 // Safe Lazy Loading for Named Exports
 // Pattern: React.lazy(() => import('path').then(module => ({ default: module.ComponentByName })))
 
-const ReactiveBackground = React.lazy(() =>
-    import('./components/common/ReactiveBackground').then(module => ({ default: module.ReactiveBackground }))
-)
+
 
 const About = React.lazy(() =>
     import('./components/sections/About').then(module => ({ default: module.About }))
@@ -80,10 +78,8 @@ function App() {
     }, [])
 
     return (
-        <div className="bg-dark-void min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
-            <Suspense fallback={null}>
-                <ReactiveBackground />
-            </Suspense>
+        <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
+
             <Navbar />
             <main>
                 <Hero />
