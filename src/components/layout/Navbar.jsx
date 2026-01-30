@@ -93,9 +93,18 @@ const Navbar = () => {
     const { navigation } = portfolioData.ui;
     const navLinks = navigation.links;
 
+    const getNavClasses = () => {
+        if (isMobileMenuOpen) {
+            return 'bg-dark-void/95 backdrop-blur-xl border-b border-white/10 py-3';
+        }
+        if (isScrolled) {
+            return 'bg-dark-void/80 backdrop-blur-lg border-b border-white/10 py-3';
+        }
+        return 'bg-transparent py-6';
+    };
+
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-dark-void/80 backdrop-blur-lg border-b border-white/10 py-3' : 'bg-transparent py-6'
-            }`}>
+        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${getNavClasses()}`}>
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -173,7 +182,7 @@ const Navbar = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="lg:hidden bg-dark-high border-b border-white/10 overflow-hidden"
+                        className="lg:hidden overflow-hidden"
                     >
                         <div className="flex flex-col p-6 gap-4">
                             {navLinks.map((link) => (
