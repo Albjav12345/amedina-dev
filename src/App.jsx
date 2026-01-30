@@ -6,6 +6,7 @@ import Lenis from 'lenis'
 // Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
 import Navbar from './components/layout/Navbar'
+import ParallaxGrid from './components/common/ParallaxGrid'
 
 // Safe Lazy Loading for Named Exports
 // Pattern: React.lazy(() => import('path').then(module => ({ default: module.ComponentByName })))
@@ -80,6 +81,8 @@ function App() {
     return (
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
 
+
+            <ParallaxGrid />
             <Navbar />
             <main>
                 <Hero />
