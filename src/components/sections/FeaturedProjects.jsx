@@ -289,13 +289,23 @@ const FeaturedProjects = () => {
                                                     </div>
 
                                                     {activeProject.icon && (
-                                                        <div className="shrink-0 w-12 h-12 md:w-24 md:h-24 rounded-2xl bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden flex items-center justify-center md:mt-4 lg:mt-6">
+                                                        <div className={`shrink-0 flex items-center justify-center rounded-2xl md:mt-4 lg:mt-6 transition-all duration-300 ${
+                                                            iconMap[activeProject.icon] || activeProject.iconFit !== 'auto'
+                                                                ? "w-12 h-12 md:w-24 md:h-24 bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden" 
+                                                                : "h-12 md:h-24 w-auto overflow-visible"
+                                                        }`}>
                                                             {iconMap[activeProject.icon] ? (
                                                                 <div className="flex items-center justify-center w-full h-full p-3 md:p-5">
                                                                     {iconMap[activeProject.icon]}
                                                                 </div>
                                                             ) : (
-                                                                <img src={activeProject.icon} alt="icon" className="w-full h-full object-cover" />
+                                                                <img 
+                                                                    src={activeProject.icon} 
+                                                                    alt="Project Icon" 
+                                                                    className={activeProject.iconFit === 'auto' 
+                                                                        ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]" 
+                                                                        : "w-full h-full object-cover"} 
+                                                                />
                                                             )}
                                                         </div>
                                                     )}

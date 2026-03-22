@@ -11,7 +11,7 @@
 // - Local Files: Put files in 'public/assets/projects/' and reference them as '/assets/projects/filename.mp4'
 // -------------------------------------------------------------------------
 
-/*
+    /*
     --- 💡 GUÍA DE CAMPOS ---
     id:          Número único (ej: 5, 6, 7...).
     title:       Nombre del proyecto (se resalta en verde al pasar el ratón).
@@ -24,6 +24,7 @@
     demoType:    Tipo de medio: 'video' (local .mp4) o 'gif' (enlace externo).
     thumbnail:   Imagen de portada (obligatoria).
     icon:        Logo pequeño del proyecto (ej: 'Zap' de Lucide o un SVG/enlace).
+    iconFit:     Opcional. Si pones 'auto', el recuadro se ajustará a la forma del PNG en lugar de ser un cuadrado fijo.
     demoUrl:     Vídeo de alta calidad (opcional, solo si demoType es 'video').
 
     --- 🚀 MASTER TEMPLATE (Copiar y pegar al final del array 'projects') ---
@@ -55,7 +56,8 @@ export const projects = [
         demoType: "video",
         previewUrl: "/assets/projects/visual-interfaces-short.mp4",
         demoUrl: "/assets/projects/visual-interfaces.mp4",
-        thumbnail: "/assets/projects/visual-interfaces.png"
+        thumbnail: "/assets/projects/visual-interfaces.png",
+        icon: "/assets/projects/unity.webp"
     },
     {
         id: 2,
@@ -99,5 +101,21 @@ export const projects = [
         previewUrl: "/assets/projects/twitch-live.mp4",
         demoUrl: "/assets/projects/twitch-live.mp4",
         thumbnail: "/assets/projects/twitch-live.png"
+    },
+    {
+        id: 5,
+        title: "USB Exfiltration",
+        subtitle: "Adversary Emulation & Headless Acquisition",
+        problem: "Physical penetration tests require stealthy, artifact-free data acquisition methods that bypass OS file locks and avoid triggering UAC or user awareness.",
+        solution: "Engineered a headless Windows payload for authorized Red Team operations. It executes silently in the background, utilizing native WMI polling and Zero-Wait I/O to exfiltrate target data without alerting the user.",
+        stack: ["PowerShell", "Batch", "WMI/CIM", "OPSEC"],
+        arch: ["Background Polling", "UAC Evasion", "File-Lock Bypass", "Encrypted Exfiltration"],
+        githubLink: "https://github.com/Albjav12345/Secure-USB-Vault-Agent",
+        demoType: "video",
+        previewUrl: "/assets/projects/usb-extraction.mp4",
+        demoUrl: "/assets/projects/usb-extraction.mp4",
+        thumbnail: "/assets/projects/usb-extraction.png",
+        icon: "/assets/projects/terminal.ico",
+        iconFit: "auto"
     }
 ];
