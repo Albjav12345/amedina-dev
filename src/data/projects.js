@@ -72,11 +72,14 @@ export const projects = [
         demoType: "video",
         previewUrl: "/assets/projects/zero-touch-ai.mp4",
         demoUrl: "/assets/projects/zero-touch-ai.mp4",
-        thumbnail: "/assets/projects/zero-touch-ai.png"
+        thumbnail: "/assets/projects/zero-touch-ai.png",
+        icon: "/assets/projects/outlook-icon.webp",
+        iconFit: "auto",
+        iconScale: 1.25
     },
     {
         id: 3,
-        title: "Booking App",
+        title: "Paddle Booking App",
         subtitle: "Reactive State & Live Synchronization",
         problem: "Asynchronous manual booking led to concurrency conflicts and lack of instant availability feedback.",
         solution: "Deployed a serverless PWA with Firestore listeners for sub-second state synchronization and dynamic validation rules.",
@@ -110,7 +113,7 @@ export const projects = [
         title: "USB Exfiltration",
         subtitle: "Adversary Emulation & Headless Acquisition",
         problem: "Physical penetration tests require stealthy, artifact-free data acquisition methods that bypass OS file locks and avoid triggering UAC or user awareness.",
-        solution: "Engineered a headless Windows payload for authorized Red Team operations. It executes silently in the background, utilizing native WMI polling and Zero-Wait I/O to exfiltrate target data without alerting the user.",
+        solution: "Engineered a stealthy Windows payload for Red Team operations, utilizing native WMI polling and Zero-Wait I/O for undetected background data exfiltration.",
         stack: ["PowerShell", "Batch", "WMI/CIM", "OPSEC"],
         arch: ["Background Polling", "UAC Evasion", "File-Lock Bypass", "Encrypted Exfiltration"],
         githubLink: "https://github.com/Albjav12345/Secure-USB-Vault-Agent",
