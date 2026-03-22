@@ -2,6 +2,11 @@
 // PROFILE & SKILLS CONFIGURATION
 // -------------------------------------------------------------------------
 
+import c1 from '../assets/testimonials/client1.png?w=200&h=200&format=webp&quality=80';
+import c2 from '../assets/testimonials/client2.png?w=200&h=200&format=webp&quality=80';
+import c3 from '../assets/testimonials/client3.png?w=200&h=200&format=webp&quality=80';
+import c4 from '../assets/testimonials/client4.png?w=200&h=200&format=webp&quality=80';
+
 export const profile = {
     name: "Alberto Medina García",
     role: "Full-Stack Developer & Automation Specialist",
@@ -25,25 +30,25 @@ export const profile = {
                 text: "Alberto created a professional Unity Editor window that saved us hours of workflow. His understanding of UI Toolkit is top-tier.",
                 author: "Unity Client (USA)",
                 project: "Custom Tooling Architecture",
-                avatarUrl: "/assets/testimonials/client1.png"
+                avatarUrl: c1
             },
             {
                 text: "Fast, efficient, and technically precise. He handled the complex metadata automation perfectly.",
                 author: "Automation Client",
                 project: "Python Automation Pipeline",
-                avatarUrl: "/assets/testimonials/client2.png"
+                avatarUrl: c2
             },
             {
                 text: "Great communication and high-quality game assets. He solved a complex C# bug no one else could fix.",
                 author: "Indie Game Studio",
                 project: "Unity Game Systems",
-                avatarUrl: "/assets/testimonials/client3.png"
+                avatarUrl: c3
             },
             {
                 text: "The delivery was exactly what we needed. Clean code, well documented, and delivered ahead of schedule.",
                 author: "Tech Startup",
                 project: "Backend Optimization",
-                avatarUrl: "/assets/testimonials/client4.png"
+                avatarUrl: c4
             }
         ]
     },
