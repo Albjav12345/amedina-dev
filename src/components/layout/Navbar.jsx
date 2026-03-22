@@ -25,6 +25,7 @@ const Navbar = () => {
             'about': 'about-wrapper',
             'projects': 'projects-wrapper',
             'tech-stack': 'tech-stack-wrapper',
+            'architect': 'architect-wrapper',
             'contact': 'contact-wrapper'
         };
 

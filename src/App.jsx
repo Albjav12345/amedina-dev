@@ -29,6 +29,10 @@ const Contact = React.lazy(() =>
     import('./components/sections/Contact').then(module => ({ default: module.Contact }))
 )
 
+const ProjectArchitect = React.lazy(() =>
+    import('./components/sections/ProjectArchitect').then(module => ({ default: module.ProjectArchitect }))
+)
+
 const Footer = React.lazy(() =>
     import('./components/layout/Footer').then(module => ({ default: module.Footer }))
 )
@@ -103,6 +107,12 @@ function App() {
                 <div id="tech-stack-wrapper" style={{ minHeight: '60vh' }}>
                     <Suspense fallback={null}>
                         <TechStack />
+                    </Suspense>
+                </div>
+
+                <div id="architect-wrapper" style={{ minHeight: '70vh' }}>
+                    <Suspense fallback={null}>
+                        <ProjectArchitect />
                     </Suspense>
                 </div>
 

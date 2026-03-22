@@ -1,6 +1,15 @@
 import Groq from 'groq-sdk';
 import portfolioData from './portfolio.js';
 import { getGitHubActivity } from './lib/github.js';
+import {
+    applySecurityHeaders,
+    clampText,
+    extractJsonObject,
+    getAllowedExternalUrls,
+    getSafeExternalUrl,
+    isAllowedOrigin,
+    sanitizeHistory,
+} from './lib/security.js';
 
 // Configuration: Model Rotation Fallback List (Latest Verified Groq Production Models)
 const MODELS = [
@@ -12,8 +21,18 @@ const MODELS = [
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default async function handler(req, res) {
+    applySecurityHeaders(res);
+
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    if (!isAllowedOrigin(req.headers.origin)) {
+        return res.status(403).json({
+            type: "MESSAGE",
+            text: ">> SYSTEM_ALERT: ORIGIN_REJECTED.",
+            action: null
+        });
     }
 
     const apiKey = process.env.GROQ_API_KEY;
@@ -26,9 +45,19 @@ export default async function handler(req, res) {
     }
 
     const groq = new Groq({ apiKey });
+    const allowedExternalUrls = getAllowedExternalUrls(portfolioData);
 
     try {
-        const { message, history } = req.body;
+        const message = clampText(req.body?.message, { min: 1, max: 500, fallback: '' });
+        const history = sanitizeHistory(req.body?.history);
+
+        if (!message) {
+            return res.status(400).json({
+                type: "MESSAGE",
+                text: ">> SYSTEM_ALERT: INVALID_QUERY_PAYLOAD.",
+                action: null
+            });
+        }
 
         // 1. Fetch Live Data (GitHub) with error handling
         let githubData = null;
@@ -67,12 +96,14 @@ Rules for Action Triggers:
 - IF user asks about "contact", "email", "hiring", or how to reach out -> RETURN action: "SCROLL_TO_CONTACT"
 - IF user asks about "stack", "skills", "tools", or "technologies" -> RETURN action: "SCROLL_TO_STACK"
 - IF user asks about Alberto's background or "about" -> RETURN action: "SCROLL_TO_ABOUT"
+- IF user asks for architecture, estimate, discovery, plan, roadmap, or how Alberto would build something -> RETURN action: "SCROLL_TO_ARCHITECT"
 
 STRATEGIC NARRATIVE CONTROL:
 1. Authority: "I am the architectural interface for Alberto's systems. I bridge advanced AI with his engineering stack."
 2. Track Record: "Alberto has delivered 25+ commercial-grade projects for international clients, specializing in automation and systems integration."
-3. Focus: "On this platform, he showcases 4 high-fidelity flagship systems. I've initiated a scroll to his featured projects for your review." -> ACTION: "SCROLL_TO_PROJECTS"
+3. Focus: "On this platform, he showcases ${portfolioData.meta.showcasedProjectsCount} high-fidelity flagship systems. I've initiated a scroll to his featured projects for your review." -> ACTION: "SCROLL_TO_PROJECTS"
 4. Conversion: "If you have a high-stakes technical requirement, Alberto's contact system is ready for your query." -> ACTION: "SCROLL_TO_CONTACT"
+5. Discovery: "If you want a tailored solution outline, the Project Architect can generate a structured build brief before contact." -> ACTION: "SCROLL_TO_ARCHITECT"
 
 IMPORTANT: You MUST always respond in a strictly valid JSON format.
 
@@ -92,10 +123,7 @@ OUTPUT_FORMAT (JSON ONLY):
         // Construct conversation context (last 2 turns + current)
         const contextMessages = [
             { role: 'system', content: SYSTEM_PROMPT },
-            ...(history || []).slice(-4).map(h => ({
-                role: h.type === 'input' ? 'user' : 'assistant',
-                content: h.content
-            })),
+            ...history,
             { role: 'user', content: message }
         ];
 
@@ -106,10 +134,12 @@ OUTPUT_FORMAT (JSON ONLY):
                 const completion = await groq.chat.completions.create({
                     messages: contextMessages,
                     model: modelId,
+                    temperature: 0.35,
+                    max_completion_tokens: 700,
                     response_format: { type: 'json_object' }
                 });
 
-                response = JSON.parse(completion.choices[0].message.content);
+                response = extractJsonObject(completion.choices[0].message.content);
                 console.log(`[SYS] Success using model: ${modelId}`);
                 break;
             } catch (error) {
@@ -125,8 +155,22 @@ OUTPUT_FORMAT (JSON ONLY):
             }
         }
 
+        const safeAction = typeof response?.action === 'string' ? response.action : null;
+        const safeUrl = safeAction === 'OPEN_LINK'
+            ? getSafeExternalUrl(response?.url, allowedExternalUrls)
+            : null;
+
         if (!response) throw lastError;
-        return res.status(200).json(response);
+        return res.status(200).json({
+            type: response?.type === 'ACTION' ? 'ACTION' : 'MESSAGE',
+            text: clampText(response?.text, { min: 1, max: 800, fallback: '>> SYSTEM_ALERT: EMPTY_MODEL_RESPONSE.' }),
+            action: safeAction === 'OPEN_LINK'
+                ? (safeUrl ? 'OPEN_LINK' : null)
+                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT'].includes(safeAction)
+                    ? safeAction
+                    : null,
+            url: safeUrl,
+        });
 
     } catch (error) {
         console.error('Final Chat API Failure:', error);

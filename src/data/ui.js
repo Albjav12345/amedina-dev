@@ -15,7 +15,8 @@ export const ui = {
             { name: 'About', href: '#about', id: 'about', num: '02' },
             { name: 'Systems', href: '#projects', id: 'projects', num: '03' },
             { name: 'Stack', href: '#tech-stack', id: 'tech-stack', num: '04' },
-            { name: 'Contact', href: '#contact', id: 'contact', num: '05' },
+            { name: 'Architect', href: '#architect', id: 'architect', num: '05' },
+            { name: 'Contact', href: '#contact', id: 'contact', num: '06' },
         ],
         terminalButton: "TERM_ACCESS"
     },
@@ -31,7 +32,9 @@ export const ui = {
         description: "Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions.",
         buttons: {
             terminal: "ACCESS_TERMINAL",
-            cv: "GET_MANIFEST.PDF"
+            cv: "GET_MANIFEST.PDF",
+            cvPending: "MANIFEST_PENDING",
+            cvHref: ""
         },
         metadata: [
             { label: "Stack_Focus", value: "PYTHON / REACT / UNITY" },
@@ -62,9 +65,10 @@ export const ui = {
             capabilities: [
                 "Accesses live content & Alberto's GitHub commits.",
                 "Performs autonomous navigation (Scroll UI).",
-                "Queries technical project specifics from data."
+                "Queries technical project specifics from data.",
+                "Generates architecture briefs for incoming projects."
             ],
-            usage: 'Try asking "What are your latest commits?" or "help".'
+            usage: 'Try asking "What are your latest commits?" or "design me a system".'
         }
     },
 
@@ -84,6 +88,11 @@ export const ui = {
             id: "SYS_03",
             line1: "Technical",
             line2: "Arsenal."
+        },
+        architect: {
+            id: "SYS_04",
+            line1: "Project",
+            line2: "Architect."
         },
         console: { // Mobile console header
             id: "SYS_00",

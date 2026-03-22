@@ -8,6 +8,7 @@ import portfolioData from '../../data/portfolio';
 const Hero = () => {
     const { hero, sections } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
+    const isCvAvailable = Boolean(hero.buttons.cvHref);
 
     return (
         <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
@@ -132,10 +133,25 @@ const Hero = () => {
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                             </button>
 
-                            <button className="px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer">
-                                <Download className="w-4 h-4" />
-                                {hero.buttons.cv}
-                            </button>
+                            {isCvAvailable ? (
+                                <a
+                                    href={hero.buttons.cvHref}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    {hero.buttons.cv}
+                                </a>
+                            ) : (
+                                <div className="px-8 py-4 border border-white/10 text-gray-500 font-mono font-bold rounded-lg flex items-center gap-3 cursor-not-allowed bg-white/[0.02]">
+                                    <Download className="w-4 h-4" />
+                                    <div className="flex flex-col items-start leading-none gap-1">
+                                        <span>{hero.buttons.cv}</span>
+                                        <span className="text-[9px] tracking-[0.2em] text-electric-cyan/80">{hero.buttons.cvPending}</span>
+                                    </div>
+                                </div>
+                            )}
                         </motion.div>
 
                         {/* Quick Metadata */}

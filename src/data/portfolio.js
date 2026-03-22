@@ -11,11 +11,17 @@ import { projects } from './projects.js';
 import { profile, skills } from './profile.js';
 import { ui } from './ui.js';
 
+const meta = {
+    showcasedProjectsCount: projects.length,
+    showcasedProjectTitles: projects.map(project => project.title),
+};
+
 export const portfolioData = {
     profile,
     skills,
     projects,
-    ui
+    ui,
+    meta,
 };
 
 export default portfolioData;

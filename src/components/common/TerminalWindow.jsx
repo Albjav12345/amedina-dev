@@ -333,7 +333,7 @@ const InteractiveConsole = ({ onClose }) => {
 
     return (
         <div
-            className="h-full overflow-y-auto pb-4 custom-terminal-scroll pr-1 pb-4"
+            className="h-full overflow-y-auto custom-terminal-scroll pr-5 pb-4"
             ref={scrollRef}
             onScroll={handleScroll}
             onWheel={handleWheel}

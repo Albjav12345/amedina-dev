@@ -98,6 +98,10 @@
         animation: scan 4s linear infinite;
     }
 
+    .animate-shimmer {
+        animation: shimmer 1.35s linear;
+    }
+
     .gpu-accelerated {
         will-change: transform, opacity;
         transform: translateZ(0);
@@ -144,6 +148,16 @@
     }
 }
 
+@keyframes shimmer {
+    0% {
+        transform: translate3d(-100%, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(100%, 0, 0);
+    }
+}
+
 /* Global Vertical Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
@@ -187,6 +201,81 @@
     background: rgba(0, 255, 153, 0.5); /* electric-green */
     border: 3px solid transparent;
     background-clip: padding-box;
+}
+
+.panel-scrollbar,
+.custom-terminal-scroll {
+    scrollbar-color: rgba(0, 255, 153, 0.25) transparent;
+    scrollbar-gutter: stable;
+}
+
+.panel-scrollbar {
+    scrollbar-width: auto;
+}
+
+.custom-terminal-scroll {
+    scrollbar-width: thin;
+}
+
+.panel-scrollbar::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.custom-terminal-scroll::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.panel-scrollbar::-webkit-scrollbar-track,
+.custom-terminal-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    cursor: default;
+}
+
+.panel-scrollbar::-webkit-scrollbar-track {
+    margin-block: 22px;
+}
+
+.custom-terminal-scroll::-webkit-scrollbar-track {
+    margin-block: 10px;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb,
+.custom-terminal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 153, 0.24);
+    border-radius: 999px;
+    background-clip: padding-box;
+    cursor: default;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb {
+    border: 4px solid transparent;
+    min-height: 34px;
+}
+
+.custom-terminal-scroll::-webkit-scrollbar-thumb {
+    border: 4px solid transparent;
+    min-height: 44px;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb:hover,
+.custom-terminal-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 252, 241, 0.4);
+    background-clip: padding-box;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb:hover {
+    border: 4px solid transparent;
+}
+
+.custom-terminal-scroll::-webkit-scrollbar-thumb:hover {
+    border: 4px solid transparent;
+}
+
+.panel-scrollbar::-webkit-scrollbar-corner,
+.custom-terminal-scroll::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 /* Zero-Visibility Scrollbar for Interactive Auto-Scroll Engines */

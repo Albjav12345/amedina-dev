@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { imagetools } from 'vite-imagetools'
 
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET
+
 export default defineConfig({
   plugins: [
     react(),
@@ -13,15 +15,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
+  server: apiProxyTarget ? {
     proxy: {
       '/api': {
-        target: 'https://amedina-dev.vercel.app', // Tu web desplegada
+        target: apiProxyTarget,
         changeOrigin: true,
-        secure: true,
+        secure: apiProxyTarget.startsWith('https://'),
       }
     }
-  },
+  } : undefined,
   build: {
     rollupOptions: {
       output: {
