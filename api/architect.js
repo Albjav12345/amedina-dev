@@ -14,10 +14,40 @@ const MODELS = [
     'llama-3.1-8b-instant'
 ];
 
+const CUSTOM_OPTION = '__custom__';
 const PROJECT_TYPES = ['web-platform', 'ai-agent', 'automation-system', 'internal-tool', 'creative-interface'];
 const USER_SCOPES = ['solo-team', 'department', 'public-users', 'clients', 'mixed'];
 const TIMELINES = ['asap', 'month', 'quarter', 'flexible'];
 const COMPLEXITIES = ['focused-mvp', 'production-build', 'multi-system'];
+
+const PROJECT_TYPE_META = {
+    'web-platform': { label: 'Web Platform', description: 'Client apps, SaaS, portals, and productized services.' },
+    'ai-agent': { label: 'AI Agent', description: 'LLM systems with tools, retrieval, approvals, or supervised execution loops.' },
+    'automation-system': { label: 'Automation System', description: 'Pipelines, sync engines, repetitive workflow automation, and orchestration.' },
+    'internal-tool': { label: 'Internal Tool', description: 'Ops panels, admin systems, back-office workflows, and internal enablement.' },
+    'creative-interface': { label: 'Creative Interface', description: 'Visually distinctive launches, interactive showcases, and high-impact web experiences.' },
+};
+
+const USER_SCOPE_META = {
+    'solo-team': { label: 'Solo Team', description: 'A founder, freelancer, or tiny operator with limited process overhead.' },
+    department: { label: 'Department', description: 'A defined internal unit with shared workflows and coordination needs.' },
+    'public-users': { label: 'Public Users', description: 'External end users where onboarding, clarity, and UX quality matter most.' },
+    clients: { label: 'Client Portal', description: 'External clients who need approvals, status visibility, or structured collaboration.' },
+    mixed: { label: 'Mixed Audience', description: 'A system serving both internal operators and external users or clients.' },
+};
+
+const TIMELINE_META = {
+    asap: { label: 'ASAP', description: 'Urgent delivery pressure; scope should stay extremely tight.' },
+    month: { label: 'Within 30 Days', description: 'A focused first release with disciplined scope and limited surface area.' },
+    quarter: { label: 'This Quarter', description: 'Enough room for stronger architecture, polish, and some iteration.' },
+    flexible: { label: 'Flexible', description: 'Quality and strategic fit matter more than an aggressive launch date.' },
+};
+
+const COMPLEXITY_META = {
+    'focused-mvp': { label: 'Focused MVP', description: 'A narrow first release around one critical workflow.' },
+    'production-build': { label: 'Production Build', description: 'A polished launch-ready system with stronger operational readiness.' },
+    'multi-system': { label: 'Multi-System Rollout', description: 'A broader platform with multiple domains, dependencies, or workflows.' },
+};
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -25,16 +55,34 @@ function buildSystemPrompt() {
     return `
 You are Alberto Medina's AI Project Architect.
 
-Your task is to transform a project intake into a sharp pre-sales architecture brief that sounds like a senior systems engineer.
+Your task is to transform a project intake into a sharp pre-sales architecture brief that sounds like a senior systems engineer writing directly to a prospective client.
 
 Rules:
-- Be concrete, useful, and commercially relevant.
+- Be concrete, commercially relevant, and architecturally credible.
 - Mirror the user's language if it is obvious; otherwise use English.
-- Focus on architecture, delivery strategy, technical tradeoffs, and measurable value.
+- Focus on architecture, delivery strategy, implementation realism, technical tradeoffs, and measurable value.
 - Do not invent proprietary data, budgets, or guarantees.
+- Prefer the narrowest architecture that credibly solves phase one.
+- Recommend simple, stable technology by default unless the brief clearly demands higher complexity.
+- Treat security, permissions, auditability, and operational visibility as first-class concerns whenever relevant.
+- Mention AI only when it materially improves the system; do not force AI into the solution.
+- Avoid generic filler such as "scalable", "robust", or "seamless" unless you immediately make it concrete.
+- Write like an expert who already sees delivery risks, hidden scope, and product shape.
+- The result should feel like something Alberto could confidently send after a real discovery call.
 - Keep output concise and high-signal.
-- Mention AI only when it materially improves the system.
 - Output valid JSON only.
+
+Decision rules:
+- First identify the smallest valuable release.
+- Then choose architecture layers that directly support that release.
+- Use the intake dimensions to infer delivery pressure, audience complexity, and operational risk.
+- If an input is custom or ambiguous, make the safest reasonable interpretation and surface the ambiguity in risks or next step.
+- Delivery phases should be realistic for one strong engineer or a small delivery team, not an enterprise org chart.
+- Recommended stack items should be implementation-ready technologies or patterns, not vague categories.
+- Architecture items should each name a real layer or subsystem and explain why it exists.
+- Quick wins should be tactical and immediately useful.
+- Risks should expose scope, dependency, data, integration, security, or adoption concerns.
+- AI opportunities should be narrow and practical: triage, summarization, drafting, retrieval, classification, anomaly detection, or supervised actions.
 
 Reference portfolio context:
 ${JSON.stringify({
@@ -62,6 +110,28 @@ Required JSON schema:
   "nextStep": "One clear next action"
 }
 `;
+}
+
+function resolveDimension(value, customValue, allowedValues, metadata, fallback) {
+    const normalized = sanitizeEnum(value, [...allowedValues, CUSTOM_OPTION], fallback);
+
+    if (normalized === CUSTOM_OPTION) {
+        const customLabel = clampText(customValue, { min: 2, max: 72, fallback: '' });
+        if (customLabel) {
+            return {
+                key: CUSTOM_OPTION,
+                label: customLabel,
+                description: 'Custom user-defined input. Infer the closest credible product or delivery interpretation.',
+                isCustom: true,
+            };
+        }
+    }
+
+    return {
+        key: normalized === CUSTOM_OPTION ? fallback : normalized,
+        ...metadata[normalized === CUSTOM_OPTION ? fallback : normalized],
+        isCustom: false,
+    };
 }
 
 function normalizeArchitectResponse(response) {
@@ -114,10 +184,10 @@ export default async function handler(req, res) {
     }
 
     const brief = sanitizeMultilineText(req.body?.brief, { min: 30, max: 1400, fallback: '' });
-    const projectType = sanitizeEnum(req.body?.projectType, PROJECT_TYPES, 'web-platform');
-    const userScope = sanitizeEnum(req.body?.userScope, USER_SCOPES, 'mixed');
-    const timeline = sanitizeEnum(req.body?.timeline, TIMELINES, 'flexible');
-    const complexity = sanitizeEnum(req.body?.complexity, COMPLEXITIES, 'production-build');
+    const projectType = resolveDimension(req.body?.projectType, req.body?.projectTypeCustom, PROJECT_TYPES, PROJECT_TYPE_META, 'web-platform');
+    const userScope = resolveDimension(req.body?.userScope, req.body?.userScopeCustom, USER_SCOPES, USER_SCOPE_META, 'mixed');
+    const timeline = resolveDimension(req.body?.timeline, req.body?.timelineCustom, TIMELINES, TIMELINE_META, 'flexible');
+    const complexity = resolveDimension(req.body?.complexity, req.body?.complexityCustom, COMPLEXITIES, COMPLEXITY_META, 'production-build');
     const constraints = sanitizeMultilineText(req.body?.constraints, { max: 400, fallback: 'No explicit constraints shared.' });
 
     if (!brief) {
@@ -127,14 +197,37 @@ export default async function handler(req, res) {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
     const userPrompt = `
-Project type: ${projectType}
-User scope: ${userScope}
-Timeline: ${timeline}
-Complexity: ${complexity}
-Constraints: ${constraints}
+Project shape:
+- Label: ${projectType.label}
+- Key: ${projectType.key}
+- Interpretation: ${projectType.description}
+
+Primary audience:
+- Label: ${userScope.label}
+- Key: ${userScope.key}
+- Interpretation: ${userScope.description}
+
+Delivery window:
+- Label: ${timeline.label}
+- Key: ${timeline.key}
+- Interpretation: ${timeline.description}
+
+Phase-one depth:
+- Label: ${complexity.label}
+- Key: ${complexity.key}
+- Interpretation: ${complexity.description}
+
+Constraints:
+${constraints}
 
 Project brief:
 ${brief}
+
+Output expectations:
+- Name the most credible product shape for phase one.
+- Recommend a stack Alberto would realistically build and defend.
+- Keep architecture grounded in the actual launch constraints.
+- If AI is not justified, keep AI opportunities limited or empty.
 `;
 
     try {
