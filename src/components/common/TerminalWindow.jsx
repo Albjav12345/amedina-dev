@@ -305,13 +305,39 @@ const InteractiveConsole = ({ onClose }) => {
         }
     };
 
+    const handleWheel = (e) => {
+        const container = scrollRef.current;
+        if (!container) return;
+
+        const deltaY = e.deltaY;
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        
+        const isAtTop = scrollTop <= 0;
+        const isAtBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight - 1;
+
+        if (deltaY < 0 && isAtTop) {
+            return; // Scroll page up smoothly
+        }
+
+        if (deltaY > 0 && isAtBottom) {
+            return; // Scroll page down smoothly
+        }
+
+        if (scrollHeight <= clientHeight) {
+            return; // No scroll needed inside terminal
+        }
+
+        // Prevent Lenis from intercepting while we scroll internal content natively
+        e.stopPropagation();
+    };
+
     return (
         <div
             className="h-full overflow-y-auto pb-4 custom-terminal-scroll pr-1 pb-4"
             ref={scrollRef}
             onScroll={handleScroll}
+            onWheel={handleWheel}
             onClick={() => inputRef.current?.focus()}
-            data-lenis-prevent
         >
             <div className="flex flex-col gap-2 text-gray-300 text-xs md:text-sm font-mono leading-relaxed">
                 {terminal.consoleGretting.map((line, i) => (
