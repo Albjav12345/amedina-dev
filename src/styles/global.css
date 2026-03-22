@@ -144,9 +144,10 @@
     }
 }
 
-/* Custom Scrollbar */
+/* Global Vertical Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -154,5 +155,45 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-dark-slate rounded-full hover:bg-electric-green;
+    @apply bg-dark-slate rounded-full hover:bg-electric-green/80 transition-colors;
+    border: 2px solid #0b0c10; /* Adds padding feel inside the track */
+    background-clip: padding-box;
+}
+
+/* Horizontal Custom Scrollbar (Pipelines/Modals) */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 10px; /* Thicker invisible track for easier clicking */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    margin: 0 16px; /* Floating look */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    border: 3px solid transparent; /* MUST BE TRANSPARENT to support bg-white/5 modal backgrounds */
+    background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 153, 0.5); /* electric-green */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+
+/* Zero-Visibility Scrollbar for Interactive Auto-Scroll Engines */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
