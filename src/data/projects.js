@@ -25,7 +25,7 @@
     thumbnail:   Imagen de portada (obligatoria).
     icon:        Logo pequeño del proyecto (ej: 'Zap' de Lucide o un SVG/enlace).
     iconFit:     Opcional. Si pones 'auto', el recuadro se ajustará a la forma del PNG en lugar de ser un cuadrado fijo.
-    demoUrl:     Vídeo de alta calidad (opcional, solo si demoType es 'video').
+    iconScale:   Opcional. Escala la imagen para eliminar bordes vacíos transparentes (ej: 1.2 o 1.5).
 
     --- 🚀 MASTER TEMPLATE (Copiar y pegar al final del array 'projects') ---
     {
@@ -57,7 +57,8 @@ export const projects = [
         previewUrl: "/assets/projects/visual-interfaces-short.mp4",
         demoUrl: "/assets/projects/visual-interfaces.mp4",
         thumbnail: "/assets/projects/visual-interfaces.png",
-        icon: "/assets/projects/unity.webp"
+        icon: "/assets/projects/unity.webp",
+        iconScale: 1.3
     },
     {
         id: 2,
@@ -100,7 +101,9 @@ export const projects = [
         demoType: "video",
         previewUrl: "/assets/projects/twitch-live.mp4",
         demoUrl: "/assets/projects/twitch-live.mp4",
-        thumbnail: "/assets/projects/twitch-live.png"
+        thumbnail: "/assets/projects/twitch-live.png",
+        icon: "/assets/projects/twitch-icon.webp",
+        iconScale: 1.3
     },
     {
         id: 5,

@@ -302,6 +302,7 @@ const FeaturedProjects = () => {
                                                                 <img 
                                                                     src={activeProject.icon} 
                                                                     alt="Project Icon" 
+                                                                    style={activeProject.iconScale ? { transform: `scale(${activeProject.iconScale})` } : {}}
                                                                     className={activeProject.iconFit === 'auto' 
                                                                         ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]" 
                                                                         : "w-full h-full object-cover"} 
