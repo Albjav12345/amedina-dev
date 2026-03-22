@@ -5,6 +5,18 @@ import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
+import c1 from '../../assets/testimonials/client1.png?w=200&h=200&format=webp&quality=80';
+import c2 from '../../assets/testimonials/client2.png?w=200&h=200&format=webp&quality=80';
+import c3 from '../../assets/testimonials/client3.png?w=200&h=200&format=webp&quality=80';
+import c4 from '../../assets/testimonials/client4.png?w=200&h=200&format=webp&quality=80';
+
+const optimizedAvatars = {
+    "/assets/testimonials/client1.png": c1,
+    "/assets/testimonials/client2.png": c2,
+    "/assets/testimonials/client3.png": c3,
+    "/assets/testimonials/client4.png": c4,
+};
+
 const { about: profileAbout } = portfolioData.profile;
 
 const Counter = ({ value }) => {
@@ -244,7 +256,7 @@ const About = () => {
                                         <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
                                             {t.avatarUrl ? (
                                                 <img
-                                                    src={t.avatarUrl}
+                                                    src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
                                                     alt={t.author}
                                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                                                     onLoad={(e) => e.target.classList.remove('opacity-0')}
