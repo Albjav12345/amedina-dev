@@ -46,38 +46,12 @@ const examples = [
 
 const initialState = { brief: '', projectType: 'web-platform', projectTypeCustom: '', userScope: 'mixed', userScopeCustom: '', timeline: 'flexible', timelineCustom: '', complexity: 'production-build', complexityCustom: '', constraints: '' };
 
-const stackMap = { 'web-platform': ['React', 'Node.js', 'PostgreSQL', 'Vercel'], 'ai-agent': ['React', 'Python', 'Groq / LLM', 'Supabase'], 'automation-system': ['Python', 'Node.js', 'APIs', 'Queue Workers'], 'internal-tool': ['React', 'Firebase', 'Role-Based Access', 'Analytics'], 'creative-interface': ['React', 'Framer Motion', 'Canvas / WebGL', 'Vite'] };
-const architectureMap = { 'web-platform': [['Experience Layer', 'A premium responsive frontend that keeps the main workflow frictionless.'], ['Application Core', 'Business logic, validation rules, and state orchestration live here.'], ['Data Layer', 'Structured models support reporting, permissions, and future automation.'], ['Integration Layer', 'External services connect without tightly coupling them to the UI.']], 'ai-agent': [['Operator Interface', 'Users launch requests, inspect outputs, and approve sensitive actions.'], ['Agent Runtime', 'Prompting, tool routing, guardrails, and execution logic stay contained.'], ['Knowledge & Memory', 'Context and documents remain useful across sessions.'], ['Human Review Layer', 'High-impact outputs pass through approval checkpoints.']], 'automation-system': [['Input Capture', 'Triggers arrive from forms, inboxes, webhooks, or schedules.'], ['Processing Engine', 'Payloads are normalized, routed, and executed deterministically.'], ['Exception Handling', 'Failures and retries stay visible instead of disappearing.'], ['Reporting Layer', 'Throughput, savings, and bottlenecks remain measurable.']], 'internal-tool': [['Ops Dashboard', 'A clear internal interface for approvals and visibility.'], ['Permissions Layer', 'Role-aware access control keeps the system safe as usage grows.'], ['Business Logic', 'Workflow rules stay centralized and consistent.'], ['Operational Data', 'History and records support auditability and optimization.']], 'creative-interface': [['Immersive Frontend', 'High-fidelity motion creates a distinctive first impression.'], ['Interaction Engine', 'Animation timing and transitions make the interface feel premium.'], ['Content Control', 'Structured content remains editable without redesigning the whole surface.'], ['Performance Layer', 'Progressive enhancement preserves polish on desktop and mobile.']] };
-
 function getSelectedLabel(options, value, customValue, fallbackLabel) {
     if (value === CUSTOM_OPTION) {
         return customValue.trim() || fallbackLabel;
     }
 
     return options.find(([optionValue]) => optionValue === value)?.[1] || fallbackLabel;
-}
-
-function getResolvedProjectType(formState) {
-    return formState.projectType === CUSTOM_OPTION ? 'web-platform' : formState.projectType;
-}
-
-function fallbackBrief(formState) {
-    const resolvedProjectType = getResolvedProjectType(formState);
-    const title = getSelectedLabel(projectTypes, formState.projectType, formState.projectTypeCustom, 'Project System');
-
-    return {
-        briefId: `ARCH-LOCAL-${Date.now().toString(36).toUpperCase()}`,
-        solutionFit: resolvedProjectType === 'ai-agent' || resolvedProjectType === 'automation-system' ? 'High' : 'Strong',
-        headline: `${title} Architecture Brief`,
-        summary: `This looks like a ${title.toLowerCase()} where the first release should stay tightly centered on one valuable workflow. The safest approach is to keep the user experience premium while isolating integrations, approvals, and future automation into explicit layers.`,
-        recommendedStack: stackMap[resolvedProjectType] || stackMap['web-platform'],
-        architecture: (architectureMap[resolvedProjectType] || architectureMap['web-platform']).map(([titleText, detail]) => ({ title: titleText, detail })),
-        deliveryPlan: [{ phase: 'Discovery & Scope Lock', detail: 'Turn the brief into exact workflows, permissions, and integration boundaries.', duration: formState.timeline === 'asap' ? '2-3 days' : '1 week' }, { phase: 'Core Build', detail: 'Ship the primary interface, core logic, and minimum integrations for the first live workflow.', duration: formState.complexity === 'focused-mvp' ? '1-2 weeks' : '2-4 weeks' }, { phase: 'Hardening & QA', detail: 'Validate edge cases, tighten permissions, and prepare analytics and operational monitoring.', duration: '4-7 days' }],
-        quickWins: ['Define one primary user journey and optimize the first release around that path.', 'Instrument the product from the start so performance and conversion are measurable.', 'Keep the first release smaller than the long-term vision.'],
-        risks: ['If integrations are added too early, delivery slows and stability drops.', 'Timeline pressure should narrow scope rather than weaken architecture.', formState.constraints ? `Constraint to respect from day one: ${formState.constraints}` : 'Key constraints should be confirmed early so architecture choices are not blind.'],
-        aiOpportunities: ['Use AI for summarization, triage, drafting, or classification only where it saves repetitive effort.', 'Keep human approval for outputs that affect clients, revenue, or external communication.', 'Log outcomes so the AI layer can be improved safely over time.'],
-        nextStep: 'Turn this outline into a scoped execution plan with exact integrations, approval rules, and launch milestones.',
-    };
 }
 
 function formatBrief(result, formState) {
@@ -87,6 +61,23 @@ function formatBrief(result, formState) {
     const complexityLabel = getSelectedLabel(complexities, formState.complexity, formState.complexityCustom, 'Production Build');
 
     return [`[AI Project Architect] ${result.briefId}`, '', `Project type: ${projectTypeLabel}`, `Audience scope: ${userScopeLabel}`, `Timeline: ${timelineLabel}`, `Delivery depth: ${complexityLabel}`, '', 'Original brief:', formState.brief, '', 'Summary:', result.summary, '', `Recommended stack: ${result.recommendedStack.join(', ')}`, '', 'Architecture:', ...result.architecture.map((item) => `- ${item.title}: ${item.detail}`), '', 'Delivery plan:', ...result.deliveryPlan.map((item) => `- ${item.phase} (${item.duration}): ${item.detail}`), '', `Next step: ${result.nextStep}`].join('\n');
+}
+
+function getArchitectErrorMessage(message, details) {
+    if (message === 'ARCHITECT_RESPONSE_INCOMPLETE') {
+        const missingFields = details?.missingFields;
+        const fieldHint = Array.isArray(missingFields) && missingFields.length
+            ? ` Missing fields: ${missingFields.join(', ')}.`
+            : '';
+
+        return `The AI response was incomplete and could not be used safely.${fieldHint} Please try again.`;
+    }
+
+    if (message === 'MODEL_RESPONSE_INVALID_JSON' || message === 'MODEL_RESPONSE_EMPTY') {
+        return 'The AI response could not be parsed safely. Please try again.';
+    }
+
+    return 'The architecture brief could not be generated right now. Please retry in a moment.';
 }
 
 function SelectField({ label, value, options, helper, customValue, customPlaceholder, customHelper, onChange, onCustomChange }) {
@@ -119,7 +110,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
     }, []);
 
     return (
-        <div ref={ref} className="space-y-2 relative">
+        <div ref={ref} className={`space-y-2 relative ${open ? 'z-[80]' : 'z-0'}`}>
             <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">{label}</label>
             {value === CUSTOM_OPTION ? (
                 <div className={`w-full h-[58px] rounded-xl border px-4 flex items-center gap-3 transition-all ${open ? 'border-electric-green/50 bg-electric-green/[0.08]' : 'border-electric-cyan/25 bg-electric-cyan/[0.05]'}`}>
@@ -147,7 +138,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
             )}
             <AnimatePresence>
                 {open && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.18 }} className="absolute left-0 right-0 top-full z-30 mt-2 rounded-2xl border border-white/10 bg-[#0d0e12] shadow-[0_24px_60px_rgba(0,0,0,0.55)] overflow-hidden">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.18 }} className="absolute left-0 right-0 top-full z-[90] mt-2 rounded-2xl border border-white/10 bg-[#0d0e12] shadow-[0_24px_60px_rgba(0,0,0,0.55)] overflow-hidden">
                         <div className="p-2">
                             {extendedOptions.map(([optionValue, optionLabel, optionDescription]) => {
                                 const isActive = optionValue === value;
@@ -170,12 +161,39 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
 const ProjectArchitect = () => {
     const quality = useHardwareQuality();
     const { architect } = portfolioData.ui.sections;
+    const examplesRef = useRef(null);
     const [formState, setFormState] = useState(initialState);
     const [result, setResult] = useState(null);
     const [status, setStatus] = useState('idle');
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
     const [showExamples, setShowExamples] = useState(false);
+
+    useEffect(() => {
+        if (!showExamples) {
+            return undefined;
+        }
+
+        const handlePointerDown = (event) => {
+            if (!examplesRef.current?.contains(event.target)) {
+                setShowExamples(false);
+            }
+        };
+
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                setShowExamples(false);
+            }
+        };
+
+        window.addEventListener('mousedown', handlePointerDown);
+        window.addEventListener('keydown', handleEscape);
+
+        return () => {
+            window.removeEventListener('mousedown', handlePointerDown);
+            window.removeEventListener('keydown', handleEscape);
+        };
+    }, [showExamples]);
 
     const updateField = (field, value) => {
         setFormState((prev) => ({ ...prev, [field]: value }));
@@ -187,6 +205,7 @@ const ProjectArchitect = () => {
 
         setStatus('loading');
         setError('');
+        setResult(null);
 
         try {
             const response = await fetch('/api/architect', {
@@ -196,12 +215,18 @@ const ProjectArchitect = () => {
             });
             const raw = await response.text();
             const payload = raw ? JSON.parse(raw) : null;
-            if (!response.ok) throw new Error(payload?.message || 'ARCHITECT_REQUEST_FAILED');
+
+            if (!response.ok) {
+                const requestError = new Error(payload?.message || 'ARCHITECT_REQUEST_FAILED');
+                requestError.details = payload?.details || null;
+                throw requestError;
+            }
+
             setResult(payload);
             setStatus('success');
-        } catch {
-            setResult(fallbackBrief(formState));
-            setStatus('success');
+        } catch (error) {
+            setStatus('idle');
+            setError(getArchitectErrorMessage(error?.message, error?.details));
         }
     };
 
@@ -274,7 +299,7 @@ const ProjectArchitect = () => {
                         </div>
                     </motion.div>
 
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={scaleIn} className={`rounded-2xl border border-white/10 p-6 md:p-8 h-full flex flex-col ${quality.glassClass}`}>
+                    <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={scaleIn} className={`rounded-2xl border border-white/10 p-6 md:p-8 h-full flex flex-col relative overflow-visible ${quality.glassClass}`}>
                         <div className="flex items-center justify-between gap-4 mb-6">
                             <div><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Intake_Interface</div><h3 className="mt-2 text-2xl font-bold text-white">Project intake</h3></div>
                             <button type="button" onClick={() => setShowExamples((prev) => !prev)} className="px-4 py-2 rounded-lg border border-white/10 bg-white/[0.04] hover:border-electric-cyan/40 hover:bg-electric-cyan/10 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors cursor-pointer">Load Example</button>
@@ -282,7 +307,7 @@ const ProjectArchitect = () => {
 
                         <AnimatePresence>
                             {showExamples && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.18 }} className="mb-5 rounded-2xl border border-white/10 bg-black/35 p-3">
+                                <motion.div ref={examplesRef} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.18 }} className="absolute left-6 right-6 top-[7.75rem] z-[70] rounded-2xl border border-white/10 bg-[#0c0d11]/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl md:left-8 md:right-8">
                                     <div className="px-2 pt-1 pb-3"><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-cyan">Preset_Examples</div><p className="mt-2 text-sm text-gray-400">Choose one of these prebuilt examples to understand how the intake behaves across different project types.</p></div>
                                     <div className="grid grid-cols-1 gap-3">
                                         {examples.map((example) => (
@@ -298,7 +323,7 @@ const ProjectArchitect = () => {
                             )}
                         </AnimatePresence>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-5 relative overflow-visible">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">Mission_Brief</label>
                                 <div className="rounded-xl border border-white/10 bg-white/5 pr-1.5 overflow-hidden transition-all focus-within:border-electric-green/50 focus-within:bg-white/[0.08]">
@@ -364,15 +389,27 @@ const ProjectArchitect = () => {
                                             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Delivery_Plan</div>
                                             <div className="space-y-4">{result.deliveryPlan.map((item) => <div key={item.phase} className="rounded-xl border border-white/10 bg-black/20 p-4"><div className="flex items-center justify-between gap-3 mb-2"><div className="text-base font-semibold text-white">{item.phase}</div><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">{item.duration}</div></div><p className="text-sm text-gray-300 leading-relaxed">{item.detail}</p></div>)}</div>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green mb-4">Quick_Wins</div><div className="space-y-3">{result.quickWins.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed">{item}</div>)}</div></div>
-                                            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan mb-4">AI_Opportunities</div><div className="space-y-3">{result.aiOpportunities.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Sparkles className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div></div>
-                                        </div>
+                                        {(result.quickWins.length > 0 || result.aiOpportunities.length > 0) && (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {result.quickWins.length > 0 && (
+                                                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green mb-4">Quick_Wins</div>
+                                                        <div className="space-y-3">{result.quickWins.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed">{item}</div>)}</div>
+                                                    </div>
+                                                )}
+                                                {result.aiOpportunities.length > 0 && (
+                                                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan mb-4">AI_Opportunities</div>
+                                                        <div className="space-y-3">{result.aiOpportunities.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Sparkles className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="mt-6 grid grid-cols-1 lg:grid-cols-[0.7fr_1.3fr] gap-4">
-                                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Execution_Risks</div><div className="space-y-3">{result.risks.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Shield className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div></div>
+                                <div className={`mt-6 grid grid-cols-1 gap-4 ${result.risks.length > 0 ? 'lg:grid-cols-[0.7fr_1.3fr]' : ''}`}>
+                                    {result.risks.length > 0 && <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Execution_Risks</div><div className="space-y-3">{result.risks.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Shield className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div></div>}
                                     <div className="rounded-2xl border border-electric-green/20 bg-electric-green/10 px-5 py-4"><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green mb-2">Next_Step</div><p className="text-sm md:text-base text-white leading-relaxed">{result.nextStep}</p></div>
                                 </div>
                             </div>

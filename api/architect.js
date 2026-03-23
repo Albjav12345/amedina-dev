@@ -49,14 +49,6 @@ const COMPLEXITY_META = {
     'multi-system': { label: 'Multi-System Rollout', description: 'A broader platform with multiple domains, dependencies, or workflows.' },
 };
 
-const STACK_FALLBACKS = {
-    'web-platform': ['React', 'Node.js', 'PostgreSQL', 'Role-Based Access Control', 'Vercel'],
-    'ai-agent': ['React', 'Python', 'Groq API', 'PostgreSQL', 'Human Approval Workflow'],
-    'automation-system': ['Python', 'Node.js', 'PostgreSQL', 'Queue Workers', 'Webhook Integrations'],
-    'internal-tool': ['React', 'Node.js', 'PostgreSQL', 'Role-Based Access Control', 'Analytics'],
-    'creative-interface': ['React', 'Framer Motion', 'Node.js', 'Structured Content Model', 'Vercel'],
-};
-
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function buildSystemPrompt() {
@@ -172,9 +164,7 @@ function normalizeStack(stackItems, projectTypeKey) {
         .filter(Boolean)
         .filter(item => !vaguePattern.test(item));
 
-    return cleaned.length >= 4
-        ? cleaned.slice(0, 6)
-        : STACK_FALLBACKS[projectTypeKey] || STACK_FALLBACKS['web-platform'];
+    return cleaned.slice(0, 6);
 }
 
 function normalizeArchitectResponse(response, { projectTypeKey }) {
@@ -182,10 +172,10 @@ function normalizeArchitectResponse(response, { projectTypeKey }) {
         ? response.aiOpportunities.map(item => sanitizeMultilineText(item, { min: 5, max: 120, fallback: '' })).filter(Boolean).slice(0, 4)
         : [];
 
-    return {
-        headline: clampText(response?.headline, { min: 8, max: 80, fallback: 'AI Architecture Brief' }),
-        summary: sanitizeMultilineText(response?.summary, { min: 40, max: 420, fallback: 'A tailored architecture brief is ready for review.' }),
-        solutionFit: sanitizeEnum(response?.solutionFit, ['High', 'Strong', 'Selective'], 'Strong'),
+    const normalized = {
+        headline: clampText(response?.headline, { min: 8, max: 80, fallback: '' }),
+        summary: sanitizeMultilineText(response?.summary, { min: 40, max: 420, fallback: '' }),
+        solutionFit: sanitizeEnum(response?.solutionFit, ['High', 'Strong', 'Selective'], ''),
         recommendedStack: normalizeStack(response?.recommendedStack, projectTypeKey),
         architecture: Array.isArray(response?.architecture)
             ? response.architecture.map(item => ({
@@ -206,10 +196,23 @@ function normalizeArchitectResponse(response, { projectTypeKey }) {
         risks: Array.isArray(response?.risks)
             ? response.risks.map(item => sanitizeMultilineText(item, { min: 5, max: 120, fallback: '' })).filter(Boolean).slice(0, 4)
             : [],
-        aiOpportunities: aiOpportunities.length
-            ? aiOpportunities
-            : ['No strong AI layer is recommended for phase one; prioritize core workflow reliability, permissions, and auditability first.'],
-        nextStep: sanitizeMultilineText(response?.nextStep, { min: 10, max: 160, fallback: 'Share this brief and turn it into a scoped execution plan.' }),
+        aiOpportunities,
+        nextStep: sanitizeMultilineText(response?.nextStep, { min: 10, max: 160, fallback: '' }),
+    };
+
+    const missingFields = [];
+
+    if (!normalized.headline) missingFields.push('headline');
+    if (!normalized.summary) missingFields.push('summary');
+    if (!normalized.solutionFit) missingFields.push('solutionFit');
+    if (normalized.recommendedStack.length < 4) missingFields.push('recommendedStack');
+    if (!normalized.architecture.length) missingFields.push('architecture');
+    if (!normalized.deliveryPlan.length) missingFields.push('deliveryPlan');
+    if (!normalized.nextStep) missingFields.push('nextStep');
+
+    return {
+        normalized,
+        missingFields,
     };
 }
 
@@ -293,10 +296,19 @@ Output expectations:
                     ],
                 });
 
-                response = normalizeArchitectResponse(
+                const parsedResponse = normalizeArchitectResponse(
                     extractJsonObject(completion.choices?.[0]?.message?.content),
                     { projectTypeKey: projectType.key }
                 );
+
+                if (parsedResponse.missingFields.length) {
+                    const error = new Error('ARCHITECT_RESPONSE_INCOMPLETE');
+                    error.status = 502;
+                    error.details = { missingFields: parsedResponse.missingFields };
+                    throw error;
+                }
+
+                response = parsedResponse.normalized;
                 break;
             } catch (error) {
                 lastError = error;
@@ -319,6 +331,7 @@ Output expectations:
     } catch (error) {
         return res.status(error?.status || 500).json({
             message: error?.message || 'ARCHITECT_REQUEST_FAILED',
+            details: error?.details || null,
         });
     }
 }
