@@ -135,7 +135,7 @@ Rules for Action Triggers:
 - IF user asks about "stack", "skills", "tools", or "technologies" -> RETURN action: "SCROLL_TO_STACK"
 - IF user asks about Alberto's background or "about" -> RETURN action: "SCROLL_TO_ABOUT"
 - IF user asks for architecture, estimate, discovery, plan, roadmap, or how Alberto would build something -> RETURN action: "SCROLL_TO_ARCHITECT"
-- IF user asks about runtime status, observability, backend, telemetry, logs, lifecycle, or integrations -> RETURN action: "SCROLL_TO_CONTROL"
+- IF user asks about runtime status, observability, backend, telemetry, logs, lifecycle, or integrations -> RETURN action: "OPEN_CONTROL_PANEL"
 
 STRATEGIC NARRATIVE CONTROL:
 1. Authority: "I am the architectural interface for Alberto's systems. I bridge advanced AI with his engineering stack."
@@ -150,7 +150,7 @@ OUTPUT_FORMAT (JSON ONLY):
 {
 "type": "MESSAGE" | "ACTION",
 "text": "Your persuasive response here...",
-"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "SCROLL_TO_ARCHITECT" | "SCROLL_TO_CONTROL" | "OPEN_LINK" | null,
+"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "SCROLL_TO_ARCHITECT" | "OPEN_CONTROL_PANEL" | "OPEN_LINK" | null,
 "url": "https://github.com/..." (Only if action is OPEN_LINK)
 }
 `;
@@ -228,7 +228,7 @@ OUTPUT_FORMAT (JSON ONLY):
             text: clampText(response?.text, { min: 1, max: 800, fallback: '>> SYSTEM_ALERT: EMPTY_MODEL_RESPONSE.' }),
             action: safeAction === 'OPEN_LINK'
                 ? (safeUrl ? 'OPEN_LINK' : null)
-                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT', 'SCROLL_TO_CONTROL'].includes(safeAction)
+                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT', 'OPEN_CONTROL_PANEL'].includes(safeAction)
                     ? safeAction
                     : null,
             url: safeUrl,

@@ -5,6 +5,7 @@ import { fadeInUp, scaleIn, viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import portfolioData from '../../data/portfolio';
 import { containWheelOnOverflow } from '../../utils/scrolling';
+import { recordOpsRun } from '../../utils/opsTelemetry';
 
 const CUSTOM_OPTION = '__custom__';
 
@@ -202,6 +203,8 @@ const ProjectArchitect = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (status === 'loading') return;
+        const startedAt = new Date().toISOString();
+        const startedAtMs = Date.now();
 
         setStatus('loading');
         setError('');
@@ -224,9 +227,47 @@ const ProjectArchitect = () => {
 
             setResult(payload);
             setStatus('success');
+            recordOpsRun({
+                channel: 'architect',
+                title: 'Project Architect Brief',
+                status: 'success',
+                startedAt,
+                completedAt: new Date().toISOString(),
+                latencyMs: Date.now() - startedAtMs,
+                input: formState.brief,
+                output: payload.summary,
+                decision: payload.solutionFit ? `${payload.solutionFit} solution fit` : 'Brief generated',
+                approval: 'Schema-validated brief returned to the interface',
+                tools: ['Architect API', 'Groq LLM', 'Portfolio Context', 'Schema Validation'],
+                steps: [
+                    { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Architect intake dispatched from the client.', state: 'complete', at: startedAt },
+                    { key: 'validation', label: 'VALIDATION', detail: 'Brief and selector values accepted safely.', state: 'complete', at: startedAt },
+                    { key: 'context', label: 'INTAKE RESOLUTION', detail: 'Project shape, audience, timeline, and constraints were resolved.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'inference', label: 'ARCHITECT REASONING', detail: 'Groq generated the architecture brief and delivery structure.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'action', label: 'SCHEMA CHECK', detail: 'The JSON response passed validation before rendering.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'response', label: 'RESPONSE', detail: 'The brief was mounted into the architect panel.', state: 'complete', at: new Date().toISOString() },
+                ],
+            });
         } catch (error) {
             setStatus('idle');
             setError(getArchitectErrorMessage(error?.message, error?.details));
+            recordOpsRun({
+                channel: 'architect',
+                title: 'Project Architect Brief',
+                status: 'error',
+                startedAt,
+                completedAt: new Date().toISOString(),
+                latencyMs: Date.now() - startedAtMs,
+                input: formState.brief,
+                output: getArchitectErrorMessage(error?.message, error?.details),
+                decision: error?.message || 'Architect request failed',
+                approval: 'Request failed before a safe brief could be rendered',
+                tools: ['Architect API', 'Groq LLM', 'Schema Validation'],
+                steps: [
+                    { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Architect intake dispatched from the client.', state: 'complete', at: startedAt },
+                    { key: 'validation', label: 'VALIDATION', detail: 'The request failed during generation or validation.', state: 'error', at: new Date().toISOString() },
+                ],
+            });
         }
     };
 

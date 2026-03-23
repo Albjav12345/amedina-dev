@@ -4,6 +4,7 @@ import { Mail, ExternalLink, Loader2, CheckCircle2, Github, Linkedin, Copy, Chec
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 import portfolioData from '../../data/portfolio';
 import { containWheelOnOverflow } from '../../utils/scrolling';
+import { recordOpsRun } from '../../utils/opsTelemetry';
 
 const initialFormState = {
     name: '',
@@ -65,6 +66,8 @@ const Contact = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (status === 'sending' || formState.company) return;
+        const startedAt = new Date().toISOString();
+        const startedAtMs = Date.now();
 
         setStatus('sending');
 
@@ -91,10 +94,45 @@ const Contact = () => {
             setStatus('success');
             setFormState(initialFormState);
             setPrefillSource('');
+            recordOpsRun({
+                channel: 'contact',
+                title: 'Contact Relay Submission',
+                status: 'success',
+                startedAt,
+                completedAt: new Date().toISOString(),
+                latencyMs: Date.now() - startedAtMs,
+                input: formState.message,
+                output: 'Contact message accepted by the Formspree relay.',
+                decision: 'External contact relay accepted payload',
+                approval: 'Outbound contact request delivered',
+                tools: ['Formspree Relay', 'Client Validation'],
+                steps: [
+                    { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Contact form payload dispatched from the client.', state: 'complete', at: startedAt },
+                    { key: 'validation', label: 'VALIDATION', detail: 'Required fields and honeypot guard passed.', state: 'complete', at: startedAt },
+                    { key: 'response', label: 'RESPONSE', detail: 'Formspree accepted the transmission.', state: 'complete', at: new Date().toISOString() },
+                ],
+            });
             setTimeout(() => setStatus('idle'), 5000);
         } catch (error) {
             console.error('[ContactForm] Error:', error);
             setStatus('error');
+            recordOpsRun({
+                channel: 'contact',
+                title: 'Contact Relay Submission',
+                status: 'error',
+                startedAt,
+                completedAt: new Date().toISOString(),
+                latencyMs: Date.now() - startedAtMs,
+                input: formState.message,
+                output: 'Contact submission failed before confirmation.',
+                decision: error.message || 'Contact relay failure',
+                approval: 'No confirmation returned from external relay',
+                tools: ['Formspree Relay'],
+                steps: [
+                    { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Contact form payload dispatched from the client.', state: 'complete', at: startedAt },
+                    { key: 'validation', label: 'VALIDATION', detail: 'The external relay rejected or failed the submission.', state: 'error', at: new Date().toISOString() },
+                ],
+            });
             setTimeout(() => setStatus('idle'), 3500);
         }
     };

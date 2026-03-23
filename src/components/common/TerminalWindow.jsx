@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minimize2, Maximize2, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
+import { recordOpsRun } from '../../utils/opsTelemetry';
 
 const TerminalWindow = ({ title, onStateChange }) => {
     const { terminal } = portfolioData.ui;
@@ -223,6 +224,8 @@ const InteractiveConsole = ({ onClose }) => {
         if (e.key === 'Enter') {
             if (!input.trim()) return;
             const cmd = input.trim();
+            const startedAt = new Date().toISOString();
+            const startedAtMs = Date.now();
 
             // Add user command to history
             setHistory(prev => [...prev, { type: 'input', content: cmd }]);
@@ -267,6 +270,23 @@ const InteractiveConsole = ({ onClose }) => {
 
                     console.error("API Error:", errorText);
                     setHistory(prev => [...prev, { type: 'output', content: errorMessage }]);
+                    recordOpsRun({
+                        channel: 'terminal',
+                        title: 'Terminal Agent Request',
+                        status: 'error',
+                        startedAt,
+                        completedAt: new Date().toISOString(),
+                        latencyMs: Date.now() - startedAtMs,
+                        input: cmd,
+                        output: errorMessage,
+                        decision: `HTTP ${res.status} failure`,
+                        approval: 'Request failed before action dispatch',
+                        tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
+                        steps: [
+                            { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
+                            { key: 'validation', label: 'VALIDATION', detail: 'The backend rejected or failed the request.', state: 'error', at: new Date().toISOString() },
+                        ],
+                    });
                     setIsLoading(false);
                     return;
                 }
@@ -280,6 +300,8 @@ const InteractiveConsole = ({ onClose }) => {
                 if (data.action) {
                     if (data.action === 'OPEN_LINK' && data.url) {
                         window.open(data.url, '_blank');
+                    } else if (data.action === 'OPEN_CONTROL_PANEL') {
+                        window.dispatchEvent(new CustomEvent('open-control-panel'));
                     } else {
                         const sectionId = data.action.replace('SCROLL_TO_', '').toLowerCase().replace('_', '-');
                         const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
@@ -297,8 +319,47 @@ const InteractiveConsole = ({ onClose }) => {
                     }
                 }
 
+                recordOpsRun({
+                    channel: 'terminal',
+                    title: 'Terminal Agent Request',
+                    status: 'success',
+                    startedAt,
+                    completedAt: new Date().toISOString(),
+                    latencyMs: Date.now() - startedAtMs,
+                    input: cmd,
+                    output: data.text,
+                    decision: data.action ? `Resolved ${data.action}` : 'Returned message response',
+                    approval: data.action === 'OPEN_LINK' ? 'External link handoff approved' : 'Autonomous UI-safe response',
+                    tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
+                    steps: [
+                        { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
+                        { key: 'validation', label: 'VALIDATION', detail: 'Payload accepted and sanitized by the backend.', state: 'complete', at: startedAt },
+                        { key: 'context', label: 'CONTEXT HYDRATION', detail: 'Portfolio and GitHub context attached to the request.', state: 'complete', at: new Date().toISOString() },
+                        { key: 'inference', label: 'AGENT REASONING', detail: 'Groq generated the response and next action.', state: 'complete', at: new Date().toISOString() },
+                        { key: 'action', label: 'ACTION RESOLUTION', detail: data.action ? `Frontend resolved ${data.action}.` : 'No UI action was required.', state: 'complete', at: new Date().toISOString() },
+                        { key: 'response', label: 'RESPONSE', detail: 'The terminal response was committed to the session log.', state: 'complete', at: new Date().toISOString() },
+                    ],
+                });
+
             } catch (error) {
                 setHistory(prev => [...prev, { type: 'output', content: ">> ERROR: SERVER DISCONNECTED. PLEASE CHECK CONNECTION." }]);
+                recordOpsRun({
+                    channel: 'terminal',
+                    title: 'Terminal Agent Request',
+                    status: 'error',
+                    startedAt,
+                    completedAt: new Date().toISOString(),
+                    latencyMs: Date.now() - startedAtMs,
+                    input: cmd,
+                    output: '>> ERROR: SERVER DISCONNECTED. PLEASE CHECK CONNECTION.',
+                    decision: 'Network or server disconnect',
+                    approval: 'No backend response returned',
+                    tools: ['Terminal API'],
+                    steps: [
+                        { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
+                        { key: 'validation', label: 'VALIDATION', detail: 'The request failed before a valid backend response returned.', state: 'error', at: new Date().toISOString() },
+                    ],
+                });
             } finally {
                 setIsLoading(false);
             }

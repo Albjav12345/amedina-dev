@@ -16,8 +16,7 @@ export const ui = {
             { name: 'Systems', href: '#projects', id: 'projects', num: '03' },
             { name: 'Stack', href: '#tech-stack', id: 'tech-stack', num: '04' },
             { name: 'Architect', href: '#architect', id: 'architect', num: '05' },
-            { name: 'Control', href: '#control', id: 'control', num: '06' },
-            { name: 'Contact', href: '#contact', id: 'contact', num: '07' },
+            { name: 'Contact', href: '#contact', id: 'contact', num: '06' },
         ],
         terminalButton: "TERM_ACCESS"
     },
@@ -94,11 +93,6 @@ export const ui = {
             id: "SYS_04",
             line1: "Project",
             line2: "Architect."
-        },
-        control: {
-            id: "SYS_05",
-            line1: "Control",
-            line2: "Plane."
         },
         console: { // Mobile console header
             id: "SYS_00",

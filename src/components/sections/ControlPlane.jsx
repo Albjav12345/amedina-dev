@@ -1,81 +1,52 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
     Activity,
-    AlertTriangle,
     BrainCircuit,
     CheckCircle2,
     Clock3,
-    Github,
     RefreshCw,
-    Server,
     ShieldCheck,
     Sparkles,
+    TerminalSquare,
+    Trash2,
+    Waves,
     Workflow,
+    X,
     XCircle,
 } from 'lucide-react';
-import { fadeInUp, scaleIn, viewportConfig } from '../../utils/animations';
-import { useHardwareQuality } from '../../hooks/useHardwareQuality';
-import portfolioData from '../../data/portfolio';
+import { containWheelOnOverflow } from '../../utils/scrolling';
+import { clearOpsTelemetry, getOpsTelemetry, subscribeOpsTelemetry } from '../../utils/opsTelemetry';
 
-const statusStyles = {
-    operational: { badge: 'border-electric-green/25 bg-electric-green/10 text-electric-green', text: 'Operational', icon: CheckCircle2 },
-    degraded: { badge: 'border-amber-400/25 bg-amber-400/10 text-amber-300', text: 'Degraded', icon: AlertTriangle },
-    offline: { badge: 'border-red-400/20 bg-red-500/10 text-red-200', text: 'Offline', icon: XCircle },
-    running: { badge: 'border-electric-cyan/25 bg-electric-cyan/10 text-electric-cyan', text: 'Running', icon: Activity },
-    success: { badge: 'border-electric-green/25 bg-electric-green/10 text-electric-green', text: 'Success', icon: CheckCircle2 },
-    error: { badge: 'border-red-400/20 bg-red-500/10 text-red-200', text: 'Error', icon: XCircle },
-    idle: { badge: 'border-white/10 bg-white/[0.04] text-gray-300', text: 'Idle', icon: Clock3 },
+const statusMap = {
+    operational: { label: 'Operational', className: 'border-electric-green/25 bg-electric-green/10 text-electric-green', icon: CheckCircle2 },
+    degraded: { label: 'Degraded', className: 'border-amber-400/25 bg-amber-400/10 text-amber-300', icon: Clock3 },
+    offline: { label: 'Offline', className: 'border-red-400/20 bg-red-500/10 text-red-200', icon: XCircle },
+    success: { label: 'Success', className: 'border-electric-green/25 bg-electric-green/10 text-electric-green', icon: CheckCircle2 },
+    error: { label: 'Error', className: 'border-red-400/20 bg-red-500/10 text-red-200', icon: XCircle },
+    idle: { label: 'Idle', className: 'border-white/10 bg-white/[0.04] text-gray-300', icon: Clock3 },
+};
+
+const channelMeta = {
+    terminal: { label: 'Terminal Agent', icon: TerminalSquare },
+    architect: { label: 'Project Architect', icon: BrainCircuit },
+    contact: { label: 'Contact Relay', icon: ShieldCheck },
 };
 
 const serviceIcons = {
-    'chat-api': Activity,
+    'chat-api': TerminalSquare,
     'architect-api': BrainCircuit,
     'groq-provider': Sparkles,
-    'github-sync': Github,
+    'github-sync': Activity,
 };
 
-const channelLabels = {
-    terminal: 'Terminal Agent',
-    architect: 'Project Architect',
-};
-
-function formatDuration(ms) {
-    if (!ms || Number.isNaN(ms)) return 'Awaiting traffic';
-    if (ms < 1000) return `${Math.round(ms)} ms`;
-    const seconds = ms / 1000;
-    if (seconds < 60) return `${seconds.toFixed(1)} s`;
-    const minutes = Math.floor(seconds / 60);
-    const remainder = Math.floor(seconds % 60);
-    return `${minutes}m ${remainder}s`;
+function getStatus(status) {
+    return statusMap[status] || statusMap.idle;
 }
 
-function formatWorkerUptime(ms) {
-    if (!ms || Number.isNaN(ms)) return 'Cold start';
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    if (hours > 0) return `${hours}h ${minutes}m`;
-    if (minutes > 0) return `${minutes}m ${seconds}s`;
-    return `${seconds}s`;
-}
-
-function formatAbsoluteTime(isoString) {
-    if (!isoString) return 'No runtime event yet';
-    return new Intl.DateTimeFormat('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        day: '2-digit',
-        month: 'short',
-    }).format(new Date(isoString));
-}
-
-function formatRelativeTime(isoString) {
-    if (!isoString) return 'Awaiting first event';
-    const deltaMs = Date.now() - new Date(isoString).getTime();
-    const seconds = Math.max(1, Math.floor(deltaMs / 1000));
+function formatRelative(iso) {
+    if (!iso) return 'No event yet';
+    const seconds = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
     if (seconds < 60) return `${seconds}s ago`;
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;
@@ -84,396 +55,388 @@ function formatRelativeTime(isoString) {
     return `${Math.floor(hours / 24)}d ago`;
 }
 
-function getStatusMeta(status) {
-    return statusStyles[status] || statusStyles.idle;
+function formatMs(ms) {
+    if (!ms && ms !== 0) return 'Awaiting traffic';
+    if (ms < 1000) return `${Math.round(ms)} ms`;
+    return `${(ms / 1000).toFixed(1)} s`;
 }
 
-function ControlPlane() {
-    const quality = useHardwareQuality();
-    const { control } = portfolioData.ui.sections;
-    const [snapshot, setSnapshot] = useState(null);
-    const [requestState, setRequestState] = useState('loading');
-    const [error, setError] = useState('');
+function formatUptime(ms) {
+    if (!ms) return 'Cold start';
+    const total = Math.floor(ms / 1000);
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const seconds = total % 60;
+    if (hours) return `${hours}h ${minutes}m`;
+    if (minutes) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
+}
+
+function ControlPlane({ isOpen, onOpen, onClose }) {
+    const [backend, setBackend] = useState(null);
+    const [session, setSession] = useState(() => getOpsTelemetry());
     const [selectedRunId, setSelectedRunId] = useState('');
+    const [error, setError] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
 
+    useEffect(() => subscribeOpsTelemetry(setSession), []);
+
     useEffect(() => {
-        let isMounted = true;
+        if (!isOpen) return undefined;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        let alive = true;
         let intervalId = null;
 
-        const loadSnapshot = async ({ silent = false } = {}) => {
-            if (silent) {
-                setIsRefreshing(true);
-            } else {
-                setRequestState((prev) => (prev === 'ready' ? prev : 'loading'));
-            }
-
+        const load = async ({ silent = false } = {}) => {
+            if (!silent) setIsRefreshing(true);
             try {
                 const response = await fetch('/api/control-plane');
                 const payload = await response.json();
                 if (!response.ok) throw new Error(payload?.message || 'CONTROL_PLANE_REQUEST_FAILED');
-                if (!isMounted) return;
-                setSnapshot(payload);
+                if (!alive) return;
+                setBackend(payload);
                 setError('');
-                setRequestState('ready');
-                setSelectedRunId((prev) => payload.runLogs.some((run) => run.id === prev) ? prev : (payload.runLogs[0]?.id || ''));
             } catch {
-                if (!isMounted) return;
-                setRequestState('error');
-                setError('Live runtime telemetry could not be loaded right now.');
+                if (alive) setError('Runtime probes could not be refreshed.');
             } finally {
-                if (isMounted) setIsRefreshing(false);
+                if (alive) setIsRefreshing(false);
             }
         };
 
-        loadSnapshot();
+        load();
         intervalId = window.setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                loadSnapshot({ silent: true });
-            }
-        }, 25000);
+            if (document.visibilityState === 'visible') load({ silent: true });
+        }, 30000);
 
         return () => {
-            isMounted = false;
+            alive = false;
             if (intervalId) clearInterval(intervalId);
         };
     }, []);
 
-    const selectedRun = useMemo(() => {
-        if (!snapshot?.runLogs?.length) return null;
-        return snapshot.runLogs.find((run) => run.id === selectedRunId) || snapshot.runLogs[0];
-    }, [selectedRunId, snapshot]);
+    const runs = session.runs || [];
+    const selectedRun = useMemo(() => runs.find((run) => run.id === selectedRunId) || runs[0] || null, [runs, selectedRunId]);
 
-    const summaryCards = snapshot ? [
-        { label: 'Worker_Uptime', value: formatWorkerUptime(snapshot.runtime.workerUptimeMs), detail: 'Current live function runtime window.' },
-        { label: 'Run_Success_Rate', value: `${snapshot.runtime.successRate}%`, detail: `${snapshot.runtime.successfulRuns} successful / ${snapshot.runtime.totalRuns} total runs` },
-        { label: 'Requests_Handled', value: String(snapshot.runtime.totalRuns), detail: 'Terminal + architect requests observed in this runtime.' },
-        { label: 'Last_Job_Execution', value: formatRelativeTime(snapshot.runtime.latestJobAt), detail: formatAbsoluteTime(snapshot.runtime.latestJobAt) },
-    ] : [];
+    useEffect(() => {
+        if (runs.length && !runs.some((run) => run.id === selectedRunId)) {
+            setSelectedRunId(runs[0].id);
+        }
+    }, [runs, selectedRunId]);
+
+    const successCount = runs.filter((run) => run.status === 'success').length;
+    const avgLatency = runs.length
+        ? Math.round(runs.reduce((sum, run) => sum + (run.latencyMs || 0), 0) / runs.length)
+        : null;
+    const latencySeries = runs.slice(0, 8).reverse();
+    const maxLatency = Math.max(...latencySeries.map((run) => run.latencyMs || 0), 1);
+
+    const summary = [
+        { label: 'Worker Uptime', value: formatUptime(backend?.runtime?.workerUptimeMs), detail: 'Current runtime window for the control-plane function.' },
+        { label: 'Session Runs', value: String(runs.length), detail: 'Terminal, architect, and contact activity captured in this browser session.' },
+        { label: 'Success Rate', value: `${runs.length ? Math.round((successCount / runs.length) * 100) : 100}%`, detail: `${successCount} successful / ${runs.length} total session runs` },
+        { label: 'Avg Latency', value: formatMs(avgLatency), detail: backend?.runtime?.latestJobAt ? `Last backend probe ${formatRelative(backend.runtime.latestJobAt)}` : 'Awaiting first backend probe' },
+    ];
 
     return (
-        <section id="control" className="py-20 md:py-32 relative overflow-hidden render-optimize">
-            {!quality.simplePhysics && (
-                <div
-                    className="absolute top-[24%] right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2"
-                    style={{ background: 'radial-gradient(circle, rgba(0, 255, 153, 0.13) 0%, transparent 70%)' }}
-                />
-            )}
+        <>
+            <button
+                type="button"
+                onClick={onOpen}
+                className="fixed bottom-5 right-5 z-[90] rounded-full border border-electric-green/25 bg-[#0b0d11]/90 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer"
+            >
+                <span className="inline-flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-electric-green opacity-60 animate-ping" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-electric-green" />
+                    </span>
+                    SYS PANEL
+                </span>
+            </button>
 
-            <div className="container mx-auto px-6 relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={viewportConfig}
-                    className="mb-16"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">
-                            {control.id}
-                        </span>
-                        <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent" />
-                    </div>
-                    <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6">
-                        <div>
-                            <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                                {control.line1} <br />
-                                <span className="text-electric-green">{control.line2}</span>
-                            </h2>
-                            <p className="mt-5 max-w-2xl text-gray-400 text-lg leading-relaxed">
-                                Live runtime telemetry for the portfolio itself. This block exposes API health, recent backend executions, integration probes, and the actual request lifecycle running behind the UI.
-                            </p>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={async () => {
-                                setIsRefreshing(true);
-                                try {
-                                    const response = await fetch('/api/control-plane');
-                                    const payload = await response.json();
-                                    if (!response.ok) throw new Error(payload?.message || 'CONTROL_PLANE_REQUEST_FAILED');
-                                    setSnapshot(payload);
-                                    setSelectedRunId((prev) => payload.runLogs.some((run) => run.id === prev) ? prev : (payload.runLogs[0]?.id || ''));
-                                    setError('');
-                                    setRequestState('ready');
-                                } catch {
-                                    setError('Live runtime telemetry could not be refreshed.');
-                                } finally {
-                                    setIsRefreshing(false);
-                                }
-                            }}
-                            className="px-4 py-3 rounded-xl border border-white/10 bg-white/[0.04] hover:border-electric-cyan/40 hover:bg-electric-cyan/10 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors cursor-pointer inline-flex items-center gap-3 self-start xl:self-auto"
-                        >
-                            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-electric-cyan' : ''}`} />
-                            Refresh Runtime
-                        </button>
-                    </div>
-                </motion.div>
-
-                {requestState === 'error' && !snapshot && (
-                    <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-6 py-5 text-sm text-red-200">
-                        {error}
-                    </div>
-                )}
-
-                {snapshot && (
+            <AnimatePresence>
+                {isOpen && (
                     <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-                            {summaryCards.map((card) => (
-                                <motion.div
-                                    key={card.label}
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={viewportConfig}
-                                    variants={fadeInUp}
-                                    className={`rounded-2xl border border-white/10 p-5 ${quality.glassClass}`}
-                                >
-                                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-gray-500">{card.label}</div>
-                                    <div className="mt-4 text-3xl font-bold tracking-tight text-white">{card.value}</div>
-                                    <p className="mt-3 text-sm leading-relaxed text-gray-400">{card.detail}</p>
-                                </motion.div>
-                            ))}
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={onClose}
+                            className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-md"
+                        />
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
-                            {snapshot.services.map((service) => {
-                                const statusMeta = getStatusMeta(service.status);
-                                const Icon = serviceIcons[service.id] || Server;
-                                const StatusIcon = statusMeta.icon;
-
-                                return (
-                                    <motion.div
-                                        key={service.id}
-                                        initial="hidden"
-                                        whileInView="visible"
-                                        viewport={viewportConfig}
-                                        variants={scaleIn}
-                                        className="rounded-2xl border border-white/10 bg-black/25 p-5"
-                                    >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="w-11 h-11 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center">
-                                                <Icon className="w-5 h-5 text-electric-green" />
+                        <motion.aside
+                            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 16, scale: 0.99 }}
+                            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                            className="fixed inset-x-4 bottom-4 top-20 z-[100] mx-auto max-w-7xl rounded-[28px] border border-white/10 bg-[#0b0d11]/92 shadow-[0_35px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
+                        >
+                            <div className="flex h-full flex-col overflow-hidden rounded-[28px]">
+                                <div className="border-b border-white/10 px-6 py-5 md:px-8">
+                                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                        <div>
+                                            <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green">
+                                                <Activity className="h-3 w-3" />
+                                                Live System Control
                                             </div>
-                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${statusMeta.badge}`}>
-                                                <StatusIcon className="w-3 h-3" />
-                                                {statusMeta.text}
-                                            </div>
+                                            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Observability panel</h2>
+                                            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-400 md:text-base">
+                                                Real backend probes, current integration modes, session telemetry, and request lifecycle for the systems that actually drive the site.
+                                            </p>
                                         </div>
-                                        <div className="mt-5">
-                                            <div className="text-lg font-semibold text-white">{service.label}</div>
-                                            <div className="mt-3 grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Latency</div>
-                                                    <div className="mt-2 text-sm text-white">{formatDuration(service.latencyMs)}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Last event</div>
-                                                    <div className="mt-2 text-sm text-white">{formatRelativeTime(service.lastEventAt)}</div>
-                                                </div>
-                                            </div>
-                                            <p className="mt-4 text-sm leading-relaxed text-gray-400">{service.note}</p>
+                                        <div className="flex flex-wrap gap-3">
+                                            <button type="button" onClick={() => clearOpsTelemetry()} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer inline-flex items-center gap-2">
+                                                <Trash2 className="h-4 w-4" />
+                                                Clear Session
+                                            </button>
+                                            <button type="button" onClick={async () => {
+                                                setIsRefreshing(true);
+                                                try {
+                                                    const response = await fetch('/api/control-plane');
+                                                    const payload = await response.json();
+                                                    if (!response.ok) throw new Error();
+                                                    setBackend(payload);
+                                                    setError('');
+                                                } catch {
+                                                    setError('Runtime probes could not be refreshed.');
+                                                } finally {
+                                                    setIsRefreshing(false);
+                                                }
+                                            }} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer inline-flex items-center gap-2">
+                                                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                                Refresh
+                                            </button>
+                                            <button type="button" onClick={onClose} className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer">
+                                                <X className="h-4 w-4" />
+                                            </button>
                                         </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-
-                        <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-8 items-start">
-                            <motion.div
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={viewportConfig}
-                                variants={fadeInUp}
-                                className={`rounded-2xl border border-white/10 p-6 md:p-8 ${quality.glassClass}`}
-                            >
-                                <div className="flex items-start justify-between gap-4 mb-6">
-                                    <div>
-                                        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Agent_Run_Logs</div>
-                                        <h3 className="mt-2 text-2xl font-bold text-white">Recent backend executions</h3>
-                                    </div>
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
-                                        <ShieldCheck className="w-3 h-3" />
-                                        Live Session Telemetry
                                     </div>
                                 </div>
 
-                                {snapshot.runLogs.length === 0 ? (
-                                    <div className="rounded-2xl border border-white/10 bg-black/30 p-6 text-sm leading-relaxed text-gray-400">
-                                        No backend run has been captured in the current runtime yet. Use the terminal agent or generate a new architecture brief to populate live logs automatically.
+                                <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 panel-scrollbar" onWheelCapture={containWheelOnOverflow}>
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                        {summary.map((item) => (
+                                            <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
+                                                <div className="mt-4 text-3xl font-bold tracking-tight text-white">{item.value}</div>
+                                                <p className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {snapshot.runLogs.map((run) => {
-                                            const statusMeta = getStatusMeta(run.status);
-                                            const StatusIcon = statusMeta.icon;
-                                            const isActive = selectedRun?.id === run.id;
 
-                                            return (
-                                                <button
-                                                    key={run.id}
-                                                    type="button"
-                                                    onClick={() => setSelectedRunId(run.id)}
-                                                    className={`w-full rounded-2xl border px-5 py-5 text-left transition-all cursor-pointer ${isActive ? 'border-electric-green/35 bg-electric-green/[0.07]' : 'border-white/10 bg-white/[0.03] hover:border-electric-cyan/30 hover:bg-white/[0.05]'}`}
-                                                >
-                                                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                                                        <div className="space-y-3">
-                                                            <div className="flex flex-wrap items-center gap-3">
-                                                                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">
-                                                                    {channelLabels[run.channel] || run.channel}
-                                                                </span>
-                                                                <span className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${statusMeta.badge}`}>
-                                                                    <StatusIcon className="w-3 h-3" />
-                                                                    {statusMeta.text}
-                                                                </span>
+                                    <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+                                        <div className="space-y-6">
+                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div>
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
+                                                        <h3 className="mt-2 text-2xl font-bold text-white">Live probes and integrations</h3>
+                                                    </div>
+                                                    <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
+                                                        <ShieldCheck className="h-3 w-3" />
+                                                        Server Probes
+                                                    </div>
+                                                </div>
+                                                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {(backend?.services || []).map((service) => {
+                                                        const meta = getStatus(service.status);
+                                                        const Icon = serviceIcons[service.id] || Sparkles;
+                                                        const StatusIcon = meta.icon;
+                                                        return (
+                                                            <div key={service.id} className="min-h-[184px] rounded-2xl border border-white/10 bg-black/25 p-5">
+                                                                <div className="flex items-start justify-between gap-4">
+                                                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                                        <Icon className="h-5 w-5 text-electric-green" />
+                                                                    </div>
+                                                                    <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                        <StatusIcon className="h-3 w-3" />
+                                                                        {meta.label}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="mt-5 text-lg font-semibold text-white">{service.label}</div>
+                                                                <div className="mt-4 grid grid-cols-2 gap-4">
+                                                                    <div>
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latency</div>
+                                                                        <div className="mt-2 text-sm text-white">{formatMs(service.latencyMs)}</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Last Event</div>
+                                                                        <div className="mt-2 text-sm text-white">{formatRelative(service.lastEventAt)}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="mt-4 text-sm leading-relaxed text-gray-400">{service.note}</p>
                                                             </div>
-                                                            <div>
-                                                                <div className="text-lg font-semibold text-white">{run.title}</div>
-                                                                <p className="mt-2 text-sm leading-relaxed text-gray-400">{run.inputExcerpt || 'No input excerpt available.'}</p>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
+                                                    <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
+                                                    <div className="mt-6 flex h-40 items-end gap-3">
+                                                        {latencySeries.length ? latencySeries.map((run) => {
+                                                            const height = Math.max(12, Math.round(((run.latencyMs || 0) / maxLatency) * 100));
+                                                            const meta = getStatus(run.status);
+                                                            return (
+                                                                <div key={run.id} className="flex flex-1 flex-col items-center gap-3">
+                                                                    <motion.div initial={{ height: 0 }} animate={{ height: `${height}%` }} className={`w-full rounded-t-xl border ${meta.className}`} />
+                                                                    <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                                        {channelMeta[run.channel]?.label?.split(' ')[0] || run.channel}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }) : (
+                                                            <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-white/10 text-sm text-gray-500">
+                                                                No live session data yet.
                                                             </div>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {run.tools.map((tool) => (
-                                                                    <span key={tool} className="px-2.5 py-1 rounded-md border border-white/10 bg-black/20 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300">
-                                                                        {tool}
-                                                                    </span>
-                                                                ))}
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
+                                                    <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
+                                                    <div className="mt-6 space-y-4">
+                                                        {(backend?.capabilities || []).map((item) => (
+                                                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                                <div className="flex items-center justify-between gap-3">
+                                                                    <div className="text-sm font-semibold text-white">{item.label}</div>
+                                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
+                                                                </div>
+                                                                <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
                                                             </div>
-                                                        </div>
-                                                        <div className="grid grid-cols-2 gap-4 shrink-0 lg:min-w-[220px]">
-                                                            <div>
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Latency</div>
-                                                                <div className="mt-2 text-sm text-white">{formatDuration(run.latencyMs)}</div>
-                                                            </div>
-                                                            <div>
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Completed</div>
-                                                                <div className="mt-2 text-sm text-white">{formatRelativeTime(run.completedAt || run.startedAt)}</div>
-                                                            </div>
-                                                            <div className="col-span-2">
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Decision</div>
-                                                                <div className="mt-2 text-sm text-gray-300">{run.decision || 'Awaiting final decision.'}</div>
-                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent backend jobs</div>
+                                                        <div className="mt-4 space-y-3">
+                                                            {(backend?.jobs || []).map((job) => (
+                                                                <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                                                                    <div className="flex items-center justify-between gap-3">
+                                                                        <div className="text-sm font-semibold text-white">{job.label}</div>
+                                                                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                                    </div>
+                                                                    <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </div>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </motion.div>
-
-                            <div className="space-y-8">
-                                <motion.div
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={viewportConfig}
-                                    variants={scaleIn}
-                                    className={`rounded-2xl border border-white/10 p-6 md:p-8 ${quality.glassClass}`}
-                                >
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div>
-                                            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-cyan">System_Timeline</div>
-                                            <h3 className="mt-2 text-2xl font-bold text-white">Request lifecycle</h3>
-                                        </div>
-                                        <div className="w-11 h-11 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center">
-                                            <Workflow className="w-5 h-5 text-electric-cyan" />
-                                        </div>
-                                    </div>
-
-                                    {selectedRun ? (
-                                        <>
-                                            <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-5">
-                                                <div className="flex flex-wrap items-center gap-3">
-                                                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">
-                                                        {channelLabels[selectedRun.channel] || selectedRun.channel}
-                                                    </span>
-                                                    <span className="text-sm text-gray-400">{formatAbsoluteTime(selectedRun.startedAt)}</span>
                                                 </div>
-                                                <div className="mt-3 text-base font-semibold text-white">{selectedRun.title}</div>
-                                                <p className="mt-2 text-sm leading-relaxed text-gray-400">{selectedRun.outputExcerpt || selectedRun.inputExcerpt}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div>
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Session Runs</div>
+                                                        <h3 className="mt-2 text-2xl font-bold text-white">Observed executions</h3>
+                                                    </div>
+                                                    <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-green">
+                                                        <Waves className="h-3 w-3" />
+                                                        Browser Telemetry
+                                                    </div>
+                                                </div>
+                                                <div className="mt-6 space-y-3">
+                                                    {runs.length ? runs.map((run) => {
+                                                        const meta = getStatus(run.status);
+                                                        const Icon = channelMeta[run.channel]?.icon || Sparkles;
+                                                        return (
+                                                            <button key={run.id} type="button" onClick={() => setSelectedRunId(run.id)} className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/25 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}>
+                                                                <div className="flex items-start justify-between gap-4">
+                                                                    <div className="flex min-w-0 gap-3">
+                                                                        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                                            <Icon className="h-4 w-4 text-electric-cyan" />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="text-base font-semibold text-white">{run.title}</div>
+                                                                            <div className="mt-1 text-sm leading-relaxed text-gray-400">{run.inputExcerpt || run.outputExcerpt}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                        {meta.label}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                                    {run.tools.map((tool) => (
+                                                                        <span key={tool} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300">
+                                                                            {tool}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    }) : (
+                                                        <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
+                                                            The session log will populate as soon as someone uses the terminal, generates an architect brief, or sends the contact form.
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
 
-                                            <div className="mt-6 space-y-4">
-                                                {selectedRun.steps.map((step, index) => {
-                                                    const isComplete = step.state === 'complete';
-                                                    const isError = step.state === 'error';
-                                                    const isRunning = step.state === 'running';
-
-                                                    return (
-                                                        <div key={step.key} className="flex gap-4">
-                                                            <div className="flex flex-col items-center pt-1">
-                                                                <div className={`w-3 h-3 rounded-full ${isComplete ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : isError ? 'bg-red-400' : isRunning ? 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]' : 'bg-white/10'}`} />
-                                                                {index < selectedRun.steps.length - 1 && <div className={`mt-2 w-px flex-1 ${isComplete ? 'bg-electric-green/25' : 'bg-white/10'}`} />}
-                                                            </div>
-                                                            <div className="pb-5">
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{step.label}</div>
-                                                                <div className="mt-2 text-sm text-white">{step.detail}</div>
-                                                                <div className="mt-2 text-[11px] text-gray-500">{step.at ? formatAbsoluteTime(step.at) : 'Pending execution'}</div>
+                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div>
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Request Lifecycle</div>
+                                                        <h3 className="mt-2 text-2xl font-bold text-white">Step-by-step flow</h3>
+                                                    </div>
+                                                    <Workflow className="h-5 w-5 text-electric-cyan" />
+                                                </div>
+                                                {selectedRun ? (
+                                                    <>
+                                                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-5">
+                                                            <div className="text-base font-semibold text-white">{selectedRun.title}</div>
+                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
+                                                            <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                                                <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
+                                                                <span>{formatMs(selectedRun.latencyMs)}</span>
+                                                                <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
                                                             </div>
                                                         </div>
-                                                    );
-                                                })}
+                                                        <div className="mt-6 space-y-4">
+                                                            {selectedRun.steps.map((step, index) => (
+                                                                <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
+                                                                    <div className="flex flex-col items-center pt-1">
+                                                                        <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
+                                                                        {index < selectedRun.steps.length - 1 && <div className="mt-2 w-px flex-1 bg-white/10" />}
+                                                                    </div>
+                                                                    <div className="pb-4">
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
+                                                                        <div className="mt-2 text-sm leading-relaxed text-white">{step.detail}</div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+                                                        Select a session run to inspect its lifecycle.
+                                                    </div>
+                                                )}
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                                                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Approval_Path</div>
-                                                    <div className="mt-3 text-sm leading-relaxed text-white">{selectedRun.approval || 'No approval metadata recorded for this run.'}</div>
-                                                </div>
-                                                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Retry_Policy</div>
-                                                    <div className="mt-3 text-sm leading-relaxed text-white">{selectedRun.retries > 0 ? `${selectedRun.retries} retry attempts recorded.` : 'No retry was required for this execution.'}</div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-5 text-sm leading-relaxed text-gray-400">
-                                            The lifecycle view will activate after the first live backend run is captured.
+                                    {error && (
+                                        <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-5 py-4 text-sm text-amber-100">
+                                            {error}
                                         </div>
                                     )}
-                                </motion.div>
-
-                                <motion.div
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={viewportConfig}
-                                    variants={fadeInUp}
-                                    className={`rounded-2xl border border-white/10 p-6 md:p-8 ${quality.glassClass}`}
-                                >
-                                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Recent_Jobs</div>
-                                    <h3 className="mt-2 text-2xl font-bold text-white">Latest probes and executions</h3>
-                                    <div className="mt-6 space-y-4">
-                                        {snapshot.jobs.map((job) => {
-                                            const statusMeta = getStatusMeta(job.status);
-                                            const StatusIcon = statusMeta.icon;
-
-                                            return (
-                                                <div key={job.id} className="rounded-2xl border border-white/10 bg-black/25 p-5">
-                                                    <div className="flex flex-wrap items-center justify-between gap-3">
-                                                        <div className="text-base font-semibold text-white">{job.label}</div>
-                                                        <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${statusMeta.badge}`}>
-                                                            <StatusIcon className="w-3 h-3" />
-                                                            {statusMeta.text}
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-3 text-sm leading-relaxed text-gray-400">{job.detail}</div>
-                                                    <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">
-                                                        {job.at ? `${formatRelativeTime(job.at)} - ${formatAbsoluteTime(job.at)}` : 'No timestamp yet'}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </motion.div>
+                                </div>
                             </div>
-                        </div>
-
-                        {error && (
-                            <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-5 py-4 text-sm text-amber-100">
-                                {error}
-                            </div>
-                        )}
+                        </motion.aside>
                     </>
                 )}
-            </div>
-        </section>
+            </AnimatePresence>
+        </>
     );
 }
 

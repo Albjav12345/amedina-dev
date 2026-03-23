@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react'
+import React, { useEffect, Suspense, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
@@ -43,6 +43,8 @@ const Footer = React.lazy(() =>
 
 
 function App() {
+    const [isControlOpen, setIsControlOpen] = useState(false);
+
     useEffect(() => {
         // Force scroll to top on mount (refresh)
         window.scrollTo(0, 0);
@@ -86,6 +88,19 @@ function App() {
         }
     }, [])
 
+    useEffect(() => {
+        const openPanel = () => setIsControlOpen(true);
+        const closePanel = () => setIsControlOpen(false);
+
+        window.addEventListener('open-control-panel', openPanel);
+        window.addEventListener('close-control-panel', closePanel);
+
+        return () => {
+            window.removeEventListener('open-control-panel', openPanel);
+            window.removeEventListener('close-control-panel', closePanel);
+        };
+    }, []);
+
     return (
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
 
@@ -120,12 +135,6 @@ function App() {
                     </Suspense>
                 </div>
 
-                <div id="control-wrapper" style={{ minHeight: '85vh' }}>
-                    <Suspense fallback={null}>
-                        <ControlPlane />
-                    </Suspense>
-                </div>
-
                 <div id="contact-wrapper" style={{ minHeight: '50vh' }}>
                     <Suspense fallback={null}>
                         <Contact />
@@ -133,7 +142,14 @@ function App() {
                 </div>
             </main>
             <Suspense fallback={null}>
-                <Footer />
+                <Footer onOpenControlPanel={() => setIsControlOpen(true)} />
+            </Suspense>
+            <Suspense fallback={null}>
+                <ControlPlane
+                    isOpen={isControlOpen}
+                    onOpen={() => setIsControlOpen(true)}
+                    onClose={() => setIsControlOpen(false)}
+                />
             </Suspense>
             <Analytics />
             <SpeedInsights />

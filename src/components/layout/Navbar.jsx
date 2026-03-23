@@ -10,7 +10,6 @@ const SECTION_TARGETS = {
     projects: 'projects-wrapper',
     'tech-stack': 'tech-stack-wrapper',
     architect: 'architect-wrapper',
-    control: 'control-wrapper',
     contact: 'contact-wrapper',
 };
 

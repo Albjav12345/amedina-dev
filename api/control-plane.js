@@ -1,5 +1,6 @@
 import {
     applySecurityHeaders,
+    getAllowedOrigins,
     isAllowedOrigin,
 } from './lib/security.js';
 import {
@@ -65,6 +66,34 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
             ...snapshot,
+            capabilities: [
+                {
+                    id: 'origin-guard',
+                    label: 'Origin Guard',
+                    value: 'Active',
+                    detail: `${getAllowedOrigins().size} allowed origins protected by backend origin checks.`,
+                },
+                {
+                    id: 'model-rotation',
+                    label: 'Model Rotation',
+                    value: '2 models',
+                    detail: 'Groq inference routes rotate between a primary and fallback model on rate limits.',
+                },
+                {
+                    id: 'github-mode',
+                    label: 'GitHub Sync Mode',
+                    value: process.env.GITHUB_TOKEN ? 'Authenticated' : 'Public',
+                    detail: process.env.GITHUB_TOKEN
+                        ? 'Live GitHub activity runs with authenticated API headroom.'
+                        : 'Live GitHub activity runs in public mode with lower rate-limit capacity.',
+                },
+                {
+                    id: 'contact-relay',
+                    label: 'Contact Relay',
+                    value: 'Formspree',
+                    detail: 'The contact endpoint uses an external HTTPS relay with honeypot protection in the client.',
+                },
+            ],
             jobs: [
                 {
                     id: 'terminal-job',
