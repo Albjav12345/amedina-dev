@@ -357,18 +357,25 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         { label: 'Avg Latency', value: formatMs(avgLatency), detail: backend?.runtime?.latestJobAt ? `Last backend probe ${formatRelative(backend.runtime.latestJobAt)}` : 'Awaiting first backend probe' },
     ];
 
+    const requestClose = async () => {
+        if (isMobileSheet) {
+            setIsClosingFromDrag(true);
+            await animate(sheetY, window.innerHeight, {
+                duration: 0.18,
+                ease: [0.22, 1, 0.36, 1],
+            });
+        }
+
+        onClose();
+    };
+
     const handleSheetDragEnd = async (_, info) => {
         if (!isMobileSheet) return;
 
         const shouldClose = info.offset.y > 120 || info.velocity.y > 900;
 
         if (shouldClose) {
-            setIsClosingFromDrag(true);
-            await animate(sheetY, window.innerHeight, {
-                duration: 0.22,
-                ease: [0.22, 1, 0.36, 1],
-            });
-            onClose();
+            await requestClose();
             return;
         }
 
@@ -402,7 +409,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={onClose}
+                            onClick={() => { void requestClose(); }}
                             className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-md"
                             style={isMobileSheet ? { opacity: overlayOpacity } : undefined}
                         />
@@ -451,7 +458,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                         <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
                                             <button
                                                 type="button"
-                                                onClick={onClose}
+                                                onClick={() => { void requestClose(); }}
                                                 className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer sm:hidden"
                                                 aria-label="Close observability panel"
                                             >
@@ -626,12 +633,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                 <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
                                                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
                                                     <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
-                                                    <div className="mt-6 grid grid-cols-1 gap-4 2xl:grid-cols-2">
+                                                    <div className="mt-6 space-y-4">
                                                         {(backend?.capabilities || []).map((item) => (
                                                             <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                <div className="flex items-center justify-between gap-3">
-                                                                    <div className="text-sm font-semibold text-white">{item.label}</div>
-                                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
+                                                                <div className="flex flex-col items-start gap-2">
+                                                                    <div className="text-sm font-semibold leading-snug text-white">{item.label}</div>
+                                                                    <div className="inline-flex max-w-full rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
+                                                                        {item.value}
+                                                                    </div>
                                                                 </div>
                                                                 <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
                                                             </div>
