@@ -365,59 +365,68 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 16, scale: 0.99 }}
                             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                            className="fixed inset-x-4 bottom-4 top-20 z-[100] mx-auto max-w-7xl rounded-[28px] border border-white/10 bg-[#0b0d11]/92 shadow-[0_35px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
+                            className="fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl rounded-[24px] border border-white/10 bg-[#0b0d11]/92 shadow-[0_35px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20"
                         >
-                            <div className="flex h-full flex-col overflow-hidden rounded-[28px]">
-                                <div className="border-b border-white/10 px-6 py-5 md:px-8">
+                            <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
+                                <div className="border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 md:px-8">
+                                    <div className="mb-3 flex justify-center sm:hidden">
+                                        <div className="h-1.5 w-16 rounded-full bg-white/10" />
+                                    </div>
                                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                         <div>
                                             <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green">
                                                 <Activity className="h-3 w-3" />
                                                 Live System Control
                                             </div>
-                                            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Observability panel</h2>
-                                            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-400 md:text-base">
+                                            <h2 className="mt-4 text-[2.15rem] font-bold leading-[0.95] tracking-tight text-white sm:text-3xl md:text-4xl">Observability panel</h2>
+                                            <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:hidden">
+                                                Live probes, session telemetry, and request flow for the systems behind the site.
+                                            </p>
+                                            <p className="mt-3 hidden max-w-3xl text-sm leading-relaxed text-gray-400 md:text-base sm:block">
                                                 Real backend probes, current integration modes, session telemetry, and request lifecycle for the systems that actually drive the site.
                                             </p>
                                         </div>
-                                        <div className="flex flex-wrap gap-3">
+                                        <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => {
                                                     clearOpsTelemetry();
                                                     setSelectedRunId('');
                                                 }}
-                                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer"
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                                             >
                                                 <Trash2 className="h-4 w-4" />
-                                                Clear Session
+                                                <span className="hidden sm:inline">Clear Session</span>
+                                                <span className="sm:hidden">Clear</span>
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => refreshBackend()}
-                                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer"
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                                             >
                                                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                                Refresh
+                                                <span className="hidden sm:inline">Refresh</span>
+                                                <span className="sm:hidden">Reload</span>
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={onClose}
-                                                className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer"
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                                             >
                                                 <X className="h-4 w-4" />
+                                                <span>Close</span>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="panel-scrollbar flex-1 overflow-y-auto px-6 py-6 md:px-8" onWheelCapture={containWheelOnOverflow}>
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                <div className="panel-scrollbar flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8" onWheelCapture={containWheelOnOverflow}>
+                                    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
                                         {summary.map((item) => (
                                             <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
                                                 <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
-                                                <div className="mt-4 text-3xl font-bold tracking-tight text-white">{item.value}</div>
-                                                <p className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</p>
+                                                <div className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">{item.value}</div>
+                                                <p className="mt-3 text-xs leading-relaxed text-gray-400 sm:text-sm">{item.detail}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -442,7 +451,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                         const StatusIcon = meta.icon;
 
                                                         return (
-                                                            <div key={service.id} className="min-h-[216px] rounded-2xl border border-white/10 bg-black/25 p-5">
+                                                            <div key={service.id} className="min-h-[200px] rounded-2xl border border-white/10 bg-black/25 p-4 sm:min-h-[216px] sm:p-5">
                                                                 <div className="flex items-start justify-between gap-4">
                                                                     <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
                                                                         <Icon className="h-5 w-5 text-electric-green" />
@@ -454,23 +463,23 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                 </div>
                                                                 <div className="mt-5 text-lg font-semibold text-white">{service.label}</div>
                                                                 <div className="mt-4 grid grid-cols-2 gap-4">
-                                                                    <div>
+                                                                    <div className="min-w-0">
                                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latency</div>
-                                                                        <div className="mt-2 text-sm text-white">{formatMs(service.latencyMs)}</div>
+                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{formatMs(service.latencyMs)}</div>
                                                                     </div>
-                                                                    <div>
+                                                                    <div className="min-w-0">
                                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Last Event</div>
-                                                                        <div className="mt-2 text-sm text-white">{formatRelative(service.lastEventAt)}</div>
+                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{formatRelative(service.lastEventAt)}</div>
                                                                     </div>
-                                                                    <div>
+                                                                    <div className="min-w-0">
                                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Activity</div>
-                                                                        <div className="mt-2 text-sm text-white">
+                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">
                                                                             {service.activityCount ? `${service.activityCount} recent run${service.activityCount === 1 ? '' : 's'}` : 'Awaiting traffic'}
                                                                         </div>
                                                                     </div>
-                                                                    <div>
+                                                                    <div className="min-w-0">
                                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Signal Feed</div>
-                                                                        <div className="mt-2 text-sm text-white">{service.feedLabel || 'Backend probe'}</div>
+                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{service.feedLabel || 'Backend probe'}</div>
                                                                     </div>
                                                                 </div>
                                                                 <p className="mt-4 text-sm leading-relaxed text-gray-400">{service.note}</p>
@@ -481,7 +490,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                             </div>
 
                                             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-                                                <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div>
                                                             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
@@ -493,15 +502,15 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                         </div>
                                                     </div>
 
-                                                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                                    <div className="mt-5 grid grid-cols-1 gap-4 min-[460px]:grid-cols-2">
                                                         <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
                                                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest sample</div>
-                                                            <div className="mt-3 text-2xl font-semibold text-white">{formatMs(latestLatencyPoint?.value ?? null)}</div>
+                                                            <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
                                                             <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
                                                         </div>
                                                         <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
                                                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak observed</div>
-                                                            <div className="mt-3 text-2xl font-semibold text-white">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
+                                                            <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
                                                             <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
                                                         </div>
                                                     </div>
@@ -549,21 +558,24 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                 </div>
 
-                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
-                                                    <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
-                                                    <div className="mt-6 space-y-4">
-                                                        {(backend?.capabilities || []).map((item) => (
-                                                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                <div className="flex items-center justify-between gap-3">
-                                                                    <div className="text-sm font-semibold text-white">{item.label}</div>
-                                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
+                                                <div className="space-y-6">
+                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
+                                                        <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
+                                                        <div className="mt-6 space-y-4">
+                                                            {(backend?.capabilities || []).map((item) => (
+                                                                <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                                    <div className="flex items-center justify-between gap-3">
+                                                                        <div className="text-sm font-semibold text-white">{item.label}</div>
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
+                                                                    </div>
+                                                                    <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
                                                                 </div>
-                                                                <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
-                                                            </div>
-                                                        ))}
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
+
+                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
                                                         <div className="mt-4 space-y-3">
                                                             {displayJobs.map((job) => {
