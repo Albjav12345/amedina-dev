@@ -38,7 +38,17 @@ const serviceIcons = {
     'architect-api': BrainCircuit,
     'groq-provider': Sparkles,
     'github-sync': Activity,
+    'contact-relay': ShieldCheck,
 };
+
+const serviceRunChannels = {
+    'chat-api': ['terminal'],
+    'architect-api': ['architect'],
+    'groq-provider': ['terminal', 'architect'],
+    'contact-relay': ['contact'],
+};
+
+const serviceOrder = ['chat-api', 'architect-api', 'groq-provider', 'github-sync', 'contact-relay'];
 
 function getStatus(status) {
     return statusMap[status] || statusMap.idle;
@@ -72,6 +82,134 @@ function formatUptime(ms) {
     return `${seconds}s`;
 }
 
+function getRunsForChannels(runs, channels = []) {
+    return runs.filter((run) => channels.includes(run.channel));
+}
+
+function getAverageLatency(runs) {
+    const values = runs
+        .map((run) => run.latencyMs)
+        .filter((value) => typeof value === 'number' && Number.isFinite(value));
+
+    if (!values.length) return null;
+    return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
+}
+
+function getServiceStatus(baseStatus, latestRun) {
+    if (baseStatus === 'offline') return 'offline';
+    if (!latestRun) return baseStatus || 'idle';
+    return latestRun.status === 'error' ? 'degraded' : 'operational';
+}
+
+function getServiceNote(serviceId, latestRun, runCount, fallback) {
+    if (!latestRun) return fallback;
+
+    if (serviceId === 'groq-provider') {
+        return latestRun.status === 'error'
+            ? `Last inference attempt failed during ${latestRun.channel} orchestration. ${latestRun.decision || 'Provider degradation observed.'}`
+            : `Inference provider served ${runCount} recent AI request${runCount === 1 ? '' : 's'} successfully.`;
+    }
+
+    if (serviceId === 'contact-relay') {
+        return latestRun.status === 'error'
+            ? 'The latest contact submission failed before relay confirmation.'
+            : 'Outbound contact relay accepted the latest message successfully.';
+    }
+
+    return latestRun.status === 'error'
+        ? `Last ${latestRun.channel} execution failed. ${latestRun.decision || 'Session telemetry captured a runtime issue.'}`
+        : `Last ${latestRun.channel} execution completed successfully. ${latestRun.decision || 'Live session telemetry captured a clean signal.'}`;
+}
+
+function buildDisplayServices(backend, runs) {
+    const serviceMap = new Map((backend?.services || []).map((service) => [service.id, { ...service }]));
+    const contactCapability = (backend?.capabilities || []).find((item) => item.id === 'contact-relay');
+
+    if (contactCapability && !serviceMap.has('contact-relay')) {
+        serviceMap.set('contact-relay', {
+            id: 'contact-relay',
+            label: 'Contact Relay',
+            category: 'integration',
+            status: 'idle',
+            latencyMs: null,
+            lastEventAt: null,
+            note: contactCapability.detail,
+        });
+    }
+
+    Object.entries(serviceRunChannels).forEach(([serviceId, channels]) => {
+        const relatedRuns = getRunsForChannels(runs, channels);
+        if (!relatedRuns.length && !serviceMap.has(serviceId)) return;
+
+        const latestRun = relatedRuns[0] || null;
+        const base = serviceMap.get(serviceId) || {
+            id: serviceId,
+            label: serviceId,
+            category: 'integration',
+            status: 'idle',
+            latencyMs: null,
+            lastEventAt: null,
+            note: 'Awaiting first event.',
+        };
+
+        serviceMap.set(serviceId, {
+            ...base,
+            status: getServiceStatus(base.status, latestRun),
+            latencyMs: latestRun?.latencyMs ?? getAverageLatency(relatedRuns) ?? base.latencyMs,
+            lastEventAt: latestRun?.completedAt || latestRun?.startedAt || base.lastEventAt,
+            note: getServiceNote(serviceId, latestRun, relatedRuns.length, base.note),
+            activityCount: relatedRuns.length,
+            feedLabel: relatedRuns.length ? 'Session + backend' : 'Backend probe',
+        });
+    });
+
+    return serviceOrder
+        .map((serviceId) => serviceMap.get(serviceId))
+        .filter(Boolean)
+        .concat(Array.from(serviceMap.values()).filter((service) => !serviceOrder.includes(service.id)));
+}
+
+function buildLatencySeries(runs, services) {
+    const sessionItems = runs
+        .filter((run) => typeof run.latencyMs === 'number' && Number.isFinite(run.latencyMs))
+        .slice(0, 8)
+        .reverse()
+        .map((run) => ({
+            id: run.id,
+            value: run.latencyMs,
+            label: (channelMeta[run.channel]?.label || run.channel).split(' ')[0],
+            detail: run.title,
+            status: run.status,
+        }));
+
+    if (sessionItems.length) {
+        return {
+            sourceLabel: 'Session traffic',
+            items: sessionItems,
+        };
+    }
+
+    const probeItems = services
+        .filter((service) => typeof service.latencyMs === 'number' && Number.isFinite(service.latencyMs))
+        .slice(0, 8)
+        .map((service) => ({
+            id: service.id,
+            value: service.latencyMs,
+            label: service.label.split(' ')[0],
+            detail: service.note,
+            status: service.status === 'offline'
+                ? 'offline'
+                : service.status === 'degraded'
+                    ? 'degraded'
+                    : 'operational',
+        }));
+
+    return {
+        sourceLabel: probeItems.length ? 'Backend probes' : 'Idle',
+        items: probeItems,
+    };
+}
+
 function ControlPlane({ isOpen, onOpen, onClose }) {
     const [backend, setBackend] = useState(null);
     const [session, setSession] = useState(() => getOpsTelemetry());
@@ -89,43 +227,60 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         };
     }, [isOpen]);
 
+    async function refreshBackend({ silent = false } = {}) {
+        if (!silent) setIsRefreshing(true);
+
+        try {
+            const response = await fetch('/api/control-plane');
+            const payload = await response.json();
+            if (!response.ok) throw new Error(payload?.message || 'CONTROL_PLANE_REQUEST_FAILED');
+            setBackend(payload);
+            setError('');
+        } catch {
+            setError('Runtime probes could not be refreshed.');
+        } finally {
+            setIsRefreshing(false);
+        }
+    }
+
     useEffect(() => {
-        let alive = true;
-        let intervalId = null;
+        if (!isOpen) return undefined;
 
-        const load = async ({ silent = false } = {}) => {
-            if (!silent) setIsRefreshing(true);
-            try {
-                const response = await fetch('/api/control-plane');
-                const payload = await response.json();
-                if (!response.ok) throw new Error(payload?.message || 'CONTROL_PLANE_REQUEST_FAILED');
-                if (!alive) return;
-                setBackend(payload);
-                setError('');
-            } catch {
-                if (alive) setError('Runtime probes could not be refreshed.');
-            } finally {
-                if (alive) setIsRefreshing(false);
+        refreshBackend();
+
+        const intervalId = window.setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                refreshBackend({ silent: true });
             }
-        };
+        }, 15000);
 
-        load();
-        intervalId = window.setInterval(() => {
-            if (document.visibilityState === 'visible') load({ silent: true });
-        }, 30000);
+        return () => clearInterval(intervalId);
+    }, [isOpen]);
 
-        return () => {
-            alive = false;
-            if (intervalId) clearInterval(intervalId);
-        };
-    }, []);
+    const runs = useMemo(() => {
+        const merged = [];
+        const seen = new Set();
 
-    const runs = session.runs || [];
+        [...(session.runs || []), ...(backend?.runLogs || [])].forEach((run) => {
+            if (!run?.id || seen.has(run.id)) return;
+            seen.add(run.id);
+            merged.push(run);
+        });
+
+        return merged;
+    }, [session.runs, backend?.runLogs]);
+
     const selectedRun = useMemo(() => runs.find((run) => run.id === selectedRunId) || runs[0] || null, [runs, selectedRunId]);
+    const services = useMemo(() => buildDisplayServices(backend, runs), [backend, runs]);
+    const latencyTrace = useMemo(() => buildLatencySeries(runs, services), [runs, services]);
 
     useEffect(() => {
         if (runs.length && !runs.some((run) => run.id === selectedRunId)) {
             setSelectedRunId(runs[0].id);
+        }
+
+        if (!runs.length && selectedRunId) {
+            setSelectedRunId('');
         }
     }, [runs, selectedRunId]);
 
@@ -133,8 +288,43 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const avgLatency = runs.length
         ? Math.round(runs.reduce((sum, run) => sum + (run.latencyMs || 0), 0) / runs.length)
         : null;
-    const latencySeries = runs.slice(0, 8).reverse();
-    const maxLatency = Math.max(...latencySeries.map((run) => run.latencyMs || 0), 1);
+    const maxLatency = Math.max(...latencyTrace.items.map((item) => item.value || 0), 1);
+    const latestLatencyPoint = latencyTrace.items[latencyTrace.items.length - 1] || null;
+    const hottestLatencyPoint = latencyTrace.items.reduce((highest, item) => (
+        !highest || item.value > highest.value ? item : highest
+    ), null);
+
+    const displayJobs = useMemo(() => {
+        const latestTerminalRun = runs.find((run) => run.channel === 'terminal') || null;
+        const latestArchitectRun = runs.find((run) => run.channel === 'architect') || null;
+        const latestContactRun = runs.find((run) => run.channel === 'contact') || null;
+        const githubJob = (backend?.jobs || []).find((job) => job.id === 'github-job') || null;
+
+        return [
+            {
+                id: 'terminal-job',
+                label: 'Last terminal orchestration',
+                status: latestTerminalRun?.status || 'idle',
+                at: latestTerminalRun?.completedAt || latestTerminalRun?.startedAt || null,
+                detail: latestTerminalRun?.decision || 'Awaiting the next terminal command.',
+            },
+            {
+                id: 'architect-job',
+                label: 'Last architect brief',
+                status: latestArchitectRun?.status || 'idle',
+                at: latestArchitectRun?.completedAt || latestArchitectRun?.startedAt || null,
+                detail: latestArchitectRun?.outputExcerpt || 'No architecture brief generated in this browser session yet.',
+            },
+            {
+                id: 'contact-job',
+                label: 'Last contact relay',
+                status: latestContactRun?.status || 'idle',
+                at: latestContactRun?.completedAt || latestContactRun?.startedAt || null,
+                detail: latestContactRun?.decision || 'Awaiting the next contact submission.',
+            },
+            githubJob,
+        ].filter(Boolean);
+    }, [backend?.jobs, runs]);
 
     const summary = [
         { label: 'Worker Uptime', value: formatUptime(backend?.runtime?.workerUptimeMs), detail: 'Current runtime window for the control-plane function.' },
@@ -191,35 +381,37 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap gap-3">
-                                            <button type="button" onClick={() => clearOpsTelemetry()} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer inline-flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    clearOpsTelemetry();
+                                                    setSelectedRunId('');
+                                                }}
+                                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer"
+                                            >
                                                 <Trash2 className="h-4 w-4" />
                                                 Clear Session
                                             </button>
-                                            <button type="button" onClick={async () => {
-                                                setIsRefreshing(true);
-                                                try {
-                                                    const response = await fetch('/api/control-plane');
-                                                    const payload = await response.json();
-                                                    if (!response.ok) throw new Error();
-                                                    setBackend(payload);
-                                                    setError('');
-                                                } catch {
-                                                    setError('Runtime probes could not be refreshed.');
-                                                } finally {
-                                                    setIsRefreshing(false);
-                                                }
-                                            }} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer inline-flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => refreshBackend()}
+                                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer"
+                                            >
                                                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                                                 Refresh
                                             </button>
-                                            <button type="button" onClick={onClose} className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer">
+                                            <button
+                                                type="button"
+                                                onClick={onClose}
+                                                className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer"
+                                            >
                                                 <X className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 panel-scrollbar" onWheelCapture={containWheelOnOverflow}>
+                                <div className="panel-scrollbar flex-1 overflow-y-auto px-6 py-6 md:px-8" onWheelCapture={containWheelOnOverflow}>
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                                         {summary.map((item) => (
                                             <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
@@ -240,16 +432,17 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                     <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
                                                         <ShieldCheck className="h-3 w-3" />
-                                                        Server Probes
+                                                        Merged Signal Feed
                                                     </div>
                                                 </div>
                                                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                    {(backend?.services || []).map((service) => {
+                                                    {services.map((service) => {
                                                         const meta = getStatus(service.status);
                                                         const Icon = serviceIcons[service.id] || Sparkles;
                                                         const StatusIcon = meta.icon;
+
                                                         return (
-                                                            <div key={service.id} className="min-h-[184px] rounded-2xl border border-white/10 bg-black/25 p-5">
+                                                            <div key={service.id} className="min-h-[216px] rounded-2xl border border-white/10 bg-black/25 p-5">
                                                                 <div className="flex items-start justify-between gap-4">
                                                                     <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
                                                                         <Icon className="h-5 w-5 text-electric-green" />
@@ -269,6 +462,16 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Last Event</div>
                                                                         <div className="mt-2 text-sm text-white">{formatRelative(service.lastEventAt)}</div>
                                                                     </div>
+                                                                    <div>
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Activity</div>
+                                                                        <div className="mt-2 text-sm text-white">
+                                                                            {service.activityCount ? `${service.activityCount} recent run${service.activityCount === 1 ? '' : 's'}` : 'Awaiting traffic'}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Signal Feed</div>
+                                                                        <div className="mt-2 text-sm text-white">{service.feedLabel || 'Backend probe'}</div>
+                                                                    </div>
                                                                 </div>
                                                                 <p className="mt-4 text-sm leading-relaxed text-gray-400">{service.note}</p>
                                                             </div>
@@ -277,25 +480,70 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
-                                                    <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
-                                                    <div className="mt-6 flex h-40 items-end gap-3">
-                                                        {latencySeries.length ? latencySeries.map((run) => {
-                                                            const height = Math.max(12, Math.round(((run.latencyMs || 0) / maxLatency) * 100));
-                                                            const meta = getStatus(run.status);
-                                                            return (
-                                                                <div key={run.id} className="flex flex-1 flex-col items-center gap-3">
-                                                                    <motion.div initial={{ height: 0 }} animate={{ height: `${height}%` }} className={`w-full rounded-t-xl border ${meta.className}`} />
-                                                                    <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
-                                                                        {channelMeta[run.channel]?.label?.split(' ')[0] || run.channel}
+                                            <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+                                                <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div>
+                                                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
+                                                            <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
+                                                        </div>
+                                                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
+                                                            <Waves className="h-3 w-3 text-electric-cyan" />
+                                                            {latencyTrace.sourceLabel}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                                        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest sample</div>
+                                                            <div className="mt-3 text-2xl font-semibold text-white">{formatMs(latestLatencyPoint?.value ?? null)}</div>
+                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
+                                                        </div>
+                                                        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak observed</div>
+                                                            <div className="mt-3 text-2xl font-semibold text-white">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
+                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                        {latencyTrace.items.length ? (
+                                                            <>
+                                                                <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                                                    <span>Recent signal distribution</span>
+                                                                    <span>Max {formatMs(maxLatency)}</span>
+                                                                </div>
+                                                                <div className="relative">
+                                                                    <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
+                                                                        {[0, 1, 2, 3].map((row) => (
+                                                                            <div key={row} className="border-t border-white/[0.05]" />
+                                                                        ))}
+                                                                    </div>
+                                                                    <div className="relative flex h-36 items-end gap-3">
+                                                                        {latencyTrace.items.map((item) => {
+                                                                            const height = Math.max(18, Math.round((item.value / maxLatency) * 100));
+                                                                            const meta = getStatus(item.status);
+
+                                                                            return (
+                                                                                <div key={item.id} className="flex flex-1 flex-col items-center gap-3">
+                                                                                    <motion.div
+                                                                                        initial={{ height: 0, opacity: 0.65 }}
+                                                                                        animate={{ height: `${height}%`, opacity: 1 }}
+                                                                                        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                                                                        className={`w-full rounded-t-xl border ${meta.className}`}
+                                                                                    />
+                                                                                    <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                                                        {item.label}
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        })}
                                                                     </div>
                                                                 </div>
-                                                            );
-                                                        }) : (
-                                                            <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-white/10 text-sm text-gray-500">
-                                                                No live session data yet.
+                                                            </>
+                                                        ) : (
+                                                            <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm leading-relaxed text-gray-500">
+                                                                No request or probe latency has been captured yet. As soon as the terminal, architect, contact relay, or GitHub probe reports activity, the trace will start drawing live samples here.
                                                             </div>
                                                         )}
                                                     </div>
@@ -316,17 +564,24 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                         ))}
                                                     </div>
                                                     <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent backend jobs</div>
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
                                                         <div className="mt-4 space-y-3">
-                                                            {(backend?.jobs || []).map((job) => (
-                                                                <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                                                                    <div className="flex items-center justify-between gap-3">
-                                                                        <div className="text-sm font-semibold text-white">{job.label}</div>
-                                                                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                            {displayJobs.map((job) => {
+                                                                const meta = getStatus(job.status);
+
+                                                                return (
+                                                                    <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                                                                        <div className="flex items-center justify-between gap-3">
+                                                                            <div className="text-sm font-semibold text-white">{job.label}</div>
+                                                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                                {meta.label}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                                        <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
                                                                     </div>
-                                                                    <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -349,8 +604,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     {runs.length ? runs.map((run) => {
                                                         const meta = getStatus(run.status);
                                                         const Icon = channelMeta[run.channel]?.icon || Sparkles;
+
                                                         return (
-                                                            <button key={run.id} type="button" onClick={() => setSelectedRunId(run.id)} className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/25 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}>
+                                                            <button
+                                                                key={run.id}
+                                                                type="button"
+                                                                onClick={() => setSelectedRunId(run.id)}
+                                                                className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/25 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
+                                                            >
                                                                 <div className="flex items-start justify-between gap-4">
                                                                     <div className="flex min-w-0 gap-3">
                                                                         <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
@@ -366,7 +627,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                     </div>
                                                                 </div>
                                                                 <div className="mt-4 flex flex-wrap gap-2">
-                                                                    {run.tools.map((tool) => (
+                                                                    {(run.tools || []).map((tool) => (
                                                                         <span key={tool} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300">
                                                                             {tool}
                                                                         </span>
@@ -402,7 +663,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                             </div>
                                                         </div>
                                                         <div className="mt-6 space-y-4">
-                                                            {selectedRun.steps.map((step, index) => (
+                                                            {(selectedRun.steps || []).map((step, index) => (
                                                                 <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
                                                                     <div className="flex flex-col items-center pt-1">
                                                                         <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
