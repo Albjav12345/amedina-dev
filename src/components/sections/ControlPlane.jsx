@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, animate, motion, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
     Activity,
     BrainCircuit,
@@ -216,8 +216,32 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const [selectedRunId, setSelectedRunId] = useState('');
     const [error, setError] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isMobileSheet, setIsMobileSheet] = useState(false);
+    const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
+    const dragControls = useDragControls();
+    const sheetY = useMotionValue(0);
+    const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
 
     useEffect(() => subscribeOpsTelemetry(setSession), []);
+
+    useEffect(() => {
+        const syncViewport = () => {
+            if (typeof window === 'undefined') return;
+            setIsMobileSheet(window.innerWidth < 640);
+        };
+
+        syncViewport();
+        window.addEventListener('resize', syncViewport);
+
+        return () => window.removeEventListener('resize', syncViewport);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen) {
+            sheetY.set(0);
+            setIsClosingFromDrag(false);
+        }
+    }, [isOpen, sheetY]);
 
     useEffect(() => {
         if (!isOpen) return undefined;
@@ -333,6 +357,28 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         { label: 'Avg Latency', value: formatMs(avgLatency), detail: backend?.runtime?.latestJobAt ? `Last backend probe ${formatRelative(backend.runtime.latestJobAt)}` : 'Awaiting first backend probe' },
     ];
 
+    const handleSheetDragEnd = async (_, info) => {
+        if (!isMobileSheet) return;
+
+        const shouldClose = info.offset.y > 120 || info.velocity.y > 900;
+
+        if (shouldClose) {
+            setIsClosingFromDrag(true);
+            await animate(sheetY, window.innerHeight, {
+                duration: 0.22,
+                ease: [0.22, 1, 0.36, 1],
+            });
+            onClose();
+            return;
+        }
+
+        animate(sheetY, 0, {
+            type: 'spring',
+            stiffness: 420,
+            damping: 36,
+        });
+    };
+
     return (
         <>
             <button
@@ -358,19 +404,35 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             exit={{ opacity: 0 }}
                             onClick={onClose}
                             className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-md"
+                            style={isMobileSheet ? { opacity: overlayOpacity } : undefined}
                         />
 
                         <motion.aside
                             initial={{ opacity: 0, y: 24, scale: 0.98 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 16, scale: 0.99 }}
+                            exit={isClosingFromDrag && isMobileSheet ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.99 }}
                             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                             className="fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl rounded-[24px] border border-white/10 bg-[#0b0d11]/92 shadow-[0_35px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20"
+                            style={isMobileSheet ? { y: sheetY } : undefined}
+                            drag={isMobileSheet ? 'y' : false}
+                            dragListener={false}
+                            dragControls={dragControls}
+                            dragMomentum
+                            dragElastic={{ top: 0, bottom: 0.18 }}
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            onDragEnd={handleSheetDragEnd}
                         >
                             <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
                                 <div className="border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 md:px-8">
                                     <div className="mb-3 flex justify-center sm:hidden">
-                                        <div className="h-1.5 w-16 rounded-full bg-white/10" />
+                                        <button
+                                            type="button"
+                                            onPointerDown={(event) => dragControls.start(event)}
+                                            className="touch-none cursor-grab active:cursor-grabbing"
+                                            aria-label="Drag down to close observability panel"
+                                        >
+                                            <div className="h-1.5 w-16 rounded-full bg-white/10" />
+                                        </button>
                                     </div>
                                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                         <div>
@@ -386,36 +448,39 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                 Real backend probes, current integration modes, session telemetry, and request lifecycle for the systems that actually drive the site.
                                             </p>
                                         </div>
-                                        <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    clearOpsTelemetry();
-                                                    setSelectedRunId('');
-                                                }}
-                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Clear Session</span>
-                                                <span className="sm:hidden">Clear</span>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => refreshBackend()}
-                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
-                                            >
-                                                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                                <span className="hidden sm:inline">Refresh</span>
-                                                <span className="sm:hidden">Reload</span>
-                                            </button>
+                                        <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
                                             <button
                                                 type="button"
                                                 onClick={onClose}
-                                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer sm:px-4 sm:text-xs sm:tracking-[0.18em]"
+                                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer sm:hidden"
+                                                aria-label="Close observability panel"
                                             >
                                                 <X className="h-4 w-4" />
-                                                <span>Close</span>
                                             </button>
+
+                                            <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-none sm:justify-end sm:gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        clearOpsTelemetry();
+                                                        setSelectedRunId('');
+                                                    }}
+                                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer sm:px-5 sm:text-xs sm:tracking-[0.18em]"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    <span className="hidden sm:inline">Clear Session</span>
+                                                    <span className="sm:hidden">Clear</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => refreshBackend()}
+                                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer sm:px-5 sm:text-xs sm:tracking-[0.18em]"
+                                                >
+                                                    <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                                    <span className="hidden sm:inline">Refresh</span>
+                                                    <span className="sm:hidden">Reload</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -558,44 +623,42 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-6">
-                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
-                                                        <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
-                                                        <div className="mt-6 space-y-4">
-                                                            {(backend?.capabilities || []).map((item) => (
-                                                                <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                    <div className="flex items-center justify-between gap-3">
-                                                                        <div className="text-sm font-semibold text-white">{item.label}</div>
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
-                                                                    </div>
-                                                                    <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
+                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
+                                                    <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
+                                                    <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                                        {(backend?.capabilities || []).map((item) => (
+                                                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                                <div className="flex items-center justify-between gap-3">
+                                                                    <div className="text-sm font-semibold text-white">{item.label}</div>
+                                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{item.value}</div>
                                                                 </div>
-                                                            ))}
-                                                        </div>
+                                                                <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
+                                                            </div>
+                                                        ))}
                                                     </div>
+                                                </div>
+                                            </div>
 
-                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
-                                                        <div className="mt-4 space-y-3">
-                                                            {displayJobs.map((job) => {
-                                                                const meta = getStatus(job.status);
+                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6 lg:col-span-2">
+                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
+                                                <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
+                                                    {displayJobs.map((job) => {
+                                                        const meta = getStatus(job.status);
 
-                                                                return (
-                                                                    <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                                                                        <div className="flex items-center justify-between gap-3">
-                                                                            <div className="text-sm font-semibold text-white">{job.label}</div>
-                                                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                                {meta.label}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
-                                                                        <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                                        return (
+                                                            <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                                                                <div className="flex items-center justify-between gap-3">
+                                                                    <div className="text-sm font-semibold text-white">{job.label}</div>
+                                                                    <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                        {meta.label}
                                                                     </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
+                                                                </div>
+                                                                <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
