@@ -116,7 +116,7 @@ export const projects = [
         solution: "Engineered a stealthy Windows payload for Red Team operations, utilizing native WMI polling and Zero-Wait I/O for undetected background data exfiltration.",
         stack: ["PowerShell", "Batch", "WMI/CIM", "OPSEC"],
         arch: ["Background Polling", "UAC Evasion", "File-Lock Bypass", "Encrypted Exfiltration"],
-        githubLink: "https://github.com/Albjav12345/Secure-USB-Vault-Agent",
+        githubLink: "https://github.com/Albjav12345/Automated-USB-Exfiltration",
         demoType: "video",
         previewUrl: "/assets/projects/usb-extraction.mp4",
         demoUrl: "/assets/projects/usb-extraction.mp4",

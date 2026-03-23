@@ -49,40 +49,71 @@ const COMPLEXITY_META = {
     'multi-system': { label: 'Multi-System Rollout', description: 'A broader platform with multiple domains, dependencies, or workflows.' },
 };
 
+const STACK_FALLBACKS = {
+    'web-platform': ['React', 'Node.js', 'PostgreSQL', 'Role-Based Access Control', 'Vercel'],
+    'ai-agent': ['React', 'Python', 'Groq API', 'PostgreSQL', 'Human Approval Workflow'],
+    'automation-system': ['Python', 'Node.js', 'PostgreSQL', 'Queue Workers', 'Webhook Integrations'],
+    'internal-tool': ['React', 'Node.js', 'PostgreSQL', 'Role-Based Access Control', 'Analytics'],
+    'creative-interface': ['React', 'Framer Motion', 'Node.js', 'Structured Content Model', 'Vercel'],
+};
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function buildSystemPrompt() {
     return `
+### ROLE
 You are Alberto Medina's AI Project Architect.
+You write like a senior full-stack systems engineer producing a sharp pre-sales brief for a real prospective client.
 
-Your task is to transform a project intake into a sharp pre-sales architecture brief that sounds like a senior systems engineer writing directly to a prospective client.
+### OBJECTIVE
+Transform the intake into a professional architecture brief that Alberto could confidently send after a discovery call.
 
-Rules:
-- Be concrete, commercially relevant, and architecturally credible.
-- Mirror the user's language if it is obvious; otherwise use English.
-- Focus on architecture, delivery strategy, implementation realism, technical tradeoffs, and measurable value.
-- Do not invent proprietary data, budgets, or guarantees.
-- Prefer the narrowest architecture that credibly solves phase one.
-- Recommend simple, stable technology by default unless the brief clearly demands higher complexity.
-- Treat security, permissions, auditability, and operational visibility as first-class concerns whenever relevant.
-- Mention AI only when it materially improves the system; do not force AI into the solution.
-- Avoid generic filler such as "scalable", "robust", or "seamless" unless you immediately make it concrete.
-- Write like an expert who already sees delivery risks, hidden scope, and product shape.
-- The result should feel like something Alberto could confidently send after a real discovery call.
-- Keep output concise and high-signal.
-- Output valid JSON only.
+### INSTRUCTIONS
+1. Be concrete, commercially relevant, and architecturally credible.
+2. Mirror the user's language if it is obvious; otherwise use English.
+3. Focus on product shape, delivery strategy, implementation realism, technical tradeoffs, and measurable value.
+4. Prefer the smallest valuable phase-one release that still feels premium.
+5. Recommend simple, stable technology unless the brief clearly requires extra complexity.
+6. Treat security, permissions, auditability, data modeling, and operational visibility as first-class concerns when relevant.
+7. Mention AI only when it materially improves the system. Do not force AI into the solution.
+8. Avoid vague filler such as "scalable", "robust", "seamless", or "modern" unless you immediately make it concrete.
+9. Do not invent budgets, team size claims, proprietary systems, or guarantees.
+10. Output valid JSON only.
 
-Decision rules:
-- First identify the smallest valuable release.
-- Then choose architecture layers that directly support that release.
-- Use the intake dimensions to infer delivery pressure, audience complexity, and operational risk.
-- If an input is custom or ambiguous, make the safest reasonable interpretation and surface the ambiguity in risks or next step.
-- Delivery phases should be realistic for one strong engineer or a small delivery team, not an enterprise org chart.
-- Recommended stack items should be implementation-ready technologies or patterns, not vague categories.
-- Architecture items should each name a real layer or subsystem and explain why it exists.
-- Quick wins should be tactical and immediately useful.
-- Risks should expose scope, dependency, data, integration, security, or adoption concerns.
-- AI opportunities should be narrow and practical: triage, summarization, drafting, retrieval, classification, anomaly detection, or supervised actions.
+### QUALITY BAR
+- The summary must be exactly 2 sentences and read like a confident technical proposal, not marketing copy.
+- The recommended stack must contain 4 to 6 concrete technologies or patterns. Never output vague items like "SQL / NoSQL".
+- Architecture must describe real layers or subsystems, not just feature names.
+- Delivery phases must be realistic for a strong solo engineer or small delivery team.
+- Risks must name actual delivery or product risks: permissions, data model, integrations, adoption, QA, compliance, or scope creep.
+- The next step must be technical and credible, not generic sales language like "schedule a call".
+- AI opportunities must never be an empty array.
+- If AI is not recommended for phase one, return 1 or 2 items explaining that core operations should come first and where AI could be added later.
+
+### DECISION PROCESS
+1. Identify the primary workflow that creates the most value in phase one.
+2. Infer what absolutely must exist at launch versus what can wait.
+3. Choose an architecture that supports the current scope without blocking later expansion.
+4. Prefer one clear data model and one credible backend path.
+5. Surface ambiguity explicitly in risks or next step instead of hallucinating certainty.
+
+### MINI EXAMPLE OF GOOD OUTPUT QUALITY
+{
+  "headline": "Client Operations Portal Brief",
+  "summary": "The first release should focus on request intake, status visibility, approvals, and internal handling in one controlled workflow. A relational backend with explicit permissions and audit history is the safest path because it supports premium UX now and future billing or reporting later.",
+  "solutionFit": "High",
+  "recommendedStack": ["React", "Node.js", "PostgreSQL", "Role-Based Access Control", "Vercel"],
+  "architecture": [
+    { "title": "Client Experience Layer", "detail": "A polished responsive portal for request submission, status tracking, and approvals." }
+  ],
+  "deliveryPlan": [
+    { "phase": "Scope Lock", "detail": "Define workflows, roles, statuses, and approval states before implementation starts.", "duration": "1 week" }
+  ],
+  "quickWins": ["Lock the approval states early so the data model stays coherent."],
+  "risks": ["Permissions can become messy if client and internal roles are not modeled explicitly from day one."],
+  "aiOpportunities": ["No strong AI layer is needed for phase one; core operations, permissions, and auditability matter more at launch."],
+  "nextStep": "Turn the core workflow into a scoped delivery plan with exact roles, statuses, integrations, and screen-level requirements."
+}
 
 Reference portfolio context:
 ${JSON.stringify({
@@ -134,14 +165,28 @@ function resolveDimension(value, customValue, allowedValues, metadata, fallback)
     };
 }
 
-function normalizeArchitectResponse(response) {
+function normalizeStack(stackItems, projectTypeKey) {
+    const vaguePattern = /^(sql\s*\/\s*nosql|sql or nosql|database|backend|frontend|cloud|api layer|auth)$/i;
+    const cleaned = (Array.isArray(stackItems) ? stackItems : [])
+        .map(item => clampText(item, { min: 1, max: 40, fallback: '' }))
+        .filter(Boolean)
+        .filter(item => !vaguePattern.test(item));
+
+    return cleaned.length >= 4
+        ? cleaned.slice(0, 6)
+        : STACK_FALLBACKS[projectTypeKey] || STACK_FALLBACKS['web-platform'];
+}
+
+function normalizeArchitectResponse(response, { projectTypeKey }) {
+    const aiOpportunities = Array.isArray(response?.aiOpportunities)
+        ? response.aiOpportunities.map(item => sanitizeMultilineText(item, { min: 5, max: 120, fallback: '' })).filter(Boolean).slice(0, 4)
+        : [];
+
     return {
         headline: clampText(response?.headline, { min: 8, max: 80, fallback: 'AI Architecture Brief' }),
         summary: sanitizeMultilineText(response?.summary, { min: 40, max: 420, fallback: 'A tailored architecture brief is ready for review.' }),
         solutionFit: sanitizeEnum(response?.solutionFit, ['High', 'Strong', 'Selective'], 'Strong'),
-        recommendedStack: Array.isArray(response?.recommendedStack)
-            ? response.recommendedStack.map(item => clampText(item, { min: 1, max: 40, fallback: '' })).filter(Boolean).slice(0, 6)
-            : [],
+        recommendedStack: normalizeStack(response?.recommendedStack, projectTypeKey),
         architecture: Array.isArray(response?.architecture)
             ? response.architecture.map(item => ({
                 title: clampText(item?.title, { min: 2, max: 40, fallback: '' }),
@@ -161,9 +206,9 @@ function normalizeArchitectResponse(response) {
         risks: Array.isArray(response?.risks)
             ? response.risks.map(item => sanitizeMultilineText(item, { min: 5, max: 120, fallback: '' })).filter(Boolean).slice(0, 4)
             : [],
-        aiOpportunities: Array.isArray(response?.aiOpportunities)
-            ? response.aiOpportunities.map(item => sanitizeMultilineText(item, { min: 5, max: 120, fallback: '' })).filter(Boolean).slice(0, 4)
-            : [],
+        aiOpportunities: aiOpportunities.length
+            ? aiOpportunities
+            : ['No strong AI layer is recommended for phase one; prioritize core workflow reliability, permissions, and auditability first.'],
         nextStep: sanitizeMultilineText(response?.nextStep, { min: 10, max: 160, fallback: 'Share this brief and turn it into a scoped execution plan.' }),
     };
 }
@@ -227,7 +272,7 @@ Output expectations:
 - Name the most credible product shape for phase one.
 - Recommend a stack Alberto would realistically build and defend.
 - Keep architecture grounded in the actual launch constraints.
-- If AI is not justified, keep AI opportunities limited or empty.
+- If AI is not justified, return one concise item explaining why phase one should stay non-AI and where AI could be added later.
 `;
 
     try {
@@ -238,7 +283,8 @@ Output expectations:
             try {
                 const completion = await groq.chat.completions.create({
                     model: MODELS[i],
-                    temperature: 0.4,
+                    temperature: 0.15,
+                    seed: 42,
                     max_completion_tokens: 1200,
                     response_format: { type: 'json_object' },
                     messages: [
@@ -248,7 +294,8 @@ Output expectations:
                 });
 
                 response = normalizeArchitectResponse(
-                    extractJsonObject(completion.choices?.[0]?.message?.content)
+                    extractJsonObject(completion.choices?.[0]?.message?.content),
+                    { projectTypeKey: projectType.key }
                 );
                 break;
             } catch (error) {
