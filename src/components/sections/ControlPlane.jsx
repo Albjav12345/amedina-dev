@@ -647,6 +647,28 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                         ))}
                                                     </div>
                                                 </div>
+
+                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
+                                                    <div className="mt-4 space-y-3">
+                                                        {displayJobs.map((job) => {
+                                                            const meta = getStatus(job.status);
+
+                                                            return (
+                                                                <div key={job.id} className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                                                                    <div className="flex min-w-0 flex-col items-start gap-2">
+                                                                        <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
+                                                                        <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                            {meta.label}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                                    <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -746,28 +768,6 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
-                                        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
-                                            {displayJobs.map((job) => {
-                                                const meta = getStatus(job.status);
-
-                                                return (
-                                                    <div key={job.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                                                        <div className="flex items-center justify-between gap-3">
-                                                            <div className="text-sm font-semibold text-white">{job.label}</div>
-                                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                {meta.label}
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
-                                                        <div className="mt-2 text-sm leading-relaxed text-gray-400">{job.detail}</div>
-                                                    </div>
-                                                );
-                                            })}
                                         </div>
                                     </div>
 
