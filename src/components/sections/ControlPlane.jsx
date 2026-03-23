@@ -562,71 +562,95 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                             </div>
 
                                             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-                                                <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                    <div className="flex items-start justify-between gap-4">
-                                                        <div>
-                                                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
-                                                            <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
-                                                        </div>
-                                                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
-                                                            <Waves className="h-3 w-3 text-electric-cyan" />
-                                                            {latencyTrace.sourceLabel}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="mt-5 grid grid-cols-1 gap-4 min-[460px]:grid-cols-2">
-                                                        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest sample</div>
-                                                            <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
-                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
-                                                        </div>
-                                                        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak observed</div>
-                                                            <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
-                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                        {latencyTrace.items.length ? (
-                                                            <>
-                                                                <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                                                                    <span>Recent signal distribution</span>
-                                                                    <span>Max {formatMs(maxLatency)}</span>
-                                                                </div>
-                                                                <div className="relative">
-                                                                    <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
-                                                                        {[0, 1, 2, 3].map((row) => (
-                                                                            <div key={row} className="border-t border-white/[0.05]" />
-                                                                        ))}
-                                                                    </div>
-                                                                    <div className="relative flex h-36 items-end gap-3">
-                                                                        {latencyTrace.items.map((item) => {
-                                                                            const height = Math.max(18, Math.round((item.value / maxLatency) * 100));
-                                                                            const meta = getStatus(item.status);
-
-                                                                            return (
-                                                                                <div key={item.id} className="flex flex-1 flex-col items-center gap-3">
-                                                                                    <motion.div
-                                                                                        initial={{ height: 0, opacity: 0.65 }}
-                                                                                        animate={{ height: `${height}%`, opacity: 1 }}
-                                                                                        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                                                                                        className={`w-full rounded-t-xl border ${meta.className}`}
-                                                                                    />
-                                                                                    <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
-                                                                                        {item.label}
-                                                                                    </div>
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                    </div>
-                                                                </div>
-                                                            </>
-                                                        ) : (
-                                                            <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm leading-relaxed text-gray-500">
-                                                                No request or probe latency has been captured yet. As soon as the terminal, architect, contact relay, or GitHub probe reports activity, the trace will start drawing live samples here.
+                                                <div className="space-y-6">
+                                                    <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                                                        <div className="flex items-start justify-between gap-4">
+                                                            <div>
+                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
+                                                                <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
                                                             </div>
-                                                        )}
+                                                            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
+                                                                <Waves className="h-3 w-3 text-electric-cyan" />
+                                                                {latencyTrace.sourceLabel}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-5 grid grid-cols-1 gap-4 min-[460px]:grid-cols-2">
+                                                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest sample</div>
+                                                                <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
+                                                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
+                                                            </div>
+                                                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak observed</div>
+                                                                <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
+                                                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                                            {latencyTrace.items.length ? (
+                                                                <>
+                                                                    <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                                                        <span>Recent signal distribution</span>
+                                                                        <span>Max {formatMs(maxLatency)}</span>
+                                                                    </div>
+                                                                    <div className="relative">
+                                                                        <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
+                                                                            {[0, 1, 2, 3].map((row) => (
+                                                                                <div key={row} className="border-t border-white/[0.05]" />
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="relative flex h-36 items-end gap-3">
+                                                                            {latencyTrace.items.map((item) => {
+                                                                                const height = Math.max(18, Math.round((item.value / maxLatency) * 100));
+                                                                                const meta = getStatus(item.status);
+
+                                                                                return (
+                                                                                    <div key={item.id} className="flex flex-1 flex-col items-center gap-3">
+                                                                                        <motion.div
+                                                                                            initial={{ height: 0, opacity: 0.65 }}
+                                                                                            animate={{ height: `${height}%`, opacity: 1 }}
+                                                                                            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                                                                            className={`w-full rounded-t-xl border ${meta.className}`}
+                                                                                        />
+                                                                                        <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                                                            {item.label}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm leading-relaxed text-gray-500">
+                                                                    No request or probe latency has been captured yet. As soon as the terminal, architect, contact relay, or GitHub probe reports activity, the trace will start drawing live samples here.
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
+                                                        <div className="mt-4 space-y-3">
+                                                            {displayJobs.map((job) => {
+                                                                const meta = getStatus(job.status);
+
+                                                                return (
+                                                                    <div key={job.id} className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                                                                        <div className="flex min-w-0 flex-col items-start gap-2">
+                                                                            <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
+                                                                            <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                                {meta.label}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                                                        <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -645,28 +669,6 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                 <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
                                                             </div>
                                                         ))}
-                                                    </div>
-                                                </div>
-
-                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
-                                                    <div className="mt-4 space-y-3">
-                                                        {displayJobs.map((job) => {
-                                                            const meta = getStatus(job.status);
-
-                                                            return (
-                                                                <div key={job.id} className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                                                                    <div className="flex min-w-0 flex-col items-start gap-2">
-                                                                        <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
-                                                                        <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                            {meta.label}
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
-                                                                    <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
-                                                                </div>
-                                                            );
-                                                        })}
                                                     </div>
                                                 </div>
                                             </div>
