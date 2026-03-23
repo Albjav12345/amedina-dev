@@ -33,6 +33,10 @@ const ProjectArchitect = React.lazy(() =>
     import('./components/sections/ProjectArchitect').then(module => ({ default: module.ProjectArchitect }))
 )
 
+const ControlPlane = React.lazy(() =>
+    import('./components/sections/ControlPlane').then(module => ({ default: module.ControlPlane }))
+)
+
 const Footer = React.lazy(() =>
     import('./components/layout/Footer').then(module => ({ default: module.Footer }))
 )
@@ -113,6 +117,12 @@ function App() {
                 <div id="architect-wrapper" style={{ minHeight: '70vh' }}>
                     <Suspense fallback={null}>
                         <ProjectArchitect />
+                    </Suspense>
+                </div>
+
+                <div id="control-wrapper" style={{ minHeight: '85vh' }}>
+                    <Suspense fallback={null}>
+                        <ControlPlane />
                     </Suspense>
                 </div>
 

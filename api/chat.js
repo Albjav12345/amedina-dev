@@ -10,6 +10,13 @@ import {
     isAllowedOrigin,
     sanitizeHistory,
 } from './lib/security.js';
+import {
+    completeStep,
+    createRun,
+    failRun,
+    finishRun,
+    recordServiceProbe,
+} from './lib/control-plane.js';
 
 // Configuration: Model Rotation Fallback List (Latest Verified Groq Production Models)
 const MODELS = [
@@ -21,6 +28,9 @@ const MODELS = [
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default async function handler(req, res) {
+    const requestStartedAt = Date.now();
+    let runId = null;
+
     applySecurityHeaders(res);
 
     if (req.method !== 'POST') {
@@ -50,8 +60,18 @@ export default async function handler(req, res) {
     try {
         const message = clampText(req.body?.message, { min: 1, max: 500, fallback: '' });
         const history = sanitizeHistory(req.body?.history);
+        runId = createRun({
+            channel: 'terminal',
+            title: 'Terminal Agent Run',
+            input: message,
+            tools: ['Groq LLM', 'Portfolio Context', 'GitHub API'],
+        });
 
         if (!message) {
+            failRun(runId, {
+                message: 'Input validation rejected an empty or invalid terminal command.',
+                decision: 'Rejected before orchestration',
+            });
             return res.status(400).json({
                 type: "MESSAGE",
                 text: ">> SYSTEM_ALERT: INVALID_QUERY_PAYLOAD.",
@@ -59,9 +79,13 @@ export default async function handler(req, res) {
             });
         }
 
+        completeStep(runId, 'ingress', 'Terminal request accepted by the edge function.');
+        completeStep(runId, 'validation', 'Input text and recent history were sanitized safely.');
+
         // 1. Fetch Live Data (GitHub) with error handling
         let githubData = null;
         let githubStatus = "ONLINE";
+        const githubProbeStartedAt = Date.now();
         try {
             githubData = await getGitHubActivity('Albjav12345');
             if (!githubData) {
@@ -72,6 +96,20 @@ export default async function handler(req, res) {
             githubStatus = "OFFLINE: SYNC_ERROR";
             console.error("[SYS] GitHub Sync Error:", e.message);
         }
+        recordServiceProbe('github-sync', {
+            status: githubData ? 'operational' : 'degraded',
+            latencyMs: Date.now() - githubProbeStartedAt,
+            note: githubData
+                ? 'Live GitHub activity synced successfully for terminal context.'
+                : 'GitHub context degraded. Terminal continues with portfolio-only context.',
+        });
+        completeStep(
+            runId,
+            'context',
+            githubData
+                ? 'Portfolio data and live GitHub activity were attached to the reasoning context.'
+                : 'Portfolio data attached. GitHub sync degraded, so the agent continued without live activity.',
+        );
 
         // 2. Define the Strategic Persona & Navigation Protocol
         const SYSTEM_PROMPT = `
@@ -97,6 +135,7 @@ Rules for Action Triggers:
 - IF user asks about "stack", "skills", "tools", or "technologies" -> RETURN action: "SCROLL_TO_STACK"
 - IF user asks about Alberto's background or "about" -> RETURN action: "SCROLL_TO_ABOUT"
 - IF user asks for architecture, estimate, discovery, plan, roadmap, or how Alberto would build something -> RETURN action: "SCROLL_TO_ARCHITECT"
+- IF user asks about runtime status, observability, backend, telemetry, logs, lifecycle, or integrations -> RETURN action: "SCROLL_TO_CONTROL"
 
 STRATEGIC NARRATIVE CONTROL:
 1. Authority: "I am the architectural interface for Alberto's systems. I bridge advanced AI with his engineering stack."
@@ -111,7 +150,7 @@ OUTPUT_FORMAT (JSON ONLY):
 {
 "type": "MESSAGE" | "ACTION",
 "text": "Your persuasive response here...",
-"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "OPEN_LINK" | null,
+"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "SCROLL_TO_ARCHITECT" | "SCROLL_TO_CONTROL" | "OPEN_LINK" | null,
 "url": "https://github.com/..." (Only if action is OPEN_LINK)
 }
 `;
@@ -141,6 +180,11 @@ OUTPUT_FORMAT (JSON ONLY):
 
                 response = extractJsonObject(completion.choices[0].message.content);
                 console.log(`[SYS] Success using model: ${modelId}`);
+                completeStep(runId, 'inference', `Inference completed successfully using ${modelId}.`);
+                recordServiceProbe('groq-provider', {
+                    status: 'operational',
+                    note: `Inference completed successfully with ${modelId}.`,
+                });
                 break;
             } catch (error) {
                 lastError = error;
@@ -151,6 +195,10 @@ OUTPUT_FORMAT (JSON ONLY):
                     await sleep(200);
                     continue;
                 }
+                recordServiceProbe('groq-provider', {
+                    status: 'degraded',
+                    note: `Inference failed on ${modelId}: ${error.message || 'provider failure'}.`,
+                });
                 throw error;
             }
         }
@@ -161,12 +209,26 @@ OUTPUT_FORMAT (JSON ONLY):
             : null;
 
         if (!response) throw lastError;
+        completeStep(runId, 'action', safeAction
+            ? `UI action ${safeAction} resolved and sanitized before returning to the client.`
+            : 'The response was normalized as a text-only terminal reply.'
+        );
+        finishRun(runId, {
+            output: response?.text,
+            decision: safeAction || 'Message response only',
+            approval: safeAction === 'OPEN_LINK' ? 'Approved external handoff' : 'Autonomous UI-safe response',
+        });
+        recordServiceProbe('chat-api', {
+            status: 'operational',
+            latencyMs: Date.now() - requestStartedAt,
+            note: 'Terminal agent request completed successfully.',
+        });
         return res.status(200).json({
             type: response?.type === 'ACTION' ? 'ACTION' : 'MESSAGE',
             text: clampText(response?.text, { min: 1, max: 800, fallback: '>> SYSTEM_ALERT: EMPTY_MODEL_RESPONSE.' }),
             action: safeAction === 'OPEN_LINK'
                 ? (safeUrl ? 'OPEN_LINK' : null)
-                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT'].includes(safeAction)
+                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT', 'SCROLL_TO_CONTROL'].includes(safeAction)
                     ? safeAction
                     : null,
             url: safeUrl,
@@ -174,6 +236,17 @@ OUTPUT_FORMAT (JSON ONLY):
 
     } catch (error) {
         console.error('Final Chat API Failure:', error);
+        recordServiceProbe('chat-api', {
+            status: 'degraded',
+            latencyMs: Date.now() - requestStartedAt,
+            note: `Terminal agent failed: ${error.message || 'internal failure'}.`,
+        });
+        if (runId) {
+            failRun(runId, {
+                message: error.message || 'Terminal agent failed before a valid response was returned.',
+                decision: 'Runtime failure',
+            });
+        }
         return res.status(error.status || 500).json({
             type: "MESSAGE",
             text: `>> SYSTEM_CRASH: ${error.status || 'ERROR'} - ${error.message || 'INTERNAL_FAILURE'}`,

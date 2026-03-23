@@ -8,6 +8,13 @@ import {
     sanitizeEnum,
     sanitizeMultilineText,
 } from './lib/security.js';
+import {
+    completeStep,
+    createRun,
+    failRun,
+    finishRun,
+    recordServiceProbe,
+} from './lib/control-plane.js';
 
 const MODELS = [
     'llama-3.3-70b-versatile',
@@ -217,6 +224,9 @@ function normalizeArchitectResponse(response, { projectTypeKey }) {
 }
 
 export default async function handler(req, res) {
+    const requestStartedAt = Date.now();
+    let runId = null;
+
     applySecurityHeaders(res);
 
     if (req.method !== 'POST') {
@@ -237,10 +247,24 @@ export default async function handler(req, res) {
     const timeline = resolveDimension(req.body?.timeline, req.body?.timelineCustom, TIMELINES, TIMELINE_META, 'flexible');
     const complexity = resolveDimension(req.body?.complexity, req.body?.complexityCustom, COMPLEXITIES, COMPLEXITY_META, 'production-build');
     const constraints = sanitizeMultilineText(req.body?.constraints, { max: 400, fallback: 'No explicit constraints shared.' });
+    runId = createRun({
+        channel: 'architect',
+        title: 'Project Architect Brief',
+        input: brief || req.body?.brief,
+        tools: ['Groq LLM', 'Portfolio Context', 'Schema Validation'],
+    });
 
     if (!brief) {
+        failRun(runId, {
+            message: 'Architect intake rejected because the project brief was too short or invalid.',
+            decision: 'Rejected before generation',
+        });
         return res.status(400).json({ message: 'A valid project brief is required.' });
     }
+
+    completeStep(runId, 'ingress', 'Architect request accepted by the edge function.');
+    completeStep(runId, 'validation', 'Brief body and selector values were normalized safely.');
+    completeStep(runId, 'context', 'Project shape, audience, timeline, and delivery depth were resolved for the model.');
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -300,6 +324,7 @@ Output expectations:
                     extractJsonObject(completion.choices?.[0]?.message?.content),
                     { projectTypeKey: projectType.key }
                 );
+                completeStep(runId, 'inference', `Architecture brief drafted successfully using ${MODELS[i]}.`);
 
                 if (parsedResponse.missingFields.length) {
                     const error = new Error('ARCHITECT_RESPONSE_INCOMPLETE');
@@ -309,6 +334,11 @@ Output expectations:
                 }
 
                 response = parsedResponse.normalized;
+                completeStep(runId, 'action', 'Structured response passed schema validation and is safe to expose.');
+                recordServiceProbe('groq-provider', {
+                    status: 'operational',
+                    note: `Architect inference completed successfully with ${MODELS[i]}.`,
+                });
                 break;
             } catch (error) {
                 lastError = error;
@@ -317,11 +347,26 @@ Output expectations:
                     await sleep(200);
                     continue;
                 }
+                recordServiceProbe('groq-provider', {
+                    status: 'degraded',
+                    note: `Architect inference failed on ${MODELS[i]}: ${error.message || 'provider failure'}.`,
+                });
                 throw error;
             }
         }
 
         if (!response) throw lastError || new Error('ARCHITECT_RESPONSE_EMPTY');
+
+        finishRun(runId, {
+            output: response.summary,
+            decision: response.solutionFit ? `${response.solutionFit} solution fit` : 'Brief generated',
+            approval: 'Schema-validated brief returned to frontend',
+        });
+        recordServiceProbe('architect-api', {
+            status: 'operational',
+            latencyMs: Date.now() - requestStartedAt,
+            note: 'Project Architect generated a validated brief successfully.',
+        });
 
         return res.status(200).json({
             briefId: `ARCH-${Date.now().toString(36).toUpperCase()}`,
@@ -329,6 +374,17 @@ Output expectations:
             ...response,
         });
     } catch (error) {
+        recordServiceProbe('architect-api', {
+            status: 'degraded',
+            latencyMs: Date.now() - requestStartedAt,
+            note: `Project Architect failed: ${error?.message || 'internal failure'}.`,
+        });
+        if (runId) {
+            failRun(runId, {
+                message: error?.message || 'Architect generation failed before a valid brief could be returned.',
+                decision: 'Runtime failure',
+            });
+        }
         return res.status(error?.status || 500).json({
             message: error?.message || 'ARCHITECT_REQUEST_FAILED',
             details: error?.details || null,
