@@ -286,11 +286,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const [isBodyVisible, setIsBodyVisible] = useState(false);
     const [isMobileSheet, setIsMobileSheet] = useState(false);
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
+    const [isDraggingSheet, setIsDraggingSheet] = useState(false);
     const [scrollRoot, setScrollRoot] = useState(null);
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
     const sheetAnimationRef = useRef(null);
     const dragCleanupRef = useRef(null);
+    const dragFrameRef = useRef(0);
+    const pendingSheetYRef = useRef(0);
 
     useEffect(() => subscribeOpsTelemetry(setSession), []);
 
@@ -309,6 +312,10 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const clearHeaderDrag = () => {
         dragCleanupRef.current?.();
         dragCleanupRef.current = null;
+        if (dragFrameRef.current) {
+            window.cancelAnimationFrame(dragFrameRef.current);
+            dragFrameRef.current = 0;
+        }
     };
 
     useEffect(() => {
@@ -327,6 +334,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         if (!isOpen) return undefined;
 
         setIsClosingFromDrag(false);
+        setIsDraggingSheet(false);
 
         if (!isMobileSheet) {
             sheetY.set(0);
@@ -515,6 +523,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
 
     const requestClose = async () => {
         clearHeaderDrag();
+        setIsDraggingSheet(false);
 
         if (isMobileSheet) {
             setIsClosingFromDrag(true);
@@ -536,6 +545,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         }
 
         setIsClosingFromDrag(false);
+        setIsDraggingSheet(false);
         runSheetAnimation(0, {
             type: 'spring',
             stiffness: 420,
@@ -549,6 +559,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
 
         stopSheetAnimation();
         setIsClosingFromDrag(false);
+        setIsDraggingSheet(true);
 
         const dragState = {
             pointerId: event.pointerId,
@@ -571,7 +582,13 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
             dragState.lastY = moveEvent.clientY;
             dragState.lastTime = now;
 
-            sheetY.set(offset);
+            pendingSheetYRef.current = offset;
+            if (!dragFrameRef.current) {
+                dragFrameRef.current = window.requestAnimationFrame(() => {
+                    sheetY.set(pendingSheetYRef.current);
+                    dragFrameRef.current = 0;
+                });
+            }
             moveEvent.preventDefault();
         };
 
@@ -592,6 +609,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         window.addEventListener('pointermove', handlePointerMove, { passive: false });
         window.addEventListener('pointerup', handlePointerEnd);
         window.addEventListener('pointercancel', handlePointerEnd);
+        event.currentTarget.setPointerCapture?.(event.pointerId);
         event.preventDefault();
     };
 
@@ -655,7 +673,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             exit={{ opacity: 0 }}
                             onClick={() => { void requestClose(); }}
                             className={`fixed inset-0 z-[95] ${isMobileSheet ? 'bg-black/68' : 'bg-black/52 backdrop-blur-sm'}`}
-                            style={isMobileSheet ? { opacity: overlayOpacity } : undefined}
+                            style={isMobileSheet ? { opacity: overlayOpacity, willChange: 'opacity' } : undefined}
                         />
 
                         <motion.aside
@@ -663,10 +681,10 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             animate={asideAnimate}
                             exit={asideExit}
                             transition={asideTransition}
-                            className={`fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]' : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
+                            className={`fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? (isDraggingSheet ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]') : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
                             data-lenis-prevent
                             data-lenis-prevent-touch
-                            style={isMobileSheet ? { y: sheetY, touchAction: 'auto' } : undefined}
+                            style={isMobileSheet ? { y: sheetY, touchAction: 'auto', willChange: 'transform', backfaceVisibility: 'hidden' } : undefined}
                         >
                             <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
                                 <div
