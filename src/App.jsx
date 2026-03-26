@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense, useState } from 'react'
+import React, { useEffect, Suspense, useRef, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
@@ -44,6 +44,9 @@ const Footer = React.lazy(() =>
 
 function App() {
     const [isControlOpen, setIsControlOpen] = useState(false);
+    const lenisRef = useRef(null);
+    const lenisRafRef = useRef(null);
+    const isControlOpenRef = useRef(false);
 
     useEffect(() => {
         // Force scroll to top on mount (refresh)
@@ -67,17 +70,24 @@ function App() {
                 infinite: false,
             })
 
+            lenisRef.current = lenis;
             window.lenis = lenis;
 
             function raf(time) {
-                lenis.raf(time)
-                requestAnimationFrame(raf)
+                if (lenisRef.current && !isControlOpenRef.current) {
+                    lenisRef.current.raf(time)
+                }
+                lenisRafRef.current = requestAnimationFrame(raf)
             }
 
-            requestAnimationFrame(raf)
+            lenisRafRef.current = requestAnimationFrame(raf)
 
             return () => {
+                if (lenisRafRef.current) {
+                    cancelAnimationFrame(lenisRafRef.current);
+                }
                 lenis.destroy()
+                lenisRef.current = null;
                 window.lenis = null;
             }
         } else {
@@ -87,6 +97,18 @@ function App() {
             window.lenis = null; // Ensure lenis is not available
         }
     }, [])
+
+    useEffect(() => {
+        isControlOpenRef.current = isControlOpen;
+
+        if (!lenisRef.current) return;
+
+        if (isControlOpen) {
+            lenisRef.current.stop?.();
+        } else {
+            lenisRef.current.start?.();
+        }
+    }, [isControlOpen]);
 
     useEffect(() => {
         const openPanel = () => setIsControlOpen(true);
@@ -105,15 +127,15 @@ function App() {
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
 
 
-            <ParallaxGrid />
+            <ParallaxGrid isFrozen={isControlOpen} />
             <Navbar />
             <main>
-                <Hero />
+                <Hero isUiFrozen={isControlOpen} />
 
                 {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
                 <div id="about-wrapper" style={{ minHeight: '80vh' }}>
                     <Suspense fallback={null}>
-                        <About />
+                        <About isUiFrozen={isControlOpen} />
                     </Suspense>
                 </div>
 

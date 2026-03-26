@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Download, Cpu } from 'lucide-react';
-import TerminalWindow, { AnimatedPipeline } from '../common/TerminalWindow';
+import TerminalWindow from '../common/TerminalWindow';
 import { fadeInUp, viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio';
 
-const Hero = () => {
+const Hero = ({ isUiFrozen = false }) => {
     const { hero, sections } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
     const isCvAvailable = Boolean(hero.buttons.cvHref);
@@ -22,7 +22,7 @@ const Hero = () => {
                 <div className="grid lg:grid-cols-12 gap-16 items-center relative">
                     {/* Hand-Drawn Arrow Pointer - ABSOLUTELY POSITIONED & INDEPENDENT */}
                     <AnimatePresence>
-                        {!isTerminalExpanded && (
+                        {!isTerminalExpanded && !isUiFrozen && (
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{
@@ -193,7 +193,7 @@ const Hero = () => {
                         </motion.div>
 
                         <div className="w-full flex justify-center relative">
-                            <TerminalWindow onStateChange={setIsTerminalExpanded} />
+                            <TerminalWindow onStateChange={setIsTerminalExpanded} isUiFrozen={isUiFrozen} />
                         </div>
                     </div>
 

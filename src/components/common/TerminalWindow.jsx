@@ -4,7 +4,7 @@ import { X, Minimize2, Maximize2, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
 import { recordOpsRun } from '../../utils/opsTelemetry';
 
-const TerminalWindow = ({ title, onStateChange }) => {
+const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const { terminal } = portfolioData.ui;
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
@@ -154,7 +154,7 @@ const TerminalWindow = ({ title, onStateChange }) => {
                             transition={{ duration: 0.2 }}
                             className="relative h-full"
                         >
-                            <AnimatedPipeline />
+                            <AnimatedPipeline isFrozen={isUiFrozen} />
                             <div className="absolute bottom-3 left-4 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
                                 {terminal.welcomeMessage}
                             </div>
@@ -474,18 +474,20 @@ const TypewriterEffect = ({ text, speed = 20 }) => {
     return <span>{displayedText}</span>;
 };
 
-export const AnimatedPipeline = () => {
+export const AnimatedPipeline = ({ isFrozen = false }) => {
     const { terminal } = portfolioData.ui;
     const [lineIdx, setLineIdx] = useState(0);
     const lines = terminal.initialLines;
 
     // Cyclic idle animation with original timing
     useEffect(() => {
+        if (isFrozen) return undefined;
+
         const interval = setInterval(() => {
             setLineIdx(prev => (prev + 1) % (lines.length + 1));
         }, 2500); // Original slow timing for idle effect
         return () => clearInterval(interval);
-    }, [lines.length]);
+    }, [isFrozen, lines.length]);
 
     return (
         <div className="flex flex-col gap-1">
@@ -505,11 +507,15 @@ export const AnimatedPipeline = () => {
                     )}
                 </motion.div>
             ))}
-            <motion.span
-                animate={{ opacity: [0, 1] }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2"
-            />
+            {isFrozen ? (
+                <span className="w-2 h-4 bg-electric-green/50 inline-block ml-1 align-middle mt-2" />
+            ) : (
+                <motion.span
+                    animate={{ opacity: [0, 1] }}
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2"
+                />
+            )}
         </div>
     );
 }

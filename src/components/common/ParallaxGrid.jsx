@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const ParallaxGrid = () => {
+const ParallaxGrid = ({ isFrozen = false }) => {
     const { scrollY } = useScroll();
 
     // Infinite Parallax Logic:
@@ -14,22 +14,38 @@ const ParallaxGrid = () => {
     return (
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-dark-void">
             {/* Layer 1: Infinite Moving Grid */}
-            <motion.div
-                style={{ y }}
-                className="absolute -top-[50px] -left-[50px] w-[calc(100%+100px)] h-[calc(100vh+100px)] gpu-accelerated"
-            >
-                <div
-                    className="w-full h-full"
-                    style={{
-                        backgroundImage: `
-                            linear-gradient(rgba(0, 255, 153, 0.1) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(0, 255, 153, 0.1) 1px, transparent 1px)
-                        `,
-                        backgroundSize: '50px 50px',
-                        backgroundRepeat: 'repeat'
-                    }}
-                />
-            </motion.div>
+            {isFrozen ? (
+                <div className="absolute -top-[50px] -left-[50px] w-[calc(100%+100px)] h-[calc(100vh+100px)] gpu-accelerated">
+                    <div
+                        className="w-full h-full"
+                        style={{
+                            backgroundImage: `
+                                linear-gradient(rgba(0, 255, 153, 0.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(0, 255, 153, 0.1) 1px, transparent 1px)
+                            `,
+                            backgroundSize: '50px 50px',
+                            backgroundRepeat: 'repeat'
+                        }}
+                    />
+                </div>
+            ) : (
+                <motion.div
+                    style={{ y }}
+                    className="absolute -top-[50px] -left-[50px] w-[calc(100%+100px)] h-[calc(100vh+100px)] gpu-accelerated"
+                >
+                    <div
+                        className="w-full h-full"
+                        style={{
+                            backgroundImage: `
+                                linear-gradient(rgba(0, 255, 153, 0.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(0, 255, 153, 0.1) 1px, transparent 1px)
+                            `,
+                            backgroundSize: '50px 50px',
+                            backgroundRepeat: 'repeat'
+                        }}
+                    />
+                </motion.div>
+            )}
 
             {/* Layer 2: Static Vignette (Does not move) */}
             <div

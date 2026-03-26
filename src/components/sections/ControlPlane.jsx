@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, animate, motion, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
     Activity,
@@ -210,14 +210,83 @@ function buildLatencySeries(runs, services) {
     };
 }
 
+function BlockSkeleton({ title, minHeight = 320 }) {
+    return (
+        <div
+            className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6"
+            style={{ minHeight }}
+        >
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan/80">{title}</div>
+            <div className="mt-3 h-8 w-48 rounded-lg bg-white/[0.05]" />
+            <div className="mt-6 space-y-4">
+                <div className="h-24 rounded-2xl border border-white/8 bg-black/20" />
+                <div className="h-24 rounded-2xl border border-white/8 bg-black/20" />
+                <div className="h-20 rounded-2xl border border-white/8 bg-black/20" />
+            </div>
+        </div>
+    );
+}
+
+function LazyPanelBlock({ root, eager = false, minHeight = 320, skeleton, children }) {
+    const [isVisible, setIsVisible] = useState(eager);
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (eager || isVisible) return undefined;
+        if (typeof IntersectionObserver === 'undefined') {
+            setIsVisible(true);
+            return undefined;
+        }
+
+        const node = containerRef.current;
+        if (!node || !root) return undefined;
+
+        const observer = new IntersectionObserver(([entry]) => {
+            if (!entry?.isIntersecting) return;
+            setIsVisible(true);
+            observer.disconnect();
+        }, {
+            root,
+            rootMargin: '240px 0px 240px 0px',
+            threshold: 0.01,
+        });
+
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [eager, isVisible, root]);
+
+    return (
+        <div
+            ref={containerRef}
+            className="min-w-0"
+            style={{ minHeight: isVisible ? undefined : minHeight }}
+        >
+            {isVisible ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                >
+                    {children}
+                </motion.div>
+            ) : (
+                skeleton || <BlockSkeleton title="Loading block" minHeight={minHeight} />
+            )}
+        </div>
+    );
+}
+
 function ControlPlane({ isOpen, onOpen, onClose }) {
     const [backend, setBackend] = useState(null);
     const [session, setSession] = useState(() => getOpsTelemetry());
     const [selectedRunId, setSelectedRunId] = useState('');
     const [error, setError] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isContentReady, setIsContentReady] = useState(false);
+    const [isBodyVisible, setIsBodyVisible] = useState(false);
     const [isMobileSheet, setIsMobileSheet] = useState(false);
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
+    const [scrollRoot, setScrollRoot] = useState(null);
     const dragControls = useDragControls();
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
@@ -237,17 +306,76 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     }, []);
 
     useEffect(() => {
-        if (isOpen) {
+        if (!isOpen) return undefined;
+
+        setIsClosingFromDrag(false);
+
+        if (!isMobileSheet) {
             sheetY.set(0);
-            setIsClosingFromDrag(false);
+            return undefined;
         }
-    }, [isOpen, sheetY]);
+
+        const entryOffset = Math.min(window.innerHeight * 0.09, 84);
+        sheetY.set(entryOffset);
+        const controls = animate(sheetY, 0, {
+            duration: 0.22,
+            ease: [0.22, 1, 0.36, 1],
+        });
+
+        return () => controls.stop();
+    }, [isMobileSheet, isOpen, sheetY]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setIsContentReady(false);
+            setIsBodyVisible(false);
+            return undefined;
+        }
+
+        let frameA = 0;
+        let frameB = 0;
+        setIsContentReady(false);
+        setIsBodyVisible(false);
+
+        frameA = window.requestAnimationFrame(() => {
+            frameB = window.requestAnimationFrame(() => {
+                setIsContentReady(true);
+            });
+        });
+
+        return () => {
+            window.cancelAnimationFrame(frameA);
+            window.cancelAnimationFrame(frameB);
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setIsBodyVisible(false);
+            return undefined;
+        }
+
+        const revealTimeout = window.setTimeout(() => {
+            setIsBodyVisible(true);
+        }, isMobileSheet ? 90 : 70);
+
+        return () => window.clearTimeout(revealTimeout);
+    }, [isMobileSheet, isOpen]);
 
     useEffect(() => {
         if (!isOpen) return undefined;
+        const previousBodyOverflow = document.body.style.overflow;
+        const previousBodyOverscroll = document.body.style.overscrollBehaviorY;
+        const previousHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
+
         document.body.style.overflow = 'hidden';
+        document.body.style.overscrollBehaviorY = 'none';
+        document.documentElement.style.overscrollBehaviorY = 'none';
+
         return () => {
-            document.body.style.overflow = '';
+            document.body.style.overflow = previousBodyOverflow;
+            document.body.style.overscrollBehaviorY = previousBodyOverscroll;
+            document.documentElement.style.overscrollBehaviorY = previousHtmlOverscroll;
         };
     }, [isOpen]);
 
@@ -270,7 +398,9 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     useEffect(() => {
         if (!isOpen) return undefined;
 
-        refreshBackend();
+        const initialRefreshId = window.setTimeout(() => {
+            refreshBackend({ silent: true });
+        }, isMobileSheet ? 140 : 90);
 
         const intervalId = window.setInterval(() => {
             if (document.visibilityState === 'visible') {
@@ -278,8 +408,11 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
             }
         }, 15000);
 
-        return () => clearInterval(intervalId);
-    }, [isOpen]);
+        return () => {
+            clearTimeout(initialRefreshId);
+            clearInterval(intervalId);
+        };
+    }, [isMobileSheet, isOpen]);
 
     const runs = useMemo(() => {
         const merged = [];
@@ -361,7 +494,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         if (isMobileSheet) {
             setIsClosingFromDrag(true);
             await animate(sheetY, window.innerHeight, {
-                duration: 0.18,
+                duration: 0.16,
                 ease: [0.22, 1, 0.36, 1],
             });
         }
@@ -372,7 +505,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const handleSheetDragEnd = async (_, info) => {
         if (!isMobileSheet) return;
 
-        const shouldClose = info.offset.y > 120 || info.velocity.y > 900;
+        const shouldClose = info.offset.y > 96 || info.velocity.y > 700;
 
         if (shouldClose) {
             await requestClose();
@@ -386,11 +519,46 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         });
     };
 
+    const handleMobileHeaderPointerDown = (event) => {
+        if (!isMobileSheet) return;
+
+        const target = event.target;
+        if (target instanceof Element && target.closest('button, a, input, textarea, select, [data-no-drag="true"]')) {
+            return;
+        }
+
+        dragControls.start(event);
+    };
+
+    const warmBackendSnapshot = () => {
+        if (backend || isRefreshing) return;
+        void refreshBackend({ silent: true });
+    };
+
+    const asideInitial = isMobileSheet
+        ? { y: 0 }
+        : { opacity: 0, y: 18 };
+
+    const asideAnimate = isMobileSheet
+        ? { y: 0 }
+        : { opacity: 1, y: 0 };
+
+    const asideExit = isMobileSheet
+        ? (isClosingFromDrag ? { opacity: 1 } : { y: 0 })
+        : { opacity: 0, y: 8 };
+
+    const asideTransition = isMobileSheet
+        ? { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
+        : { duration: 0.18, ease: [0.22, 1, 0.36, 1] };
+
     return (
         <>
             <button
                 type="button"
                 onClick={onOpen}
+                onMouseEnter={warmBackendSnapshot}
+                onFocus={warmBackendSnapshot}
+                onTouchStart={warmBackendSnapshot}
                 className="fixed bottom-5 right-5 z-[90] rounded-full border border-electric-green/25 bg-[#0b0d11]/90 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer"
             >
                 <span className="inline-flex items-center gap-2">
@@ -410,16 +578,16 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => { void requestClose(); }}
-                            className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-md"
+                            className={`fixed inset-0 z-[95] ${isMobileSheet ? 'bg-black/68' : 'bg-black/52 backdrop-blur-sm'}`}
                             style={isMobileSheet ? { opacity: overlayOpacity } : undefined}
                         />
 
                         <motion.aside
-                            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={isClosingFromDrag && isMobileSheet ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.99 }}
-                            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                            className="fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl rounded-[24px] border border-white/10 bg-[#0b0d11]/92 shadow-[0_35px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20"
+                            initial={asideInitial}
+                            animate={asideAnimate}
+                            exit={asideExit}
+                            transition={asideTransition}
+                            className={`fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]' : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
                             style={isMobileSheet ? { y: sheetY } : undefined}
                             drag={isMobileSheet ? 'y' : false}
                             dragListener={false}
@@ -430,13 +598,17 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             onDragEnd={handleSheetDragEnd}
                         >
                             <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
-                                <div className="border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 md:px-8">
+                                <div
+                                    className="touch-none border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 sm:touch-auto md:px-8"
+                                    onPointerDown={handleMobileHeaderPointerDown}
+                                >
                                     <div className="mb-3 flex justify-center sm:hidden">
                                         <button
                                             type="button"
                                             onPointerDown={(event) => dragControls.start(event)}
                                             className="touch-none cursor-grab active:cursor-grabbing"
                                             aria-label="Drag down to close observability panel"
+                                            data-no-drag="true"
                                         >
                                             <div className="h-1.5 w-16 rounded-full bg-white/10" />
                                         </button>
@@ -492,20 +664,67 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                     </div>
                                 </div>
 
-                                <div className="panel-scrollbar flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8" onWheelCapture={containWheelOnOverflow}>
-                                    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-                                        {summary.map((item) => (
-                                            <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
-                                                <div className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">{item.value}</div>
-                                                <p className="mt-3 text-xs leading-relaxed text-gray-400 sm:text-sm">{item.detail}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+                                <motion.div
+                                    initial={false}
+                                    animate={isBodyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                                    className="panel-scrollbar flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8"
+                                    ref={setScrollRoot}
+                                    onWheelCapture={containWheelOnOverflow}
+                                >
+                                    {!isContentReady ? (
                                         <div className="space-y-6">
+                                            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+                                                {summary.map((item) => (
+                                                    <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
+                                                        <div className="mt-4 h-9 w-24 rounded-lg bg-white/[0.05]" />
+                                                        <div className="mt-3 h-4 w-full rounded bg-white/[0.04]" />
+                                                    </div>
+                                                ))}
+                                            </div>
                                             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Runtime Hydration</div>
+                                                <div className="mt-3 text-xl font-bold text-white">Mounting live systems view</div>
+                                                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-gray-400">
+                                                    Loading backend probes, session telemetry, lifecycle traces, and live integration cards.
+                                                </p>
+                                                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {[0, 1, 2, 3].map((index) => (
+                                                        <div key={index} className="rounded-2xl border border-white/10 bg-black/25 p-5">
+                                                            <div className="h-4 w-32 rounded bg-white/[0.06]" />
+                                                            <div className="mt-5 h-8 w-40 rounded bg-white/[0.05]" />
+                                                            <div className="mt-4 space-y-3">
+                                                                <div className="h-3 w-full rounded bg-white/[0.04]" />
+                                                                <div className="h-3 w-5/6 rounded bg-white/[0.04]" />
+                                                                <div className="h-3 w-2/3 rounded bg-white/[0.04]" />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+                                                {summary.map((item) => (
+                                                    <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
+                                                        <div className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">{item.value}</div>
+                                                        <p className="mt-3 text-xs leading-relaxed text-gray-400 sm:text-sm">{item.detail}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+                                                <div className="space-y-6">
+                                                    <LazyPanelBlock
+                                                        root={scrollRoot}
+                                                        eager
+                                                        minHeight={620}
+                                                        skeleton={<BlockSkeleton title="Backend signals" minHeight={620} />}
+                                                    >
+                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
                                                 <div className="flex items-center justify-between gap-4">
                                                     <div>
                                                         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
@@ -560,7 +779,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     })}
                                                 </div>
                                             </div>
+                                                    </LazyPanelBlock>
 
+                                                    <LazyPanelBlock
+                                                        root={scrollRoot}
+                                                        eager={!isMobileSheet}
+                                                        minHeight={900}
+                                                        skeleton={<BlockSkeleton title="Session pulse + control notes" minHeight={900} />}
+                                                    >
                                             <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
                                                 <div className="space-y-6">
                                                     <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
@@ -608,12 +834,10 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
 
                                                                                 return (
                                                                                     <div key={item.id} className="flex flex-1 flex-col items-center gap-3">
-                                                                                        <motion.div
-                                                                                            initial={{ height: 0, opacity: 0.65 }}
-                                                                                            animate={{ height: `${height}%`, opacity: 1 }}
-                                                                                            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                                                                                            className={`w-full rounded-t-xl border ${meta.className}`}
-                                                                                        />
+                                                                                    <div
+                                                                                        className={`w-full rounded-t-xl border ${meta.className}`}
+                                                                                        style={{ height: `${height}%` }}
+                                                                                    />
                                                                                         <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
                                                                                             {item.label}
                                                                                         </div>
@@ -672,10 +896,16 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                 </div>
                                             </div>
-
-                                        </div>
+                                                    </LazyPanelBlock>
+                                                </div>
 
                                         <div className="space-y-6">
+                                            <LazyPanelBlock
+                                                root={scrollRoot}
+                                                eager={!isMobileSheet}
+                                                minHeight={420}
+                                                skeleton={<BlockSkeleton title="Session runs" minHeight={420} />}
+                                            >
                                             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
                                                 <div className="flex items-center justify-between gap-4">
                                                     <div>
@@ -729,7 +959,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     )}
                                                 </div>
                                             </div>
+                                            </LazyPanelBlock>
 
+                                            <LazyPanelBlock
+                                                root={scrollRoot}
+                                                eager={false}
+                                                minHeight={520}
+                                                skeleton={<BlockSkeleton title="Request lifecycle" minHeight={520} />}
+                                            >
                                             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
                                                 <div className="flex items-center justify-between gap-4">
                                                     <div>
@@ -770,15 +1007,18 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     </div>
                                                 )}
                                             </div>
+                                            </LazyPanelBlock>
                                         </div>
                                     </div>
+                                        </>
+                                    )}
 
                                     {error && (
                                         <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-5 py-4 text-sm text-amber-100">
                                             {error}
                                         </div>
                                     )}
-                                </div>
+                                </motion.div>
                             </div>
                         </motion.aside>
                     </>
