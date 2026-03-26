@@ -107,11 +107,11 @@ const Hero = ({ isUiFrozen = false }) => {
                                     </span>
                                 </h1>
                             </div>
-                            <div className="flex items-center gap-2 font-mono text-xs text-secondary/60">
+                            <div className="flex items-center gap-2 font-mono text-xs text-gray-300">
                                 <span className="opacity-50">@</span>
                                 <span className="text-electric-cyan">{hero.handle.replace('@', '')}</span>
                             </div>
-                            <p className="text-gray-400 text-lg md:text-xl max-w-xl font-medium leading-relaxed">
+                            <p className="text-gray-300 text-lg md:text-xl max-w-xl font-medium leading-relaxed">
                                 {hero.description}
                             </p>
                         </motion.div>
@@ -144,7 +144,7 @@ const Hero = ({ isUiFrozen = false }) => {
                                     {hero.buttons.cv}
                                 </a>
                             ) : (
-                                <div className="px-8 py-4 border border-white/10 text-gray-500 font-mono font-bold rounded-lg flex items-center gap-3 cursor-not-allowed bg-white/[0.02]">
+                                <div className="px-8 py-4 border border-white/10 text-gray-400 font-mono font-bold rounded-lg flex items-center gap-3 cursor-not-allowed bg-white/[0.02]">
                                     <Download className="w-4 h-4" />
                                     <div className="flex flex-col items-start leading-none gap-1">
                                         <span>{hero.buttons.cv}</span>
@@ -163,7 +163,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         >
                             {hero.metadata.map((item, i) => (
                                 <div key={i} className="flex flex-col gap-1">
-                                    <span className="text-[10px] text-gray-600 font-mono uppercase">{item.label}</span>
+                                    <span className="text-[10px] text-gray-500 font-mono uppercase">{item.label}</span>
                                     <span className="text-xs font-mono text-gray-300">{item.value}</span>
                                 </div>
                             ))}

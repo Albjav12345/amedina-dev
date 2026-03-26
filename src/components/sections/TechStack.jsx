@@ -42,7 +42,7 @@ const TechNode = ({ name, icon, color = "electric-green", quality }) => {
                 </div>
             </div>
             <div className="flex flex-col items-center gap-0.5">
-                <span className="font-mono text-[8px] text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors text-center px-1">
+                <span className="font-mono text-[9px] text-gray-400 group-hover:text-white uppercase tracking-wider transition-colors text-center px-1">
                     {name}
                 </span>
             </div>
@@ -77,7 +77,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
                 </div>
                 <div className="flex flex-col">
                     <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">{title}</h3>
-                    <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
+                    <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
                 </div>
             </div>
 

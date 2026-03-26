@@ -112,7 +112,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
 
     return (
         <div ref={ref} className={`space-y-2 relative ${open ? 'z-[80]' : 'z-0'}`}>
-            <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">{label}</label>
+            <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-400">{label}</label>
             {value === CUSTOM_OPTION ? (
                 <div className={`w-full h-[58px] rounded-xl border px-4 flex items-center gap-3 transition-all ${open ? 'border-electric-green/50 bg-electric-green/[0.08]' : 'border-electric-cyan/25 bg-electric-cyan/[0.05]'}`}>
                     <input
@@ -120,7 +120,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
                         value={customValue}
                         onChange={(event) => onCustomChange(event.target.value)}
                         placeholder={customPlaceholder}
-                        className="min-w-0 flex-1 bg-transparent border-0 p-0 leading-none text-white placeholder:text-gray-500 focus:outline-none font-mono text-sm"
+                        className="min-w-0 flex-1 bg-transparent border-0 p-0 leading-none text-white placeholder:text-gray-400 focus:outline-none font-mono text-sm"
                     />
                     <button
                         type="button"
@@ -134,7 +134,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
             ) : (
                 <button type="button" onClick={() => setOpen((prev) => !prev)} className={`w-full h-[58px] rounded-xl border px-4 text-left font-mono text-sm flex items-center justify-between gap-4 transition-all cursor-pointer ${open ? 'border-electric-green/50 bg-electric-green/[0.08] text-white' : 'border-white/10 bg-white/5 text-white hover:border-electric-cyan/35 hover:bg-white/[0.07]'}`}>
                     <span className="truncate">{activeLabel}</span>
-                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${open ? 'rotate-180 text-electric-green' : 'text-gray-500'}`} />
+                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${open ? 'rotate-180 text-electric-green' : 'text-gray-400'}`} />
                 </button>
             )}
             <AnimatePresence>
@@ -146,7 +146,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
                                 return (
                                     <button key={optionValue} type="button" onClick={() => { onChange(optionValue); if (optionValue !== CUSTOM_OPTION) onCustomChange(''); setOpen(false); }} className={`w-full rounded-xl px-4 py-3 text-left transition-colors cursor-pointer ${isActive ? 'bg-electric-green/10 border border-electric-green/20' : 'border border-transparent hover:bg-white/[0.05]'}`}>
                                         <div className={`font-mono text-sm ${isActive ? 'text-electric-green' : 'text-white'}`}>{optionLabel}</div>
-                                        <div className="mt-1 text-xs leading-relaxed text-gray-500">{optionDescription}</div>
+                                        <div className="mt-1 text-xs leading-relaxed text-gray-400">{optionDescription}</div>
                                     </button>
                                 );
                             })}
@@ -154,7 +154,7 @@ function SelectField({ label, value, options, helper, customValue, customPlaceho
                     </motion.div>
                 )}
             </AnimatePresence>
-            <p className="text-[11px] leading-relaxed text-gray-500 min-h-[2rem]">{value === CUSTOM_OPTION ? customHelper : helper}</p>
+            <p className="text-[11px] leading-relaxed text-gray-400 min-h-[2rem]">{value === CUSTOM_OPTION ? customHelper : helper}</p>
         </div>
     );
 }
@@ -319,7 +319,7 @@ const ProjectArchitect = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {[['Structured Intake', 'Discovery Flow'], ['Architecture Brief', 'Output'], ['Pre-Sales Qualified', 'Use Case']].map(([value, label]) => (
                                     <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-5">
-                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{label}</div>
+                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400">{label}</div>
                                         <div className="mt-3 text-sm font-semibold text-white">{value}</div>
                                     </div>
                                 ))}
@@ -354,7 +354,7 @@ const ProjectArchitect = () => {
                                         {examples.map((example) => (
                                             <button key={example.id} type="button" onClick={() => { setFormState({ ...initialState, ...example.values }); setShowExamples(false); setError(''); }} className="w-full rounded-xl border border-white/10 bg-white/[0.03] hover:border-electric-green/35 hover:bg-electric-green/[0.06] text-left px-4 py-4 transition-colors cursor-pointer">
                                                 <div className="flex items-center justify-between gap-4">
-                                                    <div><div className="text-sm font-semibold text-white">{example.name}</div><div className="mt-1 text-xs leading-relaxed text-gray-500">{example.summary}</div></div>
+                                                    <div><div className="text-sm font-semibold text-white">{example.name}</div><div className="mt-1 text-xs leading-relaxed text-gray-400">{example.summary}</div></div>
                                                     <ArrowRight className="w-4 h-4 text-electric-green shrink-0" />
                                                 </div>
                                             </button>
@@ -366,11 +366,11 @@ const ProjectArchitect = () => {
 
                         <form onSubmit={handleSubmit} className="space-y-5 relative overflow-visible">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">Mission_Brief</label>
+                                <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-400">Mission_Brief</label>
                                 <div className="rounded-xl border border-white/10 bg-white/5 pr-1.5 overflow-hidden transition-all focus-within:border-electric-green/50 focus-within:bg-white/[0.08]">
-                                    <textarea required rows="6" value={formState.brief} onChange={(event) => updateField('brief', event.target.value)} onWheelCapture={containWheelOnOverflow} placeholder="Describe the system you want to build, who it serves, the workflow it must support, and the result you care about." className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-gray-600 focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto" />
+                                    <textarea required rows="6" value={formState.brief} onChange={(event) => updateField('brief', event.target.value)} onWheelCapture={containWheelOnOverflow} placeholder="Describe the system you want to build, who it serves, the workflow it must support, and the result you care about." className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-gray-500 focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto" />
                                 </div>
-                                <p className="text-[11px] leading-relaxed text-gray-500">Write the business problem first, then the workflow, then the result that should improve.</p>
+                                <p className="text-[11px] leading-relaxed text-gray-400">Write the business problem first, then the workflow, then the result that should improve.</p>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -381,11 +381,11 @@ const ProjectArchitect = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">Constraints_Notes</label>
+                                <label className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-400">Constraints_Notes</label>
                                 <div className="rounded-xl border border-white/10 bg-white/5 pr-1.5 overflow-hidden transition-all focus-within:border-electric-green/50 focus-within:bg-white/[0.08]">
-                                    <textarea rows="3" value={formState.constraints} onChange={(event) => updateField('constraints', event.target.value)} onWheelCapture={containWheelOnOverflow} placeholder="Optional: compliance, integrations, delivery risks, team limitations, or non-negotiables." className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-gray-600 focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto" />
+                                    <textarea rows="3" value={formState.constraints} onChange={(event) => updateField('constraints', event.target.value)} onWheelCapture={containWheelOnOverflow} placeholder="Optional: compliance, integrations, delivery risks, team limitations, or non-negotiables." className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-gray-500 focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto" />
                                 </div>
-                                <p className="text-[11px] leading-relaxed text-gray-500">Use this for hard constraints the architecture cannot ignore.</p>
+                                <p className="text-[11px] leading-relaxed text-gray-400">Use this for hard constraints the architecture cannot ignore.</p>
                             </div>
 
                             <button type="submit" disabled={status === 'loading'} className="w-full relative group px-6 py-4 overflow-hidden rounded-xl font-mono font-bold uppercase tracking-widest transition-all bg-electric-green text-dark-void hover:scale-[1.01] active:scale-[0.99] disabled:cursor-wait disabled:opacity-80 cursor-pointer">
@@ -421,13 +421,13 @@ const ProjectArchitect = () => {
 
                                 <div className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Recommended_Stack</div>
+                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">Recommended_Stack</div>
                                         <div className="flex flex-wrap gap-2">{result.recommendedStack.map((item) => <span key={item} className="px-3 py-1.5 bg-electric-green/10 border border-electric-green/20 rounded text-[10px] font-mono uppercase tracking-[0.16em] text-electric-green">{item}</span>)}</div>
                                         <div className="mt-6 space-y-3">{result.architecture.map((item) => <div key={item.title} className="rounded-xl border border-white/10 bg-black/20 p-4"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green mb-2">{item.title}</div><p className="text-sm text-gray-300 leading-relaxed">{item.detail}</p></div>)}</div>
                                     </div>
                                     <div className="space-y-6">
                                         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Delivery_Plan</div>
+                                            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">Delivery_Plan</div>
                                             <div className="space-y-4">{result.deliveryPlan.map((item) => <div key={item.phase} className="rounded-xl border border-white/10 bg-black/20 p-4"><div className="flex items-center justify-between gap-3 mb-2"><div className="text-base font-semibold text-white">{item.phase}</div><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">{item.duration}</div></div><p className="text-sm text-gray-300 leading-relaxed">{item.detail}</p></div>)}</div>
                                         </div>
                                         {(result.quickWins.length > 0 || result.aiOpportunities.length > 0) && (
@@ -450,7 +450,7 @@ const ProjectArchitect = () => {
                                 </div>
 
                                 <div className={`mt-6 grid grid-cols-1 gap-4 ${result.risks.length > 0 ? 'lg:grid-cols-[0.7fr_1.3fr]' : ''}`}>
-                                    {result.risks.length > 0 && <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4">Execution_Risks</div><div className="space-y-3">{result.risks.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Shield className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div></div>}
+                                    {result.risks.length > 0 && <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">Execution_Risks</div><div className="space-y-3">{result.risks.map((item) => <div key={item} className="text-sm text-gray-300 leading-relaxed flex gap-2"><Shield className="w-4 h-4 text-electric-cyan mt-0.5 shrink-0" /><span>{item}</span></div>)}</div></div>}
                                     <div className="rounded-2xl border border-electric-green/20 bg-electric-green/10 px-5 py-4"><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green mb-2">Next_Step</div><p className="text-sm md:text-base text-white leading-relaxed">{result.nextStep}</p></div>
                                 </div>
                             </div>
