@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import portfolioData from '../../data/portfolio';
 
 const Footer = ({ onOpenControlPanel }) => {
@@ -23,18 +24,18 @@ const Footer = ({ onOpenControlPanel }) => {
                                 {footer.status}
                             </span>
                         </button>
-                        <p className="mt-1 whitespace-nowrap text-[10px] text-gray-300 md:text-xs">
-                            &copy; {new Date().getFullYear()} Engineered by <span className="text-white">{footer.name || name}</span>.
+                        <p className="text-gray-400 text-[8px] md:text-xs mt-1 whitespace-nowrap">
+                            © {new Date().getFullYear()} Engineered by <span className="text-white">{footer.name || name}</span>.
                         </p>
                     </div>
 
-                    <div className="flex gap-4 md:gap-6 font-mono text-[10px] text-gray-300 whitespace-nowrap">
+                    <div className="flex gap-4 md:gap-6 font-mono text-[8px] md:text-[10px] text-gray-400 whitespace-nowrap">
                         <div className="flex flex-col items-center md:items-end">
-                            <span className="text-gray-400">LOCATION</span>
+                            <span className="text-gray-500">LOCATION</span>
                             <span>{footer.location}</span>
                         </div>
                         <div className="flex flex-col items-center md:items-end">
-                            <span className="text-gray-400">VESSEL_ID</span>
+                            <span className="text-gray-500">VESSEL_ID</span>
                             <span>{footer.vesselId}</span>
                         </div>
                     </div>
@@ -44,4 +45,5 @@ const Footer = ({ onOpenControlPanel }) => {
     );
 };
 
+// Footer component is now a named export for optimized lazy loading
 export { Footer };

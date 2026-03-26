@@ -39,7 +39,6 @@ const cardVariants = {
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
-    const [isDesktopProjectMotion, setIsDesktopProjectMotion] = useState(false);
     const quality = useHardwareQuality();
 
     // ORCHESTRATOR & DIRECTIONAL STATE
@@ -47,23 +46,6 @@ const FeaturedProjects = () => {
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const dwellTimeoutRef = useRef(null);
     const cardRefs = useRef({});
-
-    useEffect(() => {
-        if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-
-        const mediaQuery = window.matchMedia('(min-width: 1024px) and (pointer: fine)');
-        const updateMotionMode = () => setIsDesktopProjectMotion(mediaQuery.matches);
-
-        updateMotionMode();
-
-        if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', updateMotionMode);
-            return () => mediaQuery.removeEventListener('change', updateMotionMode);
-        }
-
-        mediaQuery.addListener(updateMotionMode);
-        return () => mediaQuery.removeListener(updateMotionMode);
-    }, []);
 
     // PROXIMITY-BASED VIDEO ORCHESTRATOR
     useEffect(() => {
@@ -140,19 +122,15 @@ const FeaturedProjects = () => {
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
-            setContentReady(isDesktopProjectMotion);
+            setContentReady(false);
         } else {
             document.body.style.overflow = 'unset';
             setContentReady(false);
         }
         return () => { document.body.style.overflow = 'unset'; };
-    }, [selectedId, isDesktopProjectMotion]);
+    }, [selectedId]);
 
     const activeProject = projects.find(p => p.id === selectedId);
-    const modalTransition = isDesktopProjectMotion
-        ? { type: 'spring', stiffness: 420, damping: 34, mass: 0.92 }
-        : quality.spring;
-    const shouldRenderExpandedContent = isContentReady || isDesktopProjectMotion;
 
     return (
         <section id="projects" className="py-20 md:py-32 relative overflow-hidden render-optimize">
@@ -279,17 +257,13 @@ const FeaturedProjects = () => {
 
                         <motion.div
                             layoutId={`project-${selectedId}`}
-                            transition={modalTransition}
-                            onLayoutAnimationComplete={() => {
-                                if (!isDesktopProjectMotion) {
-                                    setContentReady(true);
-                                }
-                            }}
+                            transition={quality.spring}
+                            onLayoutAnimationComplete={() => setContentReady(true)}
                             className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
                         >
 
                             {/* Orchestrated Content Fade-in - DEFERRED RENDER */}
-                            {shouldRenderExpandedContent && (
+                            {(isContentReady || quality.tier === 'high') && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}

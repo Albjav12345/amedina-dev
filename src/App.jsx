@@ -1,4 +1,7 @@
 import React, { useEffect, Suspense, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
+import Lenis from 'lenis'
 
 // Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
@@ -41,8 +44,6 @@ const Footer = React.lazy(() =>
 
 function App() {
     const [isControlOpen, setIsControlOpen] = useState(false);
-    const [AnalyticsComponent, setAnalyticsComponent] = useState(null);
-    const [SpeedInsightsComponent, setSpeedInsightsComponent] = useState(null);
     const lenisRef = useRef(null);
     const lenisRafRef = useRef(null);
     const isControlOpenRef = useRef(false);
@@ -55,23 +56,8 @@ function App() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-        if (isIOS) {
-            // iOS: Force native hardware-accelerated scroll
-            document.documentElement.style.overflowY = 'auto';
-            document.documentElement.style.webkitOverflowScrolling = 'touch';
-            window.lenis = null; // Ensure lenis is not available
-            return undefined;
-        }
-
-        let cancelled = false;
-        let loadListener = null;
-        let idleId = null;
-        let timeoutId = null;
-
-        const initLenis = async () => {
-            const { default: Lenis } = await import('lenis');
-            if (cancelled) return;
-
+        // ONLY initialize Lenis on Non-iOS devices (Desktop, Android)
+        if (!isIOS) {
             const lenis = new Lenis({
                 duration: 1.2,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -82,134 +68,35 @@ function App() {
                 smoothTouch: false,
                 touchMultiplier: 2,
                 infinite: false,
-            });
+            })
 
             lenisRef.current = lenis;
             window.lenis = lenis;
 
-            const raf = (time) => {
+            function raf(time) {
                 if (lenisRef.current && !isControlOpenRef.current) {
-                    lenisRef.current.raf(time);
+                    lenisRef.current.raf(time)
                 }
-                lenisRafRef.current = requestAnimationFrame(raf);
-            };
-
-            lenisRafRef.current = requestAnimationFrame(raf);
-        };
-
-        const scheduleLenis = () => {
-            if (cancelled) return;
-
-            if ('requestIdleCallback' in window) {
-                idleId = window.requestIdleCallback(() => {
-                    idleId = null;
-                    void initLenis();
-                }, { timeout: 1200 });
-                return;
+                lenisRafRef.current = requestAnimationFrame(raf)
             }
 
-            timeoutId = window.setTimeout(() => {
-                timeoutId = null;
-                void initLenis();
-            }, 250);
-        };
+            lenisRafRef.current = requestAnimationFrame(raf)
 
-        if (document.readyState === 'complete') {
-            scheduleLenis();
+            return () => {
+                if (lenisRafRef.current) {
+                    cancelAnimationFrame(lenisRafRef.current);
+                }
+                lenis.destroy()
+                lenisRef.current = null;
+                window.lenis = null;
+            }
         } else {
-            loadListener = () => {
-                loadListener = null;
-                scheduleLenis();
-            };
-            window.addEventListener('load', loadListener, { once: true });
+            // iOS: Force native hardware-accelerated scroll
+            document.documentElement.style.overflowY = 'auto';
+            document.documentElement.style.webkitOverflowScrolling = 'touch';
+            window.lenis = null; // Ensure lenis is not available
         }
-
-        return () => {
-            cancelled = true;
-
-            if (loadListener) {
-                window.removeEventListener('load', loadListener);
-            }
-
-            if (idleId !== null && 'cancelIdleCallback' in window) {
-                window.cancelIdleCallback(idleId);
-            }
-
-            if (timeoutId !== null) {
-                clearTimeout(timeoutId);
-            }
-
-            if (lenisRafRef.current) {
-                cancelAnimationFrame(lenisRafRef.current);
-            }
-
-            lenisRef.current?.destroy();
-            lenisRef.current = null;
-            window.lenis = null;
-        };
     }, [])
-
-    useEffect(() => {
-        let cancelled = false;
-        let loadListener = null;
-        let idleId = null;
-        let timeoutId = null;
-
-        const loadTelemetry = async () => {
-            const [{ Analytics }, { SpeedInsights }] = await Promise.all([
-                import('@vercel/analytics/react'),
-                import('@vercel/speed-insights/react'),
-            ]);
-
-            if (cancelled) return;
-
-            setAnalyticsComponent(() => Analytics);
-            setSpeedInsightsComponent(() => SpeedInsights);
-        };
-
-        const scheduleTelemetry = () => {
-            if (cancelled) return;
-
-            if ('requestIdleCallback' in window) {
-                idleId = window.requestIdleCallback(() => {
-                    idleId = null;
-                    void loadTelemetry();
-                }, { timeout: 2200 });
-                return;
-            }
-
-            timeoutId = window.setTimeout(() => {
-                timeoutId = null;
-                void loadTelemetry();
-            }, 1200);
-        };
-
-        if (document.readyState === 'complete') {
-            scheduleTelemetry();
-        } else {
-            loadListener = () => {
-                loadListener = null;
-                scheduleTelemetry();
-            };
-            window.addEventListener('load', loadListener, { once: true });
-        }
-
-        return () => {
-            cancelled = true;
-
-            if (loadListener) {
-                window.removeEventListener('load', loadListener);
-            }
-
-            if (idleId !== null && 'cancelIdleCallback' in window) {
-                window.cancelIdleCallback(idleId);
-            }
-
-            if (timeoutId !== null) {
-                clearTimeout(timeoutId);
-            }
-        };
-    }, []);
 
     useEffect(() => {
         isControlOpenRef.current = isControlOpen;
@@ -286,8 +173,8 @@ function App() {
                     onClose={() => setIsControlOpen(false)}
                 />
             </Suspense>
-            {AnalyticsComponent ? <AnalyticsComponent /> : null}
-            {SpeedInsightsComponent ? <SpeedInsightsComponent /> : null}
+            <Analytics />
+            <SpeedInsights />
         </div>
     )
 }

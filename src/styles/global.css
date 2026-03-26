@@ -19,14 +19,13 @@
     html {
         scroll-behavior: smooth;
         @apply bg-dark-void;
-        color-scheme: dark;
         max-width: 100vw;
         overflow-x: hidden;
     }
 
     body {
         @apply text-white font-sans antialiased;
-        text-rendering: optimizeLegibility;
+        background-attachment: fixed;
         max-width: 100vw;
         overflow-x: hidden;
     }
