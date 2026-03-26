@@ -287,6 +287,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const [isMobileSheet, setIsMobileSheet] = useState(false);
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
     const [isDraggingSheet, setIsDraggingSheet] = useState(false);
+    const [isLauncherPressed, setIsLauncherPressed] = useState(false);
     const [scrollRoot, setScrollRoot] = useState(null);
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
@@ -294,6 +295,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const dragCleanupRef = useRef(null);
     const dragFrameRef = useRef(0);
     const pendingSheetYRef = useRef(0);
+    const launcherPressRef = useRef({ pointerId: null, startX: 0, startY: 0, moved: false });
+    const lastLauncherOpenRef = useRef(0);
 
     useEffect(() => subscribeOpsTelemetry(setSession), []);
 
@@ -629,6 +632,53 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         void refreshBackend({ silent: true });
     };
 
+    const openLauncherPanel = () => {
+        const now = Date.now();
+        if (isOpen || now - lastLauncherOpenRef.current < 320) return;
+        lastLauncherOpenRef.current = now;
+        setIsLauncherPressed(false);
+        onOpen();
+    };
+
+    const handleLauncherPointerDown = (event) => {
+        setIsLauncherPressed(true);
+        warmBackendSnapshot();
+
+        launcherPressRef.current = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            moved: false,
+        };
+    };
+
+    const handleLauncherPointerMove = (event) => {
+        const press = launcherPressRef.current;
+        if (press.pointerId !== event.pointerId || press.moved) return;
+
+        if (Math.abs(event.clientX - press.startX) > 14 || Math.abs(event.clientY - press.startY) > 14) {
+            launcherPressRef.current = { ...press, moved: true };
+            setIsLauncherPressed(false);
+        }
+    };
+
+    const handleLauncherPointerUp = (event) => {
+        const press = launcherPressRef.current;
+        setIsLauncherPressed(false);
+
+        if (press.pointerId !== event.pointerId) return;
+        launcherPressRef.current = { pointerId: null, startX: 0, startY: 0, moved: false };
+
+        if ((event.pointerType === 'touch' || event.pointerType === 'pen') && !press.moved) {
+            openLauncherPanel();
+        }
+    };
+
+    const handleLauncherPointerCancel = () => {
+        launcherPressRef.current = { pointerId: null, startX: 0, startY: 0, moved: false };
+        setIsLauncherPressed(false);
+    };
+
     const asideInitial = isMobileSheet
         ? { y: 0 }
         : { opacity: 0, y: 18 };
@@ -649,11 +699,16 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         <>
             <button
                 type="button"
-                onClick={onOpen}
+                onClick={openLauncherPanel}
                 onMouseEnter={warmBackendSnapshot}
                 onFocus={warmBackendSnapshot}
-                onTouchStart={warmBackendSnapshot}
-                className="fixed bottom-5 right-5 z-[90] rounded-full border border-electric-green/25 bg-[#0b0d11]/90 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer"
+                onPointerDown={handleLauncherPointerDown}
+                onPointerMove={handleLauncherPointerMove}
+                onPointerUp={handleLauncherPointerUp}
+                onPointerCancel={handleLauncherPointerCancel}
+                onPointerLeave={() => setIsLauncherPressed(false)}
+                className={`fixed bottom-5 right-5 z-[90] rounded-full border px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] backdrop-blur-xl transition-[border-color,color,box-shadow,background-color,transform,opacity] duration-120 cursor-pointer ${isLauncherPressed ? 'scale-[0.985] border-electric-cyan/32 bg-white/[0.07] text-electric-cyan shadow-[0_12px_28px_rgba(0,0,0,0.38)]' : 'border-electric-green/25 bg-[#0b0d11]/90 text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] hover:border-electric-cyan/35 hover:text-electric-cyan'}`}
+                style={{ WebkitTapHighlightColor: 'transparent' }}
             >
                 <span className="inline-flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
