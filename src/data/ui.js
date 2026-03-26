@@ -34,7 +34,7 @@ export const ui = {
             terminal: "ACCESS_TERMINAL",
             cv: "GET_MANIFEST.PDF",
             cvPending: "MANIFEST_PENDING",
-            cvHref: ""
+            cvHref: "/manifest-test.pdf"
         },
         metadata: [
             { label: "Stack_Focus", value: "PYTHON / REACT / UNITY" },

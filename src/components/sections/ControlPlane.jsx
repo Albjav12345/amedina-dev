@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, animate, motion, useDragControls, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import {
     Activity,
     BrainCircuit,
@@ -287,11 +287,29 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const [isMobileSheet, setIsMobileSheet] = useState(false);
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
     const [scrollRoot, setScrollRoot] = useState(null);
-    const dragControls = useDragControls();
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
+    const sheetAnimationRef = useRef(null);
+    const dragCleanupRef = useRef(null);
 
     useEffect(() => subscribeOpsTelemetry(setSession), []);
+
+    const stopSheetAnimation = () => {
+        sheetAnimationRef.current?.stop?.();
+        sheetAnimationRef.current = null;
+    };
+
+    const runSheetAnimation = (target, options) => {
+        stopSheetAnimation();
+        const controls = animate(sheetY, target, options);
+        sheetAnimationRef.current = controls;
+        return controls;
+    };
+
+    const clearHeaderDrag = () => {
+        dragCleanupRef.current?.();
+        dragCleanupRef.current = null;
+    };
 
     useEffect(() => {
         const syncViewport = () => {
@@ -317,7 +335,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
 
         const entryOffset = Math.min(window.innerHeight * 0.09, 84);
         sheetY.set(entryOffset);
-        const controls = animate(sheetY, 0, {
+        const controls = runSheetAnimation(0, {
             duration: 0.22,
             ease: [0.22, 1, 0.36, 1],
         });
@@ -361,6 +379,11 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
 
         return () => window.clearTimeout(revealTimeout);
     }, [isMobileSheet, isOpen]);
+
+    useEffect(() => () => {
+        stopSheetAnimation();
+        clearHeaderDrag();
+    }, []);
 
     useEffect(() => {
         if (!isOpen) return undefined;
@@ -491,9 +514,11 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     ];
 
     const requestClose = async () => {
+        clearHeaderDrag();
+
         if (isMobileSheet) {
             setIsClosingFromDrag(true);
-            await animate(sheetY, window.innerHeight, {
+            await runSheetAnimation(window.innerHeight, {
                 duration: 0.16,
                 ease: [0.22, 1, 0.36, 1],
             });
@@ -502,21 +527,72 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         onClose();
     };
 
-    const handleSheetDragEnd = async (_, info) => {
-        if (!isMobileSheet) return;
-
-        const shouldClose = info.offset.y > 96 || info.velocity.y > 700;
+    const handleHeaderDragRelease = async (velocity = 0, offset = sheetY.get()) => {
+        const shouldClose = offset > 96 || velocity > 700;
 
         if (shouldClose) {
             await requestClose();
             return;
         }
 
-        animate(sheetY, 0, {
+        setIsClosingFromDrag(false);
+        runSheetAnimation(0, {
             type: 'spring',
             stiffness: 420,
             damping: 36,
         });
+    };
+
+    const startHeaderDrag = (event) => {
+        if (!isMobileSheet) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+        stopSheetAnimation();
+        setIsClosingFromDrag(false);
+
+        const dragState = {
+            pointerId: event.pointerId,
+            startY: event.clientY,
+            lastY: event.clientY,
+            lastTime: performance.now(),
+            velocity: 0,
+        };
+
+        clearHeaderDrag();
+
+        const handlePointerMove = (moveEvent) => {
+            if (moveEvent.pointerId !== dragState.pointerId) return;
+
+            const offset = Math.max(0, moveEvent.clientY - dragState.startY);
+            const now = performance.now();
+            const elapsed = Math.max(now - dragState.lastTime, 1);
+
+            dragState.velocity = ((moveEvent.clientY - dragState.lastY) / elapsed) * 1000;
+            dragState.lastY = moveEvent.clientY;
+            dragState.lastTime = now;
+
+            sheetY.set(offset);
+            moveEvent.preventDefault();
+        };
+
+        const handlePointerEnd = async (endEvent) => {
+            if (endEvent.pointerId !== dragState.pointerId) return;
+
+            const offset = Math.max(0, endEvent.clientY - dragState.startY);
+            clearHeaderDrag();
+            await handleHeaderDragRelease(dragState.velocity, offset);
+        };
+
+        dragCleanupRef.current = () => {
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerEnd);
+            window.removeEventListener('pointercancel', handlePointerEnd);
+        };
+
+        window.addEventListener('pointermove', handlePointerMove, { passive: false });
+        window.addEventListener('pointerup', handlePointerEnd);
+        window.addEventListener('pointercancel', handlePointerEnd);
+        event.preventDefault();
     };
 
     const handleMobileHeaderPointerDown = (event) => {
@@ -527,7 +603,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
             return;
         }
 
-        dragControls.start(event);
+        startHeaderDrag(event);
     };
 
     const warmBackendSnapshot = () => {
@@ -588,14 +664,9 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                             exit={asideExit}
                             transition={asideTransition}
                             className={`fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]' : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
-                            style={isMobileSheet ? { y: sheetY } : undefined}
-                            drag={isMobileSheet ? 'y' : false}
-                            dragListener={false}
-                            dragControls={dragControls}
-                            dragMomentum
-                            dragElastic={{ top: 0, bottom: 0.18 }}
-                            dragConstraints={{ top: 0, bottom: 0 }}
-                            onDragEnd={handleSheetDragEnd}
+                            data-lenis-prevent
+                            data-lenis-prevent-touch
+                            style={isMobileSheet ? { y: sheetY, touchAction: 'auto' } : undefined}
                         >
                             <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
                                 <div
@@ -605,10 +676,9 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                     <div className="mb-3 flex justify-center sm:hidden">
                                         <button
                                             type="button"
-                                            onPointerDown={(event) => dragControls.start(event)}
+                                            onPointerDown={startHeaderDrag}
                                             className="touch-none cursor-grab active:cursor-grabbing"
                                             aria-label="Drag down to close observability panel"
-                                            data-no-drag="true"
                                         >
                                             <div className="h-1.5 w-16 rounded-full bg-white/10" />
                                         </button>
@@ -669,6 +739,13 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                     animate={isBodyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                                     transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
                                     className="panel-scrollbar flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8"
+                                    data-lenis-prevent
+                                    data-lenis-prevent-touch
+                                    style={{
+                                        WebkitOverflowScrolling: 'touch',
+                                        overscrollBehaviorY: 'contain',
+                                        touchAction: isMobileSheet ? 'pan-y' : 'auto',
+                                    }}
                                     ref={setScrollRoot}
                                     onWheelCapture={containWheelOnOverflow}
                                 >
