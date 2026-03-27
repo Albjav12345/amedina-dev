@@ -250,40 +250,34 @@ const About = ({ isUiFrozen = false }) => {
                     <div className="flex items-center gap-4 mb-8">
                         <div className="h-px flex-shrink w-12 bg-white/10"></div>
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Verified Client Feedback</h4>
+                        <div className="ml-auto inline-flex md:hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">
+                            <span>{mobileTestimonialIndex + 1}</span>
+                            <span className="text-gray-600">/</span>
+                            <span>{profileAbout.testimonials.length}</span>
+                        </div>
                         <div className="h-px flex-grow bg-white/10"></div>
                     </div>
 
                     <div className="md:hidden">
-                        <div className="flex items-center justify-between gap-4 mb-4">
-                            <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gray-500">
-                                Highlighted testimonial
-                            </div>
-                            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">
-                                <span>{mobileTestimonialIndex + 1}</span>
-                                <span className="text-gray-600">/</span>
-                                <span>{profileAbout.testimonials.length}</span>
-                            </div>
-                        </div>
-
                         <div
                             ref={mobileTestimonialsRef}
-                            className="flex gap-4 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                            className="flex gap-3 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                         >
                             {profileAbout.testimonials.map((t, i) => (
                                 <div
                                     key={`mobile-${i}`}
                                     data-testimonial-card
-                                    className="w-[calc(100vw-5rem)] max-w-none shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] p-6 flex flex-col justify-between"
+                                    className="w-[calc(100vw-4.25rem)] max-w-none min-h-[20.5rem] shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-5 flex flex-col justify-between"
                                 >
-                                    <div className="flex gap-1 mb-4">
+                                    <div className="flex gap-1 mb-3">
                                         {[...Array(5)].map((_, j) => (
                                             <Star key={j} className="w-3.5 h-3.5 fill-electric-green text-electric-green" />
                                         ))}
                                     </div>
-                                    <p className="text-[1.05rem] leading-[1.75] text-gray-200 italic mb-6">
+                                    <p className="text-[1rem] leading-[1.65] text-gray-100 italic mb-5">
                                         "{t.text}"
                                     </p>
-                                    <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                                    <div className="mt-auto flex items-center gap-3 pt-4 border-t border-white/5">
                                         <div className="w-12 h-12 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
                                             {t.avatarUrl ? (
                                                 <img
@@ -298,15 +292,15 @@ const About = ({ isUiFrozen = false }) => {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="text-base font-bold text-white truncate">{t.author}</div>
-                                            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500 truncate">{t.project}</div>
+                                            <div className="text-[1.05rem] font-bold text-white leading-tight truncate">{t.author}</div>
+                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500 truncate">{t.project}</div>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="mt-4 flex items-center justify-center gap-2">
+                        <div className="mt-3 flex items-center justify-center gap-2">
                             {profileAbout.testimonials.map((_, index) => (
                                 <button
                                     key={`dot-${index}`}
