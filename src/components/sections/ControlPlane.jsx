@@ -222,7 +222,7 @@ function prettyPrint(value) {
     }
 }
 
-function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for this block yet.' }) {
+function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for this block yet.', fillHeight = false }) {
     const [copied, setCopied] = useState(false);
     const formatted = prettyPrint(value);
 
@@ -239,7 +239,7 @@ function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for th
     };
 
     return (
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+        <div className={`min-w-0 rounded-2xl border border-white/10 bg-black/20 p-4 ${fillHeight ? 'flex h-full min-h-0 flex-col' : ''}`}>
             <div className="flex items-center justify-between gap-3">
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{label}</div>
                 <button
@@ -253,11 +253,11 @@ function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for th
                 </button>
             </div>
             {formatted ? (
-                <pre className="panel-scrollbar mt-4 max-h-[24rem] overflow-auto rounded-2xl border border-white/10 bg-[#0a0b0f] px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words">
+                <pre className={`panel-scrollbar mt-4 overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-[#0a0b0f] px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words [overflow-wrap:anywhere] ${fillHeight ? 'min-h-0 flex-1' : 'max-h-[24rem]'}`}>
                     {formatted}
                 </pre>
             ) : (
-                <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-5 text-sm leading-relaxed text-gray-500">
+                <div className={`mt-4 rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-5 text-sm leading-relaxed text-gray-500 ${fillHeight ? 'min-h-0 flex-1' : ''}`}>
                     {emptyMessage}
                 </div>
             )}
@@ -265,17 +265,17 @@ function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for th
     );
 }
 
-function RunTracePanel({ run }) {
+function RunTracePanel({ run, isMobile = false }) {
     const [activeTab, setActiveTab] = useState('messages');
     const trace = run?.trace || null;
-    const tabClassName = (isActive) => `rounded-full border px-3 py-2 text-[10px] font-mono uppercase tracking-[0.16em] transition-colors ${isActive
+    const tabClassName = (isActive) => `inline-flex items-center justify-center rounded-full border px-3 py-2 text-[10px] font-mono uppercase tracking-[0.16em] transition-colors ${isActive
         ? 'border-electric-green/30 bg-electric-green/10 text-electric-green'
         : 'border-white/10 bg-white/[0.04] text-gray-400 hover:border-electric-cyan/30 hover:text-electric-cyan'
         }`;
 
     if (!run) {
         return (
-            <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+            <div className="flex h-full min-h-0 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
                 Select a session run to inspect its prompt envelope and raw model output.
             </div>
         );
@@ -283,7 +283,7 @@ function RunTracePanel({ run }) {
 
     if (!trace) {
         return (
-            <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
+            <div className="flex h-full min-h-0 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
                 This execution does not include an AI inference trace. Terminal and Project Architect requests will populate this area automatically with full model messages, raw output, and parsed payloads.
             </div>
         );
@@ -293,108 +293,119 @@ function RunTracePanel({ run }) {
     const requestMessages = Array.isArray(trace.requestMessages) ? trace.requestMessages : [];
 
     return (
-        <div className="mt-5 space-y-5">
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-                <div className="rounded-2xl border border-white/10 bg-black/25 p-5">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">Inference Envelope</div>
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
-                            <div className="mt-2 text-sm font-semibold text-white">{trace.provider || 'Unknown'}</div>
-                        </div>
-                        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Model</div>
-                            <div className="mt-2 text-sm font-semibold text-white break-words">{trace.model || 'Awaiting model response'}</div>
-                        </div>
-                    </div>
-                    <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">User Prompt</div>
-                        <div className="mt-3 text-sm leading-relaxed text-white whitespace-pre-wrap break-words">
-                            {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
+        <div className="flex h-full min-h-0 flex-col gap-4">
+            <div className={`grid min-h-0 flex-1 gap-5 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-[320px_minmax(0,1fr)]'}`}>
+                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-5">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">Trace Summary</div>
+                    <div className="panel-scrollbar mt-4 max-h-[220px] overflow-y-auto overflow-x-hidden pr-1 lg:max-h-none lg:h-[calc(100%-1.5rem)]">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
+                                <div className="mt-2 text-sm font-semibold text-white break-words">{trace.provider || 'Unknown'}</div>
+                            </div>
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Model</div>
+                                <div className="mt-2 text-sm font-semibold text-white break-words">{trace.model || 'Awaiting model response'}</div>
+                            </div>
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-2 lg:col-span-1">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">User Prompt</div>
+                                <div className="mt-3 text-sm leading-relaxed text-white whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                    {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
+                                </div>
+                            </div>
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-2 lg:col-span-1">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Available Actions</div>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {visibleActions.length ? visibleActions.map((action) => (
+                                        <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                                            {action}
+                                        </span>
+                                    )) : (
+                                        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
+                                            No explicit actions exposed
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-black/25 p-5">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Agent Surface</div>
-                    <div className="mt-3 text-sm leading-relaxed text-gray-400">
-                        This is the exact execution envelope captured for the selected run, including the model messages sent upstream and the raw model response before the UI processed it.
+                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex min-h-0 flex-col overflow-hidden">
+                    <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+                        {[
+                            ['messages', 'Prompt Messages'],
+                            ['raw', 'Raw Model Output'],
+                            ['parsed', 'Parsed Payload'],
+                            ['payload', 'Request Payload'],
+                        ].map(([key, label]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => setActiveTab(key)}
+                                className={`${tabClassName(activeTab === key)} min-w-0 text-center`}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                        {visibleActions.length ? visibleActions.map((action) => (
-                            <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
-                                {action}
-                            </span>
-                        )) : (
-                            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
-                                No explicit actions exposed
-                            </span>
+
+                    <div className="mt-4 min-h-0 flex-1 overflow-hidden">
+                        {activeTab === 'messages' && (
+                            <div className="min-w-0 rounded-2xl border border-white/10 bg-black/20 p-4 h-full min-h-0">
+                                {requestMessages.length ? (
+                                    <div className="panel-scrollbar h-full min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+                                        <div className="space-y-4">
+                                            {requestMessages.map((message, index) => (
+                                                <div key={`${message.role || 'message'}-${index}`} className="min-w-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">{message.role || `message_${index + 1}`}</div>
+                                                        <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                            Block {index + 1}
+                                                        </div>
+                                                    </div>
+                                                    <pre className="panel-scrollbar mt-4 max-h-[14rem] overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-black/25 px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                                        {typeof message.content === 'string' ? message.content : prettyPrint(message.content)}
+                                                    </pre>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <TraceCodeBlock label="Prompt Messages" value="" emptyMessage="The selected run did not capture model messages." fillHeight />
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'raw' && (
+                            <TraceCodeBlock
+                                label="Raw Model Output"
+                                value={trace.rawModelResponse}
+                                emptyMessage="No raw model output was captured for this execution."
+                                fillHeight
+                            />
+                        )}
+
+                        {activeTab === 'parsed' && (
+                            <TraceCodeBlock
+                                label="Parsed Payload"
+                                value={trace.parsedResponse}
+                                emptyMessage="No parsed payload was captured for this execution."
+                                fillHeight
+                            />
+                        )}
+
+                        {activeTab === 'payload' && (
+                            <TraceCodeBlock
+                                label="Request Payload"
+                                value={trace.requestPayload}
+                                emptyMessage="No request payload snapshot was captured for this execution."
+                                fillHeight
+                            />
                         )}
                     </div>
                 </div>
             </div>
-
-            <div className="flex flex-wrap gap-2">
-                {[
-                    ['messages', 'Prompt Messages'],
-                    ['raw', 'Raw Model Output'],
-                    ['parsed', 'Parsed Payload'],
-                    ['payload', 'Request Payload'],
-                ].map(([key, label]) => (
-                    <button
-                        key={key}
-                        type="button"
-                        onClick={() => setActiveTab(key)}
-                        className={tabClassName(activeTab === key)}
-                    >
-                        {label}
-                    </button>
-                ))}
-            </div>
-
-            {activeTab === 'messages' && (
-                <div className="space-y-4">
-                    {requestMessages.length ? requestMessages.map((message, index) => (
-                        <div key={`${message.role || 'message'}-${index}`} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">{message.role || `message_${index + 1}`}</div>
-                                <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
-                                    Block {index + 1}
-                                </div>
-                            </div>
-                            <pre className="panel-scrollbar mt-4 max-h-[20rem] overflow-auto rounded-2xl border border-white/10 bg-[#0a0b0f] px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words">
-                                {typeof message.content === 'string' ? message.content : prettyPrint(message.content)}
-                            </pre>
-                        </div>
-                    )) : (
-                        <TraceCodeBlock label="Prompt Messages" value="" emptyMessage="The selected run did not capture model messages." />
-                    )}
-                </div>
-            )}
-
-            {activeTab === 'raw' && (
-                <TraceCodeBlock
-                    label="Raw Model Output"
-                    value={trace.rawModelResponse}
-                    emptyMessage="No raw model output was captured for this execution."
-                />
-            )}
-
-            {activeTab === 'parsed' && (
-                <TraceCodeBlock
-                    label="Parsed Payload"
-                    value={trace.parsedResponse}
-                    emptyMessage="No parsed payload was captured for this execution."
-                />
-            )}
-
-            {activeTab === 'payload' && (
-                <TraceCodeBlock
-                    label="Request Payload"
-                    value={trace.requestPayload}
-                    emptyMessage="No request payload snapshot was captured for this execution."
-                />
-            )}
         </div>
     );
 }
@@ -411,6 +422,341 @@ function BlockSkeleton({ title, minHeight = 320 }) {
                 <div className="h-24 rounded-2xl border border-white/8 bg-black/20" />
                 <div className="h-24 rounded-2xl border border-white/8 bg-black/20" />
                 <div className="h-20 rounded-2xl border border-white/8 bg-black/20" />
+            </div>
+        </div>
+    );
+}
+
+function PanelPillButton({ active, onClick, children, className = '' }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`inline-flex items-center justify-center rounded-full border px-3 py-2 text-[10px] font-mono uppercase tracking-[0.16em] transition-colors cursor-pointer ${active
+                ? 'border-electric-green/30 bg-electric-green/10 text-electric-green'
+                : 'border-white/10 bg-white/[0.04] text-gray-400 hover:border-electric-cyan/30 hover:text-electric-cyan'} ${className}`}
+        >
+            {children}
+        </button>
+    );
+}
+
+function ControlPanelSummaryStrip({ summary }) {
+    return (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+            {summary.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
+                    <div className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">{item.value}</div>
+                    <p className="mt-3 text-xs leading-relaxed text-gray-400 sm:text-sm">{item.detail}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function ServiceGridPanel({ services, isMobile = false }) {
+    return (
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[360px]' : 'h-[440px]'}`}>
+            <div className="flex items-center justify-between gap-4">
+                <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
+                    <h3 className="mt-2 text-2xl font-bold text-white">Live probes and integrations</h3>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
+                    <ShieldCheck className="h-3 w-3" />
+                    Merged Signal Feed
+                </div>
+            </div>
+            <div className="panel-scrollbar mt-6 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
+                <div className={`grid grid-cols-1 gap-4 ${isMobile ? '' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
+                    {services.map((service) => {
+                        const meta = getStatus(service.status);
+                        const Icon = serviceIcons[service.id] || Sparkles;
+                        const StatusIcon = meta.icon;
+
+                        return (
+                            <div key={service.id} className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                        <Icon className="h-5 w-5 text-electric-green" />
+                                    </div>
+                                    <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                        <StatusIcon className="h-3 w-3" />
+                                        {meta.label}
+                                    </div>
+                                </div>
+                                <div className="mt-4 text-base font-semibold text-white">{service.label}</div>
+                                <div className="mt-4 grid grid-cols-2 gap-3">
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Latency</div>
+                                        <div className="mt-2 text-sm leading-snug text-white break-words">{formatMs(service.latencyMs)}</div>
+                                    </div>
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Last Event</div>
+                                        <div className="mt-2 text-sm leading-snug text-white break-words">{formatRelative(service.lastEventAt)}</div>
+                                    </div>
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Activity</div>
+                                        <div className="mt-2 text-sm leading-snug text-white break-words">
+                                            {service.activityCount ? `${service.activityCount} recent run${service.activityCount === 1 ? '' : 's'}` : 'Awaiting traffic'}
+                                        </div>
+                                    </div>
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Feed</div>
+                                        <div className="mt-2 text-sm leading-snug text-white break-words">{service.feedLabel || 'Backend probe'}</div>
+                                    </div>
+                                </div>
+                                <p className="mt-4 text-xs leading-relaxed text-gray-400 break-words">{service.note}</p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function RuntimeActivityPanel({
+    isMobile = false,
+    activeTab,
+    onTabChange,
+    latencyTrace,
+    latestLatencyPoint,
+    hottestLatencyPoint,
+    maxLatency,
+    displayJobs,
+    capabilities,
+}) {
+    return (
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[320px]' : 'h-[620px]'}`}>
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Runtime Activity</div>
+                    <h3 className="mt-2 text-2xl font-bold text-white">Session pulse</h3>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
+                    <Waves className="h-3 w-3 text-electric-cyan" />
+                    {latencyTrace.sourceLabel}
+                </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-3 gap-2">
+                <PanelPillButton active={activeTab === 'latency'} onClick={() => onTabChange('latency')}>Latency</PanelPillButton>
+                <PanelPillButton active={activeTab === 'notes'} onClick={() => onTabChange('notes')}>Notes</PanelPillButton>
+                <PanelPillButton active={activeTab === 'jobs'} onClick={() => onTabChange('jobs')}>Recent Jobs</PanelPillButton>
+            </div>
+
+            <div className="mt-5 min-h-0 flex-1">
+                {activeTab === 'latency' && (
+                    <div className="flex h-full min-h-0 flex-col">
+                        <div className="grid grid-cols-2 gap-3 shrink-0">
+                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest Sample</div>
+                                <div className="mt-3 break-words text-[1.85rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
+                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
+                            </div>
+                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak Observed</div>
+                                <div className="mt-3 break-words text-[1.85rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
+                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/25 p-4">
+                            {latencyTrace.items.length ? (
+                                <div className="flex h-full min-h-0 flex-col">
+                                    <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                        <span>Recent signal distribution</span>
+                                        <span>Max {formatMs(maxLatency)}</span>
+                                    </div>
+                                    <div className="relative min-h-0 flex-1">
+                                        <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
+                                            {[0, 1, 2, 3].map((row) => (
+                                                <div key={row} className="border-t border-white/[0.05]" />
+                                            ))}
+                                        </div>
+                                        <div className="relative flex h-full items-end gap-2 sm:gap-3">
+                                            {latencyTrace.items.map((item) => {
+                                                const height = Math.max(18, Math.round((item.value / maxLatency) * 100));
+                                                const meta = getStatus(item.status);
+
+                                                return (
+                                                    <div key={item.id} className="flex flex-1 flex-col items-center gap-2">
+                                                        <div
+                                                            className={`w-full rounded-t-xl border ${meta.className}`}
+                                                            style={{ height: `${height}%` }}
+                                                        />
+                                                        <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                            {item.label}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex h-full items-center rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm leading-relaxed text-gray-500">
+                                    No request or probe latency has been captured yet. As soon as the terminal, architect, contact relay, or GitHub probe reports activity, the trace will start drawing live samples here.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'notes' && (
+                    <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1 space-y-3">
+                        {capabilities.map((item) => (
+                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div className="flex flex-col items-start gap-2">
+                                    <div className="text-sm font-semibold leading-snug text-white">{item.label}</div>
+                                    <div className="inline-flex max-w-full rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
+                                        {item.value}
+                                    </div>
+                                </div>
+                                <div className="mt-3 text-sm leading-relaxed text-gray-400 break-words">{item.detail}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {activeTab === 'jobs' && (
+                    <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1 space-y-3">
+                        {displayJobs.map((job) => {
+                            const meta = getStatus(job.status);
+
+                            return (
+                                <div key={job.id} className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                    <div className="flex min-w-0 flex-col items-start gap-2">
+                                        <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
+                                        <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                            {meta.label}
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
+                                    <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = false }) {
+    return (
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[520px]' : 'h-[620px]'}`}>
+            <div className="flex items-center justify-between gap-4">
+                <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Execution Inspector</div>
+                    <h3 className="mt-2 text-2xl font-bold text-white">Observed executions</h3>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-green">
+                    <Waves className="h-3 w-3" />
+                    Browser Telemetry
+                </div>
+            </div>
+
+            <div className="mt-5 min-h-0 flex-1 grid gap-4" style={{ gridTemplateRows: 'minmax(0, 0.44fr) minmax(0, 0.56fr)' }}>
+                <div className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Run Queue</div>
+                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{runs.length} observed</div>
+                    </div>
+                    <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3">
+                        {runs.length ? runs.map((run) => {
+                            const meta = getStatus(run.status);
+                            const Icon = channelMeta[run.channel]?.icon || Sparkles;
+
+                            return (
+                                <button
+                                    key={run.id}
+                                    type="button"
+                                    onClick={() => onSelectRun(run.id)}
+                                    className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/30 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex min-w-0 gap-3">
+                                            <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                <Icon className="h-4 w-4 text-electric-cyan" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="text-base font-semibold text-white">{run.title}</div>
+                                                <div className="mt-1 text-sm leading-relaxed text-gray-400 break-words">{run.inputExcerpt || run.outputExcerpt || 'No preview captured.'}</div>
+                                            </div>
+                                        </div>
+                                        <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                            {meta.label}
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        }) : (
+                            <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
+                                The session log will populate as soon as someone uses the terminal, generates an architect brief, or sends the contact form.
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Request Lifecycle</div>
+                        <Workflow className="h-4 w-4 text-electric-cyan" />
+                    </div>
+
+                    {selectedRun ? (
+                        <>
+                            <div className="mt-4 shrink-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
+                                <div className="text-base font-semibold text-white">{selectedRun.title}</div>
+                                <div className="mt-2 text-sm leading-relaxed text-gray-400 break-words">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
+                                <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                    <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
+                                    <span>{formatMs(selectedRun.latencyMs)}</span>
+                                    <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
+                                </div>
+                            </div>
+                            <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4">
+                                {(selectedRun.steps || []).map((step, index) => (
+                                    <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
+                                        <div className="flex flex-col items-center pt-1">
+                                            <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
+                                            {index < selectedRun.steps.length - 1 && <div className="mt-2 w-px flex-1 bg-white/10" />}
+                                        </div>
+                                        <div className="pb-4 min-w-0">
+                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
+                                            <div className="mt-2 text-sm leading-relaxed text-white break-words">{step.detail}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="mt-4 flex min-h-0 flex-1 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+                            Select a session run to inspect its lifecycle.
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function AgentTracePanel({ selectedRun, isMobile = false }) {
+    return (
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[540px]' : 'h-[560px]'}`}>
+            <div className="flex items-center justify-between gap-4">
+                <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Agent Trace</div>
+                    <h3 className="mt-2 text-2xl font-bold text-white">Prompt and raw output</h3>
+                </div>
+                <Sparkles className="h-5 w-5 text-electric-green" />
+            </div>
+            <div className="mt-4 min-h-0 flex-1">
+                <RunTracePanel run={selectedRun} isMobile={isMobile} />
             </div>
         </div>
     );
@@ -477,6 +823,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
     const [isDraggingSheet, setIsDraggingSheet] = useState(false);
     const [isLauncherPressed, setIsLauncherPressed] = useState(false);
+    const [runtimeTab, setRuntimeTab] = useState('latency');
+    const [mobileView, setMobileView] = useState('overview');
     const [scrollRoot, setScrollRoot] = useState(null);
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
@@ -578,6 +926,14 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
         }, isMobileSheet ? 90 : 70);
 
         return () => window.clearTimeout(revealTimeout);
+    }, [isMobileSheet, isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setRuntimeTab('latency');
+        if (isMobileSheet) {
+            setMobileView('overview');
+        }
     }, [isMobileSheet, isOpen]);
 
     useEffect(() => () => {
@@ -1045,333 +1401,126 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-                                                {summary.map((item) => (
-                                                    <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
-                                                        <div className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">{item.value}</div>
-                                                        <p className="mt-3 text-xs leading-relaxed text-gray-400 sm:text-sm">{item.detail}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-                                                <div className="space-y-6">
-                                                    <LazyPanelBlock
-                                                        root={scrollRoot}
-                                                        eager
-                                                        minHeight={620}
-                                                        skeleton={<BlockSkeleton title="Backend signals" minHeight={620} />}
-                                                    >
-                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div>
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
-                                                        <h3 className="mt-2 text-2xl font-bold text-white">Live probes and integrations</h3>
-                                                    </div>
-                                                    <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
-                                                        <ShieldCheck className="h-3 w-3" />
-                                                        Merged Signal Feed
-                                                    </div>
+                                            {isMobileSheet && (
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    <PanelPillButton active={mobileView === 'overview'} onClick={() => setMobileView('overview')}>Overview</PanelPillButton>
+                                                    <PanelPillButton active={mobileView === 'runs'} onClick={() => setMobileView('runs')}>Runs</PanelPillButton>
+                                                    <PanelPillButton active={mobileView === 'trace'} onClick={() => setMobileView('trace')}>Trace</PanelPillButton>
                                                 </div>
-                                                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                    {services.map((service) => {
-                                                        const meta = getStatus(service.status);
-                                                        const Icon = serviceIcons[service.id] || Sparkles;
-                                                        const StatusIcon = meta.icon;
+                                            )}
 
-                                                        return (
-                                                            <div key={service.id} className="min-h-[200px] rounded-2xl border border-white/10 bg-black/25 p-4 sm:min-h-[216px] sm:p-5">
-                                                                <div className="flex items-start justify-between gap-4">
-                                                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                                                                        <Icon className="h-5 w-5 text-electric-green" />
-                                                                    </div>
-                                                                    <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                        <StatusIcon className="h-3 w-3" />
-                                                                        {meta.label}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="mt-5 text-lg font-semibold text-white">{service.label}</div>
-                                                                <div className="mt-4 grid grid-cols-2 gap-4">
-                                                                    <div className="min-w-0">
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latency</div>
-                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{formatMs(service.latencyMs)}</div>
-                                                                    </div>
-                                                                    <div className="min-w-0">
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Last Event</div>
-                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{formatRelative(service.lastEventAt)}</div>
-                                                                    </div>
-                                                                    <div className="min-w-0">
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Activity</div>
-                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">
-                                                                            {service.activityCount ? `${service.activityCount} recent run${service.activityCount === 1 ? '' : 's'}` : 'Awaiting traffic'}
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="min-w-0">
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Signal Feed</div>
-                                                                        <div className="mt-2 min-w-0 break-words text-sm leading-snug text-white">{service.feedLabel || 'Backend probe'}</div>
-                                                                    </div>
-                                                                </div>
-                                                                <p className="mt-4 text-sm leading-relaxed text-gray-400">{service.note}</p>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                                    </LazyPanelBlock>
+                                            <div className={isMobileSheet ? 'mt-6 space-y-6' : 'space-y-6'}>
+                                                {(!isMobileSheet || mobileView === 'overview') && (
+                                                    <ControlPanelSummaryStrip summary={summary} />
+                                                )}
 
-                                                    <LazyPanelBlock
-                                                        root={scrollRoot}
-                                                        eager={!isMobileSheet}
-                                                        minHeight={900}
-                                                        skeleton={<BlockSkeleton title="Session pulse + control notes" minHeight={900} />}
-                                                    >
-                                            <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-                                                <div className="space-y-6">
-                                                    <div className="self-start rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                        <div className="flex items-start justify-between gap-4">
-                                                            <div>
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Session Pulse</div>
-                                                                <h3 className="mt-2 text-2xl font-bold text-white">Latency trace</h3>
-                                                            </div>
-                                                            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
-                                                                <Waves className="h-3 w-3 text-electric-cyan" />
-                                                                {latencyTrace.sourceLabel}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="mt-5 grid grid-cols-1 gap-4 min-[460px]:grid-cols-2">
-                                                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest sample</div>
-                                                                <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
-                                                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
-                                                            </div>
-                                                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak observed</div>
-                                                                <div className="mt-3 break-words text-[1.9rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
-                                                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                            {latencyTrace.items.length ? (
-                                                                <>
-                                                                    <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                                                                        <span>Recent signal distribution</span>
-                                                                        <span>Max {formatMs(maxLatency)}</span>
-                                                                    </div>
-                                                                    <div className="relative">
-                                                                        <div className="pointer-events-none absolute inset-0 grid grid-rows-4">
-                                                                            {[0, 1, 2, 3].map((row) => (
-                                                                                <div key={row} className="border-t border-white/[0.05]" />
-                                                                            ))}
-                                                                        </div>
-                                                                        <div className="relative flex h-36 items-end gap-3">
-                                                                            {latencyTrace.items.map((item) => {
-                                                                                const height = Math.max(18, Math.round((item.value / maxLatency) * 100));
-                                                                                const meta = getStatus(item.status);
-
-                                                                                return (
-                                                                                    <div key={item.id} className="flex flex-1 flex-col items-center gap-3">
-                                                                                    <div
-                                                                                        className={`w-full rounded-t-xl border ${meta.className}`}
-                                                                                        style={{ height: `${height}%` }}
-                                                                                    />
-                                                                                        <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
-                                                                                            {item.label}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                );
-                                                                            })}
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            ) : (
-                                                                <div className="rounded-2xl border border-dashed border-white/10 px-4 py-5 text-sm leading-relaxed text-gray-500">
-                                                                    No request or probe latency has been captured yet. As soon as the terminal, architect, contact relay, or GitHub probe reports activity, the trace will start drawing live samples here.
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Recent jobs and probes</div>
-                                                        <div className="mt-4 space-y-3">
-                                                            {displayJobs.map((job) => {
-                                                                const meta = getStatus(job.status);
-
-                                                                return (
-                                                                    <div key={job.id} className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                                                                        <div className="flex min-w-0 flex-col items-start gap-2">
-                                                                            <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
-                                                                            <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                                {meta.label}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
-                                                                        <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                                                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Control Notes</div>
-                                                    <h3 className="mt-2 text-2xl font-bold text-white">What is active right now</h3>
-                                                    <div className="mt-6 space-y-4">
-                                                        {(backend?.capabilities || []).map((item) => (
-                                                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                                                                <div className="flex flex-col items-start gap-2">
-                                                                    <div className="text-sm font-semibold leading-snug text-white">{item.label}</div>
-                                                                    <div className="inline-flex max-w-full rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
-                                                                        {item.value}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="mt-3 text-sm leading-relaxed text-gray-400">{item.detail}</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                    </LazyPanelBlock>
-                                                </div>
-
-                                        <div className="space-y-6">
-                                            <LazyPanelBlock
-                                                root={scrollRoot}
-                                                eager={!isMobileSheet}
-                                                minHeight={420}
-                                                skeleton={<BlockSkeleton title="Session runs" minHeight={420} />}
-                                            >
-                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div>
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Session Runs</div>
-                                                        <h3 className="mt-2 text-2xl font-bold text-white">Observed executions</h3>
-                                                    </div>
-                                                    <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-green">
-                                                        <Waves className="h-3 w-3" />
-                                                        Browser Telemetry
-                                                    </div>
-                                                </div>
-                                                <div className="mt-6 space-y-3">
-                                                    {runs.length ? runs.map((run) => {
-                                                        const meta = getStatus(run.status);
-                                                        const Icon = channelMeta[run.channel]?.icon || Sparkles;
-
-                                                        return (
-                                                            <button
-                                                                key={run.id}
-                                                                type="button"
-                                                                onClick={() => setSelectedRunId(run.id)}
-                                                                className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/25 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
-                                                            >
-                                                                <div className="flex items-start justify-between gap-4">
-                                                                    <div className="flex min-w-0 gap-3">
-                                                                        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                                                                            <Icon className="h-4 w-4 text-electric-cyan" />
-                                                                        </div>
-                                                                        <div className="min-w-0">
-                                                                            <div className="text-base font-semibold text-white">{run.title}</div>
-                                                                            <div className="mt-1 text-sm leading-relaxed text-gray-400">{run.inputExcerpt || run.outputExcerpt}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                                                        {meta.label}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="mt-4 flex flex-wrap gap-2">
-                                                                    {(run.tools || []).map((tool) => (
-                                                                        <span key={tool} className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300">
-                                                                            {tool}
-                                                                        </span>
-                                                                    ))}
-                                                                    {run.trace && (
-                                                                        <span className="rounded-md border border-electric-green/20 bg-electric-green/10 px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-green">
-                                                                            Prompt Trace
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </button>
-                                                        );
-                                                    }) : (
-                                                        <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
-                                                            The session log will populate as soon as someone uses the terminal, generates an architect brief, or sends the contact form.
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            </LazyPanelBlock>
-
-                                            <LazyPanelBlock
-                                                root={scrollRoot}
-                                                eager={false}
-                                                minHeight={520}
-                                                skeleton={<BlockSkeleton title="Request lifecycle" minHeight={520} />}
-                                            >
-                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div>
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Request Lifecycle</div>
-                                                        <h3 className="mt-2 text-2xl font-bold text-white">Step-by-step flow</h3>
-                                                    </div>
-                                                    <Workflow className="h-5 w-5 text-electric-cyan" />
-                                                </div>
-                                                {selectedRun ? (
+                                                {!isMobileSheet ? (
                                                     <>
-                                                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-5">
-                                                            <div className="text-base font-semibold text-white">{selectedRun.title}</div>
-                                                            <div className="mt-2 text-sm leading-relaxed text-gray-400">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
-                                                            <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                                                                <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
-                                                                <span>{formatMs(selectedRun.latencyMs)}</span>
-                                                                <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-6 space-y-4">
-                                                            {(selectedRun.steps || []).map((step, index) => (
-                                                                <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
-                                                                    <div className="flex flex-col items-center pt-1">
-                                                                        <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
-                                                                        {index < selectedRun.steps.length - 1 && <div className="mt-2 w-px flex-1 bg-white/10" />}
-                                                                    </div>
-                                                                    <div className="pb-4">
-                                                                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
-                                                                        <div className="mt-2 text-sm leading-relaxed text-white">{step.detail}</div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
+                                                        <LazyPanelBlock
+                                                            root={scrollRoot}
+                                                            eager
+                                                            minHeight={440}
+                                                            skeleton={<BlockSkeleton title="Backend signals" minHeight={440} />}
+                                                        >
+                                                            <ServiceGridPanel services={services} />
+                                                        </LazyPanelBlock>
+
+                                                        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(320px,0.92fr)_minmax(0,1.08fr)] xl:items-start">
+                                                            <LazyPanelBlock
+                                                                root={scrollRoot}
+                                                                eager
+                                                                minHeight={620}
+                                                                skeleton={<BlockSkeleton title="Runtime activity" minHeight={620} />}
+                                                            >
+                                                                <RuntimeActivityPanel
+                                                                    activeTab={runtimeTab}
+                                                                    onTabChange={setRuntimeTab}
+                                                                    latencyTrace={latencyTrace}
+                                                                    latestLatencyPoint={latestLatencyPoint}
+                                                                    hottestLatencyPoint={hottestLatencyPoint}
+                                                                    maxLatency={maxLatency}
+                                                                    displayJobs={displayJobs}
+                                                                    capabilities={backend?.capabilities || []}
+                                                                />
+                                                            </LazyPanelBlock>
+
+                                                            <LazyPanelBlock
+                                                                root={scrollRoot}
+                                                                eager
+                                                                minHeight={620}
+                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={620} />}
+                                                            >
+                                                                <ExecutionInspectorPanel
+                                                                    runs={runs}
+                                                                    selectedRun={selectedRun}
+                                                                    onSelectRun={setSelectedRunId}
+                                                                />
+                                                            </LazyPanelBlock>
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
-                                                        Select a session run to inspect its lifecycle.
-                                                    </div>
+                                                    <>
+                                                        {mobileView === 'overview' && (
+                                                            <>
+                                                                <LazyPanelBlock
+                                                                    root={scrollRoot}
+                                                                    eager
+                                                                    minHeight={360}
+                                                                    skeleton={<BlockSkeleton title="Backend signals" minHeight={360} />}
+                                                                >
+                                                                    <ServiceGridPanel services={services} isMobile />
+                                                                </LazyPanelBlock>
+
+                                                                <LazyPanelBlock
+                                                                    root={scrollRoot}
+                                                                    eager
+                                                                    minHeight={320}
+                                                                    skeleton={<BlockSkeleton title="Runtime activity" minHeight={320} />}
+                                                                >
+                                                                    <RuntimeActivityPanel
+                                                                        isMobile
+                                                                        activeTab={runtimeTab}
+                                                                        onTabChange={setRuntimeTab}
+                                                                        latencyTrace={latencyTrace}
+                                                                        latestLatencyPoint={latestLatencyPoint}
+                                                                        hottestLatencyPoint={hottestLatencyPoint}
+                                                                        maxLatency={maxLatency}
+                                                                        displayJobs={displayJobs}
+                                                                        capabilities={backend?.capabilities || []}
+                                                                    />
+                                                                </LazyPanelBlock>
+                                                            </>
+                                                        )}
+
+                                                        {mobileView === 'runs' && (
+                                                            <LazyPanelBlock
+                                                                root={scrollRoot}
+                                                                eager
+                                                                minHeight={520}
+                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={520} />}
+                                                            >
+                                                                <ExecutionInspectorPanel
+                                                                    runs={runs}
+                                                                    selectedRun={selectedRun}
+                                                                    onSelectRun={setSelectedRunId}
+                                                                    isMobile
+                                                                />
+                                                            </LazyPanelBlock>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                                {(!isMobileSheet || mobileView === 'trace') && (
+                                                    <LazyPanelBlock
+                                                        root={scrollRoot}
+                                                        eager={isMobileSheet}
+                                                        minHeight={isMobileSheet ? 540 : 560}
+                                                        skeleton={<BlockSkeleton title="Agent trace" minHeight={isMobileSheet ? 540 : 560} />}
+                                                    >
+                                                        <AgentTracePanel selectedRun={selectedRun} isMobile={isMobileSheet} />
+                                                    </LazyPanelBlock>
                                                 )}
                                             </div>
-                                            </LazyPanelBlock>
-
-                                            <LazyPanelBlock
-                                                root={scrollRoot}
-                                                eager={false}
-                                                minHeight={620}
-                                                skeleton={<BlockSkeleton title="Agent trace" minHeight={620} />}
-                                            >
-                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div>
-                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Agent Trace</div>
-                                                        <h3 className="mt-2 text-2xl font-bold text-white">Prompt and raw output</h3>
-                                                    </div>
-                                                    <Sparkles className="h-5 w-5 text-electric-green" />
-                                                </div>
-                                                <RunTracePanel run={selectedRun} />
-                                            </div>
-                                            </LazyPanelBlock>
-                                        </div>
-                                    </div>
                                         </>
                                     )}
 
