@@ -4,6 +4,7 @@ import {
     Activity,
     BrainCircuit,
     CheckCircle2,
+    ChevronRight,
     Clock3,
     Copy,
     RefreshCw,
@@ -468,15 +469,22 @@ function ServiceGridPanel({ services, isMobile = false }) {
                     Merged Signal Feed
                 </div>
             </div>
-            <div className="panel-scrollbar mt-6 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
-                <div className={`grid grid-cols-1 gap-4 ${isMobile ? '' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
+            <div className="mt-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                <span>Swipe or scroll sideways through the live service cards</span>
+                <span>{services.length} systems</span>
+            </div>
+            <div className="panel-scrollbar mt-5 min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-2">
+                <div className={`flex h-full items-stretch gap-4 ${isMobile ? 'snap-x snap-mandatory pr-1' : 'pr-1'}`}>
                     {services.map((service) => {
                         const meta = getStatus(service.status);
                         const Icon = serviceIcons[service.id] || Sparkles;
                         const StatusIcon = meta.icon;
 
                         return (
-                            <div key={service.id} className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4">
+                            <div
+                                key={service.id}
+                                className={`min-h-0 shrink-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col ${isMobile ? 'w-[82vw] snap-start' : 'w-[min(25rem,calc(50vw-5rem))] xl:w-[23.5rem]'}`}
+                            >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
                                         <Icon className="h-5 w-5 text-electric-green" />
@@ -507,7 +515,17 @@ function ServiceGridPanel({ services, isMobile = false }) {
                                         <div className="mt-2 text-sm leading-snug text-white break-words">{service.feedLabel || 'Backend probe'}</div>
                                     </div>
                                 </div>
-                                <p className="mt-4 text-xs leading-relaxed text-gray-400 break-words">{service.note}</p>
+                                <p
+                                    className="mt-4 text-xs leading-relaxed text-gray-400 break-words"
+                                    style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                    }}
+                                >
+                                    {service.note}
+                                </p>
                             </div>
                         );
                     })}
@@ -647,6 +665,8 @@ function RuntimeActivityPanel({
 }
 
 function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = false }) {
+    const [activeTab, setActiveTab] = useState('queue');
+
     return (
         <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[520px]' : 'h-[620px]'}`}>
             <div className="flex items-center justify-between gap-4">
@@ -660,86 +680,132 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                 </div>
             </div>
 
-            <div className="mt-5 min-h-0 flex-1 grid gap-4" style={{ gridTemplateRows: 'minmax(0, 0.44fr) minmax(0, 0.56fr)' }}>
-                <div className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Run Queue</div>
-                        <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{runs.length} observed</div>
-                    </div>
-                    <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3">
-                        {runs.length ? runs.map((run) => {
-                            const meta = getStatus(run.status);
-                            const Icon = channelMeta[run.channel]?.icon || Sparkles;
+            <div className="mt-5 grid grid-cols-2 gap-2">
+                <PanelPillButton active={activeTab === 'queue'} onClick={() => setActiveTab('queue')}>Run Queue</PanelPillButton>
+                <PanelPillButton active={activeTab === 'lifecycle'} onClick={() => setActiveTab('lifecycle')}>Lifecycle</PanelPillButton>
+            </div>
 
-                            return (
-                                <button
-                                    key={run.id}
-                                    type="button"
-                                    onClick={() => onSelectRun(run.id)}
-                                    className={`w-full rounded-2xl border p-4 text-left transition-colors cursor-pointer ${selectedRun?.id === run.id ? 'border-electric-green/35 bg-electric-green/[0.08]' : 'border-white/10 bg-black/30 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
-                                >
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="flex min-w-0 gap-3">
-                                            <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                                                <Icon className="h-4 w-4 text-electric-cyan" />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="text-base font-semibold text-white">{run.title}</div>
-                                                <div className="mt-1 text-sm leading-relaxed text-gray-400 break-words">{run.inputExcerpt || run.outputExcerpt || 'No preview captured.'}</div>
+            <div className="mt-5 min-h-0 flex-1">
+                {activeTab === 'queue' && (
+                    <div className="min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Run Queue</div>
+                            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{runs.length} observed</div>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-electric-cyan/20 bg-electric-cyan/10 px-4 py-3">
+                            <div className="min-w-0 text-xs leading-relaxed text-electric-cyan">
+                                Click a run here. Then open Lifecycle or inspect the trace below.
+                            </div>
+                            <div className="shrink-0 rounded-full border border-electric-cyan/20 bg-black/20 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                                Interactive
+                            </div>
+                        </div>
+                        <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3">
+                            {runs.length ? runs.map((run) => {
+                                const meta = getStatus(run.status);
+                                const Icon = channelMeta[run.channel]?.icon || Sparkles;
+                                const isActive = selectedRun?.id === run.id;
+
+                                return (
+                                    <button
+                                        key={run.id}
+                                        type="button"
+                                        onClick={() => onSelectRun(run.id)}
+                                        aria-pressed={isActive}
+                                        className={`w-full rounded-2xl border p-4 text-left transition-[border-color,background-color,transform,box-shadow] cursor-pointer ${isActive
+                                            ? 'border-electric-green/35 bg-electric-green/[0.08] shadow-[0_0_0_1px_rgba(0,255,153,0.08)]'
+                                            : 'border-white/10 bg-black/30 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex min-w-0 flex-1 gap-3">
+                                                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                    <Icon className="h-4 w-4 text-electric-cyan" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div className="min-w-0">
+                                                            <div className="text-base font-semibold text-white">{run.title}</div>
+                                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                                                {channelMeta[run.channel]?.label || run.channel}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex shrink-0 items-center gap-2">
+                                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                                {meta.label}
+                                                            </div>
+                                                            <ChevronRight className={`h-4 w-4 transition-transform ${isActive ? 'translate-x-0 text-electric-green' : 'text-gray-500'}`} />
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className="mt-3 text-sm leading-relaxed text-gray-300 break-words"
+                                                        style={{
+                                                            display: '-webkit-box',
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: 'vertical',
+                                                            overflow: 'hidden',
+                                                        }}
+                                                    >
+                                                        {run.inputExcerpt || run.outputExcerpt || 'No preview captured.'}
+                                                    </div>
+                                                    <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                        <span>{formatMs(run.latencyMs)}</span>
+                                                        <span>{formatRelative(run.completedAt || run.startedAt)}</span>
+                                                        {isActive && <span className="text-electric-green">Selected</span>}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                            {meta.label}
-                                        </div>
+                                    </button>
+                                );
+                            }) : (
+                                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
+                                    The session log will populate as soon as someone uses the terminal, generates an architect brief, or sends the contact form.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'lifecycle' && (
+                    <div className="min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Request Lifecycle</div>
+                            <Workflow className="h-4 w-4 text-electric-cyan" />
+                        </div>
+
+                        {selectedRun ? (
+                            <>
+                                <div className="mt-4 shrink-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
+                                    <div className="text-base font-semibold text-white">{selectedRun.title}</div>
+                                    <div className="mt-2 text-sm leading-relaxed text-gray-400 break-words">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
+                                    <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                        <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
+                                        <span>{formatMs(selectedRun.latencyMs)}</span>
+                                        <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
                                     </div>
-                                </button>
-                            );
-                        }) : (
-                            <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
-                                The session log will populate as soon as someone uses the terminal, generates an architect brief, or sends the contact form.
+                                </div>
+                                <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4">
+                                    {(selectedRun.steps || []).map((step, index) => (
+                                        <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
+                                            <div className="flex flex-col items-center pt-1">
+                                                <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
+                                                {index < selectedRun.steps.length - 1 && <div className="mt-2 w-px flex-1 bg-white/10" />}
+                                            </div>
+                                            <div className="pb-4 min-w-0">
+                                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
+                                                <div className="mt-2 text-sm leading-relaxed text-white break-words">{step.detail}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="mt-4 flex min-h-0 flex-1 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+                                Select a session run in Run Queue to inspect its lifecycle here.
                             </div>
                         )}
                     </div>
-                </div>
-
-                <div className="min-h-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Request Lifecycle</div>
-                        <Workflow className="h-4 w-4 text-electric-cyan" />
-                    </div>
-
-                    {selectedRun ? (
-                        <>
-                            <div className="mt-4 shrink-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
-                                <div className="text-base font-semibold text-white">{selectedRun.title}</div>
-                                <div className="mt-2 text-sm leading-relaxed text-gray-400 break-words">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
-                                <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                                    <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
-                                    <span>{formatMs(selectedRun.latencyMs)}</span>
-                                    <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
-                                </div>
-                            </div>
-                            <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4">
-                                {(selectedRun.steps || []).map((step, index) => (
-                                    <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
-                                        <div className="flex flex-col items-center pt-1">
-                                            <div className={`h-3 w-3 rounded-full ${step.state === 'complete' ? 'bg-electric-green shadow-[0_0_14px_rgba(0,255,153,0.35)]' : step.state === 'error' ? 'bg-red-400' : 'bg-electric-cyan shadow-[0_0_14px_rgba(0,224,255,0.35)]'}`} />
-                                            {index < selectedRun.steps.length - 1 && <div className="mt-2 w-px flex-1 bg-white/10" />}
-                                        </div>
-                                        <div className="pb-4 min-w-0">
-                                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
-                                            <div className="mt-2 text-sm leading-relaxed text-white break-words">{step.detail}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="mt-4 flex min-h-0 flex-1 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
-                            Select a session run to inspect its lifecycle.
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
         </div>
     );
