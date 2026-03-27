@@ -105,6 +105,7 @@ export function createRun({ channel, title, input, tools = [] }) {
         approval: '',
         retries: 0,
         tools,
+        trace: null,
         steps: getRunTemplate(channel).map((step, index) => ({
             ...step,
             state: index === 0 ? 'running' : 'pending',
@@ -136,6 +137,12 @@ export function completeStep(runId, stepKey, detail) {
     };
 
     markNextStepRunning(run, stepIndex);
+}
+
+export function attachRunTrace(runId, trace) {
+    const run = runs.find((entry) => entry.id === runId);
+    if (!run) return;
+    run.trace = trace || null;
 }
 
 export function failRun(runId, { message, decision, retries = 0, approval = 'Failed before approval' } = {}) {

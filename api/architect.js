@@ -9,6 +9,7 @@ import {
     sanitizeMultilineText,
 } from './lib/security.js';
 import {
+    attachRunTrace,
     completeStep,
     createRun,
     failRun,
@@ -26,6 +27,7 @@ const PROJECT_TYPES = ['web-platform', 'ai-agent', 'automation-system', 'interna
 const USER_SCOPES = ['solo-team', 'department', 'public-users', 'clients', 'mixed'];
 const TIMELINES = ['asap', 'month', 'quarter', 'flexible'];
 const COMPLEXITIES = ['focused-mvp', 'production-build', 'multi-system'];
+const ARCHITECT_ACTIONS = ['GENERATE_STRUCTURED_BRIEF', 'VALIDATE_SCHEMA', 'RETURN_SAFE_JSON'];
 
 const PROJECT_TYPE_META = {
     'web-platform': { label: 'Web Platform', description: 'Client apps, SaaS, portals, and productized services.' },
@@ -226,6 +228,7 @@ function normalizeArchitectResponse(response, { projectTypeKey }) {
 export default async function handler(req, res) {
     const requestStartedAt = Date.now();
     let runId = null;
+    let debugTrace = null;
 
     applySecurityHeaders(res);
 
@@ -301,6 +304,27 @@ Output expectations:
 - Keep architecture grounded in the actual launch constraints.
 - If AI is not justified, return one concise item explaining why phase one should stay non-AI and where AI could be added later.
 `;
+    debugTrace = {
+        channel: 'architect',
+        provider: 'Groq',
+        model: null,
+        userInput: brief,
+        availableActions: ARCHITECT_ACTIONS,
+        requestMessages: [
+            { role: 'system', content: buildSystemPrompt() },
+            { role: 'user', content: userPrompt },
+        ],
+        rawModelResponse: null,
+        parsedResponse: null,
+        requestPayload: {
+            brief,
+            projectType,
+            userScope,
+            timeline,
+            complexity,
+            constraints,
+        },
+    };
 
     try {
         let response = null;
@@ -314,14 +338,13 @@ Output expectations:
                     seed: 42,
                     max_completion_tokens: 1200,
                     response_format: { type: 'json_object' },
-                    messages: [
-                        { role: 'system', content: buildSystemPrompt() },
-                        { role: 'user', content: userPrompt },
-                    ],
+                    messages: debugTrace.requestMessages,
                 });
 
+                debugTrace.model = MODELS[i];
+                debugTrace.rawModelResponse = completion.choices?.[0]?.message?.content || '';
                 const parsedResponse = normalizeArchitectResponse(
-                    extractJsonObject(completion.choices?.[0]?.message?.content),
+                    extractJsonObject(debugTrace.rawModelResponse),
                     { projectTypeKey: projectType.key }
                 );
                 completeStep(runId, 'inference', `Architecture brief drafted successfully using ${MODELS[i]}.`);
@@ -334,6 +357,7 @@ Output expectations:
                 }
 
                 response = parsedResponse.normalized;
+                debugTrace.parsedResponse = response;
                 completeStep(runId, 'action', 'Structured response passed schema validation and is safe to expose.');
                 recordServiceProbe('groq-provider', {
                     status: 'operational',
@@ -357,6 +381,7 @@ Output expectations:
 
         if (!response) throw lastError || new Error('ARCHITECT_RESPONSE_EMPTY');
 
+        attachRunTrace(runId, debugTrace);
         finishRun(runId, {
             output: response.summary,
             decision: response.solutionFit ? `${response.solutionFit} solution fit` : 'Brief generated',
@@ -372,6 +397,7 @@ Output expectations:
             briefId: `ARCH-${Date.now().toString(36).toUpperCase()}`,
             generatedAt: new Date().toISOString(),
             ...response,
+            debugTrace,
         });
     } catch (error) {
         recordServiceProbe('architect-api', {
@@ -380,6 +406,7 @@ Output expectations:
             note: `Project Architect failed: ${error?.message || 'internal failure'}.`,
         });
         if (runId) {
+            attachRunTrace(runId, debugTrace);
             failRun(runId, {
                 message: error?.message || 'Architect generation failed before a valid brief could be returned.',
                 decision: 'Runtime failure',
@@ -388,6 +415,7 @@ Output expectations:
         return res.status(error?.status || 500).json({
             message: error?.message || 'ARCHITECT_REQUEST_FAILED',
             details: error?.details || null,
+            debugTrace,
         });
     }
 }

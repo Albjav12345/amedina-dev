@@ -5,6 +5,7 @@ import {
     BrainCircuit,
     CheckCircle2,
     Clock3,
+    Copy,
     RefreshCw,
     ShieldCheck,
     Sparkles,
@@ -208,6 +209,194 @@ function buildLatencySeries(runs, services) {
         sourceLabel: probeItems.length ? 'Backend probes' : 'Idle',
         items: probeItems,
     };
+}
+
+function prettyPrint(value) {
+    if (typeof value === 'string') return value;
+    if (value == null) return '';
+
+    try {
+        return JSON.stringify(value, null, 2);
+    } catch {
+        return String(value);
+    }
+}
+
+function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for this block yet.' }) {
+    const [copied, setCopied] = useState(false);
+    const formatted = prettyPrint(value);
+
+    const handleCopy = async () => {
+        if (!formatted) return;
+
+        try {
+            await navigator.clipboard.writeText(formatted);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1600);
+        } catch {
+            setCopied(false);
+        }
+    };
+
+    return (
+        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="flex items-center justify-between gap-3">
+                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">{label}</div>
+                <button
+                    type="button"
+                    onClick={handleCopy}
+                    disabled={!formatted}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan disabled:cursor-default disabled:opacity-40 cursor-pointer"
+                >
+                    <Copy className="h-3 w-3" />
+                    {copied ? 'Copied' : 'Copy'}
+                </button>
+            </div>
+            {formatted ? (
+                <pre className="panel-scrollbar mt-4 max-h-[24rem] overflow-auto rounded-2xl border border-white/10 bg-[#0a0b0f] px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words">
+                    {formatted}
+                </pre>
+            ) : (
+                <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-5 text-sm leading-relaxed text-gray-500">
+                    {emptyMessage}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function RunTracePanel({ run }) {
+    const [activeTab, setActiveTab] = useState('messages');
+    const trace = run?.trace || null;
+    const tabClassName = (isActive) => `rounded-full border px-3 py-2 text-[10px] font-mono uppercase tracking-[0.16em] transition-colors ${isActive
+        ? 'border-electric-green/30 bg-electric-green/10 text-electric-green'
+        : 'border-white/10 bg-white/[0.04] text-gray-400 hover:border-electric-cyan/30 hover:text-electric-cyan'
+        }`;
+
+    if (!run) {
+        return (
+            <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+                Select a session run to inspect its prompt envelope and raw model output.
+            </div>
+        );
+    }
+
+    if (!trace) {
+        return (
+            <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm leading-relaxed text-gray-500">
+                This execution does not include an AI inference trace. Terminal and Project Architect requests will populate this area automatically with full model messages, raw output, and parsed payloads.
+            </div>
+        );
+    }
+
+    const visibleActions = Array.isArray(trace.availableActions) ? trace.availableActions.filter(Boolean) : [];
+    const requestMessages = Array.isArray(trace.requestMessages) ? trace.requestMessages : [];
+
+    return (
+        <div className="mt-5 space-y-5">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+                <div className="rounded-2xl border border-white/10 bg-black/25 p-5">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">Inference Envelope</div>
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
+                            <div className="mt-2 text-sm font-semibold text-white">{trace.provider || 'Unknown'}</div>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Model</div>
+                            <div className="mt-2 text-sm font-semibold text-white break-words">{trace.model || 'Awaiting model response'}</div>
+                        </div>
+                    </div>
+                    <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">User Prompt</div>
+                        <div className="mt-3 text-sm leading-relaxed text-white whitespace-pre-wrap break-words">
+                            {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-black/25 p-5">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Agent Surface</div>
+                    <div className="mt-3 text-sm leading-relaxed text-gray-400">
+                        This is the exact execution envelope captured for the selected run, including the model messages sent upstream and the raw model response before the UI processed it.
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {visibleActions.length ? visibleActions.map((action) => (
+                            <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                                {action}
+                            </span>
+                        )) : (
+                            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
+                                No explicit actions exposed
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+                {[
+                    ['messages', 'Prompt Messages'],
+                    ['raw', 'Raw Model Output'],
+                    ['parsed', 'Parsed Payload'],
+                    ['payload', 'Request Payload'],
+                ].map(([key, label]) => (
+                    <button
+                        key={key}
+                        type="button"
+                        onClick={() => setActiveTab(key)}
+                        className={tabClassName(activeTab === key)}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {activeTab === 'messages' && (
+                <div className="space-y-4">
+                    {requestMessages.length ? requestMessages.map((message, index) => (
+                        <div key={`${message.role || 'message'}-${index}`} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">{message.role || `message_${index + 1}`}</div>
+                                <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                    Block {index + 1}
+                                </div>
+                            </div>
+                            <pre className="panel-scrollbar mt-4 max-h-[20rem] overflow-auto rounded-2xl border border-white/10 bg-[#0a0b0f] px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words">
+                                {typeof message.content === 'string' ? message.content : prettyPrint(message.content)}
+                            </pre>
+                        </div>
+                    )) : (
+                        <TraceCodeBlock label="Prompt Messages" value="" emptyMessage="The selected run did not capture model messages." />
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'raw' && (
+                <TraceCodeBlock
+                    label="Raw Model Output"
+                    value={trace.rawModelResponse}
+                    emptyMessage="No raw model output was captured for this execution."
+                />
+            )}
+
+            {activeTab === 'parsed' && (
+                <TraceCodeBlock
+                    label="Parsed Payload"
+                    value={trace.parsedResponse}
+                    emptyMessage="No parsed payload was captured for this execution."
+                />
+            )}
+
+            {activeTab === 'payload' && (
+                <TraceCodeBlock
+                    label="Request Payload"
+                    value={trace.requestPayload}
+                    emptyMessage="No request payload snapshot was captured for this execution."
+                />
+            )}
+        </div>
+    );
 }
 
 function BlockSkeleton({ title, minHeight = 320 }) {
@@ -1099,6 +1288,11 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                             {tool}
                                                                         </span>
                                                                     ))}
+                                                                    {run.trace && (
+                                                                        <span className="rounded-md border border-electric-green/20 bg-electric-green/10 px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                                                            Prompt Trace
+                                                                        </span>
+                                                                    )}
                                                                 </div>
                                                             </button>
                                                         );
@@ -1156,6 +1350,24 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                         Select a session run to inspect its lifecycle.
                                                     </div>
                                                 )}
+                                            </div>
+                                            </LazyPanelBlock>
+
+                                            <LazyPanelBlock
+                                                root={scrollRoot}
+                                                eager={false}
+                                                minHeight={620}
+                                                skeleton={<BlockSkeleton title="Agent trace" minHeight={620} />}
+                                            >
+                                            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div>
+                                                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Agent Trace</div>
+                                                        <h3 className="mt-2 text-2xl font-bold text-white">Prompt and raw output</h3>
+                                                    </div>
+                                                    <Sparkles className="h-5 w-5 text-electric-green" />
+                                                </div>
+                                                <RunTracePanel run={selectedRun} />
                                             </div>
                                             </LazyPanelBlock>
                                         </div>

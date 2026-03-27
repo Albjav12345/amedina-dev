@@ -263,9 +263,11 @@ const InteractiveConsole = ({ onClose }) => {
                 if (!res.ok) {
                     const errorText = await res.text();
                     let errorMessage = `>> ERROR ${res.status}: NEURAL LINK FAILURE.`;
+                    let errorTrace = null;
                     try {
                         const errorJson = JSON.parse(errorText);
                         if (errorJson.text) errorMessage = errorJson.text;
+                        errorTrace = errorJson.debugTrace || null;
                     } catch (e) { }
 
                     console.error("API Error:", errorText);
@@ -282,6 +284,7 @@ const InteractiveConsole = ({ onClose }) => {
                         decision: `HTTP ${res.status} failure`,
                         approval: 'Request failed before action dispatch',
                         tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
+                        trace: errorTrace,
                         steps: [
                             { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
                             { key: 'validation', label: 'VALIDATION', detail: 'The backend rejected or failed the request.', state: 'error', at: new Date().toISOString() },
@@ -331,6 +334,7 @@ const InteractiveConsole = ({ onClose }) => {
                     decision: data.action ? `Resolved ${data.action}` : 'Returned message response',
                     approval: data.action === 'OPEN_LINK' ? 'External link handoff approved' : 'Autonomous UI-safe response',
                     tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
+                    trace: data.debugTrace || null,
                     steps: [
                         { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
                         { key: 'validation', label: 'VALIDATION', detail: 'Payload accepted and sanitized by the backend.', state: 'complete', at: startedAt },

@@ -40,6 +40,16 @@ function clampText(value, max = 180) {
     return value.trim().replace(/\s+/g, ' ').slice(0, max);
 }
 
+function cloneJsonSafe(value) {
+    if (value == null) return null;
+
+    try {
+        return JSON.parse(JSON.stringify(value));
+    } catch {
+        return null;
+    }
+}
+
 export function getOpsTelemetry() {
     return readRaw();
 }
@@ -65,6 +75,7 @@ export function recordOpsRun(run) {
         retries: Number.isFinite(run.retries) ? run.retries : 0,
         tools: Array.isArray(run.tools) ? run.tools.slice(0, 6) : [],
         steps: Array.isArray(run.steps) ? run.steps.slice(0, 8) : [],
+        trace: cloneJsonSafe(run.trace),
     };
 
     return persist({

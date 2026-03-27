@@ -11,6 +11,7 @@ import {
     sanitizeHistory,
 } from './lib/security.js';
 import {
+    attachRunTrace,
     completeStep,
     createRun,
     failRun,
@@ -24,12 +25,23 @@ const MODELS = [
     'llama-3.1-8b-instant'     // Tier 2: High Reliability (250K TPM)
 ];
 
+const AVAILABLE_ACTIONS = [
+    'SCROLL_TO_PROJECTS',
+    'SCROLL_TO_CONTACT',
+    'SCROLL_TO_ABOUT',
+    'SCROLL_TO_STACK',
+    'SCROLL_TO_ARCHITECT',
+    'OPEN_CONTROL_PANEL',
+    'OPEN_LINK',
+];
+
 // Helper to sleep between retries
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default async function handler(req, res) {
     const requestStartedAt = Date.now();
     let runId = null;
+    let debugTrace = null;
 
     applySecurityHeaders(res);
 
@@ -165,6 +177,21 @@ OUTPUT_FORMAT (JSON ONLY):
             ...history,
             { role: 'user', content: message }
         ];
+        debugTrace = {
+            channel: 'terminal',
+            provider: 'Groq',
+            model: null,
+            userInput: message,
+            availableActions: AVAILABLE_ACTIONS,
+            requestMessages: contextMessages,
+            rawModelResponse: null,
+            parsedResponse: null,
+            requestPayload: {
+                message,
+                history,
+                githubStatus,
+            },
+        };
 
         for (let i = 0; i < MODELS.length; i++) {
             const modelId = MODELS[i];
@@ -178,7 +205,10 @@ OUTPUT_FORMAT (JSON ONLY):
                     response_format: { type: 'json_object' }
                 });
 
-                response = extractJsonObject(completion.choices[0].message.content);
+                debugTrace.model = modelId;
+                debugTrace.rawModelResponse = completion.choices?.[0]?.message?.content || '';
+                response = extractJsonObject(debugTrace.rawModelResponse);
+                debugTrace.parsedResponse = response;
                 console.log(`[SYS] Success using model: ${modelId}`);
                 completeStep(runId, 'inference', `Inference completed successfully using ${modelId}.`);
                 recordServiceProbe('groq-provider', {
@@ -213,6 +243,7 @@ OUTPUT_FORMAT (JSON ONLY):
             ? `UI action ${safeAction} resolved and sanitized before returning to the client.`
             : 'The response was normalized as a text-only terminal reply.'
         );
+        attachRunTrace(runId, debugTrace);
         finishRun(runId, {
             output: response?.text,
             decision: safeAction || 'Message response only',
@@ -228,10 +259,11 @@ OUTPUT_FORMAT (JSON ONLY):
             text: clampText(response?.text, { min: 1, max: 800, fallback: '>> SYSTEM_ALERT: EMPTY_MODEL_RESPONSE.' }),
             action: safeAction === 'OPEN_LINK'
                 ? (safeUrl ? 'OPEN_LINK' : null)
-                : ['SCROLL_TO_PROJECTS', 'SCROLL_TO_CONTACT', 'SCROLL_TO_ABOUT', 'SCROLL_TO_STACK', 'SCROLL_TO_ARCHITECT', 'OPEN_CONTROL_PANEL'].includes(safeAction)
+                : AVAILABLE_ACTIONS.filter((action) => action !== 'OPEN_LINK').includes(safeAction)
                     ? safeAction
                     : null,
             url: safeUrl,
+            debugTrace,
         });
 
     } catch (error) {
@@ -242,6 +274,7 @@ OUTPUT_FORMAT (JSON ONLY):
             note: `Terminal agent failed: ${error.message || 'internal failure'}.`,
         });
         if (runId) {
+            attachRunTrace(runId, debugTrace);
             failRun(runId, {
                 message: error.message || 'Terminal agent failed before a valid response was returned.',
                 decision: 'Runtime failure',
@@ -250,7 +283,8 @@ OUTPUT_FORMAT (JSON ONLY):
         return res.status(error.status || 500).json({
             type: "MESSAGE",
             text: `>> SYSTEM_CRASH: ${error.status || 'ERROR'} - ${error.message || 'INTERNAL_FAILURE'}`,
-            action: null
+            action: null,
+            debugTrace,
         });
     }
 }

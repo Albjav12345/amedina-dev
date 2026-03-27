@@ -222,6 +222,7 @@ const ProjectArchitect = () => {
             if (!response.ok) {
                 const requestError = new Error(payload?.message || 'ARCHITECT_REQUEST_FAILED');
                 requestError.details = payload?.details || null;
+                requestError.debugTrace = payload?.debugTrace || null;
                 throw requestError;
             }
 
@@ -239,6 +240,7 @@ const ProjectArchitect = () => {
                 decision: payload.solutionFit ? `${payload.solutionFit} solution fit` : 'Brief generated',
                 approval: 'Schema-validated brief returned to the interface',
                 tools: ['Architect API', 'Groq LLM', 'Portfolio Context', 'Schema Validation'],
+                trace: payload.debugTrace || null,
                 steps: [
                     { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Architect intake dispatched from the client.', state: 'complete', at: startedAt },
                     { key: 'validation', label: 'VALIDATION', detail: 'Brief and selector values accepted safely.', state: 'complete', at: startedAt },
@@ -263,6 +265,7 @@ const ProjectArchitect = () => {
                 decision: error?.message || 'Architect request failed',
                 approval: 'Request failed before a safe brief could be rendered',
                 tools: ['Architect API', 'Groq LLM', 'Schema Validation'],
+                trace: error?.debugTrace || error?.details?.debugTrace || null,
                 steps: [
                     { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Architect intake dispatched from the client.', state: 'complete', at: startedAt },
                     { key: 'validation', label: 'VALIDATION', detail: 'The request failed during generation or validation.', state: 'error', at: new Date().toISOString() },
