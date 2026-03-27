@@ -27,8 +27,19 @@ export function isAllowedOrigin(origin) {
     if (!origin) return true;
 
     try {
-        const normalizedOrigin = new URL(origin).origin;
-        return getAllowedOrigins().has(normalizedOrigin);
+        const normalized = new URL(origin);
+        const normalizedOrigin = normalized.origin;
+
+        if (getAllowedOrigins().has(normalizedOrigin)) {
+            return true;
+        }
+
+        const isLoopbackHost = normalized.hostname === 'localhost' || normalized.hostname === '127.0.0.1';
+        if (isLoopbackHost && normalized.protocol === 'http:') {
+            return true;
+        }
+
+        return false;
     } catch {
         return false;
     }
