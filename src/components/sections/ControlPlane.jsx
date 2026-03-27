@@ -17,7 +17,7 @@ import {
     X,
     XCircle,
 } from 'lucide-react';
-import { containWheelOnOverflow, translateWheelToHorizontalScroll } from '../../utils/scrolling';
+import { containWheelOnOverflow } from '../../utils/scrolling';
 import { clearOpsTelemetry, getOpsTelemetry, subscribeOpsTelemetry } from '../../utils/opsTelemetry';
 
 const statusMap = {
@@ -578,41 +578,12 @@ function ControlPanelSummaryStrip({ summary }) {
 function ServiceGridPanel({ services, isMobile = false }) {
     const scrollerRef = useRef(null);
 
-    useEffect(() => {
-        const node = scrollerRef.current;
-
-        if (!(node instanceof HTMLElement)) {
-            return undefined;
-        }
-
-        const handleWheel = (event) => {
-            const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-
-            if (!dominantDelta) {
-                return;
-            }
-
-            const maxScrollLeft = node.scrollWidth - node.clientWidth;
-            const canScrollLeft = dominantDelta < 0 && node.scrollLeft > 0;
-            const canScrollRight = dominantDelta > 0 && node.scrollLeft < maxScrollLeft - 1;
-
-            if (canScrollLeft || canScrollRight) {
-                event.preventDefault();
-                event.stopPropagation();
-                node.scrollLeft = Math.max(0, Math.min(maxScrollLeft, node.scrollLeft + dominantDelta));
-            }
-        };
-
-        node.addEventListener('wheel', handleWheel, { passive: false });
-        return () => node.removeEventListener('wheel', handleWheel);
-    }, []);
-
     return (
         <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[476px]' : 'h-[440px]'}`}>
             <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
-                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[13.25rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Live probes and integrations</h3>
+                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[15.25rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Live probes and integrations</h3>
                 </div>
                 <div className={`inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 font-mono uppercase tracking-[0.18em] text-electric-cyan ${isMobile ? 'self-start px-2.5 py-1 text-[9px]' : 'px-3 py-1 text-[10px]'}`}>
                     <ShieldCheck className="h-3 w-3" />
@@ -626,9 +597,6 @@ function ServiceGridPanel({ services, isMobile = false }) {
             <div
                 ref={scrollerRef}
                 className="panel-scrollbar mt-3 min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-2"
-                data-wheel-axis="x"
-                onWheelCapture={translateWheelToHorizontalScroll}
-                onWheel={translateWheelToHorizontalScroll}
                 style={{ overscrollBehaviorX: 'contain' }}
             >
                 <div className={`flex h-full items-stretch gap-3 ${isMobile ? 'snap-x snap-mandatory pr-1' : 'pr-1'}`}>
