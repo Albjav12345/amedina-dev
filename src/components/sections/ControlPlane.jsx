@@ -296,8 +296,7 @@ function RunTracePanel({ run, isMobile = false }) {
     if (isMobile) {
         return (
             <div className="flex h-full min-h-0 flex-col gap-3">
-                <div className="panel-scrollbar -mx-1 overflow-x-auto overflow-y-hidden px-1 pb-1">
-                    <div className="flex min-w-max gap-2">
+                <div className="grid grid-cols-3 gap-2">
                         {[
                             ['summary', 'Summary'],
                             ['messages', 'Messages'],
@@ -309,18 +308,17 @@ function RunTracePanel({ run, isMobile = false }) {
                                 key={key}
                                 type="button"
                                 onClick={() => setActiveTab(key)}
-                                className={`${tabClassName(activeTab === key)} whitespace-nowrap px-4`}
+                                className={`${tabClassName(activeTab === key)} min-w-0 px-3 py-2.5 text-[9px] whitespace-nowrap`}
                             >
                                 {label}
                             </button>
                         ))}
-                    </div>
                 </div>
 
                 <div className="min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/20 p-2.5 overflow-hidden">
                     {activeTab === 'summary' && (
                         <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1">
-                            <div className="grid grid-cols-2 gap-2.5">
+                            <div className="grid h-full min-h-0 grid-cols-2 gap-2.5">
                                 <div className="rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
                                     <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
                                     <div className="mt-2 text-sm font-semibold text-white break-words">{trace.provider || 'Unknown'}</div>
@@ -335,9 +333,9 @@ function RunTracePanel({ run, isMobile = false }) {
                                         {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
                                     </div>
                                 </div>
-                                <div className="col-span-2 rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                <div className="col-span-2 min-h-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-3 flex flex-col">
                                     <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Available Actions</div>
-                                    <div className="panel-scrollbar mt-3 max-h-[8.5rem] overflow-y-auto overflow-x-hidden pr-1">
+                                    <div className="panel-scrollbar mt-3 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
                                         <div className="flex flex-wrap gap-2">
                                             {visibleActions.length ? visibleActions.map((action) => (
                                                 <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
@@ -610,18 +608,18 @@ function ServiceGridPanel({ services, isMobile = false }) {
     }, []);
 
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[456px]' : 'h-[440px]'}`}>
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[476px]' : 'h-[440px]'}`}>
             <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
-                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[12rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Live probes and integrations</h3>
+                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[13.25rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Live probes and integrations</h3>
                 </div>
                 <div className={`inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 font-mono uppercase tracking-[0.18em] text-electric-cyan ${isMobile ? 'self-start px-2.5 py-1 text-[9px]' : 'px-3 py-1 text-[10px]'}`}>
                     <ShieldCheck className="h-3 w-3" />
                     Merged Signal Feed
                 </div>
             </div>
-            <div className={`mt-3 flex items-center justify-between gap-3 font-mono uppercase tracking-[0.18em] text-gray-500 ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
+            <div className={`mt-3 flex items-center justify-between gap-3 font-mono uppercase tracking-[0.18em] text-gray-500 ${isMobile ? 'text-[8px]' : 'text-[10px]'}`}>
                 <span>{isMobile ? 'Swipe through live cards' : 'Swipe or scroll sideways through the live service cards'}</span>
                 <span>{services.length} systems</span>
             </div>
@@ -633,7 +631,7 @@ function ServiceGridPanel({ services, isMobile = false }) {
                 onWheel={translateWheelToHorizontalScroll}
                 style={{ overscrollBehaviorX: 'contain' }}
             >
-                <div className={`flex h-full items-stretch gap-4 ${isMobile ? 'snap-x snap-mandatory pr-1' : 'pr-1'}`}>
+                <div className={`flex h-full items-stretch gap-3 ${isMobile ? 'snap-x snap-mandatory pr-1' : 'pr-1'}`}>
                     {services.map((service) => {
                         const meta = getStatus(service.status);
                         const Icon = serviceIcons[service.id] || Sparkles;
@@ -642,53 +640,53 @@ function ServiceGridPanel({ services, isMobile = false }) {
                         return (
                             <div
                                 key={service.id}
-                                className={`min-h-0 shrink-0 rounded-2xl border border-white/10 bg-black/25 flex flex-col ${isMobile ? 'w-[86vw] max-w-[19.5rem] snap-start p-3.5' : 'w-[min(25rem,calc(50vw-5rem))] xl:w-[23.5rem] p-4'}`}
+                                className={`min-h-0 shrink-0 rounded-2xl border border-white/10 bg-black/25 flex flex-col overflow-hidden ${isMobile ? 'w-[68vw] max-w-[14.5rem] snap-start p-2.5' : 'w-[min(25rem,calc(50vw-5rem))] xl:w-[23.5rem] p-4'}`}
                             >
                                 <div className="flex items-start justify-between gap-4">
-                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                                        <Icon className="h-5 w-5 text-electric-green" />
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                        <Icon className="h-4 w-4 text-electric-green" />
                                     </div>
-                                    <div className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
-                                        <StatusIcon className="h-3 w-3" />
+                                    <div className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-[8px] font-mono uppercase tracking-[0.14em] ${meta.className}`}>
+                                        <StatusIcon className="h-2.5 w-2.5" />
                                         {meta.label}
                                     </div>
                                 </div>
                                 <div
-                                    className={`mt-4 font-semibold text-white ${isMobile ? 'text-[1rem] leading-[1.18]' : 'text-base'}`}
+                                    className={`mt-3 font-semibold text-white ${isMobile ? 'text-[0.88rem] leading-[1.12]' : 'text-base'}`}
                                     style={isMobile ? {
                                         display: '-webkit-box',
-                                        WebkitLineClamp: 2,
+                                        WebkitLineClamp: 1,
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
                                     } : undefined}
                                 >
                                     {service.label}
                                 </div>
-                                <div className={`mt-4 grid grid-cols-2 ${isMobile ? 'gap-2.5' : 'gap-3'}`}>
-                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                <div className={`mt-3 grid grid-cols-2 ${isMobile ? 'gap-1.5' : 'gap-3'}`}>
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-1.5">
                                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Latency</div>
-                                        <div className="mt-2 text-sm leading-snug text-white break-words">{formatMs(service.latencyMs)}</div>
+                                        <div className="mt-1 text-[12px] leading-[1.15] text-white break-words">{formatMs(service.latencyMs)}</div>
                                     </div>
-                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-1.5">
                                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Last Event</div>
-                                        <div className="mt-2 text-sm leading-snug text-white break-words">{formatRelative(service.lastEventAt)}</div>
+                                        <div className="mt-1 text-[12px] leading-[1.15] text-white break-words">{formatRelative(service.lastEventAt)}</div>
                                     </div>
-                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-1.5">
                                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Activity</div>
-                                        <div className="mt-2 text-sm leading-snug text-white break-words">
+                                        <div className="mt-1 text-[12px] leading-[1.15] text-white break-words [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden min-h-[1.65rem]">
                                             {service.activityCount ? `${service.activityCount} recent run${service.activityCount === 1 ? '' : 's'}` : 'Awaiting traffic'}
                                         </div>
                                     </div>
-                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-1.5">
                                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Feed</div>
-                                        <div className="mt-2 text-sm leading-snug text-white break-words">{service.feedLabel || 'Backend probe'}</div>
+                                        <div className="mt-1 text-[12px] leading-[1.15] text-white break-words [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] overflow-hidden min-h-[1.65rem]">{service.feedLabel || 'Backend probe'}</div>
                                     </div>
                                 </div>
                                 <p
-                                    className={`mt-4 text-xs leading-relaxed text-gray-400 break-words ${isMobile ? 'min-h-[2.7rem]' : ''}`}
+                                    className={`mt-2.5 text-[10px] leading-relaxed text-gray-400 break-words ${isMobile ? 'min-h-[1rem]' : ''}`}
                                     style={{
                                         display: '-webkit-box',
-                                        WebkitLineClamp: isMobile ? 2 : 3,
+                                        WebkitLineClamp: isMobile ? 1 : 3,
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
                                     }}
@@ -837,7 +835,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
     const [activeTab, setActiveTab] = useState('queue');
 
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[600px]' : 'h-[620px]'}`}>
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[584px]' : 'h-[620px]'}`}>
             <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Execution Inspector</div>
@@ -869,7 +867,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                 Interactive
                             </div>
                         </div>
-                        <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3 ${isMobile ? 'mt-2.5' : 'mt-4'}`}>
+                        <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden ${isMobile ? 'mt-2.5 pl-1 pr-2.5' : 'mt-4 pr-1'} space-y-2.5`}>
                             {runs.length ? runs.map((run) => {
                                 const meta = getStatus(run.status);
                                 const Icon = channelMeta[run.channel]?.icon || Sparkles;
@@ -881,49 +879,103 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                         type="button"
                                         onClick={() => onSelectRun(run.id)}
                                         aria-pressed={isActive}
-                                        className={`w-full rounded-2xl border text-left transition-[border-color,background-color,transform,box-shadow] cursor-pointer ${isMobile ? 'p-3.5' : 'p-4'} ${isActive
+                                        className={`w-full rounded-2xl border text-left transition-[border-color,background-color,transform,box-shadow] cursor-pointer ${isMobile ? 'p-2.5' : 'p-4'} ${isActive
                                             ? 'border-electric-green/35 bg-electric-green/[0.08] shadow-[0_0_0_1px_rgba(0,255,153,0.08)]'
                                             : 'border-white/10 bg-black/30 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
                                     >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex min-w-0 flex-1 gap-3">
-                                                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                                                    <Icon className="h-4 w-4 text-electric-cyan" />
+                                        {isMobile ? (
+                                            <div className="flex min-w-0 gap-2.5">
+                                                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                    <Icon className="h-3.5 w-3.5 text-electric-cyan" />
                                                 </div>
                                                 <div className="min-w-0 flex-1">
-                                                    <div className="flex items-start justify-between gap-3">
-                                                        <div className="min-w-0">
-                                                            <div className="text-base font-semibold text-white">{run.title}</div>
-                                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                                                                {channelMeta[run.channel]?.label || run.channel}
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="min-w-0 flex-1">
+                                                            <div
+                                                                className="text-[0.92rem] font-semibold leading-[1.12] text-white"
+                                                                style={{
+                                                                    display: '-webkit-box',
+                                                                    WebkitLineClamp: 2,
+                                                                    WebkitBoxOrient: 'vertical',
+                                                                    overflow: 'hidden',
+                                                                }}
+                                                            >
+                                                                {run.title}
                                                             </div>
                                                         </div>
-                                                        <div className="flex shrink-0 items-center gap-2">
-                                                            <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
+                                                        <div className="flex shrink-0 items-center gap-1.5">
+                                                            <div className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[8px] font-mono uppercase tracking-[0.14em] ${meta.className}`}>
                                                                 {meta.label}
                                                             </div>
-                                                            <ChevronRight className={`h-4 w-4 transition-transform ${isActive ? 'translate-x-0 text-electric-green' : 'text-gray-500'}`} />
+                                                            <ChevronRight className={`h-3 w-3 transition-transform ${isActive ? 'translate-x-0 text-electric-green' : 'text-gray-500'}`} />
                                                         </div>
                                                     </div>
+                                                    <div className="mt-1.5 flex items-center justify-between gap-2">
+                                                        <div className="min-w-0 text-[8px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                            {channelMeta[run.channel]?.label || run.channel}
+                                                        </div>
+                                                        {isActive && <span className="shrink-0 text-[8px] font-mono uppercase tracking-[0.16em] text-electric-green">Selected</span>}
+                                                    </div>
                                                     <div
-                                                        className={`mt-2.5 leading-relaxed text-gray-300 break-words ${isMobile ? 'text-[13px]' : 'text-sm'}`}
+                                                        className="mt-2 text-[12px] leading-[1.25] text-gray-300 break-words"
                                                         style={{
                                                             display: '-webkit-box',
-                                                            WebkitLineClamp: isMobile ? 1 : 2,
+                                                            WebkitLineClamp: 1,
                                                             WebkitBoxOrient: 'vertical',
                                                             overflow: 'hidden',
                                                         }}
                                                     >
                                                         {run.inputExcerpt || run.outputExcerpt || 'No preview captured.'}
                                                     </div>
-                                                    <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[8px] font-mono uppercase tracking-[0.14em] text-gray-500">
                                                         <span>{formatMs(run.latencyMs)}</span>
                                                         <span>{formatRelative(run.completedAt || run.startedAt)}</span>
-                                                        {isActive && <span className="text-electric-green">Selected</span>}
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex min-w-0 flex-1 gap-2.5">
+                                                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                                                        <Icon className="h-3.5 w-3.5 text-electric-cyan" />
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-start justify-between gap-3">
+                                                            <div className="min-w-0">
+                                                                <div className="text-base font-semibold text-white">
+                                                                    {run.title}
+                                                                </div>
+                                                                <div className="mt-1 text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                                    {channelMeta[run.channel]?.label || run.channel}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex shrink-0 items-center gap-2">
+                                                                <div className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[9px] font-mono uppercase tracking-[0.16em] ${meta.className}`}>
+                                                                    {meta.label}
+                                                                </div>
+                                                                <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isActive ? 'translate-x-0 text-electric-green' : 'text-gray-500'}`} />
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className="mt-2.5 text-sm leading-relaxed text-gray-300 break-words"
+                                                            style={{
+                                                                display: '-webkit-box',
+                                                                WebkitLineClamp: 2,
+                                                                WebkitBoxOrient: 'vertical',
+                                                                overflow: 'hidden',
+                                                            }}
+                                                        >
+                                                            {run.inputExcerpt || run.outputExcerpt || 'No preview captured.'}
+                                                        </div>
+                                                        <div className="mt-2.5 flex flex-wrap items-center gap-2.5 text-[9px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                            <span>{formatMs(run.latencyMs)}</span>
+                                                            <span>{formatRelative(run.completedAt || run.startedAt)}</span>
+                                                            {isActive && <span className="text-electric-green">Selected</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </button>
                                 );
                             }) : (
@@ -1700,8 +1752,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                 <LazyPanelBlock
                                                                     root={scrollRoot}
                                                                     eager
-                                                                    minHeight={456}
-                                                                    skeleton={<BlockSkeleton title="Backend signals" minHeight={456} />}
+                                                                    minHeight={476}
+                                                                    skeleton={<BlockSkeleton title="Backend signals" minHeight={476} />}
                                                                 >
                                                                     <ServiceGridPanel services={services} isMobile />
                                                                 </LazyPanelBlock>
@@ -1731,8 +1783,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                             <LazyPanelBlock
                                                                 root={scrollRoot}
                                                                 eager
-                                                                minHeight={600}
-                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={600} />}
+                                                                minHeight={584}
+                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={584} />}
                                                             >
                                                                 <ExecutionInspectorPanel
                                                                     runs={runs}
