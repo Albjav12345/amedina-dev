@@ -803,7 +803,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
     const [activeTab, setActiveTab] = useState('queue');
 
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[584px]' : 'h-[620px]'}`}>
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col ${isMobile ? 'h-auto overflow-visible' : 'h-[620px] overflow-hidden'}`}>
             <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Execution Inspector</div>
@@ -820,9 +820,9 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                 <PanelPillButton active={activeTab === 'lifecycle'} onClick={() => setActiveTab('lifecycle')}>Lifecycle</PanelPillButton>
             </div>
 
-            <div className={`${isMobile ? 'mt-4' : 'mt-5'} min-h-0 flex-1`}>
+            <div className={`${isMobile ? 'mt-4' : 'mt-5'} ${isMobile ? 'h-auto' : 'min-h-0 flex-1'}`}>
                 {activeTab === 'queue' && (
-                    <div className={`min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 flex flex-col overflow-hidden ${isMobile ? 'p-3.5' : 'p-4'}`}>
+                    <div className={`rounded-2xl border border-white/10 bg-black/25 flex flex-col ${isMobile ? 'h-auto overflow-visible p-3.5' : 'min-h-0 h-full overflow-hidden p-4'}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Run Queue</div>
                             <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{runs.length} observed</div>
@@ -835,7 +835,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                 Interactive
                             </div>
                         </div>
-                        <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden ${isMobile ? 'mt-2.5 pl-1 pr-2.5' : 'mt-4 pr-1'} space-y-2.5`}>
+                        <div className={`${isMobile ? 'mt-2.5 space-y-2.5 pl-1 pr-2.5' : 'panel-scrollbar mt-4 min-h-0 flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden pr-1'}`}>
                             {runs.length ? runs.map((run) => {
                                 const meta = getStatus(run.status);
                                 const Icon = channelMeta[run.channel]?.icon || Sparkles;
@@ -956,7 +956,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                 )}
 
                 {activeTab === 'lifecycle' && (
-                    <div className={`min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 flex flex-col overflow-hidden ${isMobile ? 'p-3.5' : 'p-4'}`}>
+                    <div className={`rounded-2xl border border-white/10 bg-black/25 flex flex-col ${isMobile ? 'h-auto overflow-visible p-3.5' : 'min-h-0 h-full overflow-hidden p-4'}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Request Lifecycle</div>
                             <Workflow className="h-4 w-4 text-electric-cyan" />
@@ -973,7 +973,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                         <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
                                     </div>
                                 </div>
-                                <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4 ${isMobile ? 'mt-3' : 'mt-4'}`}>
+                        <div className={`${isMobile ? 'mt-3 space-y-4' : 'panel-scrollbar mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden pr-1'}`}>
                                     {(selectedRun.steps || []).map((step, index) => (
                                         <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
                                             <div className="flex flex-col items-center pt-1">
