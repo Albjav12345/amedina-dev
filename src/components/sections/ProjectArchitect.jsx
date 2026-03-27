@@ -338,14 +338,14 @@ const ProjectArchitect = () => {
                             <div className="rounded-2xl border border-white/10 bg-black/30 p-6">
                                 <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Context_Layer</div>
                                 <div className="mt-3 text-xl font-semibold text-white">Aligned with your live showcase.</div>
-                                <p className="mt-2 text-sm text-gray-400 leading-relaxed">The generator uses your {portfolioData.meta.showcasedProjectsCount} showcased systems as reference context, so the output stays close to the kind of engineering work you actually want to sell.</p>
+                                <p className="mt-2 text-sm text-gray-400 leading-relaxed">The generator uses your {portfolioData.meta.showcasedProjectsCount} showcased systems as reference context, so the output stays close to the kind of work you actually want to be hired for.</p>
                             </div>
                         </div>
                     </motion.div>
 
                     <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={scaleIn} className={`rounded-2xl border border-white/10 p-6 md:p-8 h-full flex flex-col relative overflow-visible ${quality.glassClass}`}>
                         <div className="flex items-center justify-between gap-4 mb-6">
-                            <div><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Intake_Interface</div><h3 className="mt-2 text-2xl font-bold text-white">Project intake</h3></div>
+                            <div><div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-green">Project_Intake</div><h3 className="mt-2 text-2xl font-bold text-white">Project intake</h3></div>
                             <button type="button" onClick={() => setShowExamples((prev) => !prev)} className="px-4 py-2 rounded-lg border border-white/10 bg-white/[0.04] hover:border-electric-cyan/40 hover:bg-electric-cyan/10 text-xs font-mono uppercase tracking-[0.18em] text-gray-300 transition-colors cursor-pointer">Load Example</button>
                         </div>
 

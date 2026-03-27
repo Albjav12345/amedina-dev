@@ -3,12 +3,11 @@
 // -------------------------------------------------------------------------
 
 export const ui = {
-    // Navigation & Header
     navigation: {
         brand: {
             first: "AMEDINA",
             last: ".DEV",
-            logoIcon: "Terminal" // Lucide icon name
+            logoIcon: "Terminal"
         },
         links: [
             { name: 'Start', href: '#home', id: 'home', num: '01' },
@@ -21,15 +20,14 @@ export const ui = {
         terminalButton: "TERM_ACCESS"
     },
 
-    // Hero Section
     hero: {
-        priorityLabel: "Priority: Level 1 Alpha",
+        priorityLabel: "SYSTEMS / AUTOMATION / AI",
         title: {
             white: "ALBERTO",
             green: "MEDINA"
         },
         handle: "@Albjav12345",
-        description: "Full-Stack Developer & Automation Specialist. Engineering high-performance systems and deterministic solutions.",
+        description: "I build full-stack products, automation workflows, and AI systems that solve real operational problems and still feel polished to use.",
         buttons: {
             terminal: "ACCESS_TERMINAL",
             cv: "GET_MANIFEST.PDF",
@@ -38,19 +36,18 @@ export const ui = {
         },
         metadata: [
             { label: "Stack_Focus", value: "PYTHON / REACT / UNITY" },
-            { label: "Exp_Runtime", value: "10+ YEARS" }
+            { label: "Exp_Runtime", value: "5+ YEARS SHIPPING" }
         ]
     },
 
-    // Terminal Window
     terminal: {
-        headerTitle: "zsh — port-folio",
+        headerTitle: "zsh - port-folio",
         welcomeMessage: "Click to access system...",
         initialLines: [
-            { text: ">>> SYSTEM_CHECK: OPTIMAL", color: "electric-green" },
+            { text: ">>> SYSTEM_CHECK: READY", color: "electric-green" },
             { text: ">>> DETECTED_VISITOR: AUTH_PENDING...", color: "white" },
-            { text: ">>> LIVE_GITHUB_SYNK: ACTIVE", color: "electric-cyan" },
-            { text: ">>> HINT: I have real-time access to Alberto's repositories.", color: "electric-cyan" },
+            { text: ">>> LIVE_GITHUB_SYNC: ACTIVE", color: "electric-cyan" },
+            { text: ">>> HINT: Ask about recent builds, stack decisions, or current GitHub activity.", color: "electric-cyan" },
             { text: ">>> COMMANDS: ['chat', 'explore', 'github']", color: "gray" },
             { text: ">>> STATUS: WAITING_FOR_INPUT...", color: "electric-green" },
             { text: "$ ./init_session.sh --interactive", color: "white" }
@@ -60,24 +57,23 @@ export const ui = {
             { text: "> ACCESS GRANTED. AWAITING INPUT...", color: "electric-green" }
         ],
         tooltip: {
-            title: "System Architecture",
-            description: "Powered by Llama-3-70b via Groq Cloud.",
+            title: "Terminal Agent",
+            description: "Backed by Groq-hosted Llama 3 with live portfolio context.",
             capabilities: [
-                "Accesses live content & Alberto's GitHub commits.",
-                "Performs autonomous navigation (Scroll UI).",
-                "Queries technical project specifics from data.",
-                "Generates architecture briefs for incoming projects."
+                "Reads live portfolio content and current GitHub activity.",
+                "Can navigate the site and move between sections.",
+                "Answers technical questions about projects, stack, and experience.",
+                "Works alongside the architect flow for incoming project briefs."
             ],
-            usage: 'Try asking "What are your latest commits?" or "design me a system".'
+            usage: 'Try asking "What have you built recently?" or "help me scope a system".'
         }
     },
 
-    // Section Headers (Labes & Titles)
-    sections: {
+        sections: {
         about: {
             id: "SYS_01",
             line1: "Identity",
-            line2: "Protocol."
+            line2: "Background."
         },
         projects: {
             id: "SYS_02",
@@ -87,27 +83,26 @@ export const ui = {
         tech: {
             id: "SYS_03",
             line1: "Technical",
-            line2: "Arsenal."
+            line2: "Stack."
         },
         architect: {
             id: "SYS_04",
             line1: "Project",
             line2: "Architect."
         },
-        console: { // Mobile console header
+        console: {
             id: "SYS_00",
             line1: "SYSTEM",
             line2: "CONSOLE"
         }
     },
 
-    // Contact Section
     contact: {
-        label: "Direct Communication Protocol",
+        label: "Direct Communication",
         titleLine1: "READY TO",
-        titleLine2: "INTERFACE.",
-        description: "Ready to override standard boundaries? Whether you have a specific system in mind or just want to discuss automation protocols, the transmission line is open.",
-        endpointLabel: "Primary_Endpoint",
+        titleLine2: "BUILD.",
+        description: "If you already know what you want to build, we can scope it properly. If not, we can start from the problem and work forward.",
+        endpointLabel: "Primary_Contact",
         email: "amedina.amg.dev@gmail.com",
         social: [
             { name: "GitHub", url: "https://github.com/Albjav12345", icon: "Github" },
@@ -126,13 +121,13 @@ export const ui = {
             },
             message: {
                 label: "DATA_PAYLOAD.txt",
-                placeholder: "Describe your protocol or project..."
+                placeholder: "Describe your project, system, or idea..."
             },
             submit: {
                 idle: "EXECUTE_TRANSMISSION",
                 sending: "TRANSMITTING...",
                 success: "SUCCESS_CONFIRMED",
-                error: "PROTOCOL_FAILURE"
+                error: "TRANSMISSION_ERROR"
             }
         },
         metadata: [
@@ -142,9 +137,8 @@ export const ui = {
         ]
     },
 
-    // Footer
     footer: {
-        name: "Alberto Medina García",
+        name: "Alberto Medina Garcia",
         status: "System Status: All Systems Operational",
         location: "SPAIN / REMOTE",
         vesselId: "AUTO_PORT_V2.0"

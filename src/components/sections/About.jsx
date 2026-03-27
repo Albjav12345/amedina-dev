@@ -180,7 +180,7 @@ const About = ({ isUiFrozen = false }) => {
                                     <p key={i} className="text-justify">
                                         {paragraph.split(' ').map((word, j) => {
                                             const cleanWord = word.replace(/[.,]/g, '');
-                                            if (['Unity', 'C#', 'AI-driven', 'full-stack', 'automated', 'ecosystems', 'optimization'].includes(cleanWord)) {
+                                            if (['Unity', 'C#', 'full-stack', 'automation', 'AI', 'systems', 'backend'].includes(cleanWord)) {
                                                 return <React.Fragment key={j}><span className="text-electric-cyan font-semibold">{word}</span> </React.Fragment>;
                                             }
                                             return word + ' ';
@@ -188,6 +188,20 @@ const About = ({ isUiFrozen = false }) => {
                                     </p>
                                 ))}
                             </div>
+
+                            {profileAbout.philosophy?.quote && (
+                                <div className="mt-8 rounded-2xl border border-electric-cyan/20 bg-electric-cyan/10 p-5 relative z-10">
+                                    <div className="flex items-center gap-2 text-electric-cyan">
+                                        <Quote className="w-4 h-4" />
+                                        <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
+                                            {profileAbout.philosophy.label || 'Perspective'}
+                                        </span>
+                                    </div>
+                                    <p className="mt-4 text-base md:text-lg leading-relaxed text-white">
+                                        {profileAbout.philosophy.quote}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="flex flex-wrap gap-3 mt-10 relative z-10">
                                 <span className="px-3 py-1.5 bg-electric-green/10 border border-electric-green/20 rounded text-[10px] font-mono text-electric-green uppercase tracking-wider">

@@ -2,45 +2,47 @@
 // PROJECT CONFIGURATION CENTER
 // -------------------------------------------------------------------------
 // INSTRUCTIONS:
-// 1. To ADD a project: Copy the "TEMPLATE" block below and paste it into the 'projects' array.
-// 2. To REMOVE a project: Delete its block or comment it out.
-// 3. To ORDER projects: Rearrange the blocks in the array. The first one appears first.
+// 1. To add a project: copy the template block below and paste it into the
+//    'projects' array.
+// 2. To remove a project: delete its block or comment it out.
+// 3. To reorder projects: rearrange the blocks in the array.
 //
 // MEDIA GUIDELINES:
-// - GIF/Video URLs: Can be from anywhere (Giphy, YouTube, etc.) or local files.
-// - Local Files: Put files in 'public/assets/projects/' and reference them as '/assets/projects/filename.mp4'
+// - GIF/video URLs can be external or local.
+// - Local files should live in 'public/assets/projects/' and be referenced as
+//   '/assets/projects/filename.mp4'
 // -------------------------------------------------------------------------
 
-    /*
-    --- 💡 GUÍA DE CAMPOS ---
-    id:          Número único (ej: 5, 6, 7...).
-    title:       Nombre del proyecto (se resalta en verde al pasar el ratón).
-    subtitle:    Frase corta descriptiva (aparece debajo del título).
-    problem:     Contexto: ¿Qué reto técnico resolviste?
-    solution:    Implementación: ¿Cómo lo solucionaste con ingeniería?
-    stack:       Etiquetas de lenguajes (ej: ["Python", "React"]).
-    arch:        Pasos del flujo de datos (se muestran en el diagrama del modal).
-    githubLink:  Enlace a tu repositorio.
-    demoType:    Tipo de medio: 'video' (local .mp4) o 'gif' (enlace externo).
-    thumbnail:   Imagen de portada (obligatoria).
-    icon:        Logo pequeño del proyecto (ej: 'Zap' de Lucide o un SVG/enlace).
-    iconFit:     Opcional. Si pones 'auto', el recuadro se ajustará a la forma del PNG en lugar de ser un cuadrado fijo.
-    iconScale:   Opcional. Escala la imagen para eliminar bordes vacíos transparentes (ej: 1.2 o 1.5).
+/*
+--- FIELD GUIDE ---
+id:          Unique number.
+title:       Project name.
+subtitle:    Short descriptive line shown under the title.
+problem:     What technical or product problem did you solve?
+solution:    How did you solve it?
+stack:       Technology tags.
+arch:        System flow steps shown in the modal diagram.
+githubLink:  Repository URL.
+demoType:    'video' or 'gif'.
+thumbnail:   Cover image (required).
+icon:        Small project icon.
+iconFit:     Optional. Use 'auto' if the icon should keep its natural shape.
+iconScale:   Optional. Increase scale to trim transparent padding.
 
-    --- 🚀 MASTER TEMPLATE (Copiar y pegar al final del array 'projects') ---
-    {
-        id: 5,
-        title: "NOMBRE_DEL_SISTEMA",
-        subtitle: "TAGLINE_CORTO_Y_POTENTE",
-        problem: "DESCRIPCIÓN_DEL_RETO_TÉCNICO",
-        solution: "DESCRIPCIÓN_DE_TU_INGENIERÍA",
-        stack: ["TECNOLOGÍA_1", "TECNOLOGÍA_2"],
-        arch: ["FLUJO_1", "FLUJO_2", "FLUJO_3"],
-        githubLink: "https://github.com/Albjav12345/REPO",
-        demoType: "gif",
-        thumbnail: "URL_A_IMAGEN_O_GIF",
-        icon: "Box"
-    },
+--- MASTER TEMPLATE ---
+{
+    id: 5,
+    title: "SYSTEM_NAME",
+    subtitle: "SHORT_TAGLINE",
+    problem: "WHAT WAS THE PROBLEM?",
+    solution: "HOW DID YOU SOLVE IT?",
+    stack: ["TECH_1", "TECH_2"],
+    arch: ["STEP_1", "STEP_2", "STEP_3"],
+    githubLink: "https://github.com/Albjav12345/REPO",
+    demoType: "gif",
+    thumbnail: "IMAGE_OR_GIF_URL",
+    icon: "Box"
+},
 */
 
 export const projects = [
@@ -48,8 +50,8 @@ export const projects = [
         id: 1,
         title: "Unity Developer",
         subtitle: "High-Fidelity Unity UX",
-        problem: "Demonstrating capability to build complex, non-standard visual interfaces.",
-        solution: "Polished, interactive mini-interfaces built with Unity Engine demonstrating shader prowess.",
+        problem: "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
+        solution: "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
         stack: ["Unity 3D", "C#", "HLSL Shaders", "Motion Design"],
         arch: ["Unity Core", "C# Systems", "HLSL Shaders", "Motion UI"],
         githubLink: "https://github.com/Albjav12345/unity-interfaces",
@@ -64,8 +66,8 @@ export const projects = [
         id: 2,
         title: "Smart Inbox Manager",
         subtitle: "Autonomous Corporate Email Triage",
-        problem: "Corporate email management consumes 30% of work hours, causing bottlenecks.",
-        solution: "Full Stack AI platform using Groq (Llama 3) to semantically analyze and draft responses.",
+        problem: "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
+        solution: "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
         stack: ["Python", "Flask", "Llama 3", "Supabase"],
         arch: ["Outlook", "Python Backend", "Groq Llama 3", "Web UI"],
         githubLink: "https://github.com/Albjav12345/zero_touch_email_bot",
@@ -81,8 +83,8 @@ export const projects = [
         id: 3,
         title: "Paddle Booking App",
         subtitle: "Reactive State & Live Synchronization",
-        problem: "Asynchronous manual booking led to concurrency conflicts and lack of instant availability feedback.",
-        solution: "Deployed a serverless PWA with Firestore listeners for sub-second state synchronization and dynamic validation rules.",
+        problem: "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
+        solution: "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
         stack: ["React + Vite", "Firebase", "Tailwind", "Framer Motion"],
         arch: ["Serverless", "Event Listeners", "PWA Cache", "Reactive State"],
         githubLink: "https://github.com/Albjav12345/padel-sync",
@@ -96,8 +98,8 @@ export const projects = [
         id: 4,
         title: "Twitch Live Analytics",
         subtitle: "Real-time Streamer Detection",
-        problem: "Manual detection of live streamers in Fortnite matches is slow and error-prone.",
-        solution: "Automated Python utility combining Screen Capture, OCR, and Twitch API.",
+        problem: "Finding live streamers in Fortnite lobbies manually was slow, repetitive, and easy to get wrong.",
+        solution: "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
         stack: ["Python", "Tesseract OCR", "Twitch API", "Tkinter"],
         arch: ["Screen Capture", "Tesseract OCR", "Twitch API", "Dashboard"],
         githubLink: "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
@@ -112,8 +114,8 @@ export const projects = [
         id: 5,
         title: "USB Exfiltration",
         subtitle: "Adversary Emulation & Headless Acquisition",
-        problem: "Physical penetration tests require stealthy, artifact-free data acquisition methods that bypass OS file locks and avoid triggering UAC or user awareness.",
-        solution: "Engineered a stealthy Windows payload for Red Team operations, utilizing native WMI polling and Zero-Wait I/O for undetected background data exfiltration.",
+        problem: "Red team USB collection often fails because of file locks, user friction, and the need to stay quiet on the host.",
+        solution: "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
         stack: ["PowerShell", "Batch", "WMI/CIM", "OPSEC"],
         arch: ["Background Polling", "UAC Evasion", "File-Lock Bypass", "Encrypted Exfiltration"],
         githubLink: "https://github.com/Albjav12345/Automated-USB-Exfiltration",

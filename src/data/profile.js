@@ -3,17 +3,20 @@
 // -------------------------------------------------------------------------
 
 export const profile = {
-    name: "Alberto Medina García",
-    role: "Full-Stack Developer & Automation Specialist",
-    tagline: "Engineering high-performance systems and deterministic solutions.",
+    name: "Alberto Medina Garcia",
+    role: "Full-Stack Developer & Automation Engineer",
+    tagline: "I build reliable products, automation workflows, and AI systems with clear product thinking.",
     about: {
         avatarUrl: "/assets/logo.svg",
-        title: "Engineering Logic. Artistic Vision.",
+        title: "Logic first. Built to be used.",
         bio: [
-            "I don't just write code; I engineer digital ecosystems. My journey started with game development, mastering the intricacies of Unity and C#, but my curiosity didn't stop at rendering frames.",
-            "Today, I leverage that visual expertise to build full-stack automated systems, bridging the gap between immersive user interfaces and intelligent backend logic. Whether it's a custom Unity Editor tool or an AI-driven workflow, I build for efficiency."
+            "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
+            "That same mindset now drives my work in full-stack development, automation, and AI tooling. I like building systems that solve real operational problems, feel polished to use, and stay understandable as they grow."
         ],
-        // "Verified Platform" Metrics
+        philosophy: {
+            label: "AI Philosophy",
+            quote: "AI does not replace good engineers. It exposes weak ones. The value is not in using it, but in knowing how to think with it, control it, and build reliable systems around it."
+        },
         stats: [
             { label: "Projects Delivered", value: "25+", id: "projects" },
             { label: "On-Time Delivery", value: "100%", id: "delivery" },
@@ -22,25 +25,25 @@ export const profile = {
         ],
         testimonials: [
             {
-                text: "Alberto created a professional Unity Editor window that saved us hours of workflow. His understanding of UI Toolkit is top-tier.",
+                text: "Alberto built a custom Unity Editor tool that saved us hours every week. It was clean, practical, and easy to adopt straight away.",
                 author: "Unity Client (USA)",
                 project: "Custom Tooling Architecture",
                 avatarUrl: "/assets/testimonials/client1.png"
             },
             {
-                text: "Fast, efficient, and technically precise. He handled the complex metadata automation perfectly.",
+                text: "Fast, precise, and easy to work with. He handled a messy automation problem and turned it into a workflow we could actually rely on.",
                 author: "Automation Client",
                 project: "Python Automation Pipeline",
                 avatarUrl: "/assets/testimonials/client2.png"
             },
             {
-                text: "Great communication and high-quality game assets. He solved a complex C# bug no one else could fix.",
+                text: "Great communication and strong technical judgment. He fixed a C# issue we had been stuck on and explained the solution clearly.",
                 author: "Indie Game Studio",
                 project: "Unity Game Systems",
                 avatarUrl: "/assets/testimonials/client3.png"
             },
             {
-                text: "The delivery was exactly what we needed. Clean code, well documented, and delivered ahead of schedule.",
+                text: "Exactly what we needed: clean code, clear structure, and a delivery that was easy to maintain after handoff.",
                 author: "Tech Startup",
                 project: "Backend Optimization",
                 avatarUrl: "/assets/testimonials/client4.png"
@@ -56,25 +59,25 @@ export const profile = {
 export const skills = {
     categories: [
         {
-            title: "Core Automation Engine",
+            title: "Core Development",
             icon: "Cpu",
             color: "electric-green",
             items: ["Python", "C#", "SQL / NoSQL", "Node.js", "Multithreading", "API Design"]
         },
         {
-            title: "AI & Computer Vision",
+            title: "AI & Vision Workflows",
             icon: "Brain",
             color: "electric-cyan",
             items: ["Groq (Llama 3)", "Tesseract OCR", "Selenium", "Data Processing", "Inference"]
         },
         {
-            title: "Visual & UI Systems",
+            title: "Frontend & Interactive Systems",
             icon: "Layers",
             color: "electric-green",
             items: ["React", "Unity 3D", "Tailwind CSS", "Motion Design", "HLSL Shaders"]
         },
         {
-            title: "Infrastructure & Tools",
+            title: "Infra & Delivery",
             icon: "Globe",
             color: "electric-cyan",
             items: ["Firebase", "Supabase", "Git / GitHub", "Vercel", "Vite", "Postman"]
