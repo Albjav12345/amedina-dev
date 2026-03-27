@@ -294,11 +294,11 @@ function RunTracePanel({ run, isMobile = false }) {
     const requestMessages = Array.isArray(trace.requestMessages) ? trace.requestMessages : [];
 
     return (
-        <div className="flex h-full min-h-0 flex-col gap-4">
-            <div className={`grid min-h-0 flex-1 gap-5 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-[320px_minmax(0,1fr)]'}`}>
-                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-5">
+        <div className="flex h-full min-h-0 flex-col gap-2">
+            <div className={`grid min-h-0 flex-1 gap-3 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-[292px_minmax(0,1fr)]'}`}>
+                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-3 flex min-h-0 flex-col overflow-hidden">
                     <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">Trace Summary</div>
-                    <div className="panel-scrollbar mt-4 max-h-[220px] overflow-y-auto overflow-x-hidden pr-1 lg:max-h-none lg:h-[calc(100%-1.5rem)]">
+                    <div className="panel-scrollbar mt-3 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
                             <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3">
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
@@ -308,31 +308,33 @@ function RunTracePanel({ run, isMobile = false }) {
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Model</div>
                                 <div className="mt-2 text-sm font-semibold text-white break-words">{trace.model || 'Awaiting model response'}</div>
                             </div>
-                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-2 lg:col-span-1">
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3 sm:col-span-2 lg:col-span-1">
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">User Prompt</div>
-                                <div className="mt-3 text-sm leading-relaxed text-white whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                <div className="mt-2 text-[13px] leading-5 text-white whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                                     {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
                                 </div>
                             </div>
-                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-2 lg:col-span-1">
+                            <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3 sm:col-span-2 lg:col-span-1">
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Available Actions</div>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {visibleActions.length ? visibleActions.map((action) => (
-                                        <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
-                                            {action}
-                                        </span>
-                                    )) : (
-                                        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
-                                            No explicit actions exposed
-                                        </span>
-                                    )}
+                                <div className="panel-scrollbar mt-2 max-h-[6.5rem] overflow-y-auto overflow-x-hidden pr-1">
+                                    <div className="flex flex-wrap gap-2">
+                                        {visibleActions.length ? visibleActions.map((action) => (
+                                            <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                                                {action}
+                                            </span>
+                                        )) : (
+                                            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
+                                                No explicit actions exposed
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex min-h-0 flex-col overflow-hidden">
+                <div className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-3 flex min-h-0 flex-col overflow-hidden">
                     <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
                         {[
                             ['messages', 'Prompt Messages'],
@@ -351,21 +353,21 @@ function RunTracePanel({ run, isMobile = false }) {
                         ))}
                     </div>
 
-                    <div className="mt-4 min-h-0 flex-1 overflow-hidden">
+                    <div className="mt-2 min-h-0 flex-1 overflow-hidden">
                         {activeTab === 'messages' && (
-                            <div className="min-w-0 rounded-2xl border border-white/10 bg-black/20 p-4 h-full min-h-0">
+                            <div className="min-w-0 rounded-2xl border border-white/10 bg-black/20 p-3 h-full min-h-0">
                                 {requestMessages.length ? (
                                     <div className="panel-scrollbar h-full min-h-0 overflow-y-auto overflow-x-hidden pr-1">
-                                        <div className="space-y-4">
+                                        <div className="space-y-2.5">
                                             {requestMessages.map((message, index) => (
-                                                <div key={`${message.role || 'message'}-${index}`} className="min-w-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
+                                                <div key={`${message.role || 'message'}-${index}`} className="min-w-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-2.5">
                                                     <div className="flex items-center justify-between gap-3">
                                                         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">{message.role || `message_${index + 1}`}</div>
                                                         <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
                                                             Block {index + 1}
                                                         </div>
                                                     </div>
-                                                    <pre className="panel-scrollbar mt-4 max-h-[14rem] overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-black/25 px-4 py-4 text-[12px] leading-6 text-gray-300 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                                    <pre className="panel-scrollbar mt-2.5 max-h-[8.5rem] overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 text-[12px] leading-5 text-gray-300 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                                                         {typeof message.content === 'string' ? message.content : prettyPrint(message.content)}
                                                     </pre>
                                                 </div>
@@ -813,15 +815,15 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
 
 function AgentTracePanel({ selectedRun, isMobile = false }) {
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[540px]' : 'h-[560px]'}`}>
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-5 flex flex-col overflow-hidden ${isMobile ? 'h-[540px]' : 'h-[560px]'}`}>
             <div className="flex items-center justify-between gap-4">
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Agent Trace</div>
-                    <h3 className="mt-2 text-2xl font-bold text-white">Prompt and raw output</h3>
+                    <h3 className="mt-1.5 text-2xl font-bold text-white">Prompt and raw output</h3>
                 </div>
                 <Sparkles className="h-5 w-5 text-electric-green" />
             </div>
-            <div className="mt-4 min-h-0 flex-1">
+            <div className="mt-3 min-h-0 flex-1">
                 <RunTracePanel run={selectedRun} isMobile={isMobile} />
             </div>
         </div>
