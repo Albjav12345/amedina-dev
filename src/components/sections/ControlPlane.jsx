@@ -17,7 +17,7 @@ import {
     X,
     XCircle,
 } from 'lucide-react';
-import { containWheelOnOverflow } from '../../utils/scrolling';
+import { containWheelOnOverflow, translateWheelToHorizontalScroll } from '../../utils/scrolling';
 import { clearOpsTelemetry, getOpsTelemetry, subscribeOpsTelemetry } from '../../utils/opsTelemetry';
 
 const statusMap = {
@@ -267,7 +267,7 @@ function TraceCodeBlock({ label, value, emptyMessage = 'No trace captured for th
 }
 
 function RunTracePanel({ run, isMobile = false }) {
-    const [activeTab, setActiveTab] = useState('messages');
+    const [activeTab, setActiveTab] = useState(() => (isMobile ? 'summary' : 'messages'));
     const trace = run?.trace || null;
     const tabClassName = (isActive) => `inline-flex items-center justify-center rounded-full border px-3 py-2 text-[10px] font-mono uppercase tracking-[0.16em] transition-colors ${isActive
         ? 'border-electric-green/30 bg-electric-green/10 text-electric-green'
@@ -292,6 +292,125 @@ function RunTracePanel({ run, isMobile = false }) {
 
     const visibleActions = Array.isArray(trace.availableActions) ? trace.availableActions.filter(Boolean) : [];
     const requestMessages = Array.isArray(trace.requestMessages) ? trace.requestMessages : [];
+
+    if (isMobile) {
+        return (
+            <div className="flex h-full min-h-0 flex-col gap-3">
+                <div className="panel-scrollbar -mx-1 overflow-x-auto overflow-y-hidden px-1 pb-1">
+                    <div className="flex min-w-max gap-2">
+                        {[
+                            ['summary', 'Summary'],
+                            ['messages', 'Messages'],
+                            ['raw', 'Raw'],
+                            ['parsed', 'Parsed'],
+                            ['payload', 'Request'],
+                        ].map(([key, label]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => setActiveTab(key)}
+                                className={`${tabClassName(activeTab === key)} whitespace-nowrap px-4`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/20 p-2.5 overflow-hidden">
+                    {activeTab === 'summary' && (
+                        <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1">
+                            <div className="grid grid-cols-2 gap-2.5">
+                                <div className="rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Provider</div>
+                                    <div className="mt-2 text-sm font-semibold text-white break-words">{trace.provider || 'Unknown'}</div>
+                                </div>
+                                <div className="rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Model</div>
+                                    <div className="mt-2 text-sm font-semibold text-white break-words">{trace.model || 'Awaiting model response'}</div>
+                                </div>
+                                <div className="col-span-2 rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">User Prompt</div>
+                                    <div className="mt-2 text-[13px] leading-5 text-white whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                        {trace.userInput || run.inputExcerpt || 'No user input recorded.'}
+                                    </div>
+                                </div>
+                                <div className="col-span-2 rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Available Actions</div>
+                                    <div className="panel-scrollbar mt-3 max-h-[8.5rem] overflow-y-auto overflow-x-hidden pr-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            {visibleActions.length ? visibleActions.map((action) => (
+                                                <span key={action} className="rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                                                    {action}
+                                                </span>
+                                            )) : (
+                                                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-400">
+                                                    No explicit actions exposed
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'messages' && (
+                        <>
+                            {requestMessages.length ? (
+                                <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1">
+                                    <div className="space-y-3">
+                                        {requestMessages.map((message, index) => (
+                                            <div key={`${message.role || 'message'}-${index}`} className="rounded-2xl border border-white/10 bg-[#0a0b0f] p-3">
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-green">{message.role || `message_${index + 1}`}</div>
+                                                    <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-gray-500">
+                                                        Block {index + 1}
+                                                    </div>
+                                                </div>
+                                                <pre className="panel-scrollbar mt-2.5 max-h-[10rem] overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 text-[12px] leading-5 text-gray-300 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                                    {typeof message.content === 'string' ? message.content : prettyPrint(message.content)}
+                                                </pre>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <TraceCodeBlock label="Prompt Messages" value="" emptyMessage="The selected run did not capture model messages." fillHeight />
+                            )}
+                        </>
+                    )}
+
+                    {activeTab === 'raw' && (
+                        <TraceCodeBlock
+                            label="Raw Model Output"
+                            value={trace.rawModelResponse}
+                            emptyMessage="No raw model output was captured for this execution."
+                            fillHeight
+                        />
+                    )}
+
+                    {activeTab === 'parsed' && (
+                        <TraceCodeBlock
+                            label="Parsed Payload"
+                            value={trace.parsedResponse}
+                            emptyMessage="No parsed payload was captured for this execution."
+                            fillHeight
+                        />
+                    )}
+
+                    {activeTab === 'payload' && (
+                        <TraceCodeBlock
+                            label="Request Payload"
+                            value={trace.requestPayload}
+                            emptyMessage="No request payload snapshot was captured for this execution."
+                            fillHeight
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-full min-h-0 flex-col gap-2">
@@ -459,23 +578,61 @@ function ControlPanelSummaryStrip({ summary }) {
 }
 
 function ServiceGridPanel({ services, isMobile = false }) {
+    const scrollerRef = useRef(null);
+
+    useEffect(() => {
+        const node = scrollerRef.current;
+
+        if (!(node instanceof HTMLElement)) {
+            return undefined;
+        }
+
+        const handleWheel = (event) => {
+            const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+
+            if (!dominantDelta) {
+                return;
+            }
+
+            const maxScrollLeft = node.scrollWidth - node.clientWidth;
+            const canScrollLeft = dominantDelta < 0 && node.scrollLeft > 0;
+            const canScrollRight = dominantDelta > 0 && node.scrollLeft < maxScrollLeft - 1;
+
+            if (canScrollLeft || canScrollRight) {
+                event.preventDefault();
+                event.stopPropagation();
+                node.scrollLeft = Math.max(0, Math.min(maxScrollLeft, node.scrollLeft + dominantDelta));
+            }
+        };
+
+        node.addEventListener('wheel', handleWheel, { passive: false });
+        return () => node.removeEventListener('wheel', handleWheel);
+    }, []);
+
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[360px]' : 'h-[440px]'}`}>
-            <div className="flex items-center justify-between gap-4">
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[456px]' : 'h-[440px]'}`}>
+            <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Backend Signals</div>
-                    <h3 className="mt-2 text-2xl font-bold text-white">Live probes and integrations</h3>
+                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[12rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Live probes and integrations</h3>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
+                <div className={`inline-flex items-center gap-2 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 font-mono uppercase tracking-[0.18em] text-electric-cyan ${isMobile ? 'self-start px-2.5 py-1 text-[9px]' : 'px-3 py-1 text-[10px]'}`}>
                     <ShieldCheck className="h-3 w-3" />
                     Merged Signal Feed
                 </div>
             </div>
-            <div className="mt-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
-                <span>Swipe or scroll sideways through the live service cards</span>
+            <div className={`mt-3 flex items-center justify-between gap-3 font-mono uppercase tracking-[0.18em] text-gray-500 ${isMobile ? 'text-[9px]' : 'text-[10px]'}`}>
+                <span>{isMobile ? 'Swipe through live cards' : 'Swipe or scroll sideways through the live service cards'}</span>
                 <span>{services.length} systems</span>
             </div>
-            <div className="panel-scrollbar mt-5 min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-2">
+            <div
+                ref={scrollerRef}
+                className="panel-scrollbar mt-3 min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-2"
+                data-wheel-axis="x"
+                onWheelCapture={translateWheelToHorizontalScroll}
+                onWheel={translateWheelToHorizontalScroll}
+                style={{ overscrollBehaviorX: 'contain' }}
+            >
                 <div className={`flex h-full items-stretch gap-4 ${isMobile ? 'snap-x snap-mandatory pr-1' : 'pr-1'}`}>
                     {services.map((service) => {
                         const meta = getStatus(service.status);
@@ -485,7 +642,7 @@ function ServiceGridPanel({ services, isMobile = false }) {
                         return (
                             <div
                                 key={service.id}
-                                className={`min-h-0 shrink-0 rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col ${isMobile ? 'w-[82vw] snap-start' : 'w-[min(25rem,calc(50vw-5rem))] xl:w-[23.5rem]'}`}
+                                className={`min-h-0 shrink-0 rounded-2xl border border-white/10 bg-black/25 flex flex-col ${isMobile ? 'w-[86vw] max-w-[19.5rem] snap-start p-3.5' : 'w-[min(25rem,calc(50vw-5rem))] xl:w-[23.5rem] p-4'}`}
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
@@ -496,8 +653,18 @@ function ServiceGridPanel({ services, isMobile = false }) {
                                         {meta.label}
                                     </div>
                                 </div>
-                                <div className="mt-4 text-base font-semibold text-white">{service.label}</div>
-                                <div className="mt-4 grid grid-cols-2 gap-3">
+                                <div
+                                    className={`mt-4 font-semibold text-white ${isMobile ? 'text-[1rem] leading-[1.18]' : 'text-base'}`}
+                                    style={isMobile ? {
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                    } : undefined}
+                                >
+                                    {service.label}
+                                </div>
+                                <div className={`mt-4 grid grid-cols-2 ${isMobile ? 'gap-2.5' : 'gap-3'}`}>
                                     <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
                                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-gray-500">Latency</div>
                                         <div className="mt-2 text-sm leading-snug text-white break-words">{formatMs(service.latencyMs)}</div>
@@ -518,10 +685,10 @@ function ServiceGridPanel({ services, isMobile = false }) {
                                     </div>
                                 </div>
                                 <p
-                                    className="mt-4 text-xs leading-relaxed text-gray-400 break-words"
+                                    className={`mt-4 text-xs leading-relaxed text-gray-400 break-words ${isMobile ? 'min-h-[2.7rem]' : ''}`}
                                     style={{
                                         display: '-webkit-box',
-                                        WebkitLineClamp: 3,
+                                        WebkitLineClamp: isMobile ? 2 : 3,
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
                                     }}
@@ -549,44 +716,44 @@ function RuntimeActivityPanel({
     capabilities,
 }) {
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[320px]' : 'h-[620px]'}`}>
-            <div className="flex items-start justify-between gap-4">
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[470px]' : 'h-[620px]'}`}>
+            <div className={`flex items-start gap-4 ${isMobile ? 'flex-col' : 'justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-cyan">Runtime Activity</div>
-                    <h3 className="mt-2 text-2xl font-bold text-white">Session pulse</h3>
+                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Session pulse</h3>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-300">
+                <div className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 font-mono uppercase tracking-[0.18em] text-gray-300 ${isMobile ? 'px-2.5 py-1 text-[9px]' : 'px-3 py-1 text-[10px]'}`}>
                     <Waves className="h-3 w-3 text-electric-cyan" />
                     {latencyTrace.sourceLabel}
                 </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-2">
+            <div className={`grid grid-cols-3 gap-2 ${isMobile ? 'mt-4' : 'mt-5'}`}>
                 <PanelPillButton active={activeTab === 'latency'} onClick={() => onTabChange('latency')}>Latency</PanelPillButton>
                 <PanelPillButton active={activeTab === 'notes'} onClick={() => onTabChange('notes')}>Notes</PanelPillButton>
                 <PanelPillButton active={activeTab === 'jobs'} onClick={() => onTabChange('jobs')}>Recent Jobs</PanelPillButton>
             </div>
 
-            <div className="mt-5 min-h-0 flex-1">
+            <div className={`${isMobile ? 'mt-4' : 'mt-5'} min-h-0 flex-1`}>
                 {activeTab === 'latency' && (
                     <div className="flex h-full min-h-0 flex-col">
                         <div className="grid grid-cols-2 gap-3 shrink-0">
-                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                            <div className={`rounded-2xl border border-white/10 bg-black/25 ${isMobile ? 'p-3.5' : 'p-4'}`}>
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Latest Sample</div>
-                                <div className="mt-3 break-words text-[1.85rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(latestLatencyPoint?.value ?? null)}</div>
-                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
+                                <div className={`mt-3 break-words font-semibold leading-[1.02] text-white ${isMobile ? 'text-[1.55rem]' : 'text-[1.85rem] sm:text-2xl'}`}>{formatMs(latestLatencyPoint?.value ?? null)}</div>
+                                <div className={`mt-2 leading-relaxed text-gray-400 ${isMobile ? 'text-[12px]' : 'text-sm'}`}>{latestLatencyPoint?.detail || 'Waiting for traffic or a fresh probe sample.'}</div>
                             </div>
-                            <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                            <div className={`rounded-2xl border border-white/10 bg-black/25 ${isMobile ? 'p-3.5' : 'p-4'}`}>
                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">Peak Observed</div>
-                                <div className="mt-3 break-words text-[1.85rem] font-semibold leading-[1.02] text-white sm:text-2xl">{formatMs(hottestLatencyPoint?.value ?? null)}</div>
-                                <div className="mt-2 text-sm leading-relaxed text-gray-400">{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
+                                <div className={`mt-3 break-words font-semibold leading-[1.02] text-white ${isMobile ? 'text-[1.55rem]' : 'text-[1.85rem] sm:text-2xl'}`}>{formatMs(hottestLatencyPoint?.value ?? null)}</div>
+                                <div className={`mt-2 leading-relaxed text-gray-400 ${isMobile ? 'text-[12px]' : 'text-sm'}`}>{hottestLatencyPoint?.detail || 'No measurable latency signal has been captured yet.'}</div>
                             </div>
                         </div>
 
-                        <div className="mt-4 min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/25 p-4">
+                        <div className={`min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/25 ${isMobile ? 'mt-3 p-3' : 'mt-4 p-4'}`}>
                             {latencyTrace.items.length ? (
                                 <div className="flex h-full min-h-0 flex-col">
-                                    <div className="mb-4 flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
+                                    <div className={`flex items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500 ${isMobile ? 'mb-2.5' : 'mb-4'}`}>
                                         <span>Recent signal distribution</span>
                                         <span>Max {formatMs(maxLatency)}</span>
                                     </div>
@@ -628,14 +795,14 @@ function RuntimeActivityPanel({
                 {activeTab === 'notes' && (
                     <div className="panel-scrollbar h-full overflow-y-auto overflow-x-hidden pr-1 space-y-3">
                         {capabilities.map((item) => (
-                            <div key={item.id} className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                            <div key={item.id} className={`rounded-2xl border border-white/10 bg-black/25 ${isMobile ? 'p-3.5' : 'p-4'}`}>
                                 <div className="flex flex-col items-start gap-2">
                                     <div className="text-sm font-semibold leading-snug text-white">{item.label}</div>
                                     <div className="inline-flex max-w-full rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-cyan">
                                         {item.value}
                                     </div>
                                 </div>
-                                <div className="mt-3 text-sm leading-relaxed text-gray-400 break-words">{item.detail}</div>
+                                <div className={`mt-3 leading-relaxed text-gray-400 break-words ${isMobile ? 'text-[12px]' : 'text-sm'}`}>{item.detail}</div>
                             </div>
                         ))}
                     </div>
@@ -647,7 +814,7 @@ function RuntimeActivityPanel({
                             const meta = getStatus(job.status);
 
                             return (
-                                <div key={job.id} className="min-w-0 rounded-2xl border border-white/10 bg-black/25 p-4">
+                                <div key={job.id} className={`min-w-0 rounded-2xl border border-white/10 bg-black/25 ${isMobile ? 'p-3.5' : 'p-4'}`}>
                                     <div className="flex min-w-0 flex-col items-start gap-2">
                                         <div className="min-w-0 break-words text-sm font-semibold leading-snug text-white">{job.label}</div>
                                         <div className={`inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] ${meta.className}`}>
@@ -655,7 +822,7 @@ function RuntimeActivityPanel({
                                         </div>
                                     </div>
                                     <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{formatRelative(job.at)}</div>
-                                    <div className="mt-2 break-words text-sm leading-relaxed text-gray-400">{job.detail}</div>
+                                    <div className={`mt-2 break-words leading-relaxed text-gray-400 ${isMobile ? 'text-[12px]' : 'text-sm'}`}>{job.detail}</div>
                                 </div>
                             );
                         })}
@@ -670,39 +837,39 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
     const [activeTab, setActiveTab] = useState('queue');
 
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[520px]' : 'h-[620px]'}`}>
-            <div className="flex items-center justify-between gap-4">
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-6 flex flex-col overflow-hidden ${isMobile ? 'h-[600px]' : 'h-[620px]'}`}>
+            <div className={`flex gap-4 ${isMobile ? 'flex-col items-start' : 'items-center justify-between'}`}>
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Execution Inspector</div>
-                    <h3 className="mt-2 text-2xl font-bold text-white">Observed executions</h3>
+                    <h3 className={`mt-2 font-bold text-white ${isMobile ? 'max-w-[10rem] text-[1.72rem] leading-[0.98]' : 'text-2xl'}`}>Observed executions</h3>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-electric-green">
+                <div className={`inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 font-mono uppercase tracking-[0.18em] text-electric-green ${isMobile ? 'self-start px-2.5 py-1 text-[9px]' : 'px-3 py-1 text-[10px]'}`}>
                     <Waves className="h-3 w-3" />
                     Browser Telemetry
                 </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-2">
+            <div className={`grid grid-cols-2 gap-2 ${isMobile ? 'mt-4' : 'mt-5'}`}>
                 <PanelPillButton active={activeTab === 'queue'} onClick={() => setActiveTab('queue')}>Run Queue</PanelPillButton>
                 <PanelPillButton active={activeTab === 'lifecycle'} onClick={() => setActiveTab('lifecycle')}>Lifecycle</PanelPillButton>
             </div>
 
-            <div className="mt-5 min-h-0 flex-1">
+            <div className={`${isMobile ? 'mt-4' : 'mt-5'} min-h-0 flex-1`}>
                 {activeTab === 'queue' && (
-                    <div className="min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                    <div className={`min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 flex flex-col overflow-hidden ${isMobile ? 'p-3.5' : 'p-4'}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Run Queue</div>
                             <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{runs.length} observed</div>
                         </div>
-                        <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-electric-cyan/20 bg-electric-cyan/10 px-4 py-3">
+                        <div className={`flex items-center justify-between gap-3 border-b border-white/10 pb-2 ${isMobile ? 'mt-2' : 'mt-3'}`}>
                             <div className="min-w-0 text-xs leading-relaxed text-electric-cyan">
-                                Click a run here. Then open Lifecycle or inspect the trace below.
+                                {isMobile ? 'Tap any run card to inspect it.' : 'Click a run here. Then open Lifecycle or inspect the trace below.'}
                             </div>
-                            <div className="shrink-0 rounded-full border border-electric-cyan/20 bg-black/20 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
+                            <div className="shrink-0 rounded-full border border-electric-cyan/20 bg-electric-cyan/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-electric-cyan">
                                 Interactive
                             </div>
                         </div>
-                        <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3">
+                        <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-3 ${isMobile ? 'mt-2.5' : 'mt-4'}`}>
                             {runs.length ? runs.map((run) => {
                                 const meta = getStatus(run.status);
                                 const Icon = channelMeta[run.channel]?.icon || Sparkles;
@@ -714,7 +881,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                         type="button"
                                         onClick={() => onSelectRun(run.id)}
                                         aria-pressed={isActive}
-                                        className={`w-full rounded-2xl border p-4 text-left transition-[border-color,background-color,transform,box-shadow] cursor-pointer ${isActive
+                                        className={`w-full rounded-2xl border text-left transition-[border-color,background-color,transform,box-shadow] cursor-pointer ${isMobile ? 'p-3.5' : 'p-4'} ${isActive
                                             ? 'border-electric-green/35 bg-electric-green/[0.08] shadow-[0_0_0_1px_rgba(0,255,153,0.08)]'
                                             : 'border-white/10 bg-black/30 hover:border-electric-cyan/25 hover:bg-white/[0.04]'}`}
                                     >
@@ -739,10 +906,10 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                                         </div>
                                                     </div>
                                                     <div
-                                                        className="mt-3 text-sm leading-relaxed text-gray-300 break-words"
+                                                        className={`mt-2.5 leading-relaxed text-gray-300 break-words ${isMobile ? 'text-[13px]' : 'text-sm'}`}
                                                         style={{
                                                             display: '-webkit-box',
-                                                            WebkitLineClamp: 2,
+                                                            WebkitLineClamp: isMobile ? 1 : 2,
                                                             WebkitBoxOrient: 'vertical',
                                                             overflow: 'hidden',
                                                         }}
@@ -769,7 +936,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                 )}
 
                 {activeTab === 'lifecycle' && (
-                    <div className="min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 p-4 flex flex-col overflow-hidden">
+                    <div className={`min-h-0 h-full rounded-2xl border border-white/10 bg-black/25 flex flex-col overflow-hidden ${isMobile ? 'p-3.5' : 'p-4'}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-electric-cyan">Request Lifecycle</div>
                             <Workflow className="h-4 w-4 text-electric-cyan" />
@@ -777,16 +944,16 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
 
                         {selectedRun ? (
                             <>
-                                <div className="mt-4 shrink-0 rounded-2xl border border-white/10 bg-[#0a0b0f] p-4">
+                                <div className={`shrink-0 rounded-2xl border border-white/10 bg-[#0a0b0f] ${isMobile ? 'mt-3 p-3.5' : 'mt-4 p-4'}`}>
                                     <div className="text-base font-semibold text-white">{selectedRun.title}</div>
-                                    <div className="mt-2 text-sm leading-relaxed text-gray-400 break-words">{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
+                                    <div className={`mt-2 leading-relaxed text-gray-400 break-words ${isMobile ? 'text-[13px]' : 'text-sm'}`}>{selectedRun.decision || selectedRun.outputExcerpt || 'Awaiting details.'}</div>
                                     <div className="mt-4 flex flex-wrap gap-4 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">
                                         <span>{channelMeta[selectedRun.channel]?.label || selectedRun.channel}</span>
                                         <span>{formatMs(selectedRun.latencyMs)}</span>
                                         <span>{formatRelative(selectedRun.completedAt || selectedRun.startedAt)}</span>
                                     </div>
                                 </div>
-                                <div className="panel-scrollbar mt-4 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4">
+                                <div className={`panel-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 space-y-4 ${isMobile ? 'mt-3' : 'mt-4'}`}>
                                     {(selectedRun.steps || []).map((step, index) => (
                                         <div key={`${selectedRun.id}-${step.key}`} className="flex gap-4">
                                             <div className="flex flex-col items-center pt-1">
@@ -795,14 +962,14 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
                                             </div>
                                             <div className="pb-4 min-w-0">
                                                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{step.label}</div>
-                                                <div className="mt-2 text-sm leading-relaxed text-white break-words">{step.detail}</div>
+                                                <div className={`mt-2 leading-relaxed text-white break-words ${isMobile ? 'text-[13px]' : 'text-sm'}`}>{step.detail}</div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </>
                         ) : (
-                            <div className="mt-4 flex min-h-0 flex-1 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 p-5 text-sm text-gray-500">
+                            <div className={`flex min-h-0 flex-1 items-center rounded-2xl border border-dashed border-white/10 bg-black/20 text-gray-500 ${isMobile ? 'mt-3 p-4 text-[13px]' : 'mt-4 p-5 text-sm'}`}>
                                 Select a session run in Run Queue to inspect its lifecycle here.
                             </div>
                         )}
@@ -815,7 +982,7 @@ function ExecutionInspectorPanel({ runs, selectedRun, onSelectRun, isMobile = fa
 
 function AgentTracePanel({ selectedRun, isMobile = false }) {
     return (
-        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-5 flex flex-col overflow-hidden ${isMobile ? 'h-[540px]' : 'h-[560px]'}`}>
+        <div className={`rounded-3xl border border-white/10 bg-white/[0.03] p-5 flex flex-col overflow-hidden ${isMobile ? 'h-[680px]' : 'h-[560px]'}`}>
             <div className="flex items-center justify-between gap-4">
                 <div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-electric-green">Agent Trace</div>
@@ -1533,8 +1700,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                 <LazyPanelBlock
                                                                     root={scrollRoot}
                                                                     eager
-                                                                    minHeight={360}
-                                                                    skeleton={<BlockSkeleton title="Backend signals" minHeight={360} />}
+                                                                    minHeight={456}
+                                                                    skeleton={<BlockSkeleton title="Backend signals" minHeight={456} />}
                                                                 >
                                                                     <ServiceGridPanel services={services} isMobile />
                                                                 </LazyPanelBlock>
@@ -1542,8 +1709,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                                 <LazyPanelBlock
                                                                     root={scrollRoot}
                                                                     eager
-                                                                    minHeight={320}
-                                                                    skeleton={<BlockSkeleton title="Runtime activity" minHeight={320} />}
+                                                                    minHeight={470}
+                                                                    skeleton={<BlockSkeleton title="Runtime activity" minHeight={470} />}
                                                                 >
                                                                     <RuntimeActivityPanel
                                                                         isMobile
@@ -1564,8 +1731,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                             <LazyPanelBlock
                                                                 root={scrollRoot}
                                                                 eager
-                                                                minHeight={520}
-                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={520} />}
+                                                                minHeight={600}
+                                                                skeleton={<BlockSkeleton title="Execution inspector" minHeight={600} />}
                                                             >
                                                                 <ExecutionInspectorPanel
                                                                     runs={runs}
@@ -1582,8 +1749,8 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                                                     <LazyPanelBlock
                                                         root={scrollRoot}
                                                         eager={isMobileSheet}
-                                                        minHeight={isMobileSheet ? 540 : 560}
-                                                        skeleton={<BlockSkeleton title="Agent trace" minHeight={isMobileSheet ? 540 : 560} />}
+                                                        minHeight={isMobileSheet ? 680 : 560}
+                                                        skeleton={<BlockSkeleton title="Agent trace" minHeight={isMobileSheet ? 680 : 560} />}
                                                     >
                                                         <AgentTracePanel selectedRun={selectedRun} isMobile={isMobileSheet} />
                                                     </LazyPanelBlock>
