@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView, useSpring, useTransform } from 'framer-motion';
 import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
 import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
@@ -59,6 +59,8 @@ const About = ({ isUiFrozen = false }) => {
     const { about } = portfolioData.ui.sections;
     const quality = useHardwareQuality();
     const isLow = quality.tier === 'low';
+    const mobileTestimonialsRef = useRef(null);
+    const [mobileTestimonialIndex, setMobileTestimonialIndex] = useState(0);
 
     const stats = profileAbout.stats.map(s => {
         let icon;
@@ -70,6 +72,25 @@ const About = ({ isUiFrozen = false }) => {
 
         return { ...s, icon, color: s.id === 'rating' ? 'text-electric-cyan' : 'text-electric-green' };
     });
+
+    useEffect(() => {
+        const container = mobileTestimonialsRef.current;
+        if (!container) return undefined;
+
+        const handleScroll = () => {
+            const card = container.querySelector('[data-testimonial-card]');
+            if (!card) return;
+
+            const cardWidth = card.getBoundingClientRect().width + 16;
+            if (!cardWidth) return;
+
+            const nextIndex = Math.round(container.scrollLeft / cardWidth);
+            setMobileTestimonialIndex(Math.max(0, Math.min(profileAbout.testimonials.length - 1, nextIndex)));
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [profileAbout.testimonials.length]);
 
     return (
         <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
@@ -232,7 +253,79 @@ const About = ({ isUiFrozen = false }) => {
                         <div className="h-px flex-grow bg-white/10"></div>
                     </div>
 
-                    <div className={`relative w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
+                    <div className="md:hidden">
+                        <div className="flex items-center justify-between gap-4 mb-4">
+                            <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-gray-500">
+                                Highlighted testimonial
+                            </div>
+                            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">
+                                <span>{mobileTestimonialIndex + 1}</span>
+                                <span className="text-gray-600">/</span>
+                                <span>{profileAbout.testimonials.length}</span>
+                            </div>
+                        </div>
+
+                        <div
+                            ref={mobileTestimonialsRef}
+                            className="flex gap-4 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                        >
+                            {profileAbout.testimonials.map((t, i) => (
+                                <div
+                                    key={`mobile-${i}`}
+                                    data-testimonial-card
+                                    className="w-[calc(100vw-5rem)] max-w-none shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] p-6 flex flex-col justify-between"
+                                >
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(5)].map((_, j) => (
+                                            <Star key={j} className="w-3.5 h-3.5 fill-electric-green text-electric-green" />
+                                        ))}
+                                    </div>
+                                    <p className="text-[1.05rem] leading-[1.75] text-gray-200 italic mb-6">
+                                        "{t.text}"
+                                    </p>
+                                    <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                                        <div className="w-12 h-12 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
+                                            {t.avatarUrl ? (
+                                                <img
+                                                    src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
+                                                    alt={t.author}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
+                                                    {t.author.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-base font-bold text-white truncate">{t.author}</div>
+                                            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500 truncate">{t.project}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-center gap-2">
+                            {profileAbout.testimonials.map((_, index) => (
+                                <button
+                                    key={`dot-${index}`}
+                                    type="button"
+                                    onClick={() => {
+                                        const container = mobileTestimonialsRef.current;
+                                        const card = container?.querySelector('[data-testimonial-card]');
+                                        if (!container || !card) return;
+                                        const cardWidth = card.getBoundingClientRect().width + 16;
+                                        container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+                                    }}
+                                    aria-label={`Show testimonial ${index + 1}`}
+                                    className={`h-2 rounded-full transition-all ${mobileTestimonialIndex === index ? 'w-8 bg-electric-green' : 'w-2 bg-white/15'}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className={`relative hidden md:block w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
                         style={!isLow ? { maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' } : {}}
                     >
                         {/* Gradient Masks for edges - Fallback for non-mask browsers or Low Tier */}
