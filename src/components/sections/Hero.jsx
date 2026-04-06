@@ -107,7 +107,7 @@ const Hero = ({ isUiFrozen = false }) => {
                                     </span>
                                 </h1>
                             </div>
-                            <div className="flex items-center gap-2 font-mono text-xs text-secondary/60">
+                            <div className="flex items-center gap-2 font-mono text-xs text-white/50">
                                 <span className="opacity-50">@</span>
                                 <span className="text-electric-cyan">{hero.handle.replace('@', '')}</span>
                             </div>
@@ -124,7 +124,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         >
                             <button
                                 onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
-                                className="relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
+                                className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
                             >
                                 <span className="relative z-10 flex items-center gap-2">
                                     {hero.buttons.terminal}

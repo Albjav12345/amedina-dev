@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minimize2, Maximize2, Info } from 'lucide-react';
+import { X, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
 import { recordOpsRun } from '../../utils/opsTelemetry';
 
@@ -16,9 +16,6 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [hasCursor, setHasCursor] = useState(true);
-    const containerRef = useRef(null);
-
-    const toggleExpand = () => setIsExpanded(!isExpanded);
 
     useEffect(() => {
         const checkLayout = () => {
@@ -116,7 +113,7 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                                                 <br /><br />
                                                 <span className="text-electric-green">{" >> REAL-TIME CAPABILITIES:"}</span><br />
                                                 {terminal.tooltip.capabilities.map((cap, i) => (
-                                                    <React.Fragment key={i}>• {cap}<br /></React.Fragment>
+                                                    <React.Fragment key={i}>- {cap}<br /></React.Fragment>
                                                 ))}
                                                 <br />
                                                 <span className="opacity-60">USAGE:</span> {terminal.tooltip.usage}

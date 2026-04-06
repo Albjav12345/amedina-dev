@@ -1,44 +1,64 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-    Cpu, Brain, Layers, Globe,
-    Database, Terminal, Code2,
-    Zap, Share2, Box, Wind,
-    Flame, Monitor, Layout,
-    Smartphone, Network, Lock,
-    Server, Cloud, GitBranch,
-    Search, MousePointer2
+    Cpu,
+    Brain,
+    Layers,
+    Globe,
+    Database,
+    Terminal,
+    Code2,
+    Zap,
+    Box,
+    Wind,
+    Flame,
+    Layout,
+    Cloud,
+    Search,
+    MousePointer2,
 } from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
-const { categories: rawCategories } = portfolioData.skills;
+const COLOR_STYLES = {
+    'electric-green': {
+        glowBg: 'bg-electric-green/10',
+        hoverText: 'group-hover:text-electric-green',
+        border: 'border-electric-green/10',
+        text: 'text-electric-green',
+    },
+    'electric-cyan': {
+        glowBg: 'bg-electric-cyan/10',
+        hoverText: 'group-hover:text-electric-cyan',
+        border: 'border-electric-cyan/10',
+        text: 'text-electric-cyan',
+    },
+};
 
-const TechNode = ({ name, icon, color = "electric-green", quality }) => {
-    // Low Tier: No hover scale, no heavy glows, simple opacity transition
+const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
     const isLow = quality.tier === 'low';
+    const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
 
     return (
         <motion.div
             variants={isLow ? { hidden: { opacity: 0 }, visible: { opacity: 1 } } : {
                 hidden: { opacity: 0, scale: 0.8, y: 10 },
-                visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } }
+                visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 20 } },
             }}
             whileHover={!isLow ? { y: -5, scale: 1.05 } : {}}
             className="group relative flex flex-col items-center gap-2 gpu-accelerated"
         >
             <div className={`w-14 h-14 rounded-xl flex items-center justify-center border-white/5 relative overflow-hidden transition-all duration-300 ${quality.glassClass}`}>
-                {/* Glow Effect - Only for Mid/High Tier */}
                 {quality.tier !== 'low' && (
                     <>
-                        <div className={`absolute inset-0 bg-${color}/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
-                        <div className={`absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                        <div className={`absolute inset-0 ${colorStyles.glowBg} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
+                        <div className="absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </>
                 )}
 
-                <div className={`relative z-10 text-gray-400 group-hover:text-${color} transition-colors duration-300 transform ${quality.tier !== 'low' ? 'group-hover:scale-110' : ''}`}>
-                    {React.cloneElement(icon, { className: "w-4 h-4" })}
+                <div className={`relative z-10 text-gray-400 ${colorStyles.hoverText} transition-colors duration-300 transform ${quality.tier !== 'low' ? 'group-hover:scale-110' : ''}`}>
+                    {React.cloneElement(icon, { className: 'w-4 h-4' })}
                 </div>
             </div>
             <div className="flex flex-col items-center gap-0.5">
@@ -52,14 +72,14 @@ const TechNode = ({ name, icon, color = "electric-green", quality }) => {
 
 const NodeGroup = ({ title, icon, items, index, color }) => {
     const quality = useHardwareQuality();
+    const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
 
-    // Low Tier: Faster staggered animations or no stagger
     const activeContainerVariants = quality.tier === 'low' ? {
         hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+        visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
     } : {
         hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+        visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
     };
 
     return (
@@ -69,10 +89,10 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             viewport={viewportConfig}
             variants={activeContainerVariants}
             custom={index}
-            className={`p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl bg-dark-high/90`}
+            className="p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl bg-dark-high/90"
         >
             <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
-                <div className={`p-3 rounded-lg bg-black/40 border border-${color}/10 text-${color} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
+                <div className={`p-3 rounded-lg bg-black/40 border ${colorStyles.border} ${colorStyles.text} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
                     {icon}
                 </div>
                 <div className="flex flex-col">
@@ -84,22 +104,33 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             <div className={`flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
                 {items.map((item) => {
                     const subIconMap = {
-                        "Python": <Terminal />, "C#": <Code2 />, "SQL / NoSQL": <Database />, "Node.js": <Zap />,
-                        "React": <Layout />, "Unity 3D": <Box />, "Tailwind CSS": <Wind />, "Motion Design": <Flame />,
-                        "Firebase": <Flame />, "Supabase": <Database />, "Vercel": <Cloud />, "Vite": <Zap />,
-                        "Groq (Llama 3)": <Brain />, "Tesseract OCR": <Search />, "Selenium": <MousePointer2 />
+                        'Python': <Terminal />,
+                        'C#': <Code2 />,
+                        'SQL / NoSQL': <Database />,
+                        'Node.js': <Zap />,
+                        'React': <Layout />,
+                        'Unity 3D': <Box />,
+                        'Tailwind CSS': <Wind />,
+                        'Motion Design': <Flame />,
+                        'Firebase': <Flame />,
+                        'Supabase': <Database />,
+                        'Vercel': <Cloud />,
+                        'Vite': <Zap />,
+                        'Groq (Llama 3)': <Brain />,
+                        'Tesseract OCR': <Search />,
+                        'Selenium': <MousePointer2 />,
                     };
+
                     return <TechNode key={item} name={item} color={color} icon={subIconMap[item] || <Cpu />} quality={quality} />;
                 })}
             </div>
 
-            {/* Decorative background number */}
             <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none hidden md:block">
                 0{index + 1}
             </span>
         </motion.div>
     );
-}
+};
 
 const TechStack = () => {
     const { tech } = portfolioData.ui.sections;
@@ -109,25 +140,22 @@ const TechStack = () => {
         Cpu: <Cpu className="w-5 h-5" />,
         Brain: <Brain className="w-5 h-5" />,
         Layers: <Layers className="w-5 h-5" />,
-        Globe: <Globe className="w-5 h-5" />
+        Globe: <Globe className="w-5 h-5" />,
     };
 
-    const mappedCategories = categories.map(cat => ({
+    const mappedCategories = categories.map((cat) => ({
         ...cat,
-        icon: iconMap[cat.icon] || <Cpu className="w-5 h-5" />
+        icon: iconMap[cat.icon] || <Cpu className="w-5 h-5" />,
     }));
 
     return (
         <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden section-padding render-optimize">
-            {/* Background Decor - GPU-Friendly Radial Gradient */}
             <div
                 className="absolute bottom-[10%] left-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-45 -translate-x-1/2"
-                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)" }}
+                style={{ background: 'radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)' }}
             />
 
             <div className="container mx-auto px-6 relative z-10">
-
-                {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -156,11 +184,9 @@ const TechStack = () => {
                         />
                     ))}
                 </div>
-
             </div>
         </section>
     );
 };
 
-// TechStack component is now a named export for optimized lazy loading
 export { TechStack };

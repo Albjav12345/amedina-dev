@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import portfolioData from '../../data/portfolio';
 
 const Footer = ({ onOpenControlPanel }) => {
@@ -25,7 +24,7 @@ const Footer = ({ onOpenControlPanel }) => {
                             </span>
                         </button>
                         <p className="text-gray-400 text-[8px] md:text-xs mt-1 whitespace-nowrap">
-                            © {new Date().getFullYear()} Engineered by <span className="text-white">{footer.name || name}</span>.
+                            Copyright {new Date().getFullYear()} Engineered by <span className="text-white">{footer.name || name}</span>.
                         </p>
                     </div>
 

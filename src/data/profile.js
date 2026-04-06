@@ -52,7 +52,7 @@ export const profile = {
     },
     social: {
         github: "https://github.com/Albjav12345",
-        linkedin: "#"
+        linkedin: "https://www.linkedin.com/in/alberto-medina-dev/"
     }
 };
 
