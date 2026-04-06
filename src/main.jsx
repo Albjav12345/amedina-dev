@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles/global.css'
 
-// DISABLE BROWSER SCROLL RESTORATION -> We force scroll to top in App.jsx
+// Keep browser restoration manual so the SPA can restore the intended section route itself.
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }

@@ -10,12 +10,12 @@ export const ui = {
             logoIcon: "Terminal"
         },
         links: [
-            { name: 'Start', href: '#home', id: 'home', num: '01' },
-            { name: 'About', href: '#about', id: 'about', num: '02' },
-            { name: 'Systems', href: '#projects', id: 'projects', num: '03' },
-            { name: 'Stack', href: '#tech-stack', id: 'tech-stack', num: '04' },
-            { name: 'Architect', href: '#architect', id: 'architect', num: '05' },
-            { name: 'Contact', href: '#contact', id: 'contact', num: '06' },
+            { name: 'Start', href: '/', id: 'home', num: '01' },
+            { name: 'About', href: '/about', id: 'about', num: '02' },
+            { name: 'Systems', href: '/projects', id: 'projects', num: '03' },
+            { name: 'Stack', href: '/stack', id: 'tech-stack', num: '04' },
+            { name: 'Architect', href: '/architect', id: 'architect', num: '05' },
+            { name: 'Contact', href: '/contact', id: 'contact', num: '06' },
         ],
         terminalButton: "TERM_ACCESS"
     },

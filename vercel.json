@@ -1,3 +1,12 @@
 {
-    "framework": "vite"
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "framework": "vite",
+    "trailingSlash": false,
+    "rewrites": [
+        { "source": "/about", "destination": "/" },
+        { "source": "/projects", "destination": "/" },
+        { "source": "/stack", "destination": "/" },
+        { "source": "/architect", "destination": "/" },
+        { "source": "/contact", "destination": "/" }
+    ]
 }

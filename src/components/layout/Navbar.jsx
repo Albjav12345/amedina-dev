@@ -2,65 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Menu, X } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
-
-const NAV_HEIGHT = 50;
-const SECTION_TARGETS = {
-    home: 'home',
-    about: 'about-wrapper',
-    projects: 'projects-wrapper',
-    'tech-stack': 'tech-stack-wrapper',
-    architect: 'architect-wrapper',
-    contact: 'contact-wrapper',
-};
-
-function getSectionElement(sectionId) {
-    return document.getElementById(SECTION_TARGETS[sectionId] || sectionId) || document.getElementById(sectionId);
-}
-
-function getActiveSectionId(sectionIds) {
-    const scrollY = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-    const anchorY = scrollY + NAV_HEIGHT + Math.min(viewportHeight * 0.32, 260);
-
-    if (scrollY <= 24) {
-        return 'home';
-    }
-
-    if (scrollY + viewportHeight >= documentHeight - 24) {
-        return 'contact';
-    }
-
-    const positionedSections = sectionIds.map((sectionId) => {
-        const element = getSectionElement(sectionId);
-        if (!element) return null;
-
-        return {
-            id: sectionId,
-            top: element.getBoundingClientRect().top + scrollY,
-        };
-    }).filter(Boolean);
-
-    if (!positionedSections.length) {
-        return 'home';
-    }
-
-    let activeId = positionedSections[0].id;
-
-    positionedSections.forEach((section) => {
-        if (section.top <= anchorY) {
-            activeId = section.id;
-        }
-    });
-
-    return activeId;
-}
+import {
+    DEFAULT_SECTION_ID,
+    SECTION_ACTIVE_LOCK_EVENT,
+    dispatchSectionNavigation,
+    getActiveSectionId,
+    getPathnameForSection,
+    getSectionIdFromPathname,
+    getSectionScrollY,
+    isPlainLeftClick,
+} from '../../utils/sectionRouting';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [activeSection, setActiveSection] = useState('home');
+    const [activeSection, setActiveSection] = useState(() => {
+        if (typeof window === 'undefined') {
+            return DEFAULT_SECTION_ID;
+        }
+
+        return getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID;
+    });
     const scrollLockRef = useRef({ active: false, targetId: null, targetY: 0, expiresAt: 0 });
+    const activeLockRef = useRef({ active: false, targetId: DEFAULT_SECTION_ID });
     const { navigation } = portfolioData.ui;
     const navLinks = navigation.links;
 
@@ -71,6 +35,12 @@ const Navbar = () => {
         const updateNavigationState = () => {
             rafId = null;
             setIsScrolled(window.scrollY > 20);
+
+            const activeLock = activeLockRef.current;
+            if (activeLock.active) {
+                setActiveSection(activeLock.targetId);
+                return;
+            }
 
             const lock = scrollLockRef.current;
             if (lock.active) {
@@ -107,36 +77,72 @@ const Navbar = () => {
         };
     }, [navLinks]);
 
-    const scrollToSection = (event, id) => {
-        event.preventDefault();
+    useEffect(() => {
+        const handleActiveLock = (event) => {
+            const { sectionId, locked } = event.detail || {};
 
-        const element = document.getElementById(id);
-        if (!element) return;
+            activeLockRef.current = {
+                active: Boolean(locked),
+                targetId: sectionId || DEFAULT_SECTION_ID,
+            };
 
-        const targetY = Math.max(0, element.getBoundingClientRect().top + window.pageYOffset - NAV_HEIGHT);
+            if (locked) {
+                setActiveSection(sectionId || DEFAULT_SECTION_ID);
+            }
+        };
+
+        window.addEventListener(SECTION_ACTIVE_LOCK_EVENT, handleActiveLock);
+
+        return () => {
+            window.removeEventListener(SECTION_ACTIVE_LOCK_EVENT, handleActiveLock);
+        };
+    }, []);
+
+    const lockSection = (sectionId) => {
+        const targetY = getSectionScrollY(sectionId);
+
+        if (targetY === null) {
+            return false;
+        }
+
         scrollLockRef.current = {
             active: true,
-            targetId: id,
+            targetId: sectionId,
             targetY,
             expiresAt: Date.now() + 1800,
         };
-        setActiveSection(id);
+
+        setActiveSection(sectionId);
         setIsMobileMenuOpen(false);
 
-        if (window.lenis) {
-            window.lenis.scrollTo(element, {
-                offset: -NAV_HEIGHT,
-                duration: 1.5,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            });
+        return true;
+    };
+
+    const handleSectionNavigation = (event, sectionId) => {
+        if (!isPlainLeftClick(event)) {
             return;
         }
 
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - NAV_HEIGHT;
+        event.preventDefault();
 
-        window.scrollTo({
-            top: offsetPosition,
+        if (!lockSection(sectionId)) {
+            return;
+        }
+
+        dispatchSectionNavigation(sectionId, {
+            historyMode: 'push',
+            behavior: 'smooth',
+        });
+    };
+
+    const handleTerminalAccess = () => {
+        if (!lockSection(DEFAULT_SECTION_ID)) {
+            return;
+        }
+
+        window.dispatchEvent(new CustomEvent('toggle-terminal'));
+        dispatchSectionNavigation(DEFAULT_SECTION_ID, {
+            historyMode: 'push',
             behavior: 'smooth',
         });
     };
@@ -156,10 +162,11 @@ const Navbar = () => {
     return (
         <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${getNavClasses()}`}>
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                <motion.div
+                <motion.a
+                    href={getPathnameForSection(DEFAULT_SECTION_ID)}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    onClick={(event) => scrollToSection(event, 'home')}
+                    onClick={(event) => handleSectionNavigation(event, DEFAULT_SECTION_ID)}
                     className="flex items-center gap-2 group cursor-pointer"
                 >
                     <div className="w-10 h-10 rounded-lg bg-electric-green/10 border border-electric-green/30 flex items-center justify-center group-hover:bg-electric-green/20">
@@ -169,14 +176,14 @@ const Navbar = () => {
                         {navigation.brand.first}
                         <span className="text-electric-green">{navigation.brand.last}</span>
                     </span>
-                </motion.div>
+                </motion.a>
 
                 <div className="hidden lg:flex items-center gap-4 lg:gap-8">
                     {navLinks.map((link, index) => (
                         <motion.a
                             key={link.id}
                             href={link.href}
-                            onClick={(event) => scrollToSection(event, link.id)}
+                            onClick={(event) => handleSectionNavigation(event, link.id)}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
@@ -198,10 +205,7 @@ const Navbar = () => {
                         </motion.a>
                     ))}
                     <motion.button
-                        onClick={(event) => {
-                            window.dispatchEvent(new CustomEvent('toggle-terminal'));
-                            scrollToSection(event, 'home');
-                        }}
+                        onClick={handleTerminalAccess}
                         className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest flex items-center gap-2 ml-4 cursor-pointer"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -235,7 +239,7 @@ const Navbar = () => {
                                 <a
                                     key={link.id}
                                     href={link.href}
-                                    onClick={(event) => scrollToSection(event, link.id)}
+                                    onClick={(event) => handleSectionNavigation(event, link.id)}
                                     className="flex items-center gap-4 group cursor-pointer p-2"
                                 >
                                     <span className="font-mono text-xs text-electric-green">{link.num}</span>
@@ -245,10 +249,7 @@ const Navbar = () => {
                                 </a>
                             ))}
                             <motion.button
-                                onClick={(event) => {
-                                    window.dispatchEvent(new CustomEvent('toggle-terminal'));
-                                    scrollToSection(event, 'home');
-                                }}
+                                onClick={handleTerminalAccess}
                                 className="btn-system text-[10px] py-3 px-3 uppercase tracking-widest flex items-center justify-center gap-2 mt-4 cursor-pointer w-full"
                             >
                                 <Terminal className="w-4 h-4" />

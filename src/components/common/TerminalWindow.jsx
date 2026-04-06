@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
 import { recordOpsRun } from '../../utils/opsTelemetry';
+import { dispatchSectionNavigation } from '../../utils/sectionRouting';
 
 const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const { terminal } = portfolioData.ui;
@@ -307,14 +308,10 @@ const InteractiveConsole = ({ onClose }) => {
                         const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
 
                         setTimeout(() => {
-                            const element = document.getElementById(targetId);
-                            if (element) {
-                                if (window.lenis) {
-                                    window.lenis.scrollTo(element, { offset: -50, duration: 1.5 });
-                                } else {
-                                    element.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            }
+                            dispatchSectionNavigation(targetId, {
+                                historyMode: 'push',
+                                behavior: 'smooth',
+                            });
                         }, 500);
                     }
                 }

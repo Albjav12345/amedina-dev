@@ -6,6 +6,7 @@ import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import portfolioData from '../../data/portfolio';
 import { containWheelOnOverflow } from '../../utils/scrolling';
 import { recordOpsRun } from '../../utils/opsTelemetry';
+import { dispatchSectionNavigation } from '../../utils/sectionRouting';
 
 const CUSTOM_OPTION = '__custom__';
 
@@ -290,16 +291,10 @@ const ProjectArchitect = () => {
         window.dispatchEvent(new CustomEvent('prefill-contact', {
             detail: { source: result.briefId, message: formatBrief(result, formState) },
         }));
-
-        const target = document.getElementById('contact');
-        if (!target) return;
-
-        if (window.lenis) {
-            window.lenis.scrollTo(target, { offset: -50, duration: 1.4 });
-            return;
-        }
-
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        dispatchSectionNavigation('contact', {
+            historyMode: 'push',
+            behavior: 'smooth',
+        });
     };
 
     return (
