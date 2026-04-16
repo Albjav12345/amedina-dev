@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+const VIDEO_RELEASE_MS = 260;
+
 const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
     const videoRef = useRef(null);
     const [shouldMount, setShouldMount] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isVideoVisible, setIsVideoVisible] = useState(false);
 
     const previewSource = project.media?.cardPreview || null;
     const posterSource = project.media?.poster || project.thumbnail;
@@ -11,24 +14,39 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
 
     useEffect(() => {
         let timeoutId;
+        let visibilityFrameId;
+        let releaseTimeoutId;
 
         if (hasVideo && isAllowedToPlay) {
             const delay = Math.max(0, stagger) * 120;
             timeoutId = window.setTimeout(() => {
                 setShouldMount(true);
+                visibilityFrameId = window.requestAnimationFrame(() => {
+                    setIsVideoVisible(true);
+                });
             }, delay);
         } else {
-            const currentVideo = videoRef.current;
-            if (currentVideo) {
-                currentVideo.pause();
-            }
-            setShouldMount(false);
-            setIsLoaded(false);
+            setIsVideoVisible(false);
+
+            releaseTimeoutId = window.setTimeout(() => {
+                const currentVideo = videoRef.current;
+                if (currentVideo) {
+                    currentVideo.pause();
+                }
+                setShouldMount(false);
+                setIsLoaded(false);
+            }, VIDEO_RELEASE_MS);
         }
 
         return () => {
             if (timeoutId) {
                 window.clearTimeout(timeoutId);
+            }
+            if (visibilityFrameId) {
+                window.cancelAnimationFrame(visibilityFrameId);
+            }
+            if (releaseTimeoutId) {
+                window.clearTimeout(releaseTimeoutId);
             }
         };
     }, [hasVideo, isAllowedToPlay, stagger]);
@@ -41,7 +59,6 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
         }
 
         if (!isAllowedToPlay || !shouldMount) {
-            currentVideo.pause();
             return undefined;
         }
 
@@ -62,7 +79,11 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
-                className={`w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-0 scale-110' : 'opacity-80 scale-100 group-hover:opacity-100 group-hover:scale-105'}`}
+                className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+                    isLoaded && isVideoVisible
+                        ? 'opacity-0 scale-110'
+                        : 'opacity-80 scale-100 group-hover:opacity-100 group-hover:scale-105'
+                }`}
             />
 
             {hasVideo && shouldMount && (
@@ -77,7 +98,11 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                     onLoadedData={() => {
                         setIsLoaded(true);
                     }}
-                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-70 group-hover:opacity-100 group-hover:scale-105' : 'opacity-0 scale-100'}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${
+                        isLoaded && isVideoVisible
+                            ? 'opacity-70 group-hover:opacity-100 group-hover:scale-105'
+                            : 'opacity-0 scale-100'
+                    }`}
                 />
             )}
 
