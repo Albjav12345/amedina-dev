@@ -11,7 +11,6 @@ import {
     DEFAULT_SECTION_ID,
     SECTION_IDS,
     SECTION_NAVIGATION_EVENT,
-    SECTION_TARGETS,
     dispatchSectionActiveLock,
     getActiveSectionId,
     getSectionElement,
@@ -60,7 +59,7 @@ const Footer = React.lazy(() =>
     import('./components/layout/Footer').then(module => ({ default: module.Footer }))
 )
 
-const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v1'
+const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v2'
 
 const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
     desktop: {
@@ -72,7 +71,7 @@ const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
     },
     mobile: {
         about: 1980,
-        projects: 2120,
+        projects: 1180,
         'tech-stack': 1560,
         architect: 2180,
         contact: 1260,
@@ -129,6 +128,27 @@ function writeSectionHeightCache(bucket, nextHeights) {
     }
 }
 
+function getSectionMeasurementElement(sectionId) {
+    if (typeof document === 'undefined') {
+        return null
+    }
+
+    return document.getElementById(sectionId) || getSectionElement(sectionId)
+}
+
+function isSectionContentReady(sectionId) {
+    if (typeof document === 'undefined') {
+        return false
+    }
+
+    const sectionElement = document.getElementById(sectionId)
+    if (!sectionElement) {
+        return false
+    }
+
+    return sectionElement.getBoundingClientRect().height > 48
+}
+
 
 function App() {
     const initialSectionIdRef = useRef(
@@ -140,6 +160,12 @@ function App() {
     const [isControlOpen, setIsControlOpen] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
+    const [mountedSectionMap, setMountedSectionMap] = useState(() =>
+        SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
+            acc[sectionId] = typeof document !== 'undefined' && Boolean(document.getElementById(sectionId))
+            return acc
+        }, {}),
+    )
     const lenisRef = useRef(null);
     const lenisRafRef = useRef(null);
     const isControlOpenRef = useRef(false);
@@ -343,12 +369,14 @@ function App() {
     };
 
     useEffect(() => {
-        // Detect iOS devices (iPhone, iPad, iPod) including iPads masquerading as desktop
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isCoarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches;
+        const isDesktopViewport = window.innerWidth >= 1024;
+        const shouldPreferNativeTouchScroll = isIOS || (isCoarsePointer && !isDesktopViewport);
 
-        // ONLY initialize Lenis on Non-iOS devices (Desktop, Android)
-        if (!isIOS) {
+        // Keep premium smooth scroll on desktop, even on touch-capable Windows hardware.
+        if (!shouldPreferNativeTouchScroll) {
             const lenis = new Lenis({
                 duration: 1.2,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -380,12 +408,68 @@ function App() {
                 lenis.destroy()
                 lenisRef.current = null;
                 window.lenis = null;
+                document.documentElement.style.overflowY = '';
+                document.documentElement.style.webkitOverflowScrolling = '';
             }
         } else {
-            // iOS: Force native hardware-accelerated scroll
+            // Mobile/touch-first devices: keep native hardware-accelerated scrolling.
             document.documentElement.style.overflowY = 'auto';
             document.documentElement.style.webkitOverflowScrolling = 'touch';
             window.lenis = null; // Ensure lenis is not available
+
+            return () => {
+                document.documentElement.style.overflowY = '';
+                document.documentElement.style.webkitOverflowScrolling = '';
+            }
+        }
+    }, [viewportBucket])
+
+    useEffect(() => {
+        let frameId = null
+        let timeoutId = null
+        let attempts = 0
+
+        const syncMountedSections = () => {
+            let allMounted = true
+
+            SECTION_WRAPPER_IDS.forEach((sectionId) => {
+                if (!document.getElementById(sectionId)) {
+                    allMounted = false
+                }
+            })
+
+            setMountedSectionMap((currentMap) => {
+                let didChange = false
+                const nextMap = { ...currentMap }
+
+                SECTION_WRAPPER_IDS.forEach((sectionId) => {
+                    const isMounted = Boolean(document.getElementById(sectionId))
+                    if (nextMap[sectionId] !== isMounted) {
+                        nextMap[sectionId] = isMounted
+                        didChange = true
+                    }
+                })
+
+                return didChange ? nextMap : currentMap
+            })
+
+            if (!allMounted && attempts < 30) {
+                attempts += 1
+                timeoutId = window.setTimeout(() => {
+                    frameId = window.requestAnimationFrame(syncMountedSections)
+                }, 80)
+            }
+        }
+
+        frameId = window.requestAnimationFrame(syncMountedSections)
+
+        return () => {
+            if (frameId !== null) {
+                window.cancelAnimationFrame(frameId)
+            }
+            if (timeoutId !== null) {
+                window.clearTimeout(timeoutId)
+            }
         }
     }, [])
 
@@ -405,6 +489,29 @@ function App() {
             window.cancelAnimationFrame(frameId);
         };
     }, []);
+
+    useEffect(() => {
+        const preloadSections = () => {
+            loadAboutModule()
+            loadFeaturedProjectsModule()
+            loadTechStackModule()
+            loadProjectArchitectModule()
+            loadContactModule()
+        }
+
+        if (typeof window.requestIdleCallback === 'function') {
+            const idleId = window.requestIdleCallback(preloadSections, { timeout: 1200 })
+
+            return () => {
+                window.cancelIdleCallback?.(idleId)
+            }
+        }
+
+        const timeoutId = window.setTimeout(preloadSections, 250)
+        return () => {
+            window.clearTimeout(timeoutId)
+        }
+    }, [])
 
     useEffect(() => {
         isControlOpenRef.current = isControlOpen;
@@ -455,7 +562,11 @@ function App() {
         }
 
         let frameId = null
+        let syncFrameId = null
+        let syncTimeoutId = null
+        let syncAttempts = 0
         const latestHeights = { ...sectionWrapperHeights }
+        const observedElements = new Map()
 
         const flushHeights = () => {
             frameId = null
@@ -465,11 +576,21 @@ function App() {
             writeSectionHeightCache(viewportBucket, nextHeights)
         }
 
+        const getSectionIdForElement = (element) => {
+            for (const [sectionId, observedElement] of observedElements.entries()) {
+                if (observedElement === element) {
+                    return sectionId
+                }
+            }
+
+            return null
+        }
+
         const observer = new ResizeObserver((entries) => {
             let didChange = false
 
             entries.forEach((entry) => {
-                const sectionId = SECTION_WRAPPER_IDS.find((candidateId) => SECTION_TARGETS[candidateId] === entry.target.id)
+                const sectionId = getSectionIdForElement(entry.target)
                 if (!sectionId) {
                     return
                 }
@@ -494,23 +615,56 @@ function App() {
             frameId = window.requestAnimationFrame(flushHeights)
         })
 
-        const rafId = window.requestAnimationFrame(() => {
+        const syncObservedElements = () => {
+            let allSectionsObserved = true
+
             SECTION_WRAPPER_IDS.forEach((sectionId) => {
-                const element = getSectionElement(sectionId)
-                if (element) {
-                    observer.observe(element)
+                const nextElement = getSectionMeasurementElement(sectionId)
+                const currentElement = observedElements.get(sectionId)
+
+                if (!document.getElementById(sectionId)) {
+                    allSectionsObserved = false
+                }
+
+                if (currentElement === nextElement) {
+                    return
+                }
+
+                if (currentElement) {
+                    observer.unobserve(currentElement)
+                }
+
+                if (nextElement) {
+                    observer.observe(nextElement)
+                    observedElements.set(sectionId, nextElement)
+                } else {
+                    observedElements.delete(sectionId)
                 }
             })
-        })
+
+            if (!allSectionsObserved && syncAttempts < 30) {
+                syncAttempts += 1
+                syncTimeoutId = window.setTimeout(() => {
+                    syncFrameId = window.requestAnimationFrame(syncObservedElements)
+                }, 80)
+            }
+        }
+
+        syncFrameId = window.requestAnimationFrame(syncObservedElements)
 
         return () => {
-            window.cancelAnimationFrame(rafId)
             if (frameId !== null) {
                 window.cancelAnimationFrame(frameId)
             }
+            if (syncFrameId !== null) {
+                window.cancelAnimationFrame(syncFrameId)
+            }
+            if (syncTimeoutId !== null) {
+                window.clearTimeout(syncTimeoutId)
+            }
             observer.disconnect()
         }
-    }, [viewportBucket])
+    }, [sectionWrapperHeights, viewportBucket])
 
     useEffect(() => {
         const handleSectionNavigation = (event) => {
@@ -520,13 +674,24 @@ function App() {
                 return;
             }
 
-            if (behavior === 'instant') {
+            setIsControlOpen(false);
+            document.body.style.overflow = '';
+            document.body.style.overscrollBehaviorY = '';
+            document.documentElement.style.overscrollBehaviorY = '';
+            window.dispatchEvent(new CustomEvent('close-project-modal'));
+
+            const shouldRestoreTarget = behavior === 'instant' || !isSectionContentReady(sectionId);
+
+            if (shouldRestoreTarget) {
                 startRouteRestore(sectionId);
             } else {
                 stopRouteRestore();
             }
 
-            navigateToSection(sectionId, { historyMode, behavior });
+            navigateToSection(sectionId, {
+                historyMode,
+                behavior: shouldRestoreTarget ? 'instant' : behavior,
+            });
         };
 
         const handlePopState = () => {
@@ -602,31 +767,31 @@ function App() {
                 <Hero isUiFrozen={isControlOpen} />
 
                 {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
-                <div id="about-wrapper" style={{ minHeight: `${sectionWrapperHeights.about}px` }}>
+                <div id="about-wrapper" style={{ minHeight: mountedSectionMap.about ? undefined : `${sectionWrapperHeights.about}px` }}>
                     <Suspense fallback={null}>
                         <About isUiFrozen={isControlOpen} />
                     </Suspense>
                 </div>
 
-                <div id="projects-wrapper" style={{ minHeight: `${sectionWrapperHeights.projects}px` }}>
+                <div id="projects-wrapper" style={{ minHeight: mountedSectionMap.projects ? undefined : `${sectionWrapperHeights.projects}px` }}>
                     <Suspense fallback={null}>
                         <FeaturedProjects />
                     </Suspense>
                 </div>
 
-                <div id="tech-stack-wrapper" style={{ minHeight: `${sectionWrapperHeights['tech-stack']}px` }}>
+                <div id="tech-stack-wrapper" style={{ minHeight: mountedSectionMap['tech-stack'] ? undefined : `${sectionWrapperHeights['tech-stack']}px` }}>
                     <Suspense fallback={null}>
                         <TechStack />
                     </Suspense>
                 </div>
 
-                <div id="architect-wrapper" style={{ minHeight: `${sectionWrapperHeights.architect}px` }}>
+                <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
                     <Suspense fallback={null}>
                         <ProjectArchitect />
                     </Suspense>
                 </div>
 
-                <div id="contact-wrapper" style={{ minHeight: `${sectionWrapperHeights.contact}px` }}>
+                <div id="contact-wrapper" style={{ minHeight: mountedSectionMap.contact ? undefined : `${sectionWrapperHeights.contact}px` }}>
                     <Suspense fallback={null}>
                         <Contact />
                     </Suspense>

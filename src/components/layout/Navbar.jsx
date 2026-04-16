@@ -101,8 +101,16 @@ const Navbar = () => {
         return true;
     };
 
-    const handleSectionNavigation = (event, sectionId) => {
-        if (!isPlainLeftClick(event)) {
+    const releaseNavigationLocks = () => {
+        window.dispatchEvent(new CustomEvent('close-control-panel'));
+        window.dispatchEvent(new CustomEvent('close-project-modal'));
+        document.body.style.overflow = '';
+        document.body.style.overscrollBehaviorY = '';
+        document.documentElement.style.overscrollBehaviorY = '';
+    };
+
+    const handleSectionNavigation = (event, sectionId, { forceSpaNavigation = false } = {}) => {
+        if (!forceSpaNavigation && !isPlainLeftClick(event)) {
             return;
         }
 
@@ -111,6 +119,8 @@ const Navbar = () => {
         if (!lockSection(sectionId)) {
             return;
         }
+
+        releaseNavigationLocks();
 
         dispatchSectionNavigation(sectionId, {
             historyMode: 'push',
@@ -123,6 +133,7 @@ const Navbar = () => {
             return;
         }
 
+        releaseNavigationLocks();
         window.dispatchEvent(new CustomEvent('toggle-terminal'));
         dispatchSectionNavigation(DEFAULT_SECTION_ID, {
             historyMode: 'push',
@@ -222,7 +233,7 @@ const Navbar = () => {
                                 <a
                                     key={link.id}
                                     href={link.href}
-                                    onClick={(event) => handleSectionNavigation(event, link.id)}
+                                    onClick={(event) => handleSectionNavigation(event, link.id, { forceSpaNavigation: true })}
                                     className="flex items-center gap-4 group cursor-pointer p-2"
                                 >
                                     <span className="font-mono text-xs text-electric-green">{link.num}</span>

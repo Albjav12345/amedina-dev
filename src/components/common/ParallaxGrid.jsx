@@ -11,7 +11,10 @@ const ParallaxGrid = ({ isFrozen = false }) => {
             return undefined;
         }
 
-        if (isFrozen) {
+        const prefersStaticGrid = window.matchMedia?.('(pointer: coarse)')?.matches
+            || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+        if (isFrozen || prefersStaticGrid) {
             node.style.willChange = 'auto';
             node.style.transform = 'translate3d(0, 0px, 0)';
             return undefined;

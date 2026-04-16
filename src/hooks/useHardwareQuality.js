@@ -2,15 +2,19 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 
 const defaultQuality = {
     tier: 'mid',
+    isDesktopViewport: true,
+    isCompactViewport: false,
     allowBlur: true,
     simplePhysics: false,
     loadHeavyMedia: false,
     glassClass: 'backdrop-blur-xl bg-dark-high/80',
     spring: { type: 'spring', stiffness: 350, damping: 30 },
+    modalTransition: { type: 'spring', stiffness: 350, damping: 30 },
     maxPreviewVideos: 0,
     previewRootMarginPx: 320,
     previewIdleDelayMs: 180,
     allowAmbientMotion: true,
+    useCompactProjectModal: false,
 };
 
 const HardwareQualityContext = createContext(defaultQuality);
@@ -27,6 +31,7 @@ function buildQualityState() {
     const isAndroid = /Android/i.test(ua);
     const viewportWidth = window.innerWidth;
     const isDesktopViewport = viewportWidth >= 1024;
+    const isCompactViewport = viewportWidth < 768;
 
     let tier = 'high';
 
@@ -40,11 +45,11 @@ function buildQualityState() {
         tier = cores <= 2 ? 'mid' : 'high';
     }
 
-    if (viewportWidth < 768 && tier === 'high') {
+    if (isCompactViewport && tier === 'high') {
         tier = 'mid';
     }
 
-    const allowBlur = tier === 'high' || (tier === 'mid' && !isAndroid);
+    const allowBlur = !isCompactViewport && (tier === 'high' || (tier === 'mid' && !isAndroid));
     const maxPreviewVideos = !isDesktopViewport
         ? 0
         : tier === 'high'
@@ -52,27 +57,39 @@ function buildQualityState() {
             : tier === 'mid'
                 ? 3
                 : 0;
+    const compactModalTransition = {
+        type: 'tween',
+        duration: tier === 'low' ? 0.18 : 0.22,
+        ease: [0.22, 1, 0.36, 1],
+    };
+    const spring = tier === 'low'
+        ? { type: 'tween', duration: 0.3, ease: 'circOut' }
+        : { type: 'spring', stiffness: 350, damping: 30 };
 
     return {
         tier,
+        isDesktopViewport,
+        isCompactViewport,
         allowBlur,
         simplePhysics: tier === 'low',
         loadHeavyMedia: tier === 'high' && isDesktopViewport,
         glassClass: allowBlur ? 'backdrop-blur-xl bg-dark-high/80' : 'bg-dark-high',
-        spring: tier === 'low'
-            ? { type: 'tween', duration: 0.3, ease: 'circOut' }
-            : { type: 'spring', stiffness: 350, damping: 30 },
+        spring,
+        modalTransition: isCompactViewport ? compactModalTransition : spring,
         maxPreviewVideos,
         previewRootMarginPx: isDesktopViewport
             ? (tier === 'high' ? 380 : tier === 'mid' ? 300 : 240)
             : 220,
         previewIdleDelayMs: isDesktopViewport ? 180 : 260,
         allowAmbientMotion: tier !== 'low',
+        useCompactProjectModal: isCompactViewport,
     };
 }
 
 function shallowEqualQuality(a, b) {
     return a.tier === b.tier
+        && a.isDesktopViewport === b.isDesktopViewport
+        && a.isCompactViewport === b.isCompactViewport
         && a.allowBlur === b.allowBlur
         && a.simplePhysics === b.simplePhysics
         && a.loadHeavyMedia === b.loadHeavyMedia
@@ -81,11 +98,17 @@ function shallowEqualQuality(a, b) {
         && a.previewRootMarginPx === b.previewRootMarginPx
         && a.previewIdleDelayMs === b.previewIdleDelayMs
         && a.allowAmbientMotion === b.allowAmbientMotion
+        && a.useCompactProjectModal === b.useCompactProjectModal
         && a.spring.type === b.spring.type
         && a.spring.duration === b.spring.duration
         && a.spring.ease === b.spring.ease
         && a.spring.stiffness === b.spring.stiffness
-        && a.spring.damping === b.spring.damping;
+        && a.spring.damping === b.spring.damping
+        && a.modalTransition.type === b.modalTransition.type
+        && a.modalTransition.duration === b.modalTransition.duration
+        && a.modalTransition.ease === b.modalTransition.ease
+        && a.modalTransition.stiffness === b.modalTransition.stiffness
+        && a.modalTransition.damping === b.modalTransition.damping;
 }
 
 export function HardwareQualityProvider({ children }) {

@@ -54,6 +54,7 @@ const FeaturedProjects = () => {
     const [cardStatus, setCardStatus] = useState({});
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
+    const useCompactProjectModal = quality.useCompactProjectModal;
 
     const cardRefs = useRef({});
     const sectionRef = useRef(null);
@@ -215,6 +216,18 @@ const FeaturedProjects = () => {
         };
     }, [selectedId]);
 
+    useEffect(() => {
+        const handleExternalClose = () => {
+            setSelectedId(null);
+        };
+
+        window.addEventListener('close-project-modal', handleExternalClose);
+
+        return () => {
+            window.removeEventListener('close-project-modal', handleExternalClose);
+        };
+    }, []);
+
     const activeProject = projects.find((project) => project.id === selectedId);
 
     const handleProjectOpen = (projectId) => {
@@ -270,7 +283,7 @@ const FeaturedProjects = () => {
                             <motion.div
                                 ref={(element) => { cardRefs.current[project.id] = element; }}
                                 key={project.id}
-                                layoutId={`project-${project.id}`}
+                                layoutId={useCompactProjectModal ? undefined : `project-${project.id}`}
                                 initial="below"
                                 animate={currentStatus}
                                 viewport={{ once: false, amount: 0.1, margin: "15% 0px 15% 0px" }}
@@ -335,6 +348,7 @@ const FeaturedProjects = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={handleProjectClose}
+                            transition={quality.modalTransition}
                             className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                         />
 
@@ -350,16 +364,19 @@ const FeaturedProjects = () => {
                         </motion.button>
 
                         <motion.div
-                            layoutId={`project-${selectedId}`}
-                            transition={quality.spring}
-                            onLayoutAnimationComplete={() => setContentReady(true)}
-                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated layout-projection-surface my-8 md:my-0 ${quality.glassClass}`}
+                            layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
+                            initial={useCompactProjectModal ? { opacity: 0, y: 18, scale: 0.985 } : undefined}
+                            animate={useCompactProjectModal ? { opacity: 1, y: 0, scale: 1 } : undefined}
+                            exit={useCompactProjectModal ? { opacity: 0, y: 12, scale: 0.985 } : undefined}
+                            transition={quality.modalTransition}
+                            onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => setContentReady(true)}
+                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated ${useCompactProjectModal ? '' : 'layout-projection-surface'} my-8 md:my-0 ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`}
                         >
-                            {(isContentReady || quality.tier === 'high') && (
+                            {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
                                 <motion.div
-                                    initial={{ opacity: 0 }}
+                                    initial={useCompactProjectModal ? { opacity: 0.92 } : { opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={useCompactProjectModal ? { duration: 0.18, ease: [0.22, 1, 0.36, 1] } : { duration: 0.3 }}
                                     className="contents"
                                 >
                                     <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
