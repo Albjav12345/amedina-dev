@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { generateProjectMedia } from './generate-project-media.mjs'
 import { startLocalApiServer } from './local-api-server.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -46,6 +47,7 @@ async function shutdown(code = 0) {
 }
 
 try {
+  await generateProjectMedia()
   apiServer = await startLocalApiServer({ port: apiPort })
   console.log(`[local-api] running on ${proxyTarget}`)
   console.log(`[dev] frontend target: http://${viteHost}:${vitePort}`)

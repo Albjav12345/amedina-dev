@@ -60,7 +60,10 @@ const About = ({ isUiFrozen = false }) => {
     const quality = useHardwareQuality();
     const isLow = quality.tier === 'low';
     const mobileTestimonialsRef = useRef(null);
+    const desktopMarqueeRef = useRef(null);
     const [mobileTestimonialIndex, setMobileTestimonialIndex] = useState(0);
+    const isDesktopMarqueeInView = useInView(desktopMarqueeRef, { margin: '200px', amount: 0.05 });
+    const shouldAnimateDesktopMarquee = !isUiFrozen && isDesktopMarqueeInView;
 
     const stats = profileAbout.stats.map(s => {
         let icon;
@@ -330,91 +333,50 @@ const About = ({ isUiFrozen = false }) => {
                             </>
                         )}
 
-                        {/* Scrolling Container */}
-                        {isUiFrozen ? (
-                            <div className="flex gap-6 w-max will-change-transform transform-gpu">
-                                {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
-                                    <div
-                                        key={i}
-                                        className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
-                                            }`}
-                                    >
-                                        <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                                            {[...Array(5)].map((_, j) => (
-                                                <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
-                                            ))}
+                        <div
+                            ref={desktopMarqueeRef}
+                            className="testimonial-marquee-track flex gap-6 w-max transform-gpu"
+                            style={{
+                                animationDuration: `${isLow ? 50 : 40}s`,
+                                animationPlayState: shouldAnimateDesktopMarquee ? 'running' : 'paused',
+                                willChange: shouldAnimateDesktopMarquee ? 'transform' : 'auto',
+                            }}
+                        >
+                            {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
+                                <div
+                                    key={i}
+                                    className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                        }`}
+                                >
+                                    <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
+                                        {[...Array(5)].map((_, j) => (
+                                            <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
+                                        ))}
+                                    </div>
+                                    <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
+                                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+                                        <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
+                                            {t.avatarUrl ? (
+                                                <img
+                                                    src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
+                                                    alt={t.author}
+                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                                    onLoad={(e) => e.target.classList.remove('opacity-0')}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
+                                                    {t.author.charAt(0)}
+                                                </div>
+                                            )}
                                         </div>
-                                        <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
-                                        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                                            <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
-                                                {t.avatarUrl ? (
-                                                    <img
-                                                        src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
-                                                        alt={t.author}
-                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                        onLoad={(e) => e.target.classList.remove('opacity-0')}
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                                        {t.author.charAt(0)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-white">{t.author}</span>
-                                                <span className="text-[9px] text-gray-500 font-mono uppercase">{t.project}</span>
-                                            </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-bold text-white">{t.author}</span>
+                                            <span className="text-[9px] text-gray-500 font-mono uppercase">{t.project}</span>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <motion.div
-                                className="flex gap-6 w-max will-change-transform transform-gpu"
-                                animate={{ x: ["0%", "-50%"] }}
-                                transition={{
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                    duration: isLow ? 50 : 40
-                                }}
-                            >
-                            {/* Duplicate list 4 times for seamless loop */}
-                                {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
-                                    <div
-                                        key={i}
-                                        className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
-                                            }`}
-                                    >
-                                        <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                                            {[...Array(5)].map((_, j) => (
-                                                <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
-                                            ))}
-                                        </div>
-                                        <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
-                                        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                                            <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
-                                                {t.avatarUrl ? (
-                                                    <img
-                                                        src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
-                                                        alt={t.author}
-                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                        onLoad={(e) => e.target.classList.remove('opacity-0')}
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                                        {t.author.charAt(0)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-white">{t.author}</span>
-                                                <span className="text-[9px] text-gray-500 font-mono uppercase">{t.project}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </motion.div>
-                        )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </motion.div>
             </div>

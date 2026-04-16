@@ -21,6 +21,7 @@ import {
     isSectionId,
     normalizePathname,
 } from './utils/sectionRouting'
+import { subscribeScrollRuntime } from './utils/scrollRuntime'
 
 // Safe Lazy Loading for Named Exports
 // Pattern: React.lazy(() => import('path').then(module => ({ default: module.ComponentByName })))
@@ -431,8 +432,8 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const handleResize = () => {
-            const nextBucket = getViewportBucket()
+        return subscribeScrollRuntime((runtimeSnapshot) => {
+            const nextBucket = runtimeSnapshot.width >= 1024 ? 'desktop' : 'mobile'
 
             setViewportBucket((currentBucket) => {
                 if (currentBucket === nextBucket) {
@@ -441,13 +442,7 @@ function App() {
 
                 return nextBucket
             })
-        }
-
-        window.addEventListener('resize', handleResize)
-
-        return () => {
-            window.removeEventListener('resize', handleResize)
-        }
+        })
     }, [])
 
     useEffect(() => {
@@ -554,11 +549,7 @@ function App() {
     }, []);
 
     useEffect(() => {
-        let rafId = null;
-
         const syncVisibleSection = () => {
-            rafId = null;
-
             const pendingRestore = routeRestoreRef.current;
             if (pendingRestore.active) {
                 activeSectionRef.current = pendingRestore.targetId;
@@ -594,26 +585,7 @@ function App() {
             }
         };
 
-        const queueSync = () => {
-            if (rafId !== null) {
-                return;
-            }
-
-            rafId = window.requestAnimationFrame(syncVisibleSection);
-        };
-
-        queueSync();
-        window.addEventListener('scroll', queueSync, { passive: true });
-        window.addEventListener('resize', queueSync);
-
-        return () => {
-            window.removeEventListener('scroll', queueSync);
-            window.removeEventListener('resize', queueSync);
-
-            if (rafId !== null) {
-                window.cancelAnimationFrame(rafId);
-            }
-        };
+        return subscribeScrollRuntime(syncVisibleSection);
     }, []);
 
     useEffect(() => {

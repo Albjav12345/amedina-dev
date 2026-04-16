@@ -1,0 +1,27 @@
+{
+  "1": {
+    "poster": "/assets/projects/visual-interfaces.png",
+    "cardPreview": "/assets/generated/projects/visual-interfaces.preview.mp4",
+    "modalVideo": "/assets/generated/projects/visual-interfaces.modal.mp4"
+  },
+  "2": {
+    "poster": "/assets/projects/zero-touch-ai.png",
+    "cardPreview": "/assets/generated/projects/zero-touch-ai.preview.mp4",
+    "modalVideo": "/assets/generated/projects/zero-touch-ai.modal.mp4"
+  },
+  "3": {
+    "poster": "/assets/projects/padel-booking.png",
+    "cardPreview": "/assets/generated/projects/padel-booking.preview.mp4",
+    "modalVideo": "/assets/generated/projects/padel-booking.modal.mp4"
+  },
+  "4": {
+    "poster": "/assets/projects/twitch-live.png",
+    "cardPreview": "/assets/generated/projects/twitch-live.preview.mp4",
+    "modalVideo": "/assets/generated/projects/twitch-live.modal.mp4"
+  },
+  "5": {
+    "poster": "/assets/projects/usb-extraction.png",
+    "cardPreview": "/assets/generated/projects/usb-extraction.preview.mp4",
+    "modalVideo": "/assets/generated/projects/usb-extraction.modal.mp4"
+  }
+}

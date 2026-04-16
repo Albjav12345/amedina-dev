@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, ArrowUpRight, Play, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
+import { Code2, ArrowUpRight, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
-import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import SmartThumbnail from './SmartThumbnail';
+import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 
 import portfolioData from '../../data/portfolio';
+
 const { projects } = portfolioData;
 
 const cardVariants = {
@@ -36,74 +38,155 @@ const cardVariants = {
     }
 };
 
+function areIdListsEqual(left, right) {
+    if (left.length !== right.length) {
+        return false;
+    }
+
+    return left.every((value, index) => value === right[index]);
+}
+
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
+    const [isSectionNearViewport, setIsSectionNearViewport] = useState(false);
+    const [isScrollIdle, setIsScrollIdle] = useState(false);
+    const [cardStatus, setCardStatus] = useState({});
+    const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
 
-    // ORCHESTRATOR & DIRECTIONAL STATE
-    const [cardStatus, setCardStatus] = useState({}); // { id: 'visible' | 'above' | 'below' }
-    const [allowedVideoIds, setAllowedVideoIds] = useState([]);
-    const dwellTimeoutRef = useRef(null);
     const cardRefs = useRef({});
+    const sectionRef = useRef(null);
+    const allowedVideoIdsRef = useRef([]);
+    const idleTimeoutRef = useRef(null);
+    const lastScrollYRef = useRef(null);
 
-    // PROXIMITY-BASED VIDEO ORCHESTRATOR
     useEffect(() => {
-        const updateOrchestration = () => {
-            if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
+        const node = sectionRef.current;
+        if (!node) {
+            return undefined;
+        }
 
-            const maxVideos = quality.tier === 'low' ? 0 : 6;
+        if (typeof IntersectionObserver === 'undefined') {
+            setIsSectionNearViewport(true);
+            return undefined;
+        }
 
-            dwellTimeoutRef.current = setTimeout(() => {
-                // Focus Line: 65% of viewport height (Center + 15% shift)
-                const targetLine = window.innerHeight * 0.65;
+        const observer = new IntersectionObserver(([entry]) => {
+            setIsSectionNearViewport(Boolean(entry?.isIntersecting));
+        }, {
+            root: null,
+            rootMargin: `${quality.previewRootMarginPx}px 0px ${quality.previewRootMarginPx}px 0px`,
+            threshold: 0.01,
+        });
 
-                // 1. Identify IDs that the Viewport Observer says are currently 'visible'
-                const visibleIds = Object.entries(cardStatus)
-                    .filter(([_, status]) => status === 'visible')
-                    .map(([id]) => Number(id));
-
-                if (visibleIds.length === 0) {
-                    setAllowedVideoIds([]);
-                    return;
-                }
-
-                // 2. Measure physical distance for all 'visible' cards
-                const measured = visibleIds.map(id => {
-                    const el = cardRefs.current[id];
-                    if (!el) return null;
-                    const rect = el.getBoundingClientRect();
-                    const centerY = rect.top + rect.height / 2;
-                    return { id, distance: Math.abs(centerY - targetLine) };
-                }).filter(Boolean);
-
-                // 3. Sort by proximity (Closest to the focus line wins the priority queue)
-                const sorted = measured.sort((a, b) => a.distance - b.distance);
-                const winningIds = sorted.slice(0, maxVideos).map(entry => entry.id);
-
-                setAllowedVideoIds(winningIds);
-            }, 150); // Dwell time: 150ms
-        };
-
-        // Trigger on card entry/exit OR on mount
-        updateOrchestration();
-
-        // Also trigger on scroll-stop for precise proximity re-evaluation
-        const handleScroll = () => updateOrchestration();
-        window.addEventListener('scroll', handleScroll, { passive: true });
+        observer.observe(node);
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
-            if (dwellTimeoutRef.current) clearTimeout(dwellTimeoutRef.current);
+            observer.disconnect();
         };
-    }, [cardStatus, quality.tier]);
+    }, [quality.previewRootMarginPx]);
+
+    useEffect(() => {
+        if (selectedId) {
+            setIsScrollIdle(false);
+            return undefined;
+        }
+
+        return subscribeScrollRuntime((runtimeSnapshot) => {
+            const didMove = lastScrollYRef.current === null || Math.abs(runtimeSnapshot.scrollY - lastScrollYRef.current) > 0.5;
+            lastScrollYRef.current = runtimeSnapshot.scrollY;
+
+            if (didMove) {
+                setIsScrollIdle(false);
+            }
+
+            if (idleTimeoutRef.current !== null) {
+                window.clearTimeout(idleTimeoutRef.current);
+            }
+
+            idleTimeoutRef.current = window.setTimeout(() => {
+                setIsScrollIdle(true);
+            }, quality.previewIdleDelayMs);
+        });
+    }, [quality.previewIdleDelayMs, selectedId]);
+
+    useEffect(() => {
+        return () => {
+            if (idleTimeoutRef.current !== null) {
+                window.clearTimeout(idleTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (selectedId || !isSectionNearViewport || !isScrollIdle) {
+            if (allowedVideoIdsRef.current.length) {
+                allowedVideoIdsRef.current = [];
+                setAllowedVideoIds([]);
+            }
+            return undefined;
+        }
+
+        const updateOrchestration = (runtimeSnapshot) => {
+            const maxVideos = quality.maxPreviewVideos;
+
+            if (!maxVideos) {
+                if (allowedVideoIdsRef.current.length) {
+                    allowedVideoIdsRef.current = [];
+                    setAllowedVideoIds([]);
+                }
+                return;
+            }
+
+            const targetLine = runtimeSnapshot.height * 0.62;
+            const visibleIds = Object.entries(cardStatus)
+                .filter(([, status]) => status === 'visible')
+                .map(([id]) => Number(id));
+
+            if (!visibleIds.length) {
+                if (allowedVideoIdsRef.current.length) {
+                    allowedVideoIdsRef.current = [];
+                    setAllowedVideoIds([]);
+                }
+                return;
+            }
+
+            const measured = visibleIds.map((id) => {
+                const element = cardRefs.current[id];
+                if (!element) {
+                    return null;
+                }
+
+                const rect = element.getBoundingClientRect();
+                if (rect.bottom < -96 || rect.top > runtimeSnapshot.height + 96) {
+                    return null;
+                }
+
+                const centerY = rect.top + rect.height / 2;
+                return { id, distance: Math.abs(centerY - targetLine) };
+            }).filter(Boolean);
+
+            const winningIds = measured
+                .sort((a, b) => a.distance - b.distance)
+                .slice(0, maxVideos)
+                .map((entry) => entry.id);
+
+            if (!areIdListsEqual(allowedVideoIdsRef.current, winningIds)) {
+                allowedVideoIdsRef.current = winningIds;
+                setAllowedVideoIds(winningIds);
+            }
+        };
+
+        return subscribeScrollRuntime(updateOrchestration);
+    }, [cardStatus, isScrollIdle, isSectionNearViewport, quality.maxPreviewVideos, selectedId]);
 
     const handleViewportAction = (id, inView, entry) => {
         if (inView) {
-            setCardStatus(prev => ({ ...prev, [id]: 'visible' }));
+            setCardStatus((prev) => ({ ...prev, [id]: 'visible' }));
         } else if (entry) {
             const isAbove = entry.boundingClientRect.top < 0;
-            setCardStatus(prev => ({ ...prev, [id]: isAbove ? 'above' : 'below' }));
+            setCardStatus((prev) => ({ ...prev, [id]: isAbove ? 'above' : 'below' }));
         }
     };
 
@@ -118,7 +201,6 @@ const FeaturedProjects = () => {
         Globe: <Globe className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />
     };
 
-    // Lock body scroll when modal is open
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
@@ -127,22 +209,41 @@ const FeaturedProjects = () => {
             document.body.style.overflow = 'unset';
             setContentReady(false);
         }
-        return () => { document.body.style.overflow = 'unset'; };
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
     }, [selectedId]);
 
-    const activeProject = projects.find(p => p.id === selectedId);
+    const activeProject = projects.find((project) => project.id === selectedId);
+
+    const handleProjectOpen = (projectId) => {
+        if (idleTimeoutRef.current !== null) {
+            window.clearTimeout(idleTimeoutRef.current);
+        }
+
+        allowedVideoIdsRef.current = [];
+        setAllowedVideoIds([]);
+        setIsScrollIdle(false);
+        setSelectedId(projectId);
+    };
+
+    const handleProjectClose = () => {
+        setSelectedId(null);
+    };
 
     return (
-        <section id="projects" className="py-20 md:py-32 relative overflow-hidden render-optimize">
-            {/* Background Decor - GPU-Friendly Radial Gradient */}
+        <section
+            id="projects"
+            ref={sectionRef}
+            className="py-20 md:py-32 relative overflow-hidden render-optimize"
+        >
             <div
                 className="absolute top-[20%] right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2"
                 style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.13) 0%, transparent 70%)" }}
             />
 
             <div className="container mx-auto px-6">
-
-                {/* Section Title */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -159,16 +260,15 @@ const FeaturedProjects = () => {
                     </h2>
                 </motion.div>
 
-                {/* Grid Layout with Directional System */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
-                    {projects.map((project, index) => {
+                    {projects.map((project) => {
                         const isSelected = selectedId === project.id;
                         const isAllowedToPlay = allowedVideoIds.includes(project.id);
                         const currentStatus = isSelected ? "visible" : (cardStatus[project.id] || "below");
 
                         return (
                             <motion.div
-                                ref={el => cardRefs.current[project.id] = el}
+                                ref={(element) => { cardRefs.current[project.id] = element; }}
                                 key={project.id}
                                 layoutId={`project-${project.id}`}
                                 initial="below"
@@ -177,19 +277,18 @@ const FeaturedProjects = () => {
                                 onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
-                                onClick={() => setSelectedId(project.id)}
-                                className="gpu-accelerated cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/90"
+                                onClick={() => handleProjectOpen(project.id)}
+                                className="gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/90"
                             >
                                 <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
                                     <SmartThumbnail
                                         project={project}
-                                        isAllowedToPlay={isAllowedToPlay}
+                                        isAllowedToPlay={isSectionNearViewport && isScrollIdle && !selectedId && isAllowedToPlay}
                                         stagger={allowedVideoIds.indexOf(project.id)}
                                     />
 
                                     <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
-                                    {/* Scanning Line Effect - DISABLED ON LOW TIER */}
-                                    {!quality.simplePhysics && (
+                                    {!quality.simplePhysics && isSectionNearViewport && !selectedId && (
                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
                                     )}
 
@@ -213,7 +312,7 @@ const FeaturedProjects = () => {
                                     </div>
 
                                     <div className="hidden md:flex mt-6 flex-wrap gap-2">
-                                        {project.stack.slice(0, 3).map(tech => (
+                                        {project.stack.slice(0, 3).map((tech) => (
                                             <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
                                                 {tech}
                                             </span>
@@ -221,7 +320,6 @@ const FeaturedProjects = () => {
                                     </div>
                                 </div>
 
-                                {/* Background Glow - Simple opacity fade on low tier */}
                                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
                             </motion.div>
                         );
@@ -229,27 +327,23 @@ const FeaturedProjects = () => {
                 </div>
             </div>
 
-
-            {/* Modal Overlay */}
             <AnimatePresence>
                 {selectedId && activeProject && (
                     <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none">
-                        {/* Backdrop - Adaptive Glass */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setSelectedId(null)}
+                            onClick={handleProjectClose}
                             className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                         />
 
-                        {/* Close Button - Moved OUTSIDE layoutId container to prevent 'stretching' */}
                         <motion.button
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
-                            onClick={() => setSelectedId(null)}
+                            onClick={handleProjectClose}
                             className="fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer"
                         >
                             <X className="w-6 h-6" />
@@ -259,10 +353,8 @@ const FeaturedProjects = () => {
                             layoutId={`project-${selectedId}`}
                             transition={quality.spring}
                             onLayoutAnimationComplete={() => setContentReady(true)}
-                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated my-8 md:my-0 ${quality.glassClass}`}
+                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated layout-projection-surface my-8 md:my-0 ${quality.glassClass}`}
                         >
-
-                            {/* Orchestrated Content Fade-in - DEFERRED RENDER */}
                             {(isContentReady || quality.tier === 'high') && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
@@ -270,7 +362,6 @@ const FeaturedProjects = () => {
                                     transition={{ duration: 0.3 }}
                                     className="contents"
                                 >
-                                    {/* PART 2: Text Content & Actions */}
                                     <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
                                         <div className="space-y-8 flex-grow">
                                             <div className="space-y-4">
@@ -291,7 +382,7 @@ const FeaturedProjects = () => {
                                                     {activeProject.icon && (
                                                         <div className={`shrink-0 flex items-center justify-center rounded-2xl md:mt-4 lg:mt-6 transition-all duration-300 ${
                                                             iconMap[activeProject.icon] || activeProject.iconFit !== 'auto'
-                                                                ? "w-12 h-12 md:w-24 md:h-24 bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden" 
+                                                                ? "w-12 h-12 md:w-24 md:h-24 bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden"
                                                                 : "h-12 md:h-24 w-auto overflow-visible"
                                                         }`}>
                                                             {iconMap[activeProject.icon] ? (
@@ -299,13 +390,13 @@ const FeaturedProjects = () => {
                                                                     {iconMap[activeProject.icon]}
                                                                 </div>
                                                             ) : (
-                                                                <img 
-                                                                    src={activeProject.icon} 
-                                                                    alt="Project Icon" 
+                                                                <img
+                                                                    src={activeProject.icon}
+                                                                    alt="Project Icon"
                                                                     style={activeProject.iconScale ? { transform: `scale(${activeProject.iconScale})` } : {}}
-                                                                    className={activeProject.iconFit === 'auto' 
-                                                                        ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]" 
-                                                                        : "w-full h-full object-cover"} 
+                                                                    className={activeProject.iconFit === 'auto'
+                                                                        ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]"
+                                                                        : "w-full h-full object-cover"}
                                                                 />
                                                             )}
                                                         </div>
@@ -341,7 +432,7 @@ const FeaturedProjects = () => {
                                             <div className="space-y-4">
                                                 <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest block pb-2 border-b border-white/5">Tech_Arsenal</span>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {activeProject.stack.map(tech => (
+                                                    {activeProject.stack.map((tech) => (
                                                         <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px] text-gray-300">
                                                             {tech}
                                                         </span>
@@ -350,7 +441,6 @@ const FeaturedProjects = () => {
                                             </div>
                                         </div>
 
-                                        {/* Action Footer */}
                                         <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
                                             <a
                                                 href={activeProject.githubLink}
@@ -365,7 +455,6 @@ const FeaturedProjects = () => {
                                         <div className="h-4 lg:hidden" />
                                     </div>
 
-                                    {/* PART 1: Media/Demo - TOP on Mobile */}
                                     <div className="w-full lg:col-start-2 lg:row-start-1 bg-black/40 border-b lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-1 lg:order-none">
                                         <div className="space-y-4 flex-grow">
                                             <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
@@ -375,14 +464,16 @@ const FeaturedProjects = () => {
                                             <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
                                                 {activeProject.demoType === 'video' ? (
                                                     <video
-                                                        src={activeProject.demoUrl}
+                                                        src={activeProject.media.modalVideo}
+                                                        poster={activeProject.media.poster}
                                                         controls
+                                                        preload="metadata"
                                                         playsInline
                                                         className="w-full h-full object-contain"
                                                     />
                                                 ) : (
                                                     <img
-                                                        src={activeProject.demoUrl || activeProject.thumbnail}
+                                                        src={activeProject.media.poster || activeProject.thumbnail}
                                                         alt="Demo Preview"
                                                         className="w-full h-full object-cover"
                                                     />
@@ -400,7 +491,6 @@ const FeaturedProjects = () => {
                                         </div>
                                     </div>
 
-                                    {/* PART 3: Workflow/Diagram - BOTTOM on Mobile */}
                                     <div className="w-full lg:col-start-2 lg:row-start-2 bg-black/60 lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-3 lg:order-none">
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
@@ -426,5 +516,4 @@ const FeaturedProjects = () => {
     );
 };
 
-// FeaturedProjects component is now a named export for optimized lazy loading
 export { FeaturedProjects };

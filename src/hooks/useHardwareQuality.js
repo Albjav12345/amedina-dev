@@ -1,63 +1,116 @@
-import { useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-/**
- * Heuristic-based hardware quality detection.
- * Tiers: 
- * - low: Slow Android, low RAM, or <= 4 cores. Optimized for stability.
- * - mid: Standard modern phones. Balanced.
- * - high: Desktop, iPhone 14+, high-end Android. Full effects.
- */
-export const useHardwareQuality = () => {
-    return useMemo(() => {
-        if (typeof window === 'undefined') return { tier: 'mid', allowBlur: true };
+const defaultQuality = {
+    tier: 'mid',
+    allowBlur: true,
+    simplePhysics: false,
+    loadHeavyMedia: false,
+    glassClass: 'backdrop-blur-xl bg-dark-high/80',
+    spring: { type: 'spring', stiffness: 350, damping: 30 },
+    maxPreviewVideos: 0,
+    previewRootMarginPx: 320,
+    previewIdleDelayMs: 180,
+    allowAmbientMotion: true,
+};
 
-        const cores = navigator.hardwareConcurrency || 4;
-        // navigator.deviceMemory is generic, often 8 for high end, 4 or 2 for low.
-        // It's non-standard, but supported in Chrome/Android.
-        const memory = (navigator).deviceMemory || 4;
-        const ua = navigator.userAgent;
-        const isMobile = /Android|iPhone|iPad/i.test(ua);
-        const isAndroid = /Android/i.test(ua);
+const HardwareQualityContext = createContext(defaultQuality);
 
-        // Strict check for "Low End"
-        // Most < 2023 mid-range Androids have < 6GB usable heap or limited GPU bandwidth.
-        // We treat any Android with <= 4GB RAM or <= 6 cores as 'low'.
-        // Also, if deviceMemory is unknown, we assume 'mid' unless cores are low.
+function buildQualityState() {
+    if (typeof window === 'undefined') {
+        return defaultQuality;
+    }
 
-        let tier = 'high';
+    const cores = navigator.hardwareConcurrency || 4;
+    const memory = navigator.deviceMemory || 4;
+    const ua = navigator.userAgent;
+    const isMobile = /Android|iPhone|iPad/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+    const viewportWidth = window.innerWidth;
+    const isDesktopViewport = viewportWidth >= 1024;
 
-        if (isAndroid) {
-            if (memory <= 4 || cores <= 6) {
-                tier = 'low';
-            } else {
-                tier = 'mid'; // Even high-end Androids struggle with massive blur + scroll
-            }
-        } else if (isMobile) {
-            // iOS usually handles blur better, but older iPhones might struggle
-            if (cores <= 2) tier = 'mid';
+    let tier = 'high';
+
+    if (isAndroid) {
+        if (memory <= 4 || cores <= 6) {
+            tier = 'low';
+        } else {
+            tier = 'mid';
+        }
+    } else if (isMobile) {
+        tier = cores <= 2 ? 'mid' : 'high';
+    }
+
+    if (viewportWidth < 768 && tier === 'high') {
+        tier = 'mid';
+    }
+
+    const allowBlur = tier === 'high' || (tier === 'mid' && !isAndroid);
+    const maxPreviewVideos = !isDesktopViewport
+        ? 0
+        : tier === 'high'
+            ? 6
+            : tier === 'mid'
+                ? 3
+                : 0;
+
+    return {
+        tier,
+        allowBlur,
+        simplePhysics: tier === 'low',
+        loadHeavyMedia: tier === 'high' && isDesktopViewport,
+        glassClass: allowBlur ? 'backdrop-blur-xl bg-dark-high/80' : 'bg-dark-high',
+        spring: tier === 'low'
+            ? { type: 'tween', duration: 0.3, ease: 'circOut' }
+            : { type: 'spring', stiffness: 350, damping: 30 },
+        maxPreviewVideos,
+        previewRootMarginPx: isDesktopViewport
+            ? (tier === 'high' ? 380 : tier === 'mid' ? 300 : 240)
+            : 220,
+        previewIdleDelayMs: isDesktopViewport ? 180 : 260,
+        allowAmbientMotion: tier !== 'low',
+    };
+}
+
+function shallowEqualQuality(a, b) {
+    return a.tier === b.tier
+        && a.allowBlur === b.allowBlur
+        && a.simplePhysics === b.simplePhysics
+        && a.loadHeavyMedia === b.loadHeavyMedia
+        && a.glassClass === b.glassClass
+        && a.maxPreviewVideos === b.maxPreviewVideos
+        && a.previewRootMarginPx === b.previewRootMarginPx
+        && a.previewIdleDelayMs === b.previewIdleDelayMs
+        && a.allowAmbientMotion === b.allowAmbientMotion
+        && a.spring.type === b.spring.type
+        && a.spring.duration === b.spring.duration
+        && a.spring.ease === b.spring.ease
+        && a.spring.stiffness === b.spring.stiffness
+        && a.spring.damping === b.spring.damping;
+}
+
+export function HardwareQualityProvider({ children }) {
+    const [quality, setQuality] = useState(() => buildQualityState());
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return undefined;
         }
 
-        // Tier characteristics
-        return {
-            tier,
-            // Blur is the #1 FPS killer on Android. Disable it on Low/Mid Androids.
-            allowBlur: tier === 'high' || (tier === 'mid' && !isAndroid),
+        const handleResize = () => {
+            const nextQuality = buildQualityState();
+            setQuality((currentQuality) => shallowEqualQuality(currentQuality, nextQuality) ? currentQuality : nextQuality);
+        };
 
-            // Low tier gets simple opacity fades instead of complex layout projection
-            simplePhysics: tier === 'low',
+        window.addEventListener('resize', handleResize, { passive: true });
 
-            // Load HQ videos vs Static Images - STRICT: Only High tier gets heavy GIFs
-            loadHeavyMedia: tier === 'high',
-
-            // CSS Classes for dynamic usage
-            glassClass: (tier === 'low' || (tier === 'mid' && isAndroid))
-                ? 'bg-dark-high' // Solid color (fastest) - No opacity to avoid blending cost if possible, or 95%
-                : 'backdrop-blur-xl bg-dark-high/80', // Premium glass
-
-            // Spring Physics
-            spring: tier === 'low'
-                ? { type: "tween", duration: 0.3, ease: "circOut" } // Tween is cheaper than Spring calculation
-                : { type: "spring", stiffness: 350, damping: 30 }    // Pro spring
+        return () => {
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
-};
+
+    const value = useMemo(() => quality, [quality]);
+
+    return React.createElement(HardwareQualityContext.Provider, { value }, children);
+}
+
+export const useHardwareQuality = () => useContext(HardwareQualityContext) || defaultQuality;

@@ -12,6 +12,7 @@ import {
     getSectionScrollY,
     isPlainLeftClick,
 } from '../../utils/sectionRouting';
+import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -30,10 +31,8 @@ const Navbar = () => {
 
     useEffect(() => {
         const sectionIds = navLinks.map((link) => link.id);
-        let rafId = null;
 
         const updateNavigationState = () => {
-            rafId = null;
             setIsScrolled(window.scrollY > 20);
 
             const activeLock = activeLockRef.current;
@@ -58,23 +57,7 @@ const Navbar = () => {
             setActiveSection(getActiveSectionId(sectionIds));
         };
 
-        const queueNavigationStateUpdate = () => {
-            if (rafId !== null) return;
-            rafId = window.requestAnimationFrame(updateNavigationState);
-        };
-
-        queueNavigationStateUpdate();
-
-        window.addEventListener('scroll', queueNavigationStateUpdate, { passive: true });
-        window.addEventListener('resize', queueNavigationStateUpdate);
-
-        return () => {
-            window.removeEventListener('scroll', queueNavigationStateUpdate);
-            window.removeEventListener('resize', queueNavigationStateUpdate);
-            if (rafId !== null) {
-                window.cancelAnimationFrame(rafId);
-            }
-        };
+        return subscribeScrollRuntime(updateNavigationState);
     }, [navLinks]);
 
     useEffect(() => {

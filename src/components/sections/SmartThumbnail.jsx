@@ -1,78 +1,84 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+import React, { useEffect, useRef, useState } from 'react';
 
 const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
     const videoRef = useRef(null);
-    const containerRef = useRef(null);
-    const quality = useHardwareQuality();
     const [shouldMount, setShouldMount] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Determine media sources
-    const previewVideo = project.previewUrl && project.previewUrl.endsWith('.mp4') ? project.previewUrl : null;
-    const legacyVideo = project.demoType === 'video' || (project.demoUrl && project.demoUrl.endsWith('.mp4')) ? project.demoUrl : null;
-    const baseVideoUrl = previewVideo || legacyVideo;
-    const hasVideo = !!baseVideoUrl;
+    const previewSource = project.media?.cardPreview || null;
+    const posterSource = project.media?.poster || project.thumbnail;
+    const hasVideo = Boolean(previewSource);
 
-    const isMobileTier = quality.tier === 'low' || quality.tier === 'mid' || (typeof window !== 'undefined' && window.innerWidth < 768);
-    const mobileVideoUrl = (isMobileTier && hasVideo) ? baseVideoUrl.replace('.mp4', '_mobile.mp4') : baseVideoUrl;
-
-    const [currentSrc, setCurrentSrc] = useState(mobileVideoUrl);
-
-    // STAGGERED MOUNTING LOGIC
     useEffect(() => {
-        let timeout;
-        if (isAllowedToPlay) {
-            const delay = stagger * 150;
-            timeout = setTimeout(() => {
+        let timeoutId;
+
+        if (hasVideo && isAllowedToPlay) {
+            const delay = Math.max(0, stagger) * 120;
+            timeoutId = window.setTimeout(() => {
                 setShouldMount(true);
             }, delay);
         } else {
+            const currentVideo = videoRef.current;
+            if (currentVideo) {
+                currentVideo.pause();
+            }
             setShouldMount(false);
             setIsLoaded(false);
         }
-        return () => clearTimeout(timeout);
-    }, [isAllowedToPlay, stagger]);
 
-    // Update source if base changes
+        return () => {
+            if (timeoutId) {
+                window.clearTimeout(timeoutId);
+            }
+        };
+    }, [hasVideo, isAllowedToPlay, stagger]);
+
     useEffect(() => {
-        setCurrentSrc(isMobileTier && hasVideo ? baseVideoUrl.replace('.mp4', '_mobile.mp4') : baseVideoUrl);
-    }, [baseVideoUrl, isMobileTier, hasVideo]);
+        const currentVideo = videoRef.current;
+
+        if (!currentVideo) {
+            return undefined;
+        }
+
+        if (!isAllowedToPlay || !shouldMount) {
+            currentVideo.pause();
+            return undefined;
+        }
+
+        const playPromise = currentVideo.play?.();
+        if (playPromise?.catch) {
+            playPromise.catch(() => {});
+        }
+
+        return () => {
+            currentVideo.pause();
+        };
+    }, [isAllowedToPlay, shouldMount]);
 
     return (
-        <div ref={containerRef} className="w-full h-full relative group bg-dark-high/50">
-            {/* 1. LAYER 0: Static Facade (Always visible initially) */}
+        <div className="w-full h-full relative group bg-dark-high/50">
             <img
-                src={project.thumbnail}
+                src={posterSource}
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
                 className={`w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-0 scale-110' : 'opacity-80 scale-100 group-hover:opacity-100 group-hover:scale-105'}`}
             />
 
-            {/* 2. LAYER 1: Dynamic Video (Only mounts when allowed by Orchestrator) */}
             {hasVideo && shouldMount && (
                 <video
                     ref={videoRef}
-                    src={currentSrc}
-                    poster={project.thumbnail}
-                    autoPlay
+                    src={previewSource}
+                    poster={posterSource}
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     onLoadedData={() => {
                         setIsLoaded(true);
                     }}
                     className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${isLoaded ? 'opacity-70 group-hover:opacity-100 group-hover:scale-105' : 'opacity-0 scale-100'}`}
-                    onError={() => {
-                        if (currentSrc !== baseVideoUrl) {
-                            setCurrentSrc(baseVideoUrl);
-                        }
-                    }}
-                >
-
-                </video>
+                />
             )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-dark-void/90 via-dark-void/20 to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none" />

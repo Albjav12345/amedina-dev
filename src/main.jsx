@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { HardwareQualityProvider } from './hooks/useHardwareQuality'
 import './styles/global.css'
 
 // Keep browser restoration manual so the SPA can restore the intended section route itself.
@@ -10,6 +11,8 @@ if ('scrollRestoration' in history) {
 
 ReactDOM.createRoot(document.getElementById('app')).render(
     <React.StrictMode>
-        <App />
+        <HardwareQualityProvider>
+            <App />
+        </HardwareQualityProvider>
     </React.StrictMode>,
 )
