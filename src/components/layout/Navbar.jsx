@@ -5,8 +5,8 @@ import portfolioData from '../../data/portfolio';
 import {
     DEFAULT_SECTION_ID,
     SECTION_ACTIVE_LOCK_EVENT,
+    SECTION_VISIBLE_EVENT,
     dispatchSectionNavigation,
-    getActiveSectionId,
     getPathnameForSection,
     getSectionIdFromPathname,
     getSectionScrollY,
@@ -26,19 +26,26 @@ const Navbar = () => {
     });
     const scrollLockRef = useRef({ active: false, targetId: null, targetY: 0, expiresAt: 0 });
     const activeLockRef = useRef({ active: false, targetId: DEFAULT_SECTION_ID });
+    const isScrolledRef = useRef(false);
+    const activeSectionRef = useRef(
+        typeof window === 'undefined'
+            ? DEFAULT_SECTION_ID
+            : (getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID),
+    );
     const mobileScrollAnimationRef = useRef({ rafId: null, timeoutId: null, token: 0 });
     const { navigation } = portfolioData.ui;
     const navLinks = navigation.links;
 
     useEffect(() => {
-        const sectionIds = navLinks.map((link) => link.id);
-
         const updateNavigationState = () => {
-            setIsScrolled(window.scrollY > 20);
+            const nextIsScrolled = window.scrollY > 20;
+            if (isScrolledRef.current !== nextIsScrolled) {
+                isScrolledRef.current = nextIsScrolled;
+                setIsScrolled(nextIsScrolled);
+            }
 
             const activeLock = activeLockRef.current;
             if (activeLock.active) {
-                setActiveSection(activeLock.targetId);
                 return;
             }
 
@@ -48,18 +55,15 @@ const Navbar = () => {
                 const lockExpired = Date.now() >= lock.expiresAt;
 
                 if (!hasReachedTarget && !lockExpired) {
-                    setActiveSection(lock.targetId);
                     return;
                 }
 
                 scrollLockRef.current = { active: false, targetId: null, targetY: 0, expiresAt: 0 };
             }
-
-            setActiveSection(getActiveSectionId(sectionIds));
         };
 
         return subscribeScrollRuntime(updateNavigationState);
-    }, [navLinks]);
+    }, []);
 
     useEffect(() => {
         const handleActiveLock = (event) => {
@@ -70,7 +74,8 @@ const Navbar = () => {
                 targetId: sectionId || DEFAULT_SECTION_ID,
             };
 
-            if (locked) {
+            if (locked && activeSectionRef.current !== (sectionId || DEFAULT_SECTION_ID)) {
+                activeSectionRef.current = sectionId || DEFAULT_SECTION_ID;
                 setActiveSection(sectionId || DEFAULT_SECTION_ID);
             }
         };
@@ -79,6 +84,25 @@ const Navbar = () => {
 
         return () => {
             window.removeEventListener(SECTION_ACTIVE_LOCK_EVENT, handleActiveLock);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleVisibleSection = (event) => {
+            const sectionId = event.detail?.sectionId || DEFAULT_SECTION_ID;
+
+            if (activeSectionRef.current === sectionId) {
+                return;
+            }
+
+            activeSectionRef.current = sectionId;
+            setActiveSection(sectionId);
+        };
+
+        window.addEventListener(SECTION_VISIBLE_EVENT, handleVisibleSection);
+
+        return () => {
+            window.removeEventListener(SECTION_VISIBLE_EVENT, handleVisibleSection);
         };
     }, []);
 
@@ -103,6 +127,7 @@ const Navbar = () => {
             expiresAt: Date.now() + 1800,
         };
 
+        activeSectionRef.current = sectionId;
         setActiveSection(sectionId);
         setIsMobileMenuOpen(false);
 

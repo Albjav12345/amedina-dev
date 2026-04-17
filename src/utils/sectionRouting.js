@@ -2,6 +2,7 @@ export const DEFAULT_SECTION_ID = 'home';
 export const NAV_HEIGHT = 50;
 export const SECTION_NAVIGATION_EVENT = 'section:navigate';
 export const SECTION_ACTIVE_LOCK_EVENT = 'section:active-lock';
+export const SECTION_VISIBLE_EVENT = 'section:visible';
 
 export const SECTION_IDS = [
     'home',
@@ -157,6 +158,16 @@ export function dispatchSectionActiveLock(sectionId, locked) {
             sectionId: isSectionId(sectionId) ? sectionId : DEFAULT_SECTION_ID,
             locked: Boolean(locked),
         },
+    }));
+}
+
+export function dispatchVisibleSection(sectionId) {
+    if (typeof window === 'undefined' || !isSectionId(sectionId)) {
+        return;
+    }
+
+    window.dispatchEvent(new CustomEvent(SECTION_VISIBLE_EVENT, {
+        detail: { sectionId },
     }));
 }
 

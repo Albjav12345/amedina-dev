@@ -4,6 +4,7 @@ import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 
 const ParallaxGrid = ({ isFrozen = false }) => {
     const gridLayerRef = useRef(null);
+    const lastOffsetRef = useRef(0);
 
     useEffect(() => {
         const node = gridLayerRef.current;
@@ -23,7 +24,13 @@ const ParallaxGrid = ({ isFrozen = false }) => {
         node.style.willChange = 'transform';
 
         const unsubscribe = subscribeScrollRuntime((runtimeSnapshot) => {
-            const nextOffset = -((runtimeSnapshot.scrollY * 0.15) % 50);
+            const nextOffset = Math.round(-((runtimeSnapshot.scrollY * 0.15) % 50));
+
+            if (nextOffset === lastOffsetRef.current) {
+                return;
+            }
+
+            lastOffsetRef.current = nextOffset;
             node.style.transform = `translate3d(0, ${nextOffset}px, 0)`;
         });
 

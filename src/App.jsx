@@ -12,6 +12,7 @@ import {
     SECTION_IDS,
     SECTION_NAVIGATION_EVENT,
     dispatchSectionActiveLock,
+    dispatchVisibleSection,
     getActiveSectionId,
     getSectionElement,
     getPathnameForSection,
@@ -241,6 +242,20 @@ function App() {
         window.history.replaceState(nextState, '', nextPathname);
     };
 
+    const commitActiveSection = (sectionId, historyMode = 'replace') => {
+        if (!isSectionId(sectionId)) {
+            return;
+        }
+
+        const previousSectionId = activeSectionRef.current;
+        activeSectionRef.current = sectionId;
+        syncPathname(sectionId, historyMode);
+
+        if (previousSectionId !== sectionId) {
+            dispatchVisibleSection(sectionId);
+        }
+    };
+
     const navigateToSection = (sectionId, { historyMode = 'push', behavior = 'smooth' } = {}) => {
         const targetSectionId = isSectionId(sectionId) ? sectionId : DEFAULT_SECTION_ID;
         const targetY = getSectionScrollY(targetSectionId);
@@ -258,8 +273,7 @@ function App() {
             expiresAt: Date.now() + (isImmediate ? 650 : 1800),
         };
 
-        activeSectionRef.current = targetSectionId;
-        syncPathname(targetSectionId, historyMode);
+        commitActiveSection(targetSectionId, historyMode);
 
         if (lenisRef.current) {
             lenisRef.current.scrollTo(targetY, {
@@ -371,8 +385,7 @@ function App() {
                         targetY,
                         expiresAt: Date.now() + 500,
                     };
-                    activeSectionRef.current = pendingRestore.targetId;
-                    syncPathname(pendingRestore.targetId, 'replace');
+                    commitActiveSection(pendingRestore.targetId, 'replace');
 
                     if (lenisRef.current) {
                         lenisRef.current.scrollTo(targetY, {
@@ -522,7 +535,7 @@ function App() {
         }
 
         const initialSectionId = initialSectionIdRef.current;
-        activeSectionRef.current = initialSectionId;
+        commitActiveSection(initialSectionId, 'replace');
         startRouteRestore(initialSectionId);
         navigateToSection(initialSectionId, {
             historyMode: 'replace',
@@ -607,17 +620,20 @@ function App() {
     }, []);
 
     useEffect(() => {
-        return subscribeScrollRuntime((runtimeSnapshot) => {
-            const nextBucket = runtimeSnapshot.width >= 1024 ? 'desktop' : 'mobile'
+        const syncViewportBucket = () => {
+            const nextBucket = window.innerWidth >= 1024 ? 'desktop' : 'mobile'
 
-            setViewportBucket((currentBucket) => {
-                if (currentBucket === nextBucket) {
-                    return currentBucket
-                }
+            setViewportBucket((currentBucket) => (
+                currentBucket === nextBucket ? currentBucket : nextBucket
+            ))
+        }
 
-                return nextBucket
-            })
-        })
+        syncViewportBucket()
+        window.addEventListener('resize', syncViewportBucket, { passive: true })
+
+        return () => {
+            window.removeEventListener('resize', syncViewportBucket)
+        }
     }, [])
 
     useEffect(() => {
@@ -743,7 +759,7 @@ function App() {
                 return;
             }
 
-            activeSectionRef.current = sectionId;
+            commitActiveSection(sectionId, 'preserve');
             startRouteRestore(sectionId);
             navigateToSection(sectionId, {
                 historyMode: 'preserve',
@@ -766,8 +782,7 @@ function App() {
 
             if (skipScroll) {
                 stopRouteRestore();
-                activeSectionRef.current = sectionId;
-                syncPathname(sectionId, historyMode);
+                commitActiveSection(sectionId, historyMode);
                 return;
             }
 
@@ -804,8 +819,7 @@ function App() {
         const syncVisibleSection = () => {
             const pendingRestore = routeRestoreRef.current;
             if (pendingRestore.active) {
-                activeSectionRef.current = pendingRestore.targetId;
-                syncPathname(pendingRestore.targetId, 'replace');
+                commitActiveSection(pendingRestore.targetId, 'replace');
                 return;
             }
 
@@ -816,8 +830,7 @@ function App() {
                 const lockExpired = Date.now() >= lock.expiresAt;
 
                 if (!hasReachedTarget && !lockExpired) {
-                    activeSectionRef.current = lock.targetId;
-                    syncPathname(lock.targetId, 'replace');
+                    commitActiveSection(lock.targetId, 'replace');
                     return;
                 }
 
@@ -832,8 +845,7 @@ function App() {
             const visibleSectionId = getActiveSectionId(SECTION_IDS);
 
             if (visibleSectionId !== activeSectionRef.current) {
-                activeSectionRef.current = visibleSectionId;
-                syncPathname(visibleSectionId, 'replace');
+                commitActiveSection(visibleSectionId, 'replace');
             }
         };
 
