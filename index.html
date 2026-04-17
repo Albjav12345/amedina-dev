@@ -63,6 +63,23 @@
       "knowsAbout": ["React", "Python", "Backend Architecture", "Automation", "AI Agents", "Frontend Systems", "Web Performance"]
     }
   </script>
+  <script>
+    (function () {
+      try {
+        var pathname = (window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+        var isDeepRoute = pathname !== '/';
+        var isMobileViewport = window.innerWidth < 1024;
+
+        if (isDeepRoute && isMobileViewport) {
+          document.documentElement.setAttribute('data-route-restore-pending', 'true');
+        }
+
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
+      } catch { }
+    })();
+  </script>
 </head>
 
 <body>

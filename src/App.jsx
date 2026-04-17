@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, Suspense, useRef, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
@@ -149,23 +149,57 @@ function isSectionContentReady(sectionId) {
     return sectionElement.getBoundingClientRect().height > 48
 }
 
+function performWindowScroll(top, { instant = false } = {}) {
+    if (typeof window === 'undefined') {
+        return
+    }
+
+    if (!instant) {
+        window.scrollTo({
+            top,
+            behavior: 'smooth',
+        })
+        return
+    }
+
+    const html = document.documentElement
+    const body = document.body
+    const previousHtmlBehavior = html.style.scrollBehavior
+    const previousBodyBehavior = body.style.scrollBehavior
+
+    html.style.scrollBehavior = 'auto'
+    body.style.scrollBehavior = 'auto'
+    window.scrollTo(0, top)
+
+    window.requestAnimationFrame(() => {
+        html.style.scrollBehavior = previousHtmlBehavior
+        body.style.scrollBehavior = previousBodyBehavior
+    })
+}
+
 
 function App() {
-    const initialSectionIdRef = useRef(
+    const initialViewportBucket = getViewportBucket()
+    const initialSectionId = (
         typeof window !== 'undefined'
             ? (getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID)
-            : DEFAULT_SECTION_ID,
+            : DEFAULT_SECTION_ID
     )
-    const initialViewportBucket = getViewportBucket()
+    const shouldHoldInitialReveal = initialViewportBucket === 'mobile' && initialSectionId !== DEFAULT_SECTION_ID
+    const initialSectionIdRef = useRef(
+        initialSectionId,
+    )
     const [isControlOpen, setIsControlOpen] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
+    const [isInitialRouteRevealReady, setIsInitialRouteRevealReady] = useState(!shouldHoldInitialReveal)
     const [mountedSectionMap, setMountedSectionMap] = useState(() =>
         SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
             acc[sectionId] = typeof document !== 'undefined' && Boolean(document.getElementById(sectionId))
             return acc
         }, {}),
     )
+    const hasCompletedInitialRestoreRef = useRef(!shouldHoldInitialReveal)
     const lenisRef = useRef(null);
     const lenisRafRef = useRef(null);
     const isControlOpenRef = useRef(false);
@@ -237,10 +271,7 @@ function App() {
             return;
         }
 
-        window.scrollTo({
-            top: targetY,
-            behavior: isImmediate ? 'auto' : 'smooth',
-        });
+        performWindowScroll(targetY, { instant: isImmediate });
     };
 
     const stopRouteRestore = () => {
@@ -253,6 +284,16 @@ function App() {
         pendingRestore.observer?.disconnect?.();
 
         dispatchSectionActiveLock(pendingRestore.targetId, false);
+
+        if (!hasCompletedInitialRestoreRef.current) {
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    hasCompletedInitialRestoreRef.current = true
+                    setIsInitialRouteRevealReady(true)
+                    document.documentElement.removeAttribute('data-route-restore-pending')
+                })
+            })
+        }
 
         routeRestoreRef.current = {
             active: false,
@@ -339,10 +380,7 @@ function App() {
                             force: true,
                         });
                     } else {
-                        window.scrollTo({
-                            top: targetY,
-                            behavior: 'auto',
-                        });
+                        performWindowScroll(targetY, { instant: true });
                     }
                 }
 
@@ -473,22 +511,52 @@ function App() {
         }
     }, [])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (typeof window === 'undefined') {
+            return undefined
+        }
+
+        const previousScrollRestoration = window.history.scrollRestoration
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual'
+        }
+
         const initialSectionId = initialSectionIdRef.current;
         activeSectionRef.current = initialSectionId;
         startRouteRestore(initialSectionId);
-
-        const frameId = window.requestAnimationFrame(() => {
-            navigateToSection(initialSectionId, {
-                historyMode: 'replace',
-                behavior: 'instant',
-            });
+        navigateToSection(initialSectionId, {
+            historyMode: 'replace',
+            behavior: 'instant',
         });
 
         return () => {
-            window.cancelAnimationFrame(frameId);
+            if ('scrollRestoration' in window.history) {
+                window.history.scrollRestoration = previousScrollRestoration
+            }
         };
     }, []);
+
+    useEffect(() => {
+        if (isInitialRouteRevealReady) {
+            document.documentElement.removeAttribute('data-route-restore-pending')
+        }
+    }, [isInitialRouteRevealReady])
+
+    useEffect(() => {
+        if (isInitialRouteRevealReady) {
+            return undefined
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            hasCompletedInitialRestoreRef.current = true
+            setIsInitialRouteRevealReady(true)
+            document.documentElement.removeAttribute('data-route-restore-pending')
+        }, 1800)
+
+        return () => {
+            window.clearTimeout(timeoutId)
+        }
+    }, [isInitialRouteRevealReady])
 
     useEffect(() => {
         const preloadSections = () => {
@@ -667,8 +735,24 @@ function App() {
     }, [sectionWrapperHeights, viewportBucket])
 
     useEffect(() => {
+        const syncRouteFromPathname = () => {
+            const sectionId = getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID;
+            const pendingRestore = routeRestoreRef.current;
+
+            if (pendingRestore.active && pendingRestore.targetId === sectionId) {
+                return;
+            }
+
+            activeSectionRef.current = sectionId;
+            startRouteRestore(sectionId);
+            navigateToSection(sectionId, {
+                historyMode: 'preserve',
+                behavior: 'instant',
+            });
+        };
+
         const handleSectionNavigation = (event) => {
-            const { sectionId, historyMode = 'push', behavior = 'smooth' } = event.detail || {};
+            const { sectionId, historyMode = 'push', behavior = 'smooth', skipScroll = false } = event.detail || {};
 
             if (!sectionId) {
                 return;
@@ -679,6 +763,13 @@ function App() {
             document.body.style.overscrollBehaviorY = '';
             document.documentElement.style.overscrollBehaviorY = '';
             window.dispatchEvent(new CustomEvent('close-project-modal'));
+
+            if (skipScroll) {
+                stopRouteRestore();
+                activeSectionRef.current = sectionId;
+                syncPathname(sectionId, historyMode);
+                return;
+            }
 
             const shouldRestoreTarget = behavior === 'instant' || !isSectionContentReady(sectionId);
 
@@ -695,21 +786,17 @@ function App() {
         };
 
         const handlePopState = () => {
-            const sectionId = getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID;
-            activeSectionRef.current = sectionId;
-            startRouteRestore(sectionId);
-            navigateToSection(sectionId, {
-                historyMode: 'preserve',
-                behavior: 'instant',
-            });
+            syncRouteFromPathname();
         };
 
         window.addEventListener(SECTION_NAVIGATION_EVENT, handleSectionNavigation);
         window.addEventListener('popstate', handlePopState);
+        window.addEventListener('pageshow', syncRouteFromPathname);
 
         return () => {
             window.removeEventListener(SECTION_NAVIGATION_EVENT, handleSectionNavigation);
             window.removeEventListener('popstate', handlePopState);
+            window.removeEventListener('pageshow', syncRouteFromPathname);
         };
     }, []);
 
@@ -763,6 +850,13 @@ function App() {
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
             <ParallaxGrid isFrozen={isControlOpen} />
             <Navbar />
+            <div
+                style={{
+                    opacity: isInitialRouteRevealReady ? 1 : 0,
+                    pointerEvents: isInitialRouteRevealReady ? 'auto' : 'none',
+                    transition: isInitialRouteRevealReady ? 'opacity 180ms ease-out' : 'none',
+                }}
+            >
             <main>
                 <Hero isUiFrozen={isControlOpen} />
 
@@ -807,6 +901,7 @@ function App() {
                     onClose={() => setIsControlOpen(false)}
                 />
             </Suspense>
+            </div>
             <Analytics />
             <SpeedInsights />
         </div>

@@ -26,6 +26,7 @@ const Navbar = () => {
     });
     const scrollLockRef = useRef({ active: false, targetId: null, targetY: 0, expiresAt: 0 });
     const activeLockRef = useRef({ active: false, targetId: DEFAULT_SECTION_ID });
+    const mobileScrollAnimationRef = useRef({ rafId: null, timeoutId: null, token: 0 });
     const { navigation } = portfolioData.ui;
     const navLinks = navigation.links;
 
@@ -81,17 +82,24 @@ const Navbar = () => {
         };
     }, []);
 
+    useEffect(() => {
+        return () => {
+            if (mobileScrollAnimationRef.current.rafId !== null) {
+                window.cancelAnimationFrame(mobileScrollAnimationRef.current.rafId);
+            }
+            if (mobileScrollAnimationRef.current.timeoutId !== null) {
+                window.clearTimeout(mobileScrollAnimationRef.current.timeoutId);
+            }
+        };
+    }, []);
+
     const lockSection = (sectionId) => {
         const targetY = getSectionScrollY(sectionId);
-
-        if (targetY === null) {
-            return false;
-        }
 
         scrollLockRef.current = {
             active: true,
             targetId: sectionId,
-            targetY,
+            targetY: targetY ?? window.scrollY,
             expiresAt: Date.now() + 1800,
         };
 
@@ -109,7 +117,70 @@ const Navbar = () => {
         document.documentElement.style.overscrollBehaviorY = '';
     };
 
-    const handleSectionNavigation = (event, sectionId, { forceSpaNavigation = false } = {}) => {
+    const animateMobileScrollToSection = (sectionId, attempt = 0, token = Date.now()) => {
+        const maxAttempts = 18;
+        const targetY = getSectionScrollY(sectionId);
+
+        mobileScrollAnimationRef.current.token = token;
+
+        if (targetY === null) {
+            if (attempt >= maxAttempts) {
+                return;
+            }
+
+            mobileScrollAnimationRef.current.timeoutId = window.setTimeout(() => {
+                animateMobileScrollToSection(sectionId, attempt + 1, token);
+            }, 90);
+            return;
+        }
+
+        const startY = window.scrollY;
+        const distance = targetY - startY;
+
+        if (Math.abs(distance) <= 2) {
+            window.scrollTo(0, targetY);
+            return;
+        }
+
+        const html = document.documentElement;
+        const body = document.body;
+        const previousHtmlBehavior = html.style.scrollBehavior;
+        const previousBodyBehavior = body.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        body.style.scrollBehavior = 'auto';
+
+        const duration = Math.min(900, Math.max(420, Math.abs(distance) * 0.55));
+        const startedAt = performance.now();
+
+        const step = (now) => {
+            if (mobileScrollAnimationRef.current.token !== token) {
+                html.style.scrollBehavior = previousHtmlBehavior;
+                body.style.scrollBehavior = previousBodyBehavior;
+                return;
+            }
+
+            const elapsed = Math.min(1, (now - startedAt) / duration);
+            const eased = 1 - Math.pow(1 - elapsed, 3);
+            const nextY = Math.round(startY + distance * eased);
+
+            window.scrollTo(0, nextY);
+
+            if (elapsed < 1) {
+                mobileScrollAnimationRef.current.rafId = window.requestAnimationFrame(step);
+                return;
+            }
+
+            window.scrollTo(0, targetY);
+            html.style.scrollBehavior = previousHtmlBehavior;
+            body.style.scrollBehavior = previousBodyBehavior;
+            mobileScrollAnimationRef.current.rafId = null;
+            mobileScrollAnimationRef.current.timeoutId = null;
+        };
+
+        mobileScrollAnimationRef.current.rafId = window.requestAnimationFrame(step);
+    };
+
+    const handleSectionNavigation = (event, sectionId, { forceSpaNavigation = false, behavior = 'smooth' } = {}) => {
         if (!forceSpaNavigation && !isPlainLeftClick(event)) {
             return;
         }
@@ -124,8 +195,13 @@ const Navbar = () => {
 
         dispatchSectionNavigation(sectionId, {
             historyMode: 'push',
-            behavior: 'smooth',
+            behavior,
+            skipScroll: forceSpaNavigation,
         });
+
+        if (forceSpaNavigation) {
+            animateMobileScrollToSection(sectionId);
+        }
     };
 
     const handleTerminalAccess = () => {
@@ -233,7 +309,10 @@ const Navbar = () => {
                                 <a
                                     key={link.id}
                                     href={link.href}
-                                    onClick={(event) => handleSectionNavigation(event, link.id, { forceSpaNavigation: true })}
+                                    onClick={(event) => handleSectionNavigation(event, link.id, {
+                                        forceSpaNavigation: true,
+                                        behavior: 'smooth',
+                                    })}
                                     className="flex items-center gap-4 group cursor-pointer p-2"
                                 >
                                     <span className="font-mono text-xs text-electric-green">{link.num}</span>

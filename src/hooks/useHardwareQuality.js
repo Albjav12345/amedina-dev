@@ -32,6 +32,10 @@ function buildQualityState() {
     const viewportWidth = window.innerWidth;
     const isDesktopViewport = viewportWidth >= 1024;
     const isCompactViewport = viewportWidth < 768;
+    const hasCoarsePointer = typeof window.matchMedia === 'function'
+        && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const hasTouchPoints = (navigator.maxTouchPoints || 0) > 0;
+    const useCompactProjectModal = !isDesktopViewport && (isMobile || hasCoarsePointer || hasTouchPoints);
 
     let tier = 'high';
 
@@ -75,14 +79,14 @@ function buildQualityState() {
         loadHeavyMedia: tier === 'high' && isDesktopViewport,
         glassClass: allowBlur ? 'backdrop-blur-xl bg-dark-high/80' : 'bg-dark-high',
         spring,
-        modalTransition: isCompactViewport ? compactModalTransition : spring,
+        modalTransition: useCompactProjectModal ? compactModalTransition : spring,
         maxPreviewVideos,
         previewRootMarginPx: isDesktopViewport
             ? (tier === 'high' ? 380 : tier === 'mid' ? 300 : 240)
             : 220,
         previewIdleDelayMs: isDesktopViewport ? 180 : 260,
         allowAmbientMotion: tier !== 'low',
-        useCompactProjectModal: isCompactViewport,
+        useCompactProjectModal,
     };
 }
 
