@@ -96,8 +96,7 @@ const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
     );
 };
 
-const NodeGroup = ({ title, icon, items, index, color }) => {
-    const quality = useHardwareQuality();
+const NodeGroup = ({ title, icon, items, index, color, quality }) => {
     const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
     const backgroundStyle = getCardBackgroundStyle(title);
 
@@ -130,7 +129,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             </div>
 
             <div className={`flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
-                {items.map((item) => <TechNode key={item} name={item} color={color} icon={renderTechItemIcon(item)} quality={quality} />)}
+                {items.map((item) => <TechNode key={item} name={item} color={color} icon={renderTechItemIcon(item, quality)} quality={quality} />)}
             </div>
 
             <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none hidden md:block">
@@ -141,12 +140,13 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
 };
 
 const TechStack = () => {
+    const quality = useHardwareQuality();
     const { tech } = portfolioData.ui.sections;
     const { categories } = portfolioData.skills;
 
     const mappedCategories = categories.map((cat) => ({
         ...cat,
-        icon: renderTechCategoryIcon(cat.title),
+        icon: renderTechCategoryIcon(cat.title, quality),
     }));
 
     return (
@@ -181,6 +181,7 @@ const TechStack = () => {
                             icon={cat.icon}
                             items={cat.items}
                             index={i}
+                            quality={quality}
                             color={cat.color === 'electric-green' ? 'electric-green' : 'electric-cyan'}
                         />
                     ))}
