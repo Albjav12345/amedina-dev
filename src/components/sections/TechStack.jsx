@@ -1,25 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-    Cpu,
-    Brain,
-    Layers,
-    Globe,
-    Database,
-    Terminal,
-    Code2,
-    Zap,
-    Box,
-    Wind,
-    Flame,
-    Layout,
-    Cloud,
-    Search,
-    MousePointer2,
-} from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+import { renderTechCategoryIcon, renderTechItemIcon } from './techStackIcons';
 
 const COLOR_STYLES = {
     'electric-green': {
@@ -100,7 +84,7 @@ const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
                 )}
 
                 <div className={`relative z-10 text-gray-400 ${colorStyles.hoverText} transition-colors duration-300 transform ${quality.tier !== 'low' ? 'group-hover:scale-110' : ''}`}>
-                    {React.cloneElement(icon, { className: 'w-4 h-4' })}
+                    {icon}
                 </div>
             </div>
             <div className="flex flex-col items-center gap-0.5">
@@ -146,27 +130,7 @@ const NodeGroup = ({ title, icon, items, index, color }) => {
             </div>
 
             <div className={`flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
-                {items.map((item) => {
-                    const subIconMap = {
-                        'Python': <Terminal />,
-                        'C#': <Code2 />,
-                        'SQL / NoSQL': <Database />,
-                        'Node.js': <Zap />,
-                        'React': <Layout />,
-                        'Unity 3D': <Box />,
-                        'Tailwind CSS': <Wind />,
-                        'Motion Design': <Flame />,
-                        'Firebase': <Flame />,
-                        'Supabase': <Database />,
-                        'Vercel': <Cloud />,
-                        'Vite': <Zap />,
-                        'Groq (Llama 3)': <Brain />,
-                        'Tesseract OCR': <Search />,
-                        'Selenium': <MousePointer2 />,
-                    };
-
-                    return <TechNode key={item} name={item} color={color} icon={subIconMap[item] || <Cpu />} quality={quality} />;
-                })}
+                {items.map((item) => <TechNode key={item} name={item} color={color} icon={renderTechItemIcon(item)} quality={quality} />)}
             </div>
 
             <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none hidden md:block">
@@ -180,16 +144,9 @@ const TechStack = () => {
     const { tech } = portfolioData.ui.sections;
     const { categories } = portfolioData.skills;
 
-    const iconMap = {
-        Cpu: <Cpu className="w-5 h-5" />,
-        Brain: <Brain className="w-5 h-5" />,
-        Layers: <Layers className="w-5 h-5" />,
-        Globe: <Globe className="w-5 h-5" />,
-    };
-
     const mappedCategories = categories.map((cat) => ({
         ...cat,
-        icon: iconMap[cat.icon] || <Cpu className="w-5 h-5" />,
+        icon: renderTechCategoryIcon(cat.title),
     }));
 
     return (
