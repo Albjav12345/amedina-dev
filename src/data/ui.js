@@ -2,6 +2,17 @@
 // GLOBAL UI CONFIGURATION
 // -------------------------------------------------------------------------
 
+import { isArchitectSectionEnabled } from '../config/siteFeatures.js';
+
+const baseNavigationLinks = [
+    { name: 'Start', href: '/', id: 'home' },
+    { name: 'About', href: '/about', id: 'about' },
+    { name: 'Systems', href: '/projects', id: 'projects' },
+    { name: 'Stack', href: '/stack', id: 'tech-stack' },
+    { name: 'Architect', href: '/architect', id: 'architect' },
+    { name: 'Contact', href: '/contact', id: 'contact' },
+];
+
 export const ui = {
     navigation: {
         brand: {
@@ -9,14 +20,12 @@ export const ui = {
             last: ".DEV",
             logoIcon: "Terminal"
         },
-        links: [
-            { name: 'Start', href: '/', id: 'home', num: '01' },
-            { name: 'About', href: '/about', id: 'about', num: '02' },
-            { name: 'Systems', href: '/projects', id: 'projects', num: '03' },
-            { name: 'Stack', href: '/stack', id: 'tech-stack', num: '04' },
-            { name: 'Architect', href: '/architect', id: 'architect', num: '05' },
-            { name: 'Contact', href: '/contact', id: 'contact', num: '06' },
-        ],
+        links: baseNavigationLinks
+            .filter((link) => link.id !== 'architect' || isArchitectSectionEnabled)
+            .map((link, index) => ({
+                ...link,
+                num: String(index + 1).padStart(2, '0'),
+            })),
         terminalButton: "TERM_ACCESS"
     },
 
@@ -63,7 +72,7 @@ export const ui = {
                 "Reads live portfolio content and current GitHub activity.",
                 "Can navigate the site and move between sections.",
                 "Answers technical questions about projects, stack, and experience.",
-                "Works alongside the architect flow for incoming project briefs."
+                "Can help scope incoming project briefs and technical direction."
             ],
             usage: 'Try asking "What have you built recently?" or "help me scope a system".'
         }

@@ -1,10 +1,12 @@
+import { isArchitectSectionEnabled } from '../config/siteFeatures';
+
 export const DEFAULT_SECTION_ID = 'home';
 export const NAV_HEIGHT = 50;
 export const SECTION_NAVIGATION_EVENT = 'section:navigate';
 export const SECTION_ACTIVE_LOCK_EVENT = 'section:active-lock';
 export const SECTION_VISIBLE_EVENT = 'section:visible';
 
-export const SECTION_IDS = [
+const BASE_SECTION_IDS = [
     'home',
     'about',
     'projects',
@@ -13,7 +15,7 @@ export const SECTION_IDS = [
     'contact',
 ];
 
-export const SECTION_TARGETS = {
+const BASE_SECTION_TARGETS = {
     home: 'home',
     about: 'about-wrapper',
     projects: 'projects-wrapper',
@@ -22,7 +24,7 @@ export const SECTION_TARGETS = {
     contact: 'contact-wrapper',
 };
 
-export const SECTION_PATHS = {
+const BASE_SECTION_PATHS = {
     home: '/',
     about: '/about',
     projects: '/projects',
@@ -30,6 +32,18 @@ export const SECTION_PATHS = {
     architect: '/architect',
     contact: '/contact',
 };
+
+function isSectionEnabled(sectionId) {
+    return sectionId !== 'architect' || isArchitectSectionEnabled;
+}
+
+export const SECTION_IDS = BASE_SECTION_IDS.filter(isSectionEnabled);
+export const SECTION_TARGETS = Object.fromEntries(
+    Object.entries(BASE_SECTION_TARGETS).filter(([sectionId]) => isSectionEnabled(sectionId)),
+);
+export const SECTION_PATHS = Object.fromEntries(
+    Object.entries(BASE_SECTION_PATHS).filter(([sectionId]) => isSectionEnabled(sectionId)),
+);
 
 const FALLBACK_ORIGIN = 'https://amedina.dev';
 

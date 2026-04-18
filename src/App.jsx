@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, Suspense, useRef, useState } from 'r
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
+import { isArchitectSectionEnabled } from './config/siteFeatures'
 
 // Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
@@ -48,9 +49,11 @@ const Contact = React.lazy(() =>
     loadContactModule().then(module => ({ default: module.Contact }))
 )
 
-const ProjectArchitect = React.lazy(() =>
-    loadProjectArchitectModule().then(module => ({ default: module.ProjectArchitect }))
-)
+const ProjectArchitect = isArchitectSectionEnabled
+    ? React.lazy(() =>
+        loadProjectArchitectModule().then(module => ({ default: module.ProjectArchitect }))
+    )
+    : null
 
 const ControlPlane = React.lazy(() =>
     import('./components/sections/ControlPlane').then(module => ({ default: module.ControlPlane }))
@@ -576,7 +579,9 @@ function App() {
             loadAboutModule()
             loadFeaturedProjectsModule()
             loadTechStackModule()
-            loadProjectArchitectModule()
+            if (isArchitectSectionEnabled) {
+                loadProjectArchitectModule()
+            }
             loadContactModule()
         }
 
@@ -891,11 +896,13 @@ function App() {
                     </Suspense>
                 </div>
 
-                <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
-                    <Suspense fallback={null}>
-                        <ProjectArchitect />
-                    </Suspense>
-                </div>
+                {isArchitectSectionEnabled && ProjectArchitect && (
+                    <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
+                        <Suspense fallback={null}>
+                            <ProjectArchitect />
+                        </Suspense>
+                    </div>
+                )}
 
                 <div id="contact-wrapper" style={{ minHeight: mountedSectionMap.contact ? undefined : `${sectionWrapperHeights.contact}px` }}>
                     <Suspense fallback={null}>
