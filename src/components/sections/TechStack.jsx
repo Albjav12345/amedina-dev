@@ -24,25 +24,25 @@ const COLOR_STYLES = {
 const TECH_CARD_BACKGROUNDS = {
     'Core Development': {
         image: '/assets/stack/tech-core.webp',
-        position: 'center 54%',
+        position: 'center 66%',
         overlay:
             'radial-gradient(circle at 78% 24%, rgba(255, 120, 90, 0.10) 0%, rgba(255, 120, 90, 0) 28%), linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 255, 153, 0.10) 100%)',
     },
     'AI & Vision Workflows': {
         image: '/assets/stack/tech-ai.webp',
-        position: 'center 34%',
+        position: 'center 58%',
         overlay:
             'radial-gradient(circle at 18% 78%, rgba(240, 255, 140, 0.16) 0%, rgba(240, 255, 140, 0) 26%), linear-gradient(135deg, rgba(255, 96, 72, 0.14) 0%, rgba(0, 0, 0, 0.02) 42%, rgba(88, 166, 255, 0.14) 100%)',
     },
     'Frontend & Interactive Systems': {
         image: '/assets/stack/tech-frontend.webp',
-        position: 'center 32%',
+        position: 'center 52%',
         overlay:
             'radial-gradient(circle at 52% 24%, rgba(88, 166, 255, 0.18) 0%, rgba(88, 166, 255, 0) 30%), linear-gradient(135deg, rgba(255, 220, 120, 0.08) 0%, rgba(0, 0, 0, 0) 42%, rgba(88, 166, 255, 0.14) 100%)',
     },
     'Infra & Delivery': {
         image: '/assets/stack/tech-infra.webp',
-        position: 'center center',
+        position: 'center 60%',
         overlay:
             'radial-gradient(circle at 84% 16%, rgba(0, 255, 153, 0.18) 0%, rgba(0, 255, 153, 0) 24%), linear-gradient(135deg, rgba(0, 255, 153, 0.10) 0%, rgba(0, 0, 0, 0) 42%, rgba(255, 255, 255, 0.04) 100%)',
     },
@@ -52,13 +52,28 @@ function getCardBackgroundStyle(title) {
     const background = TECH_CARD_BACKGROUNDS[title] || TECH_CARD_BACKGROUNDS['Core Development'];
 
     return {
-        backgroundColor: '#0f141a',
-        backgroundImage: `${background.overlay}, linear-gradient(180deg, rgba(5, 8, 12, 0.10) 0%, rgba(5, 8, 12, 0.42) 38%, rgba(5, 8, 12, 0.84) 68%, rgba(5, 8, 12, 0.98) 86%, rgba(5, 8, 12, 1) 100%), linear-gradient(180deg, rgba(5, 8, 12, 0) 58%, rgba(5, 8, 12, 0.72) 82%, rgba(5, 8, 12, 1) 100%), url("${background.image}")`,
-        backgroundPosition: `center, center, center, ${background.position}`,
-        backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat',
-        backgroundSize: 'cover, cover, cover, cover',
-        backgroundClip: 'padding-box',
-        boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -34px 42px rgba(5, 8, 12, 0.90), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
+        shellStyle: {
+            backgroundColor: '#0f141a',
+            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -34px 42px rgba(5, 8, 12, 0.90), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
+        },
+        imageStyle: {
+            backgroundImage: `${background.overlay}, url("${background.image}")`,
+            backgroundPosition: `center, ${background.position}`,
+            backgroundRepeat: 'no-repeat, no-repeat',
+            backgroundSize: 'cover, cover',
+        },
+        bandStyle: {
+            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 58%, rgba(5, 8, 12, 0.36) 74%, rgba(5, 8, 12, 0.76) 88%, rgba(5, 8, 12, 0.98) 100%)',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+        },
+        highlightStyle: {
+            backgroundImage: 'radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 26%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 42%)',
+            backgroundPosition: 'center, center',
+            backgroundRepeat: 'no-repeat, no-repeat',
+            backgroundSize: 'cover, cover',
+        },
     };
 }
 
@@ -115,10 +130,16 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
             viewport={viewportConfig}
             variants={activeContainerVariants}
             custom={index}
-            className="p-10 border border-white/5 relative overflow-hidden space-y-10 gpu-accelerated rounded-xl bg-dark-high/90"
-            style={backgroundStyle}
+            className="group/stack-card stack-card-hoverable min-h-[280px] md:min-h-[304px] px-10 pt-10 pb-16 border border-white/5 relative overflow-hidden gpu-accelerated rounded-xl bg-dark-high/90"
+            style={backgroundStyle.shellStyle}
         >
-            <div className="flex items-center gap-4 border-l-2 border-white/5 pl-6">
+            <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
+                <div className="stack-card-bg absolute inset-0" style={backgroundStyle.imageStyle}></div>
+                <div className="stack-card-band absolute inset-0" style={backgroundStyle.bandStyle}></div>
+                <div className="stack-card-highlight absolute inset-0" style={backgroundStyle.highlightStyle}></div>
+            </div>
+
+            <div className="relative z-10 flex items-center gap-4 border-l-2 border-white/5 pl-6">
                 <div className={`p-3 rounded-lg bg-black/40 border ${colorStyles.border} ${colorStyles.text} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
                     {icon}
                 </div>
@@ -128,7 +149,7 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
                 </div>
             </div>
 
-            <div className={`flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
+            <div className={`relative z-10 mt-10 flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start ${quality.tier === 'low' ? 'will-change-contents' : ''}`}>
                 {items.map((item) => <TechNode key={item} name={item} color={color} icon={renderTechItemIcon(item, quality)} quality={quality} />)}
             </div>
 
