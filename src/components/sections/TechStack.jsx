@@ -62,6 +62,10 @@ const STACK_CARD_BG_DEFAULTS = {
     shift: '3%',
     brightness: 1,
     saturation: 1.03,
+    bandOpacity: 1,
+    bandBrightness: 1,
+    highlightOpacity: 0,
+    highlightScale: 1.02,
 };
 
 function getCardBackgroundStyle(title) {
@@ -70,7 +74,7 @@ function getCardBackgroundStyle(title) {
     return {
         shellStyle: {
             backgroundColor: '#0f141a',
-            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -40px 48px rgba(5, 8, 12, 0.94), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
+            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.98), inset 0 -60px 74px rgba(5, 8, 12, 0.97), inset 0 -136px 156px rgba(5, 8, 12, 0.64), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
         },
         imageStyle: {
             backgroundImage: `${background.overlay}, url("${background.image}")`,
@@ -79,7 +83,7 @@ function getCardBackgroundStyle(title) {
             backgroundSize: 'cover, cover',
         },
         bandStyle: {
-            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 42%, rgba(5, 8, 12, 0.32) 58%, rgba(5, 8, 12, 0.60) 74%, rgba(5, 8, 12, 0.88) 90%, rgba(5, 8, 12, 1) 100%)',
+            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0.03) 0%, rgba(5, 8, 12, 0.05) 22%, rgba(5, 8, 12, 0.22) 38%, rgba(5, 8, 12, 0.48) 56%, rgba(5, 8, 12, 0.78) 74%, rgba(5, 8, 12, 0.94) 90%, rgba(5, 8, 12, 1) 100%)',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
@@ -127,7 +131,7 @@ const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
     );
 };
 
-const NodeGroup = ({ title, icon, items, index, color, quality }) => {
+const NodeGroup = ({ title, icon, items, index, color, quality, backgroundRef }) => {
     const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
     const backgroundStyle = getCardBackgroundStyle(title);
     const mobileTitleLines = TECH_CARD_TITLE_LINES[title] || [title];
@@ -151,7 +155,7 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
             style={backgroundStyle.shellStyle}
         >
             <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
-                <div className="stack-card-bg absolute inset-0" style={backgroundStyle.imageStyle}></div>
+                <div ref={backgroundRef} className="stack-card-bg absolute inset-0" style={backgroundStyle.imageStyle}></div>
                 <div className="stack-card-band absolute inset-0" style={backgroundStyle.bandStyle}></div>
                 <div className="stack-card-highlight absolute inset-0" style={backgroundStyle.highlightStyle}></div>
             </div>
@@ -204,21 +208,31 @@ const TechStack = () => {
 
     useEffect(() => {
         const activeCards = cardRefs.current.filter(Boolean);
-        const activeBackgrounds = bgRefs.current.filter(Boolean);
 
-        const resetBackground = (backgroundElement) => {
+        const resetCardVisuals = (cardElement, backgroundElement) => {
             if (!backgroundElement) {
-                return;
+                if (!cardElement) {
+                    return;
+                }
+            } else {
+                backgroundElement.style.setProperty('--stack-card-bg-scale', String(STACK_CARD_BG_DEFAULTS.scale));
+                backgroundElement.style.setProperty('--stack-card-bg-shift', STACK_CARD_BG_DEFAULTS.shift);
+                backgroundElement.style.setProperty('--stack-card-bg-brightness', String(STACK_CARD_BG_DEFAULTS.brightness));
+                backgroundElement.style.setProperty('--stack-card-bg-saturation', String(STACK_CARD_BG_DEFAULTS.saturation));
             }
 
-            backgroundElement.style.setProperty('--stack-card-bg-scale', String(STACK_CARD_BG_DEFAULTS.scale));
-            backgroundElement.style.setProperty('--stack-card-bg-shift', STACK_CARD_BG_DEFAULTS.shift);
-            backgroundElement.style.setProperty('--stack-card-bg-brightness', String(STACK_CARD_BG_DEFAULTS.brightness));
-            backgroundElement.style.setProperty('--stack-card-bg-saturation', String(STACK_CARD_BG_DEFAULTS.saturation));
+            if (cardElement) {
+                cardElement.style.setProperty('--stack-card-band-opacity', String(STACK_CARD_BG_DEFAULTS.bandOpacity));
+                cardElement.style.setProperty('--stack-card-band-brightness', String(STACK_CARD_BG_DEFAULTS.bandBrightness));
+                cardElement.style.setProperty('--stack-card-highlight-opacity', String(STACK_CARD_BG_DEFAULTS.highlightOpacity));
+                cardElement.style.setProperty('--stack-card-highlight-scale', String(STACK_CARD_BG_DEFAULTS.highlightScale));
+            }
         };
 
         const resetAllBackgrounds = () => {
-            activeBackgrounds.forEach(resetBackground);
+            activeCards.forEach((cardElement, index) => {
+                resetCardVisuals(cardElement, bgRefs.current[index]);
+            });
         };
 
         if (!activeCards.length || quality.isDesktopViewport || !quality.allowAmbientMotion) {
@@ -244,10 +258,11 @@ const TechStack = () => {
             const rankedCards = activeCards.map((cardElement, cardIndex) => {
                 const rect = cardElement.getBoundingClientRect();
                 const cardCenter = rect.top + (rect.height / 2);
-                const distanceRatio = Math.min(1, Math.abs(cardCenter - viewportCenter) / (runtimeSnapshot.height * 0.7));
+                const distanceRatio = Math.min(1, Math.abs(cardCenter - viewportCenter) / (runtimeSnapshot.height * 1.02));
                 const visibilityScore = 1 - distanceRatio;
 
                 return {
+                    cardElement,
                     backgroundElement: bgRefs.current[cardIndex],
                     score: Math.max(0, visibilityScore),
                 };
@@ -255,31 +270,46 @@ const TechStack = () => {
 
             const highlightedBackgrounds = new Set(
                 rankedCards
-                    .filter((entry) => entry.score > 0.08)
+                    .filter((entry) => entry.score > 0.04)
                     .slice(0, 2)
                     .map((entry) => entry.backgroundElement),
             );
 
-            rankedCards.forEach(({ backgroundElement, score }) => {
-                if (!backgroundElement) {
+            rankedCards.forEach(({ cardElement, backgroundElement, score }) => {
+                if (!cardElement && !backgroundElement) {
                     return;
                 }
 
                 if (!highlightedBackgrounds.has(backgroundElement)) {
-                    resetBackground(backgroundElement);
+                    resetCardVisuals(cardElement, backgroundElement);
                     return;
                 }
 
-                const intensity = Math.min(1, score);
-                const scale = STACK_CARD_BG_DEFAULTS.scale + (intensity * 0.08);
-                const shift = 3 + (intensity * 1.6);
-                const brightness = STACK_CARD_BG_DEFAULTS.brightness + (intensity * 0.08);
-                const saturation = STACK_CARD_BG_DEFAULTS.saturation + (intensity * 0.1);
+                const normalizedScore = Math.min(1, score);
+                const easedScore = normalizedScore * normalizedScore * (3 - (2 * normalizedScore));
+                const cinematicIntensity = easedScore * easedScore * (3 - (2 * easedScore));
+                const scale = STACK_CARD_BG_DEFAULTS.scale + (cinematicIntensity * 0.33);
+                const shift = 3 + (cinematicIntensity * 4.25);
+                const brightness = STACK_CARD_BG_DEFAULTS.brightness + (cinematicIntensity * 0.14);
+                const saturation = STACK_CARD_BG_DEFAULTS.saturation + (cinematicIntensity * 0.17);
+                const bandOpacity = STACK_CARD_BG_DEFAULTS.bandOpacity - (cinematicIntensity * 0.18);
+                const bandBrightness = STACK_CARD_BG_DEFAULTS.bandBrightness + (cinematicIntensity * 0.15);
+                const highlightOpacity = STACK_CARD_BG_DEFAULTS.highlightOpacity + (cinematicIntensity * 0.1);
+                const highlightScale = STACK_CARD_BG_DEFAULTS.highlightScale + (cinematicIntensity * 0.04);
 
-                backgroundElement.style.setProperty('--stack-card-bg-scale', scale.toFixed(3));
-                backgroundElement.style.setProperty('--stack-card-bg-shift', `${shift.toFixed(2)}%`);
-                backgroundElement.style.setProperty('--stack-card-bg-brightness', brightness.toFixed(3));
-                backgroundElement.style.setProperty('--stack-card-bg-saturation', saturation.toFixed(3));
+                if (backgroundElement) {
+                    backgroundElement.style.setProperty('--stack-card-bg-scale', scale.toFixed(3));
+                    backgroundElement.style.setProperty('--stack-card-bg-shift', `${shift.toFixed(2)}%`);
+                    backgroundElement.style.setProperty('--stack-card-bg-brightness', brightness.toFixed(3));
+                    backgroundElement.style.setProperty('--stack-card-bg-saturation', saturation.toFixed(3));
+                }
+
+                if (cardElement) {
+                    cardElement.style.setProperty('--stack-card-band-opacity', bandOpacity.toFixed(3));
+                    cardElement.style.setProperty('--stack-card-band-brightness', bandBrightness.toFixed(3));
+                    cardElement.style.setProperty('--stack-card-highlight-opacity', highlightOpacity.toFixed(3));
+                    cardElement.style.setProperty('--stack-card-highlight-scale', highlightScale.toFixed(3));
+                }
             });
         };
 
