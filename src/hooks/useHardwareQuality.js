@@ -4,6 +4,7 @@ const defaultQuality = {
     tier: 'mid',
     isDesktopViewport: true,
     isCompactViewport: false,
+    useWideProjectModalLayout: true,
     allowBlur: true,
     simplePhysics: false,
     loadHeavyMedia: false,
@@ -30,12 +31,23 @@ function buildQualityState() {
     const isMobile = /Android|iPhone|iPad/i.test(ua);
     const isAndroid = /Android/i.test(ua);
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     const isDesktopViewport = viewportWidth >= 1024;
     const isCompactViewport = viewportWidth < 768;
+    const isPortraitTabletViewport = viewportWidth >= 768
+        && viewportWidth <= 1100
+        && viewportHeight >= 900
+        && viewportHeight > viewportWidth;
     const hasCoarsePointer = typeof window.matchMedia === 'function'
         && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     const hasTouchPoints = (navigator.maxTouchPoints || 0) > 0;
-    const useCompactProjectModal = !isDesktopViewport && (isMobile || hasCoarsePointer || hasTouchPoints);
+    const useCompactProjectModal = (!isDesktopViewport && (isMobile || hasCoarsePointer || hasTouchPoints))
+        || isPortraitTabletViewport;
+    const useWideProjectModalLayout = isDesktopViewport
+        && !isPortraitTabletViewport
+        && !hasCoarsePointer
+        && viewportWidth >= 1366
+        && viewportHeight >= 860;
 
     let tier = 'high';
 
@@ -74,6 +86,7 @@ function buildQualityState() {
         tier,
         isDesktopViewport,
         isCompactViewport,
+        useWideProjectModalLayout,
         allowBlur,
         simplePhysics: tier === 'low',
         loadHeavyMedia: tier === 'high' && isDesktopViewport,
@@ -94,6 +107,7 @@ function shallowEqualQuality(a, b) {
     return a.tier === b.tier
         && a.isDesktopViewport === b.isDesktopViewport
         && a.isCompactViewport === b.isCompactViewport
+        && a.useWideProjectModalLayout === b.useWideProjectModalLayout
         && a.allowBlur === b.allowBlur
         && a.simplePhysics === b.simplePhysics
         && a.loadHeavyMedia === b.loadHeavyMedia

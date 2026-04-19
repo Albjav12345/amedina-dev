@@ -55,6 +55,7 @@ const FeaturedProjects = () => {
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
     const useCompactProjectModal = quality.useCompactProjectModal;
+    const useWideProjectLayout = quality.useWideProjectModalLayout;
 
     const cardRefs = useRef({});
     const sectionRef = useRef(null);
@@ -202,17 +203,54 @@ const FeaturedProjects = () => {
         Globe: <Globe className="w-6 h-6 md:w-10 md:h-10 text-electric-cyan" />
     };
 
+    const modalViewportClass = useCompactProjectModal
+        ? 'fixed inset-0 z-[70] flex items-start justify-center p-4 pt-4 overflow-y-auto custom-scrollbar line-clamp-none'
+        : 'fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none';
+    const modalCloseClass = useCompactProjectModal
+        ? 'fixed top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer'
+        : 'fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer';
+    const modalShellClass = useCompactProjectModal
+        ? `relative w-full max-w-[860px] mx-auto border border-white/10 rounded-2xl overflow-hidden flex flex-col h-auto min-h-[50vh] gpu-accelerated ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`
+        : `relative w-full ${useWideProjectLayout ? 'max-w-6xl' : 'max-w-[860px]'} mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col ${useWideProjectLayout ? 'lg:grid lg:grid-cols-2' : ''} h-auto min-h-[50vh] gpu-accelerated ${useCompactProjectModal ? '' : 'layout-projection-surface'} my-8 md:my-0 ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`;
+    const projectInfoPanelClass = useCompactProjectModal
+        ? 'w-full p-6 flex flex-col order-2 border-b border-white/5'
+        : `${useWideProjectLayout ? 'w-full lg:col-start-1 lg:row-start-1 lg:row-span-2' : 'w-full'} p-6 md:p-12 ${useWideProjectLayout ? 'md:overflow-y-auto custom-scrollbar' : ''} flex flex-col ${useWideProjectLayout ? 'order-2 lg:order-none border-b lg:border-b-0' : 'order-2 border-b'} border-white/5`;
+    const projectMediaPanelClass = useCompactProjectModal
+        ? 'w-full bg-black/40 border-b border-white/5 flex flex-col p-6 gap-6 order-1'
+        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-1' : 'w-full'} bg-black/40 ${useWideProjectLayout ? 'border-b lg:border-l' : 'border-b'} border-white/5 flex flex-col p-6 md:p-12 gap-6 ${useWideProjectLayout ? 'order-1 lg:order-none' : 'order-1'}`;
+    const projectFlowPanelClass = useCompactProjectModal
+        ? 'w-full bg-black/60 border-t border-white/5 flex flex-col p-6 gap-6 order-3'
+        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-2' : 'w-full'} bg-black/60 ${useWideProjectLayout ? 'lg:bg-black/40 border-t lg:border-t-0 lg:border-l' : 'border-t'} border-white/5 flex flex-col p-6 md:p-12 gap-6 ${useWideProjectLayout ? 'order-3 lg:order-none' : 'order-3'}`;
+    const projectTitleClass = useCompactProjectModal
+        ? 'text-3xl font-bold text-white tracking-tighter leading-tight'
+        : 'text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight';
+    const projectProblemGridClass = useCompactProjectModal
+        ? 'grid grid-cols-1 gap-6 py-2'
+        : 'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2';
+
     useEffect(() => {
         if (selectedId) {
             document.body.style.overflow = 'hidden';
+            document.body.style.overscrollBehaviorY = 'none';
+            document.documentElement.style.overflow = 'hidden';
+            document.documentElement.style.overscrollBehaviorY = 'none';
+            window.lenis?.stop?.();
             setContentReady(false);
         } else {
             document.body.style.overflow = 'unset';
+            document.body.style.overscrollBehaviorY = '';
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.overscrollBehaviorY = '';
+            window.lenis?.start?.();
             setContentReady(false);
         }
 
         return () => {
             document.body.style.overflow = 'unset';
+            document.body.style.overscrollBehaviorY = '';
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.overscrollBehaviorY = '';
+            window.lenis?.start?.();
         };
     }, [selectedId]);
 
@@ -342,7 +380,7 @@ const FeaturedProjects = () => {
 
             <AnimatePresence>
                 {selectedId && activeProject && (
-                    <div className="fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none">
+                    <div className={modalViewportClass}>
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -358,7 +396,7 @@ const FeaturedProjects = () => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                             onClick={handleProjectClose}
-                            className="fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer"
+                            className={modalCloseClass}
                         >
                             <X className="w-6 h-6" />
                         </motion.button>
@@ -370,7 +408,7 @@ const FeaturedProjects = () => {
                             exit={useCompactProjectModal ? { opacity: 0, y: 12, scale: 0.985 } : undefined}
                             transition={quality.modalTransition}
                             onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => setContentReady(true)}
-                            className={`relative w-full max-w-6xl mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-2 h-auto min-h-[50vh] gpu-accelerated ${useCompactProjectModal ? '' : 'layout-projection-surface'} my-8 md:my-0 ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`}
+                            className={modalShellClass}
                         >
                             {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
                                 <motion.div
@@ -379,7 +417,7 @@ const FeaturedProjects = () => {
                                     transition={useCompactProjectModal ? { duration: 0.18, ease: [0.22, 1, 0.36, 1] } : { duration: 0.3 }}
                                     className="contents"
                                 >
-                                    <div className="w-full lg:col-start-1 lg:row-start-1 lg:row-span-2 p-6 md:p-12 md:overflow-y-auto custom-scrollbar flex flex-col order-2 lg:order-none border-b lg:border-b-0 border-white/5">
+                                    <div className={projectInfoPanelClass}>
                                         <div className="space-y-8 flex-grow">
                                             <div className="space-y-4">
                                                 <div className="flex items-start justify-between gap-4">
@@ -391,7 +429,7 @@ const FeaturedProjects = () => {
                                                             <div className="h-px w-8 bg-white/10 hidden md:block"></div>
                                                         </div>
 
-                                                        <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight">
+                                                        <h2 className={projectTitleClass}>
                                                             {activeProject.title}
                                                         </h2>
                                                     </div>
@@ -425,7 +463,7 @@ const FeaturedProjects = () => {
                                                 </p>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2">
+                                            <div className={projectProblemGridClass}>
                                                 <div className="space-y-3">
                                                     <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] uppercase tracking-widest">
                                                         <Cpu className="w-3 h-3 text-electric-cyan" />
@@ -469,16 +507,15 @@ const FeaturedProjects = () => {
                                                 <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                             </a>
                                         </div>
-                                        <div className="h-4 lg:hidden" />
                                     </div>
 
-                                    <div className="w-full lg:col-start-2 lg:row-start-1 bg-black/40 border-b lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-1 lg:order-none">
+                                    <div className={projectMediaPanelClass}>
                                         <div className="space-y-4 flex-grow">
                                             <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
                                                 Live_Stream_Demo
                                                 <ExternalLink className="w-3 h-3 opacity-50" />
                                             </span>
-                                            <div className="relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl">
+                                            <div className={`relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl ${useWideProjectLayout ? '' : 'max-h-[min(46vh,28rem)]'}`}>
                                                 {activeProject.demoType === 'video' ? (
                                                     <video
                                                         src={activeProject.media.modalVideo}
@@ -508,7 +545,7 @@ const FeaturedProjects = () => {
                                         </div>
                                     </div>
 
-                                    <div className="w-full lg:col-start-2 lg:row-start-2 bg-black/60 lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col p-6 md:p-12 gap-6 order-3 lg:order-none">
+                                    <div className={projectFlowPanelClass}>
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
