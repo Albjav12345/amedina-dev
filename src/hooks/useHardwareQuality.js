@@ -75,8 +75,8 @@ function buildQualityState() {
                 : 0;
     const compactModalTransition = {
         type: 'tween',
-        duration: tier === 'low' ? 0.18 : 0.22,
-        ease: [0.22, 1, 0.36, 1],
+        duration: tier === 'low' ? 0.24 : 0.28,
+        ease: [0.16, 1, 0.3, 1],
     };
     const spring = tier === 'low'
         ? { type: 'tween', duration: 0.3, ease: 'circOut' }

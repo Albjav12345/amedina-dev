@@ -227,6 +227,24 @@ const FeaturedProjects = () => {
     const projectProblemGridClass = useCompactProjectModal
         ? 'grid grid-cols-1 gap-6 py-2'
         : 'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2';
+    const compactModalMotion = useCompactProjectModal
+        ? {
+            initial: { opacity: 0, y: 20, scale: 0.992 },
+            animate: { opacity: 1, y: 0, scale: 1 },
+            exit: { opacity: 0, y: 14, scale: 0.992 },
+        }
+        : null;
+    const compactContentMotion = useCompactProjectModal
+        ? {
+            initial: { opacity: 0, y: 8 },
+            animate: { opacity: 1, y: 0 },
+            transition: {
+                duration: 0.24,
+                delay: 0.04,
+                ease: [0.16, 1, 0.3, 1],
+            },
+        }
+        : null;
 
     useEffect(() => {
         if (selectedId) {
@@ -386,15 +404,19 @@ const FeaturedProjects = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={handleProjectClose}
-                            transition={quality.modalTransition}
+                            transition={useCompactProjectModal
+                                ? { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+                                : quality.modalTransition}
                             className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                         />
 
                         <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2, delay: 0.1 }}
+                            initial={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
+                            animate={useCompactProjectModal ? { opacity: 1, scale: 1 } : { opacity: 1 }}
+                            exit={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
+                            transition={useCompactProjectModal
+                                ? { duration: 0.2, delay: 0.08, ease: [0.16, 1, 0.3, 1] }
+                                : { duration: 0.2, delay: 0.1 }}
                             onClick={handleProjectClose}
                             className={modalCloseClass}
                         >
@@ -403,18 +425,19 @@ const FeaturedProjects = () => {
 
                         <motion.div
                             layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
-                            initial={useCompactProjectModal ? { opacity: 0, y: 18, scale: 0.985 } : undefined}
-                            animate={useCompactProjectModal ? { opacity: 1, y: 0, scale: 1 } : undefined}
-                            exit={useCompactProjectModal ? { opacity: 0, y: 12, scale: 0.985 } : undefined}
+                            initial={compactModalMotion?.initial}
+                            animate={compactModalMotion?.animate}
+                            exit={compactModalMotion?.exit}
                             transition={quality.modalTransition}
                             onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => setContentReady(true)}
                             className={modalShellClass}
+                            style={useCompactProjectModal ? { transformOrigin: '50% 0%' } : undefined}
                         >
                             {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
                                 <motion.div
-                                    initial={useCompactProjectModal ? { opacity: 0.92 } : { opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={useCompactProjectModal ? { duration: 0.18, ease: [0.22, 1, 0.36, 1] } : { duration: 0.3 }}
+                                    initial={compactContentMotion?.initial ?? { opacity: 0 }}
+                                    animate={compactContentMotion?.animate ?? { opacity: 1 }}
+                                    transition={compactContentMotion?.transition ?? { duration: 0.3 }}
                                     className="contents"
                                 >
                                     <div className={projectInfoPanelClass}>
