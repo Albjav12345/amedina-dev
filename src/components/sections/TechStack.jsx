@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import { renderTechCategoryIcon, renderTechItemIcon } from './techStackIcons';
+import { subscribeScrollRuntime, isElementNearViewport } from '../../utils/scrollRuntime';
+import { SECTION_ACTIVE_LOCK_EVENT } from '../../utils/sectionRouting';
 
 const COLOR_STYLES = {
     'electric-green': {
@@ -46,6 +48,20 @@ const TECH_CARD_BACKGROUNDS = {
         overlay:
             'radial-gradient(circle at 84% 16%, rgba(0, 255, 153, 0.18) 0%, rgba(0, 255, 153, 0) 24%), linear-gradient(135deg, rgba(0, 255, 153, 0.10) 0%, rgba(0, 0, 0, 0) 42%, rgba(255, 255, 255, 0.04) 100%)',
     },
+};
+
+const TECH_CARD_TITLE_LINES = {
+    'Core Development': ['Core', 'Development'],
+    'AI & Vision Workflows': ['AI & Vision', 'Workflows'],
+    'Frontend & Interactive Systems': ['Frontend &', 'UI Systems'],
+    'Infra & Delivery': ['Infra &', 'Delivery'],
+};
+
+const STACK_CARD_BG_DEFAULTS = {
+    scale: 1.07,
+    shift: '3%',
+    brightness: 1,
+    saturation: 1.03,
 };
 
 function getCardBackgroundStyle(title) {
@@ -114,6 +130,7 @@ const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
 const NodeGroup = ({ title, icon, items, index, color, quality }) => {
     const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
     const backgroundStyle = getCardBackgroundStyle(title);
+    const mobileTitleLines = TECH_CARD_TITLE_LINES[title] || [title];
 
     const activeContainerVariants = quality.tier === 'low' ? {
         hidden: { opacity: 0 },
@@ -143,8 +160,19 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
                 <div className={`p-3 rounded-lg bg-black/40 border ${colorStyles.border} ${colorStyles.text} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
                     {icon}
                 </div>
-                <div className="flex flex-col">
-                    <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">{title}</h3>
+                <div className="flex min-h-[3.75rem] flex-col justify-start md:min-h-0">
+                    <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">
+                        <span className="block md:hidden leading-[1.35]">
+                            {mobileTitleLines.map((line) => (
+                                <span key={line} className="block min-h-[1.2em] whitespace-nowrap">
+                                    {line}
+                                </span>
+                            ))}
+                        </span>
+                        <span className="hidden md:block">
+                            {title}
+                        </span>
+                    </h3>
                     <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
                 </div>
             </div>
@@ -162,6 +190,10 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
 
 const TechStack = () => {
     const quality = useHardwareQuality();
+    const sectionRef = useRef(null);
+    const cardRefs = useRef([]);
+    const bgRefs = useRef([]);
+    const navLockRef = useRef(false);
     const { tech } = portfolioData.ui.sections;
     const { categories } = portfolioData.skills;
 
@@ -170,8 +202,99 @@ const TechStack = () => {
         icon: renderTechCategoryIcon(cat.title, quality),
     }));
 
+    useEffect(() => {
+        const activeCards = cardRefs.current.filter(Boolean);
+        const activeBackgrounds = bgRefs.current.filter(Boolean);
+
+        const resetBackground = (backgroundElement) => {
+            if (!backgroundElement) {
+                return;
+            }
+
+            backgroundElement.style.setProperty('--stack-card-bg-scale', String(STACK_CARD_BG_DEFAULTS.scale));
+            backgroundElement.style.setProperty('--stack-card-bg-shift', STACK_CARD_BG_DEFAULTS.shift);
+            backgroundElement.style.setProperty('--stack-card-bg-brightness', String(STACK_CARD_BG_DEFAULTS.brightness));
+            backgroundElement.style.setProperty('--stack-card-bg-saturation', String(STACK_CARD_BG_DEFAULTS.saturation));
+        };
+
+        const resetAllBackgrounds = () => {
+            activeBackgrounds.forEach(resetBackground);
+        };
+
+        if (!activeCards.length || quality.isDesktopViewport || !quality.allowAmbientMotion) {
+            resetAllBackgrounds();
+            return undefined;
+        }
+
+        const handleActiveLock = (event) => {
+            navLockRef.current = Boolean(event.detail?.locked);
+
+            if (navLockRef.current) {
+                resetAllBackgrounds();
+            }
+        };
+
+        const updateScrollZoom = (runtimeSnapshot) => {
+            if (navLockRef.current || !sectionRef.current || !isElementNearViewport(sectionRef.current, runtimeSnapshot, runtimeSnapshot.height * 0.35)) {
+                resetAllBackgrounds();
+                return;
+            }
+
+            const viewportCenter = runtimeSnapshot.height / 2;
+            const rankedCards = activeCards.map((cardElement, cardIndex) => {
+                const rect = cardElement.getBoundingClientRect();
+                const cardCenter = rect.top + (rect.height / 2);
+                const distanceRatio = Math.min(1, Math.abs(cardCenter - viewportCenter) / (runtimeSnapshot.height * 0.7));
+                const visibilityScore = 1 - distanceRatio;
+
+                return {
+                    backgroundElement: bgRefs.current[cardIndex],
+                    score: Math.max(0, visibilityScore),
+                };
+            }).sort((a, b) => b.score - a.score);
+
+            const highlightedBackgrounds = new Set(
+                rankedCards
+                    .filter((entry) => entry.score > 0.08)
+                    .slice(0, 2)
+                    .map((entry) => entry.backgroundElement),
+            );
+
+            rankedCards.forEach(({ backgroundElement, score }) => {
+                if (!backgroundElement) {
+                    return;
+                }
+
+                if (!highlightedBackgrounds.has(backgroundElement)) {
+                    resetBackground(backgroundElement);
+                    return;
+                }
+
+                const intensity = Math.min(1, score);
+                const scale = STACK_CARD_BG_DEFAULTS.scale + (intensity * 0.08);
+                const shift = 3 + (intensity * 1.6);
+                const brightness = STACK_CARD_BG_DEFAULTS.brightness + (intensity * 0.08);
+                const saturation = STACK_CARD_BG_DEFAULTS.saturation + (intensity * 0.1);
+
+                backgroundElement.style.setProperty('--stack-card-bg-scale', scale.toFixed(3));
+                backgroundElement.style.setProperty('--stack-card-bg-shift', `${shift.toFixed(2)}%`);
+                backgroundElement.style.setProperty('--stack-card-bg-brightness', brightness.toFixed(3));
+                backgroundElement.style.setProperty('--stack-card-bg-saturation', saturation.toFixed(3));
+            });
+        };
+
+        window.addEventListener(SECTION_ACTIVE_LOCK_EVENT, handleActiveLock);
+        const unsubscribe = subscribeScrollRuntime(updateScrollZoom);
+
+        return () => {
+            unsubscribe();
+            window.removeEventListener(SECTION_ACTIVE_LOCK_EVENT, handleActiveLock);
+            resetAllBackgrounds();
+        };
+    }, [quality.allowAmbientMotion, quality.isDesktopViewport]);
+
     return (
-        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden section-padding render-optimize">
+        <section id="tech-stack" ref={sectionRef} className="py-20 md:py-32 relative overflow-hidden section-padding render-optimize">
             <div
                 className="absolute bottom-[10%] left-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-45 -translate-x-1/2"
                 style={{ background: 'radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)' }}
@@ -196,15 +319,24 @@ const TechStack = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {mappedCategories.map((cat, i) => (
-                        <NodeGroup
+                        <div
                             key={cat.title}
-                            title={cat.title}
-                            icon={cat.icon}
-                            items={cat.items}
-                            index={i}
-                            quality={quality}
-                            color={cat.color === 'electric-green' ? 'electric-green' : 'electric-cyan'}
-                        />
+                            ref={(element) => {
+                                cardRefs.current[i] = element;
+                            }}
+                        >
+                            <NodeGroup
+                                title={cat.title}
+                                icon={cat.icon}
+                                items={cat.items}
+                                index={i}
+                                quality={quality}
+                                color={cat.color === 'electric-green' ? 'electric-green' : 'electric-cyan'}
+                                backgroundRef={(element) => {
+                                    bgRefs.current[i] = element;
+                                }}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>
