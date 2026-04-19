@@ -54,7 +54,7 @@ function getCardBackgroundStyle(title) {
     return {
         shellStyle: {
             backgroundColor: '#0f141a',
-            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -34px 42px rgba(5, 8, 12, 0.90), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
+            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -40px 48px rgba(5, 8, 12, 0.94), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
         },
         imageStyle: {
             backgroundImage: `${background.overlay}, url("${background.image}")`,
@@ -63,7 +63,7 @@ function getCardBackgroundStyle(title) {
             backgroundSize: 'cover, cover',
         },
         bandStyle: {
-            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 58%, rgba(5, 8, 12, 0.36) 74%, rgba(5, 8, 12, 0.76) 88%, rgba(5, 8, 12, 0.98) 100%)',
+            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 52%, rgba(5, 8, 12, 0.48) 72%, rgba(5, 8, 12, 0.84) 88%, rgba(5, 8, 12, 1) 100%)',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
@@ -130,7 +130,7 @@ const NodeGroup = ({ title, icon, items, index, color, quality }) => {
             viewport={viewportConfig}
             variants={activeContainerVariants}
             custom={index}
-            className="group/stack-card stack-card-hoverable min-h-[280px] md:min-h-[304px] px-10 pt-10 pb-16 border border-white/5 relative overflow-hidden gpu-accelerated rounded-xl bg-dark-high/90"
+            className="group/stack-card stack-card-hoverable min-h-[272px] md:min-h-[296px] px-10 pt-10 pb-14 border border-white/5 relative overflow-hidden gpu-accelerated rounded-xl bg-dark-high/90"
             style={backgroundStyle.shellStyle}
         >
             <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
