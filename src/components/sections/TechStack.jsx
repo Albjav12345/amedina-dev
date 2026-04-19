@@ -63,7 +63,7 @@ function getCardBackgroundStyle(title) {
             backgroundSize: 'cover, cover',
         },
         bandStyle: {
-            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 52%, rgba(5, 8, 12, 0.48) 72%, rgba(5, 8, 12, 0.84) 88%, rgba(5, 8, 12, 1) 100%)',
+            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 42%, rgba(5, 8, 12, 0.32) 58%, rgba(5, 8, 12, 0.60) 74%, rgba(5, 8, 12, 0.88) 90%, rgba(5, 8, 12, 1) 100%)',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
