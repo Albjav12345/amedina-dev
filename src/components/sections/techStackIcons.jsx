@@ -65,16 +65,16 @@ const ICON_TUNING = {
         category: { scale: 1.14 },
     },
     groq: {
-        item: { scale: 1.12, x: -0.1 },
-        category: { scale: 1.18, x: -0.1 },
+        item: { scale: 1.22 },
+        category: { scale: 1.28 },
     },
     meta: {
         item: { scale: 1.16, y: 0.1 },
         category: { scale: 1.22, y: 0.1 },
     },
     tesseract: {
-        item: { scale: 1.12 },
-        category: { scale: 1.18 },
+        item: { scale: 1.22 },
+        category: { scale: 1.28 },
     },
     selenium: {
         item: { scale: 0.96, y: 0.1 },
@@ -224,22 +224,19 @@ function BrandIcon({ icon, token, size = 'item' }) {
 function GroqIcon({ size = 'item' }) {
     return (
         <BalancedIcon token="groq" size={size}>
-            <SvgIconFrame viewBox="0 0 498.82 299.17">
+            <SvgIconFrame viewBox="0 0 24 24">
                 <path
-                    d="M297.32,111.54h-.01c-36.59,0-66.36,29.77-66.36,66.36s29.77,66.36,66.36,66.36,66.36-29.77,66.36-66.38c-.06-36.52-29.83-66.29-66.35-66.35ZM328.47,177.9c0,17.19-13.98,31.17-31.17,31.17s-31.17-13.98-31.17-31.17,13.98-31.17,31.17-31.17,31.17,13.98,31.17,31.17Z"
-                    fill="currentColor"
+                    d="M18.4 8.3a6.4 6.4 0 1 0-1.3 8.6V13h-4.7"
+                    stroke="currentColor"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 />
                 <path
-                    d="M140.69,171.78c.14-3.92.48-7.72,1.22-11.58l.02-.08c.95-4.55,2.39-8.92,4.28-13.02,3.94-8.38,9.75-15.76,16.83-21.38,6.94-5.47,15.06-9.55,23.5-11.8,4.14-1.15,8.42-1.89,12.74-2.2,9.56-.69,19.01.38,28.01,3.75,3.33,1.25,6.66,2.83,9.77,4.63l5.27,3.06-16.9,29.39-5.27-2.94c-3.65-2.04-7.6-3.29-11.74-3.71-4.33-.39-8.8,0-13,1.15-3.97,1.06-7.76,2.98-10.97,5.55-3,2.42-5.43,5.51-7,8.92-1.7,3.67-2.33,7.72-2.33,11.74v66.49h-34.43v-68Z"
-                    fill="currentColor"
-                />
-                <path
-                    d="M128.73,174.02c-.42-16.82-7.27-32.55-19.29-44.31-12.01-11.74-27.87-18.23-44.65-18.27h-.54C29.19,111.44.51,139.87.21,175.07c-.15,17.14,6.36,33.33,18.35,45.57,11.99,12.25,28,19.07,45.14,19.22h19.53v-34.01h-18.55c-8.04.11-15.64-2.96-21.39-8.59-5.75-5.63-8.97-13.18-9.06-21.26-.18-16.65,13.15-30.35,29.73-30.55h.8c16.55,0,30.09,13.55,30.19,30.17v59.37c0,16.43-13.37,29.96-29.82,30.17-7.88-.06-15.28-3.19-20.84-8.82l-4.32-4.36-.02.02-17.35,30.65c11.58,10.57,26.42,16.41,42.16,16.53h.87c16.88-.24,32.71-6.99,44.58-19.02,11.86-12.02,18.45-27.97,18.54-44.94v-61.19h-.02Z"
-                    fill="currentColor"
-                />
-                <path
-                    d="M434.93,111.54c-17.14,0-33.24,6.68-45.35,18.82-12.09,12.12-18.73,28.22-18.7,45.32,0,35.34,28.73,64.09,64.05,64.09h18.17v-33.96h-18.17c-16.6,0-30.11-13.51-30.11-30.13s13.51-30.13,30.11-30.13c7.54,0,14.77,2.82,20.34,7.93,5.38,4.94,9.61,11.56,9.61,18.85v122.74h33.94v-119.4c0-35.37-28.66-64.15-63.89-64.15Z"
-                    fill="currentColor"
+                    d="M17.1 13v7"
+                    stroke="currentColor"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
                 />
             </SvgIconFrame>
         </BalancedIcon>
@@ -249,38 +246,25 @@ function GroqIcon({ size = 'item' }) {
 function TesseractIcon({ size = 'item' }) {
     return (
         <BalancedIcon token="tesseract" size={size}>
-            <SvgIconFrame viewBox="0 0 48 48">
+            <SvgIconFrame viewBox="0 0 24 24">
                 <path
-                    d="M7.66,22.0588H40.34a3.16,3.16,0,0,1,3.16,3.16v10.2a3.16,3.16,0,0,1-3.16,3.16H7.66a3.16,3.16,0,0,1-3.16-3.16v-10.2A3.16,3.16,0,0,1,7.66,22.0588Z"
+                    d="M6 5h12M12 5v14M8.2 19H15.8"
                     stroke="currentColor"
-                    strokeWidth="2.15"
+                    strokeWidth="2.7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 />
                 <path
-                    d="M40.32,22.0631,5.37,9.4212"
+                    d="M4.5 8V5.8c0-.7.6-1.3 1.3-1.3H8M19.5 8V5.8c0-.7-.6-1.3-1.3-1.3H16"
                     stroke="currentColor"
-                    strokeWidth="2.15"
+                    strokeWidth="2.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 />
-                <rect
-                    x="17.2363"
-                    y="28.1436"
-                    width="22.338"
-                    height="4.3504"
+                <path
+                    d="M4.5 16v2.2c0 .7.6 1.3 1.3 1.3H8M19.5 16v2.2c0 .7-.6 1.3-1.3 1.3H16"
                     stroke="currentColor"
-                    strokeWidth="2.15"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-                <rect
-                    x="8.3367"
-                    y="28.1436"
-                    width="4.3435"
-                    height="4.3504"
-                    stroke="currentColor"
-                    strokeWidth="2.15"
+                    strokeWidth="2.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 />
