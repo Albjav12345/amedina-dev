@@ -255,7 +255,13 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${getNavClasses()}`}>
+        <nav
+            className={`fixed top-0 w-full z-[1000] isolate transition-[background-color,border-color,padding-top,padding-bottom,backdrop-filter] duration-300 ${getNavClasses()}`}
+            style={{
+                paddingRight: 'var(--viewport-scrollbar-compensation, 0px)',
+                zIndex: 'var(--project-navbar-layer, 1000)',
+            }}
+        >
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                 <motion.a
                     href={getPathnameForSection(DEFAULT_SECTION_ID)}

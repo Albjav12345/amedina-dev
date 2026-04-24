@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, ArrowUpRight, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
@@ -48,6 +48,8 @@ function areIdListsEqual(left, right) {
 
 const FeaturedProjects = () => {
     const [selectedId, setSelectedId] = useState(null);
+    const [elevatedCardId, setElevatedCardId] = useState(null);
+    const [closingCardId, setClosingCardId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
     const [isSectionNearViewport, setIsSectionNearViewport] = useState(false);
     const [isScrollIdle, setIsScrollIdle] = useState(false);
@@ -62,6 +64,9 @@ const FeaturedProjects = () => {
     const allowedVideoIdsRef = useRef([]);
     const idleTimeoutRef = useRef(null);
     const lastScrollYRef = useRef(null);
+    const closeFrameRef = useRef(null);
+    const isClosingRef = useRef(false);
+    const isProjectTransitionActive = selectedId !== null || closingCardId !== null;
 
     useEffect(() => {
         const node = sectionRef.current;
@@ -115,6 +120,10 @@ const FeaturedProjects = () => {
 
     useEffect(() => {
         return () => {
+            if (closeFrameRef.current !== null) {
+                window.cancelAnimationFrame(closeFrameRef.current);
+            }
+
             if (idleTimeoutRef.current !== null) {
                 window.clearTimeout(idleTimeoutRef.current);
             }
@@ -246,16 +255,24 @@ const FeaturedProjects = () => {
         }
         : null;
 
-    useEffect(() => {
-        if (selectedId) {
+    useLayoutEffect(() => {
+        if (isProjectTransitionActive) {
+            const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+
+            document.documentElement.style.setProperty('--viewport-scrollbar-compensation', `${scrollbarCompensation}px`);
+            document.documentElement.style.setProperty('--project-navbar-layer', '60');
             document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollbarCompensation}px`;
             document.body.style.overscrollBehaviorY = 'none';
             document.documentElement.style.overflow = 'hidden';
             document.documentElement.style.overscrollBehaviorY = 'none';
             window.lenis?.stop?.();
             setContentReady(false);
         } else {
+            document.documentElement.style.setProperty('--viewport-scrollbar-compensation', '0px');
+            document.documentElement.style.setProperty('--project-navbar-layer', '1000');
             document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = '';
             document.body.style.overscrollBehaviorY = '';
             document.documentElement.style.overflow = '';
             document.documentElement.style.overscrollBehaviorY = '';
@@ -264,17 +281,20 @@ const FeaturedProjects = () => {
         }
 
         return () => {
+            document.documentElement.style.setProperty('--viewport-scrollbar-compensation', '0px');
+            document.documentElement.style.setProperty('--project-navbar-layer', '1000');
             document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = '';
             document.body.style.overscrollBehaviorY = '';
             document.documentElement.style.overflow = '';
             document.documentElement.style.overscrollBehaviorY = '';
             window.lenis?.start?.();
         };
-    }, [selectedId]);
+    }, [isProjectTransitionActive]);
 
     useEffect(() => {
         const handleExternalClose = () => {
-            setSelectedId(null);
+            handleProjectClose();
         };
 
         window.addEventListener('close-project-modal', handleExternalClose);
@@ -282,23 +302,60 @@ const FeaturedProjects = () => {
         return () => {
             window.removeEventListener('close-project-modal', handleExternalClose);
         };
-    }, []);
+    }, [selectedId, useCompactProjectModal]);
+
+    useEffect(() => {
+        if (useCompactProjectModal && elevatedCardId !== null) {
+            setElevatedCardId(null);
+        }
+    }, [elevatedCardId, useCompactProjectModal]);
 
     const activeProject = projects.find((project) => project.id === selectedId);
 
     const handleProjectOpen = (projectId) => {
+        if (closeFrameRef.current !== null) {
+            window.cancelAnimationFrame(closeFrameRef.current);
+            closeFrameRef.current = null;
+        }
+
         if (idleTimeoutRef.current !== null) {
             window.clearTimeout(idleTimeoutRef.current);
         }
 
+        isClosingRef.current = false;
         allowedVideoIdsRef.current = [];
         setAllowedVideoIds([]);
         setIsScrollIdle(false);
+        setClosingCardId(null);
+        setElevatedCardId(useCompactProjectModal ? null : projectId);
         setSelectedId(projectId);
     };
 
     const handleProjectClose = () => {
-        setSelectedId(null);
+        if (!selectedId) {
+            return;
+        }
+
+        if (closeFrameRef.current !== null) {
+            window.cancelAnimationFrame(closeFrameRef.current);
+            closeFrameRef.current = null;
+        }
+
+        if (useCompactProjectModal) {
+            isClosingRef.current = false;
+            setSelectedId(null);
+            setClosingCardId(null);
+            setElevatedCardId(null);
+            return;
+        }
+
+        setContentReady(false);
+        isClosingRef.current = true;
+        setClosingCardId(selectedId);
+        closeFrameRef.current = window.requestAnimationFrame(() => {
+            closeFrameRef.current = null;
+            setSelectedId(null);
+        });
     };
 
     return (
@@ -334,6 +391,8 @@ const FeaturedProjects = () => {
                         const isSelected = selectedId === project.id;
                         const isAllowedToPlay = allowedVideoIds.includes(project.id);
                         const currentStatus = isSelected ? "visible" : (cardStatus[project.id] || "below");
+                        const isElevatedCard = elevatedCardId === project.id;
+                        const shouldHideGalleryCard = isSelected;
 
                         return (
                             <motion.div
@@ -347,56 +406,66 @@ const FeaturedProjects = () => {
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
                                 onClick={() => handleProjectOpen(project.id)}
-                                className="gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border border-white/5 bg-dark-high/90"
+                                className={`gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/5 bg-dark-high/90'}`}
+                                style={isElevatedCard ? { zIndex: 80 } : undefined}
                             >
-                                <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                    <SmartThumbnail
-                                        project={project}
-                                        isAllowedToPlay={isSectionNearViewport && isScrollIdle && !selectedId && isAllowedToPlay}
-                                        stagger={allowedVideoIds.indexOf(project.id)}
-                                    />
+                                <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                                    <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                        <SmartThumbnail
+                                            project={project}
+                                            isAllowedToPlay={isSectionNearViewport && isScrollIdle && !selectedId && isAllowedToPlay}
+                                            stagger={allowedVideoIds.indexOf(project.id)}
+                                        />
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
-                                    {!quality.simplePhysics && isSectionNearViewport && !selectedId && (
-                                        <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
-                                    )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
+                                        {!quality.simplePhysics && isSectionNearViewport && !selectedId && (
+                                            <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
+                                        )}
 
-                                    <div className="absolute top-4 left-4 flex gap-1 z-20">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-                                    </div>
-                                </div>
-
-                                <div className="p-3 md:p-8 flex flex-col justify-between flex-grow relative z-10">
-                                    <div className="relative">
-                                        <div className="flex justify-between items-start mb-1 md:mb-4">
-                                            <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                                <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
-                                            </div>
-                                            <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                        <div className="absolute top-4 left-4 flex gap-1 z-20">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
                                         </div>
-                                        <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
-                                        <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
                                     </div>
 
-                                    <div className="hidden md:flex mt-6 flex-wrap gap-2">
-                                        {project.stack.slice(0, 3).map((tech) => (
-                                            <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
-                                                {tech}
-                                            </span>
-                                        ))}
+                                    <div className="p-3 md:p-8 flex flex-col justify-between flex-grow relative z-10">
+                                        <div className="relative">
+                                            <div className="flex justify-between items-start mb-1 md:mb-4">
+                                                <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
+                                                    <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
+                                                </div>
+                                                <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                            </div>
+                                            <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
+                                            <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
+                                        </div>
+
+                                        <div className="hidden md:flex mt-6 flex-wrap gap-2">
+                                            {project.stack.slice(0, 3).map((tech) => (
+                                                <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
+
+                                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
                                 </div>
-
-                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
                             </motion.div>
                         );
                     })}
                 </div>
             </div>
 
-            <AnimatePresence>
+            <AnimatePresence
+                onExitComplete={() => {
+                    setContentReady(false);
+                    isClosingRef.current = false;
+                    setClosingCardId(null);
+                    setElevatedCardId(null);
+                }}
+            >
                 {selectedId && activeProject && (
                     <div className={modalViewportClass}>
                         <motion.div
@@ -429,7 +498,11 @@ const FeaturedProjects = () => {
                             animate={compactModalMotion?.animate}
                             exit={compactModalMotion?.exit}
                             transition={quality.modalTransition}
-                            onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => setContentReady(true)}
+                            onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => {
+                                if (!isClosingRef.current) {
+                                    setContentReady(true);
+                                }
+                            }}
                             className={modalShellClass}
                             style={useCompactProjectModal ? { transformOrigin: '50% 0%' } : undefined}
                         >
