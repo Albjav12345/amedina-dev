@@ -14,7 +14,7 @@ import {
 } from '../../utils/sectionRouting';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 
-const Navbar = () => {
+const Navbar = ({ isUiObscured = false }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState(() => {
@@ -254,12 +254,14 @@ const Navbar = () => {
         return 'bg-transparent py-6';
     };
 
+    const resolvedNavbarZIndex = isUiObscured ? 80 : 'var(--project-navbar-layer, 1000)';
+
     return (
         <nav
             className={`fixed top-0 w-full z-[1000] isolate transition-[background-color,border-color,padding-top,padding-bottom,backdrop-filter] duration-300 ${getNavClasses()}`}
             style={{
                 paddingRight: 'var(--viewport-scrollbar-compensation, 0px)',
-                zIndex: 'var(--project-navbar-layer, 1000)',
+                zIndex: resolvedNavbarZIndex,
             }}
         >
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">

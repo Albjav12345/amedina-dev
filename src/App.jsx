@@ -226,6 +226,7 @@ function App() {
         initialSectionId,
     )
     const [isControlOpen, setIsControlOpen] = useState(false);
+    const [isControlUiLocked, setIsControlUiLocked] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
     const [mountedSectionMap, setMountedSectionMap] = useState(() =>
@@ -311,6 +312,19 @@ function App() {
 
         performWindowScroll(targetY, { instant: isImmediate });
     };
+
+    const openControlPanel = () => {
+        setIsControlUiLocked(true)
+        setIsControlOpen(true)
+    }
+
+    const closeControlPanel = () => {
+        setIsControlOpen(false)
+    }
+
+    const handleControlPanelExitComplete = () => {
+        setIsControlUiLocked(false)
+    }
 
     const clearNavigationLock = () => {
         navigationLockRef.current = createInactiveNavigationLock()
@@ -643,8 +657,8 @@ function App() {
     }, [isControlOpen]);
 
     useEffect(() => {
-        const openPanel = () => setIsControlOpen(true);
-        const closePanel = () => setIsControlOpen(false);
+        const openPanel = () => openControlPanel();
+        const closePanel = () => closeControlPanel();
 
         window.addEventListener('open-control-panel', openPanel);
         window.addEventListener('close-control-panel', closePanel);
@@ -814,7 +828,7 @@ function App() {
                 return;
             }
 
-            setIsControlOpen(false);
+            closeControlPanel();
             document.body.style.overflow = '';
             document.body.style.overscrollBehaviorY = '';
             document.documentElement.style.overscrollBehaviorY = '';
@@ -896,7 +910,7 @@ function App() {
     return (
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
             <ParallaxGrid isFrozen={isControlOpen} />
-            <Navbar />
+            <Navbar isUiObscured={isControlUiLocked} />
             <div>
                 <main>
                     <Hero isUiFrozen={isControlOpen} />
@@ -935,13 +949,14 @@ function App() {
                     </div>
                 </main>
                 <Suspense fallback={null}>
-                    <Footer onOpenControlPanel={() => setIsControlOpen(true)} />
+                    <Footer onOpenControlPanel={openControlPanel} />
                 </Suspense>
                 <Suspense fallback={null}>
                     <ControlPlane
                         isOpen={isControlOpen}
-                        onOpen={() => setIsControlOpen(true)}
-                        onClose={() => setIsControlOpen(false)}
+                        onOpen={openControlPanel}
+                        onClose={closeControlPanel}
+                        onExitComplete={handleControlPanelExitComplete}
                     />
                 </Suspense>
             </div>

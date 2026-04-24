@@ -1066,7 +1066,7 @@ function LazyPanelBlock({ root, eager = false, minHeight = 320, skeleton, childr
     );
 }
 
-function ControlPlane({ isOpen, onOpen, onClose }) {
+function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
     const [backend, setBackend] = useState(null);
     const [session, setSession] = useState(() => getOpsTelemetry());
     const [selectedRunId, setSelectedRunId] = useState('');
@@ -1519,7 +1519,7 @@ function ControlPlane({ isOpen, onOpen, onClose }) {
                 </span>
             </button>
 
-            <AnimatePresence>
+            <AnimatePresence onExitComplete={onExitComplete}>
                 {isOpen && (
                     <>
                         <motion.div
