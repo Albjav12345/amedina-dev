@@ -64,6 +64,8 @@ const Footer = React.lazy(() =>
 )
 
 const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v2'
+const ROUTE_RESTORE_DEADLINE_MS = 2400
+const ROUTE_RESTORE_LAYOUT_SETTLE_MS = 140
 
 const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
     desktop: {
@@ -83,6 +85,37 @@ const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
 }
 
 const SECTION_WRAPPER_IDS = SECTION_IDS.filter((sectionId) => sectionId !== DEFAULT_SECTION_ID)
+
+function createInactiveNavigationLock() {
+    return {
+        active: false,
+        targetId: DEFAULT_SECTION_ID,
+        targetY: 0,
+        expiresAt: 0,
+    }
+}
+
+function createIdleRouteRestoreState() {
+    return {
+        active: false,
+        targetId: DEFAULT_SECTION_ID,
+        startedAt: 0,
+        deadline: 0,
+        lastChangeAt: 0,
+        lastTargetY: null,
+        rafId: null,
+        observer: null,
+    }
+}
+
+function isEditableTarget(target) {
+    return target instanceof HTMLElement
+        && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+}
+
+function isScrollCancelKey(event) {
+    return [' ', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End'].includes(event.key)
+}
 
 function getViewportBucket() {
     if (typeof window === 'undefined') {
@@ -189,36 +222,24 @@ function App() {
             ? (getSectionIdFromPathname(window.location.pathname) || DEFAULT_SECTION_ID)
             : DEFAULT_SECTION_ID
     )
-    const shouldHoldInitialReveal = initialViewportBucket === 'mobile' && initialSectionId !== DEFAULT_SECTION_ID
     const initialSectionIdRef = useRef(
         initialSectionId,
     )
     const [isControlOpen, setIsControlOpen] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
-    const [isInitialRouteRevealReady, setIsInitialRouteRevealReady] = useState(!shouldHoldInitialReveal)
     const [mountedSectionMap, setMountedSectionMap] = useState(() =>
         SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
             acc[sectionId] = typeof document !== 'undefined' && Boolean(document.getElementById(sectionId))
             return acc
         }, {}),
     )
-    const hasCompletedInitialRestoreRef = useRef(!shouldHoldInitialReveal)
     const lenisRef = useRef(null);
     const lenisRafRef = useRef(null);
     const isControlOpenRef = useRef(false);
     const activeSectionRef = useRef(DEFAULT_SECTION_ID);
-    const navigationLockRef = useRef({ active: false, targetId: DEFAULT_SECTION_ID, targetY: 0, expiresAt: 0 });
-    const routeRestoreRef = useRef({
-        active: false,
-        targetId: DEFAULT_SECTION_ID,
-        startedAt: 0,
-        deadline: 0,
-        lastChangeAt: 0,
-        lastTargetY: null,
-        rafId: null,
-        observer: null,
-    });
+    const navigationLockRef = useRef(createInactiveNavigationLock());
+    const routeRestoreRef = useRef(createIdleRouteRestoreState());
 
     const syncPathname = (sectionId, historyMode = 'replace') => {
         if (typeof window === 'undefined' || historyMode === 'preserve' || !isSectionId(sectionId)) {
@@ -291,6 +312,18 @@ function App() {
         performWindowScroll(targetY, { instant: isImmediate });
     };
 
+    const clearNavigationLock = () => {
+        navigationLockRef.current = createInactiveNavigationLock()
+    }
+
+    const shouldRestoreSectionRoute = (sectionId, behavior = 'instant') => {
+        if (!isSectionId(sectionId) || sectionId === DEFAULT_SECTION_ID) {
+            return false
+        }
+
+        return behavior === 'instant' || !isSectionContentReady(sectionId)
+    }
+
     const stopRouteRestore = () => {
         const pendingRestore = routeRestoreRef.current;
 
@@ -300,28 +333,11 @@ function App() {
 
         pendingRestore.observer?.disconnect?.();
 
-        dispatchSectionActiveLock(pendingRestore.targetId, false);
-
-        if (!hasCompletedInitialRestoreRef.current) {
-            window.requestAnimationFrame(() => {
-                window.requestAnimationFrame(() => {
-                    hasCompletedInitialRestoreRef.current = true
-                    setIsInitialRouteRevealReady(true)
-                    document.documentElement.removeAttribute('data-route-restore-pending')
-                })
-            })
+        if (pendingRestore.active) {
+            dispatchSectionActiveLock(pendingRestore.targetId, false);
         }
 
-        routeRestoreRef.current = {
-            active: false,
-            targetId: DEFAULT_SECTION_ID,
-            startedAt: 0,
-            deadline: 0,
-            lastChangeAt: 0,
-            lastTargetY: null,
-            rafId: null,
-            observer: null,
-        };
+        routeRestoreRef.current = createIdleRouteRestoreState();
     };
 
     const startRouteRestore = (sectionId) => {
@@ -334,7 +350,7 @@ function App() {
             active: true,
             targetId: sectionId,
             startedAt: now,
-            deadline: now + 5200,
+            deadline: now + ROUTE_RESTORE_DEADLINE_MS,
             lastChangeAt: now,
             lastTargetY: null,
             rafId: null,
@@ -402,10 +418,10 @@ function App() {
 
                 pendingRestore.lastTargetY = targetY;
 
-                const minDurationReached = now - pendingRestore.startedAt >= 900;
-                const layoutSettled = now - pendingRestore.lastChangeAt >= 450;
+                const targetContentReady = isSectionContentReady(pendingRestore.targetId);
+                const layoutSettled = now - pendingRestore.lastChangeAt >= ROUTE_RESTORE_LAYOUT_SETTLE_MS;
 
-                if (minDurationReached && layoutSettled && isAligned && isTargetActive) {
+                if (targetContentReady && layoutSettled && isAligned && isTargetActive) {
                     stopRouteRestore();
                     return;
                 }
@@ -421,6 +437,39 @@ function App() {
 
         routeRestoreRef.current.rafId = window.requestAnimationFrame(tick);
     };
+
+    useEffect(() => {
+        const cancelPendingAutoScroll = () => {
+            if (!routeRestoreRef.current.active && !navigationLockRef.current.active) {
+                return
+            }
+
+            stopRouteRestore()
+            clearNavigationLock()
+        }
+
+        const handleKeyDown = (event) => {
+            if (isEditableTarget(event.target) || !isScrollCancelKey(event)) {
+                return
+            }
+
+            cancelPendingAutoScroll()
+        }
+
+        window.addEventListener('wheel', cancelPendingAutoScroll, { passive: true })
+        window.addEventListener('touchstart', cancelPendingAutoScroll, { passive: true })
+        window.addEventListener('touchmove', cancelPendingAutoScroll, { passive: true })
+        window.addEventListener('pointerdown', cancelPendingAutoScroll, { passive: true })
+        window.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            window.removeEventListener('wheel', cancelPendingAutoScroll)
+            window.removeEventListener('touchstart', cancelPendingAutoScroll)
+            window.removeEventListener('touchmove', cancelPendingAutoScroll)
+            window.removeEventListener('pointerdown', cancelPendingAutoScroll)
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [])
 
     useEffect(() => {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -539,7 +588,11 @@ function App() {
 
         const initialSectionId = initialSectionIdRef.current;
         commitActiveSection(initialSectionId, 'replace');
-        startRouteRestore(initialSectionId);
+        if (shouldRestoreSectionRoute(initialSectionId, 'instant')) {
+            startRouteRestore(initialSectionId);
+        } else {
+            stopRouteRestore();
+        }
         navigateToSection(initialSectionId, {
             historyMode: 'replace',
             behavior: 'instant',
@@ -551,28 +604,6 @@ function App() {
             }
         };
     }, []);
-
-    useEffect(() => {
-        if (isInitialRouteRevealReady) {
-            document.documentElement.removeAttribute('data-route-restore-pending')
-        }
-    }, [isInitialRouteRevealReady])
-
-    useEffect(() => {
-        if (isInitialRouteRevealReady) {
-            return undefined
-        }
-
-        const timeoutId = window.setTimeout(() => {
-            hasCompletedInitialRestoreRef.current = true
-            setIsInitialRouteRevealReady(true)
-            document.documentElement.removeAttribute('data-route-restore-pending')
-        }, 1800)
-
-        return () => {
-            window.clearTimeout(timeoutId)
-        }
-    }, [isInitialRouteRevealReady])
 
     useEffect(() => {
         const preloadSections = () => {
@@ -765,7 +796,11 @@ function App() {
             }
 
             commitActiveSection(sectionId, 'preserve');
-            startRouteRestore(sectionId);
+            if (shouldRestoreSectionRoute(sectionId, 'instant')) {
+                startRouteRestore(sectionId);
+            } else {
+                stopRouteRestore();
+            }
             navigateToSection(sectionId, {
                 historyMode: 'preserve',
                 behavior: 'instant',
@@ -791,7 +826,7 @@ function App() {
                 return;
             }
 
-            const shouldRestoreTarget = behavior === 'instant' || !isSectionContentReady(sectionId);
+            const shouldRestoreTarget = shouldRestoreSectionRoute(sectionId, behavior);
 
             if (shouldRestoreTarget) {
                 startRouteRestore(sectionId);
@@ -839,12 +874,7 @@ function App() {
                     return;
                 }
 
-                navigationLockRef.current = {
-                    active: false,
-                    targetId: DEFAULT_SECTION_ID,
-                    targetY: 0,
-                    expiresAt: 0,
-                };
+                clearNavigationLock()
             }
 
             const visibleSectionId = getActiveSectionId(SECTION_IDS);
@@ -867,59 +897,53 @@ function App() {
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
             <ParallaxGrid isFrozen={isControlOpen} />
             <Navbar />
-            <div
-                style={{
-                    opacity: isInitialRouteRevealReady ? 1 : 0,
-                    pointerEvents: isInitialRouteRevealReady ? 'auto' : 'none',
-                    transition: isInitialRouteRevealReady ? 'opacity 180ms ease-out' : 'none',
-                }}
-            >
-            <main>
-                <Hero isUiFrozen={isControlOpen} />
+            <div>
+                <main>
+                    <Hero isUiFrozen={isControlOpen} />
 
-                {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
-                <div id="about-wrapper" style={{ minHeight: mountedSectionMap.about ? undefined : `${sectionWrapperHeights.about}px` }}>
-                    <Suspense fallback={null}>
-                        <About isUiFrozen={isControlOpen} />
-                    </Suspense>
-                </div>
-
-                <div id="projects-wrapper" style={{ minHeight: mountedSectionMap.projects ? undefined : `${sectionWrapperHeights.projects}px` }}>
-                    <Suspense fallback={null}>
-                        <FeaturedProjects />
-                    </Suspense>
-                </div>
-
-                <div id="tech-stack-wrapper" style={{ minHeight: mountedSectionMap['tech-stack'] ? undefined : `${sectionWrapperHeights['tech-stack']}px` }}>
-                    <Suspense fallback={null}>
-                        <TechStack />
-                    </Suspense>
-                </div>
-
-                {isArchitectSectionEnabled && ProjectArchitect && (
-                    <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
+                    {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
+                    <div id="about-wrapper" style={{ minHeight: mountedSectionMap.about ? undefined : `${sectionWrapperHeights.about}px` }}>
                         <Suspense fallback={null}>
-                            <ProjectArchitect />
+                            <About isUiFrozen={isControlOpen} />
                         </Suspense>
                     </div>
-                )}
 
-                <div id="contact-wrapper" style={{ minHeight: mountedSectionMap.contact ? undefined : `${sectionWrapperHeights.contact}px` }}>
-                    <Suspense fallback={null}>
-                        <Contact />
-                    </Suspense>
-                </div>
-            </main>
-            <Suspense fallback={null}>
-                <Footer onOpenControlPanel={() => setIsControlOpen(true)} />
-            </Suspense>
-            <Suspense fallback={null}>
-                <ControlPlane
-                    isOpen={isControlOpen}
-                    onOpen={() => setIsControlOpen(true)}
-                    onClose={() => setIsControlOpen(false)}
-                />
-            </Suspense>
+                    <div id="projects-wrapper" style={{ minHeight: mountedSectionMap.projects ? undefined : `${sectionWrapperHeights.projects}px` }}>
+                        <Suspense fallback={null}>
+                            <FeaturedProjects />
+                        </Suspense>
+                    </div>
+
+                    <div id="tech-stack-wrapper" style={{ minHeight: mountedSectionMap['tech-stack'] ? undefined : `${sectionWrapperHeights['tech-stack']}px` }}>
+                        <Suspense fallback={null}>
+                            <TechStack />
+                        </Suspense>
+                    </div>
+
+                    {isArchitectSectionEnabled && ProjectArchitect && (
+                        <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
+                            <Suspense fallback={null}>
+                                <ProjectArchitect />
+                            </Suspense>
+                        </div>
+                    )}
+
+                    <div id="contact-wrapper" style={{ minHeight: mountedSectionMap.contact ? undefined : `${sectionWrapperHeights.contact}px` }}>
+                        <Suspense fallback={null}>
+                            <Contact />
+                        </Suspense>
+                    </div>
+                </main>
+                <Suspense fallback={null}>
+                    <Footer onOpenControlPanel={() => setIsControlOpen(true)} />
+                </Suspense>
+                <Suspense fallback={null}>
+                    <ControlPlane
+                        isOpen={isControlOpen}
+                        onOpen={() => setIsControlOpen(true)}
+                        onClose={() => setIsControlOpen(false)}
+                    />
+                </Suspense>
             </div>
             <Analytics />
             <SpeedInsights />

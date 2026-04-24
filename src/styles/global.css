@@ -29,14 +29,6 @@
         overflow-x: hidden;
     }
 
-    html[data-route-restore-pending='true'] body {
-        visibility: hidden;
-    }
-
-    html[data-route-restore-pending='true'] {
-        scroll-behavior: auto !important;
-    }
-
     #app {
         width: 100%;
         max-width: 100vw;
