@@ -59,6 +59,7 @@ const FeaturedProjects = () => {
     const quality = useHardwareQuality();
     const useCompactProjectModal = quality.useCompactProjectModal;
     const useWideProjectLayout = quality.useWideProjectModalLayout;
+    const shouldUseDesktopProjectTransition = !useCompactProjectModal;
 
     const cardRefs = useRef({});
     const sectionRef = useRef(null);
@@ -255,13 +256,34 @@ const FeaturedProjects = () => {
             },
         }
         : null;
+    const desktopShellAnimate = shouldUseDesktopProjectTransition
+        ? {
+            opacity: isContentClosing ? 0.2 : 1,
+        }
+        : undefined;
+    const desktopShellTransition = shouldUseDesktopProjectTransition
+        ? {
+            layout: quality.modalTransition,
+            opacity: isContentClosing
+                ? {
+                    duration: 0.26,
+                    delay: 0.1,
+                    ease: [0.4, 0, 1, 1],
+                }
+                : {
+                    duration: 0.18,
+                    ease: [0.16, 1, 0.3, 1],
+                },
+        }
+        : quality.modalTransition;
 
     useLayoutEffect(() => {
         if (isProjectTransitionActive) {
             const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+            const navbarLayer = isContentClosing ? '120' : '60';
 
             document.documentElement.style.setProperty('--viewport-scrollbar-compensation', `${scrollbarCompensation}px`);
-            document.documentElement.style.setProperty('--project-navbar-layer', '60');
+            document.documentElement.style.setProperty('--project-navbar-layer', navbarLayer);
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = `${scrollbarCompensation}px`;
             document.body.style.overscrollBehaviorY = 'none';
@@ -291,7 +313,7 @@ const FeaturedProjects = () => {
             document.documentElement.style.overscrollBehaviorY = '';
             window.lenis?.start?.();
         };
-    }, [isProjectTransitionActive]);
+    }, [isContentClosing, isProjectTransitionActive]);
 
     useEffect(() => {
         const handleExternalClose = () => {
@@ -499,9 +521,9 @@ const FeaturedProjects = () => {
                         <motion.div
                             layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
                             initial={compactModalMotion?.initial}
-                            animate={compactModalMotion?.animate}
+                            animate={compactModalMotion?.animate ?? desktopShellAnimate}
                             exit={compactModalMotion?.exit}
-                            transition={quality.modalTransition}
+                            transition={desktopShellTransition}
                             onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => {
                                 if (!isClosingRef.current) {
                                     setIsContentClosing(false);
@@ -511,6 +533,24 @@ const FeaturedProjects = () => {
                             className={modalShellClass}
                             style={useCompactProjectModal ? { transformOrigin: '50% 0%' } : undefined}
                         >
+                            {shouldUseDesktopProjectTransition && (
+                                <motion.div
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] bg-gradient-to-b from-dark-void via-dark-void/78 via-30% to-dark-void/10"
+                                    initial={false}
+                                    animate={{ opacity: isContentClosing ? 1 : 0 }}
+                                    transition={isContentClosing
+                                        ? {
+                                            duration: 0.28,
+                                            delay: 0.08,
+                                            ease: [0.32, 0, 0.67, 0],
+                                        }
+                                        : {
+                                            duration: 0.18,
+                                            ease: [0.16, 1, 0.3, 1],
+                                        }}
+                                />
+                            )}
                             {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
                                 <motion.div
                                     initial={compactContentMotion?.initial ?? { opacity: 0 }}
