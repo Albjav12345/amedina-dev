@@ -51,6 +51,7 @@ const FeaturedProjects = () => {
     const [elevatedCardId, setElevatedCardId] = useState(null);
     const [closingCardId, setClosingCardId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
+    const [isContentClosing, setIsContentClosing] = useState(false);
     const [isSectionNearViewport, setIsSectionNearViewport] = useState(false);
     const [isScrollIdle, setIsScrollIdle] = useState(false);
     const [cardStatus, setCardStatus] = useState({});
@@ -323,6 +324,7 @@ const FeaturedProjects = () => {
         }
 
         isClosingRef.current = false;
+        setIsContentClosing(false);
         allowedVideoIdsRef.current = [];
         setAllowedVideoIds([]);
         setIsScrollIdle(false);
@@ -343,14 +345,15 @@ const FeaturedProjects = () => {
 
         if (useCompactProjectModal) {
             isClosingRef.current = false;
+            setIsContentClosing(false);
             setSelectedId(null);
             setClosingCardId(null);
             setElevatedCardId(null);
             return;
         }
 
-        setContentReady(false);
         isClosingRef.current = true;
+        setIsContentClosing(true);
         setClosingCardId(selectedId);
         closeFrameRef.current = window.requestAnimationFrame(() => {
             closeFrameRef.current = null;
@@ -461,6 +464,7 @@ const FeaturedProjects = () => {
             <AnimatePresence
                 onExitComplete={() => {
                     setContentReady(false);
+                    setIsContentClosing(false);
                     isClosingRef.current = false;
                     setClosingCardId(null);
                     setElevatedCardId(null);
@@ -500,6 +504,7 @@ const FeaturedProjects = () => {
                             transition={quality.modalTransition}
                             onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => {
                                 if (!isClosingRef.current) {
+                                    setIsContentClosing(false);
                                     setContentReady(true);
                                 }
                             }}
@@ -509,8 +514,16 @@ const FeaturedProjects = () => {
                             {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
                                 <motion.div
                                     initial={compactContentMotion?.initial ?? { opacity: 0 }}
-                                    animate={compactContentMotion?.animate ?? { opacity: 1 }}
-                                    transition={compactContentMotion?.transition ?? { duration: 0.3 }}
+                                    animate={useCompactProjectModal
+                                        ? (compactContentMotion?.animate ?? { opacity: 1 })
+                                        : (isContentClosing
+                                            ? { opacity: 0 }
+                                            : { opacity: 1 })}
+                                    transition={useCompactProjectModal
+                                        ? (compactContentMotion?.transition ?? { duration: 0.3 })
+                                        : (isContentClosing
+                                            ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
+                                            : { duration: 0.3, ease: [0.16, 1, 0.3, 1] })}
                                     className="contents"
                                 >
                                     <div className={projectInfoPanelClass}>
