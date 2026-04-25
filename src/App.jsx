@@ -687,7 +687,7 @@ function App() {
             inFlight = true
 
             try {
-                const response = await fetch('/api/dev-content-status', {
+                const response = await fetch('/__dev/content-status', {
                     cache: 'no-store',
                     headers: {
                         'Cache-Control': 'no-cache',

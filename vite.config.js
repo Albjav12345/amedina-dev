@@ -4,11 +4,47 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import { imagetools } from 'vite-imagetools'
 import { generateProjectMedia } from './scripts/generate-project-media.mjs'
-import { WORKBOOK_PATH, syncPortfolioContent } from './scripts/lib/portfolio-content-workbook.mjs'
+import { GENERATED_JSON_PATH, WORKBOOK_PATH, syncPortfolioContent } from './scripts/lib/portfolio-content-workbook.mjs'
 
 const workbookPollIntervalMs = 900
 const workbookSyncRetryDelayMs = 800
 const workbookSyncMaxRetries = 3
+const devContentStatusPath = '/__dev/content-status'
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+async function getFileMtimeMs(targetPath) {
+  try {
+    const stats = await fs.promises.stat(targetPath)
+    return stats.mtimeMs
+  } catch {
+    return 0
+  }
+}
+
+async function readGeneratedContent() {
+  const raw = await fs.promises.readFile(GENERATED_JSON_PATH, 'utf8')
+  return JSON.parse(raw)
+}
+
+async function syncRuntimeOnly(attempt = 0) {
+  try {
+    await syncPortfolioContent({ writeWorkbookOutput: false })
+    await generateProjectMedia()
+    return true
+  } catch (error) {
+    if (attempt < workbookSyncMaxRetries) {
+      await sleep(workbookSyncRetryDelayMs)
+      return syncRuntimeOnly(attempt + 1)
+    }
+
+    throw error
+  }
+}
 
 function portfolioWorkbookDevPlugin() {
   let server
@@ -16,10 +52,6 @@ function portfolioWorkbookDevPlugin() {
   let refreshInFlight = false
   let refreshQueued = false
   let lastWorkbookSignature = null
-
-  const sleep = (ms) => new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
 
   const getWorkbookSignature = () => {
     try {
@@ -32,17 +64,11 @@ function portfolioWorkbookDevPlugin() {
 
   const refreshRuntimeFromWorkbook = async (trigger, attempt = 0) => {
     try {
-      await syncPortfolioContent({ writeWorkbookOutput: false })
-      await generateProjectMedia()
+      await syncRuntimeOnly(attempt)
       server.ws.send({ type: 'full-reload', path: '*' })
       console.log(`[vite] workbook refresh complete (${trigger})`)
       return true
     } catch (error) {
-      if (attempt < workbookSyncMaxRetries) {
-        await sleep(workbookSyncRetryDelayMs)
-        return refreshRuntimeFromWorkbook(trigger, attempt + 1)
-      }
-
       console.error(`[vite] workbook refresh failed (${trigger}):`, error)
       return false
     }
@@ -79,6 +105,46 @@ function portfolioWorkbookDevPlugin() {
     configureServer(viteServer) {
       server = viteServer
       lastWorkbookSignature = getWorkbookSignature()
+
+      viteServer.middlewares.use(async (req, res, next) => {
+        if (!req.url?.startsWith(devContentStatusPath)) {
+          next()
+          return
+        }
+
+        try {
+          const workbookMtimeMs = await getFileMtimeMs(WORKBOOK_PATH)
+          const runtimeBeforeMtimeMs = await getFileMtimeMs(GENERATED_JSON_PATH)
+
+          let refreshed = false
+
+          if (workbookMtimeMs > runtimeBeforeMtimeMs) {
+            await syncRuntimeOnly()
+            refreshed = true
+            lastWorkbookSignature = getWorkbookSignature()
+          }
+
+          const runtimeContent = await readGeneratedContent()
+          const runtimeAfterMtimeMs = await getFileMtimeMs(GENERATED_JSON_PATH)
+
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'application/json; charset=utf-8')
+          res.end(JSON.stringify({
+            refreshed,
+            workbookMtimeMs,
+            runtimeMtimeMs: runtimeAfterMtimeMs,
+            generatedAt: runtimeContent.generatedAt,
+            featuredTestimonials: runtimeContent.runtime?.profile?.about?.testimonials?.length ?? 0,
+          }))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json; charset=utf-8')
+          res.end(JSON.stringify({
+            message: 'DEV_CONTENT_STATUS_ERROR',
+            details: error instanceof Error ? error.message : String(error),
+          }))
+        }
+      })
 
       fs.watchFile(WORKBOOK_PATH, { interval: workbookPollIntervalMs }, (currentStats, previousStats) => {
         if (disposed) return
