@@ -2,6 +2,8 @@
 // PROFILE & SKILLS CONFIGURATION
 // -------------------------------------------------------------------------
 
+import { featuredFiverrTestimonials, fiverrTestimonialsSection } from './fiverrTestimonials.js';
+
 export const profile = {
     name: "Alberto Medina Garcia",
     role: "Full-Stack Developer & Automation Engineer",
@@ -23,32 +25,8 @@ export const profile = {
             { label: "Global Clients", value: "12+", id: "global" },
             { label: "Years Experience", value: "5+", id: "years" }
         ],
-        testimonials: [
-            {
-                text: "Alberto built a custom Unity Editor tool that saved us hours every week. It was clean, practical, and easy to adopt straight away.",
-                author: "Unity Client (USA)",
-                project: "Custom Tooling Architecture",
-                avatarUrl: "/assets/testimonials/client1.png"
-            },
-            {
-                text: "Fast, precise, and easy to work with. He handled a messy automation problem and turned it into a workflow we could actually rely on.",
-                author: "Automation Client",
-                project: "Python Automation Pipeline",
-                avatarUrl: "/assets/testimonials/client2.png"
-            },
-            {
-                text: "Great communication and strong technical judgment. He fixed a C# issue we had been stuck on and explained the solution clearly.",
-                author: "Indie Game Studio",
-                project: "Unity Game Systems",
-                avatarUrl: "/assets/testimonials/client3.png"
-            },
-            {
-                text: "Exactly what we needed: clean code, clear structure, and a delivery that was easy to maintain after handoff.",
-                author: "Tech Startup",
-                project: "Backend Optimization",
-                avatarUrl: "/assets/testimonials/client4.png"
-            }
-        ]
+        testimonialsSection: fiverrTestimonialsSection,
+        testimonials: featuredFiverrTestimonials
     },
     social: {
         github: "https://github.com/Albjav12345",

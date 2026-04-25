@@ -1,23 +1,119 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { motion, useInView, useSpring, useTransform } from 'framer-motion';
-import { Shield, Zap, Target, Box, Star, Quote, Globe } from 'lucide-react';
-import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
+import { Shield, Zap, Target, Star, Quote, Globe } from 'lucide-react';
+import { fadeInUp, viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
-import c1 from '../../assets/testimonials/client1.png?w=200&h=200&format=webp&quality=80';
-import c2 from '../../assets/testimonials/client2.png?w=200&h=200&format=webp&quality=80';
-import c3 from '../../assets/testimonials/client3.png?w=200&h=200&format=webp&quality=80';
-import c4 from '../../assets/testimonials/client4.png?w=200&h=200&format=webp&quality=80';
+const { about: profileAbout } = portfolioData.profile;
 
-const optimizedAvatars = {
-    "/assets/testimonials/client1.png": c1,
-    "/assets/testimonials/client2.png": c2,
-    "/assets/testimonials/client3.png": c3,
-    "/assets/testimonials/client4.png": c4,
+const testimonialSection = profileAbout.testimonialsSection ?? {
+    title: 'Verified Fiverr Client Feedback',
+    subtitle: 'Real client feedback collected from completed Fiverr orders.',
 };
 
-const { about: profileAbout } = portfolioData.profile;
+const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => (
+    [...Array(Math.max(1, Math.min(5, rating)))].map((_, index) => (
+        <Star key={index} className={`${sizeClassName} fill-electric-green text-electric-green`} />
+    ))
+);
+
+const avatarVariants = [
+    {
+        headRadius: 11,
+        shouldersPath: 'M14 58c3-11 12-17 22-17s19 6 22 17',
+        visorPath: 'M24 24h24',
+        accentCircle: { cx: 52, cy: 18, r: 5 },
+        shellOpacity: 0.82,
+    },
+    {
+        headRadius: 10,
+        shouldersPath: 'M12 58c5-10 14-15 24-15s19 5 24 15',
+        visorPath: 'M22 25c6 4 22 4 28 0',
+        accentCircle: { cx: 18, cy: 18, r: 4.5 },
+        shellOpacity: 0.76,
+    },
+    {
+        headRadius: 10.5,
+        shouldersPath: 'M15 58c4-9 11-14 21-14s17 5 21 14',
+        visorPath: 'M24 26c4-2 16-2 24 0',
+        accentCircle: { cx: 50, cy: 20, r: 4 },
+        shellOpacity: 0.8,
+    },
+];
+
+const getAvatarVariant = (testimonial) => {
+    const hash = testimonial.id.split('').reduce((total, char) => total + char.charCodeAt(0), 0);
+    return avatarVariants[hash % avatarVariants.length];
+};
+
+const GeneratedClientAvatar = ({ testimonial, sizeClassName, textClassName }) => {
+    const avatarId = useId().replace(/:/g, '');
+    const gradientId = `${avatarId}-avatar-gradient`;
+    const silhouetteId = `${avatarId}-avatar-silhouette`;
+    const highlightId = `${avatarId}-avatar-highlight`;
+    const variant = getAvatarVariant(testimonial);
+    const avatarLabel = testimonial.avatarLabel || testimonial.clientName.slice(0, 2);
+
+    if (testimonial.avatarUrl) {
+        return (
+            <div className={`${sizeClassName} relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5`}>
+                <img src={testimonial.avatarUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+            </div>
+        );
+    }
+
+    return (
+        <div
+            className={`${sizeClassName} relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5`}
+            style={{
+                background: testimonial.avatarGradient,
+                boxShadow: testimonial.avatarAccent ? `0 0 30px -16px ${testimonial.avatarAccent}` : undefined,
+            }}
+        >
+            <div className="absolute inset-[1px] rounded-full border border-white/10" />
+            <svg
+                viewBox="0 0 72 72"
+                aria-hidden="true"
+                className="relative z-10 h-full w-full"
+                role="presentation"
+            >
+                <defs>
+                    <radialGradient id={gradientId} cx="50%" cy="35%" r="70%">
+                        <stop offset="0%" stopColor="rgba(255,255,255,0.22)" />
+                        <stop offset="52%" stopColor="rgba(12,16,22,0.08)" />
+                        <stop offset="100%" stopColor="rgba(8,11,17,0.52)" />
+                    </radialGradient>
+                    <linearGradient id={silhouetteId} x1="50%" y1="10%" x2="50%" y2="100%">
+                        <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                        <stop offset="100%" stopColor="rgba(162,255,220,0.16)" />
+                    </linearGradient>
+                    <radialGradient id={highlightId} cx="25%" cy="20%" r="55%">
+                        <stop offset="0%" stopColor="rgba(102,252,241,0.55)" />
+                        <stop offset="100%" stopColor="rgba(102,252,241,0)" />
+                    </radialGradient>
+                </defs>
+
+                <circle cx="36" cy="36" r="35" fill={`url(#${gradientId})`} opacity="0.95" />
+                <circle cx="36" cy="36" r="26" fill={`url(#${highlightId})`} opacity="0.9" />
+                <circle cx="36" cy="25" r={variant.headRadius} fill="rgba(248, 252, 255, 0.84)" />
+                <path d={variant.shouldersPath} fill={`url(#${silhouetteId})`} opacity={variant.shellOpacity} stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
+                <path d={variant.visorPath} fill="none" stroke="rgba(102,252,241,0.82)" strokeWidth="2" strokeLinecap="round" />
+                <circle
+                    cx={variant.accentCircle.cx}
+                    cy={variant.accentCircle.cy}
+                    r={variant.accentCircle.r}
+                    fill="rgba(15,255,153,0.18)"
+                    stroke="rgba(15,255,153,0.44)"
+                />
+                <path d="M19 51c7 5 27 5 34 0" fill="none" stroke="rgba(15,255,153,0.28)" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+            <span className={`absolute bottom-[14%] z-20 font-mono font-bold uppercase tracking-[0.18em] text-white/90 ${textClassName}`}>
+                {avatarLabel}
+            </span>
+        </div>
+    );
+};
 
 const Counter = ({ value }) => {
     const ref = useRef(null);
@@ -64,6 +160,7 @@ const About = ({ isUiFrozen = false }) => {
     const [mobileTestimonialIndex, setMobileTestimonialIndex] = useState(0);
     const isDesktopMarqueeInView = useInView(desktopMarqueeRef, { margin: '200px', amount: 0.05 });
     const shouldAnimateDesktopMarquee = !isUiFrozen && isDesktopMarqueeInView;
+    const desktopMarqueeDuration = isLow ? 110 : 140;
 
     const stats = profileAbout.stats.map(s => {
         let icon;
@@ -153,17 +250,13 @@ const About = ({ isUiFrozen = false }) => {
                             <h3 className="text-2xl font-bold text-white tracking-tight mb-2">{portfolioData.profile.name}</h3>
                             <p className="text-sm text-electric-green font-mono mb-6">{portfolioData.profile.role}</p>
 
-                            {/* Verified Badge & Rating */}
-                            <div className="bg-white/5 border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 mb-8" title="Verified Commercial History">
+                            {/* Verified Badge */}
+                            <div className="bg-white/5 border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 mb-8" title="Real client feedback sourced from completed freelance work">
                                 <Shield className="w-3 h-3 text-electric-green" />
-                                <span className="text-[10px] uppercase tracking-wider text-gray-300">Verified Pro</span>
+                                <span className="text-[10px] uppercase tracking-wider text-gray-300">Client-Backed</span>
                                 <div className="h-3 w-px bg-white/10 mx-1"></div>
-                                <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} className="w-3 h-3 fill-electric-green text-electric-green" />
-                                    ))}
-                                </div>
-                                <span className="text-xs font-bold text-white ml-1">4.9</span>
+                                <div className="flex gap-0.5">{renderStars(5, 'w-3 h-3')}</div>
+                                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 ml-1">Real Reviews</span>
                             </div>
 
                             {/* Quick Stats Divider */}
@@ -250,15 +343,23 @@ const About = ({ isUiFrozen = false }) => {
                     viewport={viewportConfig}
                     className="w-full relative"
                 >
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="h-px flex-shrink w-12 bg-white/10"></div>
-                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Verified Client Feedback</h4>
+                    <div className="mb-8 flex flex-wrap items-start gap-4 md:items-center">
+                        <div className="mt-3 h-px w-12 flex-shrink-0 bg-white/10 md:mt-0"></div>
+                        <div className="min-w-[16rem] flex-1">
+                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">{testimonialSection.title}</h4>
+                            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500">{testimonialSection.subtitle}</p>
+                        </div>
                         <div className="ml-auto inline-flex md:hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">
                             <span>{mobileTestimonialIndex + 1}</span>
                             <span className="text-gray-600">/</span>
                             <span>{profileAbout.testimonials.length}</span>
                         </div>
-                        <div className="h-px flex-grow bg-white/10"></div>
+                        <div className="ml-auto hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 md:inline-flex">
+                            <span className="text-electric-green">Hover</span>
+                            <span className="text-gray-600">to</span>
+                            <span>pause</span>
+                        </div>
+                        <div className="hidden h-px flex-grow bg-white/10 md:block"></div>
                     </div>
 
                     <div className="md:hidden">
@@ -270,33 +371,25 @@ const About = ({ isUiFrozen = false }) => {
                                 <div
                                     key={`mobile-${i}`}
                                     data-testimonial-card
-                                    className="w-[calc(100vw-4.25rem)] max-w-none min-h-[20.5rem] shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-5 flex flex-col justify-between"
+                                    className="w-[calc(100vw-4.25rem)] max-w-none min-h-[22rem] shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-5 flex flex-col justify-between"
                                 >
-                                    <div className="flex gap-1 mb-3">
-                                        {[...Array(5)].map((_, j) => (
-                                            <Star key={j} className="w-3.5 h-3.5 fill-electric-green text-electric-green" />
-                                        ))}
+                                    <div className="mb-4 flex items-center justify-between gap-3">
+                                        <div className="flex gap-1">{renderStars(t.rating, 'w-3.5 h-3.5')}</div>
+                                        <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                            {t.label}
+                                        </span>
                                     </div>
                                     <p className="text-[1rem] leading-[1.65] text-gray-100 italic mb-5">
-                                        "{t.text}"
+                                        "{t.review}"
                                     </p>
-                                    <div className="mt-auto flex items-center gap-3 pt-4 border-t border-white/5">
-                                        <div className="w-12 h-12 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
-                                            {t.avatarUrl ? (
-                                                <img
-                                                    src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
-                                                    alt={t.author}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                                    {t.author.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
+                                    <div className="mt-auto flex items-start gap-3 pt-4 border-t border-white/5">
+                                        <GeneratedClientAvatar testimonial={t} sizeClassName="w-12 h-12" textClassName="text-[10px]" />
                                         <div className="min-w-0">
-                                            <div className="text-[1.05rem] font-bold text-white leading-tight truncate">{t.author}</div>
-                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500 truncate">{t.project}</div>
+                                            <div className="text-[1.05rem] font-bold text-white leading-tight truncate">{t.clientName}</div>
+                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{t.clientType}</div>
+                                            <div className="mt-3 inline-flex max-w-full rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                                {t.service}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -322,7 +415,7 @@ const About = ({ isUiFrozen = false }) => {
                         </div>
                     </div>
 
-                    <div className={`relative hidden md:block w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
+                    <div className={`testimonial-marquee-shell relative hidden md:block w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
                         style={!isLow ? { maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' } : {}}
                     >
                         {/* Gradient Masks for edges - Fallback for non-mask browsers or Low Tier */}
@@ -337,7 +430,7 @@ const About = ({ isUiFrozen = false }) => {
                             ref={desktopMarqueeRef}
                             className="testimonial-marquee-track flex gap-6 w-max transform-gpu"
                             style={{
-                                animationDuration: `${isLow ? 50 : 40}s`,
+                                animationDuration: `${desktopMarqueeDuration}s`,
                                 animationPlayState: shouldAnimateDesktopMarquee ? 'running' : 'paused',
                                 willChange: shouldAnimateDesktopMarquee ? 'transform' : 'auto',
                             }}
@@ -345,33 +438,24 @@ const About = ({ isUiFrozen = false }) => {
                             {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
                                 <div
                                     key={i}
-                                    className={`w-[350px] md:w-[400px] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                    className={`testimonial-card w-[350px] md:w-[400px] min-h-[19rem] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
                                         }`}
                                 >
-                                    <div className={`flex gap-1 mb-3 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                                        {[...Array(5)].map((_, j) => (
-                                            <Star key={j} className="w-3 h-3 fill-electric-green text-electric-green" />
-                                        ))}
-                                    </div>
-                                    <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-3">"{t.text}"</p>
-                                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
-                                        <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex-shrink-0">
-                                            {t.avatarUrl ? (
-                                                <img
-                                                    src={optimizedAvatars[t.avatarUrl] || t.avatarUrl}
-                                                    alt={t.author}
-                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                    onLoad={(e) => e.target.classList.remove('opacity-0')}
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                                    {t.author.charAt(0)}
-                                                </div>
-                                            )}
+                                    <div className="mb-4 flex items-center justify-between gap-3">
+                                        <div className={`flex gap-1 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
+                                            {renderStars(t.rating, 'w-3 h-3')}
                                         </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-white">{t.author}</span>
-                                            <span className="text-[9px] text-gray-500 font-mono uppercase">{t.project}</span>
+                                        <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                            {t.label}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-300 italic mb-5 leading-relaxed line-clamp-4">"{t.review}"</p>
+                                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+                                        <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
+                                        <div className="flex min-w-0 flex-col">
+                                            <span className="text-xs font-bold text-white">{t.clientName}</span>
+                                            <span className="text-[9px] text-gray-500 font-mono uppercase">{t.clientType}</span>
+                                            <span className="mt-2 text-[9px] text-electric-green font-mono uppercase tracking-[0.18em]">{t.service}</span>
                                         </div>
                                     </div>
                                 </div>
