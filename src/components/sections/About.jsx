@@ -12,11 +12,19 @@ const testimonialSection = profileAbout.testimonialsSection ?? {
     subtitle: 'Real client feedback collected from completed projects.',
 };
 
-const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => (
-    [...Array(Math.max(1, Math.min(5, rating)))].map((_, index) => (
-        <Star key={index} className={`${sizeClassName} fill-electric-green text-electric-green`} />
-    ))
-);
+const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => {
+    const normalizedRating = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+
+    return [...Array(5)].map((_, index) => {
+        const isFilled = index < normalizedRating;
+        return (
+            <Star
+                key={index}
+                className={`${sizeClassName} ${isFilled ? 'fill-electric-green text-electric-green' : 'fill-transparent text-electric-green/25'}`}
+            />
+        );
+    });
+};
 
 const avatarVariants = [
     {

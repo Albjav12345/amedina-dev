@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-25T13:13:34.833Z",
+  "generatedAt": "2026-04-25T22:40:09.779Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -12,42 +12,42 @@
       "id": "home",
       "name": "Start",
       "href": "/",
-      "enabled": true,
+      "enabled": "TRUE",
       "order": 1
     },
     {
       "id": "about",
       "name": "About",
       "href": "/about",
-      "enabled": true,
+      "enabled": "TRUE",
       "order": 2
     },
     {
       "id": "projects",
       "name": "Systems",
       "href": "/projects",
-      "enabled": true,
+      "enabled": "TRUE",
       "order": 3
     },
     {
       "id": "tech-stack",
       "name": "Stack",
       "href": "/stack",
-      "enabled": true,
+      "enabled": "TRUE",
       "order": 4
     },
     {
       "id": "architect",
       "name": "Architect",
       "href": "/architect",
-      "enabled": false,
+      "enabled": "FALSE",
       "order": 5
     },
     {
       "id": "contact",
       "name": "Contact",
       "href": "/contact",
-      "enabled": true,
+      "enabled": "TRUE",
       "order": 6
     }
   ],
@@ -398,7 +398,7 @@
       "iconFit": "",
       "iconScale": 1.3,
       "order": 1,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "id": 2,
@@ -414,7 +414,7 @@
       "iconFit": "auto",
       "iconScale": 1.25,
       "order": 2,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "id": 3,
@@ -430,7 +430,7 @@
       "iconFit": "",
       "iconScale": "",
       "order": 3,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "id": 4,
@@ -446,7 +446,7 @@
       "iconFit": "",
       "iconScale": 1.3,
       "order": 4,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "id": 5,
@@ -462,209 +462,209 @@
       "iconFit": "auto",
       "iconScale": "",
       "order": 5,
-      "enabled": true
+      "enabled": "TRUE"
     }
   ],
   "projectStackEntries": [
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "Unity 3D",
       "order": 1
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "C#",
       "order": 2
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "Motion Design",
       "order": 4
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Flask",
       "order": 2
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Llama 3",
       "order": 3
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Supabase",
       "order": 4
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "React + Vite",
       "order": 1
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Firebase",
       "order": 2
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Tailwind",
       "order": 3
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Framer Motion",
       "order": 4
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Tkinter",
       "order": 4
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "PowerShell",
       "order": 1
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "Batch",
       "order": 2
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "WMI/CIM",
       "order": 3
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "OPSEC",
       "order": 4
     }
   ],
   "projectArchEntries": [
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "Unity Core",
       "order": 1
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "C# Systems",
       "order": 2
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": 1,
+      "project_id": "1",
       "label": "Motion UI",
       "order": 4
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Outlook",
       "order": 1
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Python Backend",
       "order": 2
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Groq Llama 3",
       "order": 3
     },
     {
-      "project_id": 2,
+      "project_id": "2",
       "label": "Web UI",
       "order": 4
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Serverless",
       "order": 1
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Event Listeners",
       "order": 2
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "PWA Cache",
       "order": 3
     },
     {
-      "project_id": 3,
+      "project_id": "3",
       "label": "Reactive State",
       "order": 4
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Screen Capture",
       "order": 1
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": 4,
+      "project_id": "4",
       "label": "Dashboard",
       "order": 4
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "Background Polling",
       "order": 1
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "UAC Evasion",
       "order": 2
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "File-Lock Bypass",
       "order": 3
     },
     {
-      "project_id": 5,
+      "project_id": "5",
       "label": "Encrypted Exfiltration",
       "order": 4
     }
@@ -696,13 +696,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
-      "starRating": "",
+      "starRating": "2",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-06-16T19:22:08Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 1,
-      "enabled": true,
       "order": 1
     },
     {
@@ -713,13 +712,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
-      "starRating": "",
+      "starRating": "3",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-02T16:25:00Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 5,
-      "enabled": true,
       "order": 2
     },
     {
@@ -730,13 +728,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Great work and great communication.",
-      "starRating": "",
+      "starRating": "4",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-05T20:42:58Z",
       "avatarAssetId": "testimonial-client1",
-      "featured": false,
+      "featured": "TRUE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 3
     },
     {
@@ -747,13 +744,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Great work!",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-21T14:05:57Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": false,
+      "featured": "TRUE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 4
     },
     {
@@ -764,13 +760,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
       "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-07-29T16:57:35Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 3,
-      "enabled": true,
       "order": 5
     },
     {
@@ -781,13 +776,12 @@
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
       "review": "Great work as always",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-09-27T19:47:17Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": false,
+      "featured": "TRUE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 6
     },
     {
@@ -798,13 +792,12 @@
       "clientType": "Operations / Media Client",
       "serviceOverride": "Automation / Metadata Workflow",
       "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for easy gallery managing",
       "createdAt": "2024-11-07T20:02:11Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 2,
-      "enabled": true,
       "order": 7
     },
     {
@@ -815,13 +808,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-08T22:07:56Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 4,
-      "enabled": true,
       "order": 8
     },
     {
@@ -832,13 +824,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-09T18:29:07Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": false,
+      "featured": "TRUE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 9
     },
     {
@@ -849,13 +840,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-19T14:13:23Z",
       "avatarAssetId": "testimonial-client1",
-      "featured": false,
+      "featured": "TRUE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 10
     },
     {
@@ -866,13 +856,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-08T08:55:41Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 11
     },
     {
@@ -883,13 +872,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-12T19:03:03Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": true,
+      "featured": "TRUE",
       "featuredOrder": 6,
-      "enabled": true,
       "order": 12
     },
     {
@@ -900,13 +888,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Wonderful details",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-15T18:18:51Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 13
     },
     {
@@ -917,13 +904,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Handled the task with vigor",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T09:56:00Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 14
     },
     {
@@ -934,13 +920,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Good job and fast",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T17:58:51Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 15
     },
     {
@@ -951,13 +936,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "He's great. I highly recommend",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-30T18:59:30Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 16
     },
     {
@@ -968,13 +952,12 @@
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Nice guy he does his work good! Go check him out guys",
-      "starRating": "",
+      "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-31T10:10:16Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": false,
+      "featured": "FALSE",
       "featuredOrder": "",
-      "enabled": true,
       "order": 17
     }
   ],
@@ -1006,28 +989,28 @@
       "url": "https://github.com/Albjav12345",
       "icon": "Github",
       "order": 1,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "name": "LinkedIn",
       "url": "https://www.linkedin.com/in/alberto-medina-dev/",
       "icon": "Linkedin",
       "order": 2,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "name": "X",
       "url": "https://x.com/Albjav12345",
       "icon": "Twitter",
       "order": 3,
-      "enabled": true
+      "enabled": "TRUE"
     },
     {
       "name": "Upwork",
       "url": "https://www.upwork.com/freelancers/~0177774c838e1e7798",
       "icon": "Upwork",
       "order": 4,
-      "enabled": true
+      "enabled": "TRUE"
     }
   ],
   "contactMetadataEntries": [
@@ -1338,8 +1321,8 @@
             "avatarLabel": "UI",
             "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(102, 252, 241, 0.34)",
-            "rating": 5,
-            "hasConfirmedRating": false,
+            "rating": 2,
+            "hasConfirmedRating": true,
             "createdAt": "2024-06-16T19:22:08Z",
             "featured": true
           },
@@ -1358,7 +1341,7 @@
             "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(102, 252, 241, 0.3)",
             "rating": 5,
-            "hasConfirmedRating": false,
+            "hasConfirmedRating": true,
             "createdAt": "2024-11-07T20:02:11Z",
             "featured": true
           },
@@ -1377,7 +1360,7 @@
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.36)",
             "rating": 5,
-            "hasConfirmedRating": false,
+            "hasConfirmedRating": true,
             "createdAt": "2024-07-29T16:57:35Z",
             "featured": true
           },
@@ -1396,7 +1379,7 @@
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.28)",
             "rating": 5,
-            "hasConfirmedRating": false,
+            "hasConfirmedRating": true,
             "createdAt": "2024-11-08T22:07:56Z",
             "featured": true
           },
@@ -1414,8 +1397,8 @@
             "avatarLabel": "UI",
             "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(102, 252, 241, 0.34)",
-            "rating": 5,
-            "hasConfirmedRating": false,
+            "rating": 3,
+            "hasConfirmedRating": true,
             "createdAt": "2024-07-02T16:25:00Z",
             "featured": true
           },
@@ -1434,8 +1417,103 @@
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.28)",
             "rating": 5,
-            "hasConfirmedRating": false,
+            "hasConfirmedRating": true,
             "createdAt": "2024-12-12T19:03:03Z",
+            "featured": true
+          },
+          {
+            "id": "unity-communication",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Great work and great communication.",
+            "service": "Unity UI / Editor Tools",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client1.png",
+            "avatarLabel": "UI",
+            "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(102, 252, 241, 0.34)",
+            "rating": 4,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-07-05T20:42:58Z",
+            "featured": true
+          },
+          {
+            "id": "unity-great-work",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Great work!",
+            "service": "Unity UI / Editor Tools",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "UI",
+            "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(102, 252, 241, 0.34)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-07-21T14:05:57Z",
+            "featured": true
+          },
+          {
+            "id": "unity-repeat-client",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Great work as always",
+            "service": "Unity UI / Game Systems",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client4.png",
+            "avatarLabel": "GS",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.36)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-09-27T19:47:17Z",
+            "featured": true
+          },
+          {
+            "id": "automation-gallery-spanish",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-11-09T18:29:07Z",
+            "featured": true
+          },
+          {
+            "id": "automation-fiverr-credit",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client1.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-11-19T14:13:23Z",
             "featured": true
           }
         ]
@@ -1877,7 +1955,12 @@
       "unity-complex-ownership",
       "automation-exceeded-expectations",
       "unity-fast-delivery",
-      "automation-communication-timelines"
+      "automation-communication-timelines",
+      "unity-communication",
+      "unity-great-work",
+      "unity-repeat-client",
+      "automation-gallery-spanish",
+      "automation-fiverr-credit"
     ],
     "testimonialEntries": [
       {
@@ -1888,14 +1971,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Editor Tools",
         "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
-        "starRating": null,
+        "starRating": 2,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-06-16T19:22:08Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
         "featured": true,
         "featuredOrder": 1,
-        "enabled": true,
         "order": 1
       },
       {
@@ -1906,14 +1988,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Editor Tools",
         "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
-        "starRating": null,
+        "starRating": 3,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-07-02T16:25:00Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
         "featured": true,
         "featuredOrder": 5,
-        "enabled": true,
         "order": 2
       },
       {
@@ -1924,14 +2005,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Editor Tools",
         "review": "Great work and great communication.",
-        "starRating": null,
+        "starRating": 4,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-07-05T20:42:58Z",
         "avatarAssetId": "testimonial-client1",
         "avatarUrl": "/assets/testimonials/client1.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
-        "enabled": true,
         "order": 3
       },
       {
@@ -1942,14 +2022,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Editor Tools",
         "review": "Great work!",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-07-21T14:05:57Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
-        "enabled": true,
         "order": 4
       },
       {
@@ -1960,14 +2039,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Game Systems",
         "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
         "createdAt": "2024-07-29T16:57:35Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
         "featured": true,
         "featuredOrder": 3,
-        "enabled": true,
         "order": 5
       },
       {
@@ -1978,14 +2056,13 @@
         "clientType": "Game / Unity Client",
         "serviceOverride": "Unity UI / Game Systems",
         "review": "Great work as always",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
         "createdAt": "2024-09-27T19:47:17Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
-        "enabled": true,
         "order": 6
       },
       {
@@ -1996,14 +2073,13 @@
         "clientType": "Operations / Media Client",
         "serviceOverride": "Automation / Metadata Workflow",
         "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for easy gallery managing",
         "createdAt": "2024-11-07T20:02:11Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
         "featured": true,
         "featuredOrder": 2,
-        "enabled": true,
         "order": 7
       },
       {
@@ -2014,14 +2090,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-11-08T22:07:56Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
         "featured": true,
         "featuredOrder": 4,
-        "enabled": true,
         "order": 8
       },
       {
@@ -2032,14 +2107,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-11-09T18:29:07Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
-        "enabled": true,
         "order": 9
       },
       {
@@ -2050,14 +2124,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-11-19T14:13:23Z",
         "avatarAssetId": "testimonial-client1",
         "avatarUrl": "/assets/testimonials/client1.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
-        "enabled": true,
         "order": 10
       },
       {
@@ -2068,14 +2141,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-12-08T08:55:41Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 11
       },
       {
@@ -2086,14 +2158,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-12-12T19:03:03Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
         "featured": true,
         "featuredOrder": 6,
-        "enabled": true,
         "order": 12
       },
       {
@@ -2104,14 +2175,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Wonderful details",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-12-15T18:18:51Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 13
       },
       {
@@ -2122,14 +2192,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Handled the task with vigor",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for seo and gallery managing",
         "createdAt": "2025-01-06T09:56:00Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 14
       },
       {
@@ -2140,14 +2209,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Good job and fast",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for seo and gallery managing",
         "createdAt": "2025-01-06T17:58:51Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 15
       },
       {
@@ -2158,14 +2226,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "He's great. I highly recommend",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for seo and gallery managing",
         "createdAt": "2025-01-30T18:59:30Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 16
       },
       {
@@ -2176,14 +2243,13 @@
         "clientType": "SEO / Content Operations",
         "serviceOverride": "Automation / SEO Workflow",
         "review": "Nice guy he does his work good! Go check him out guys",
-        "starRating": null,
+        "starRating": 5,
         "gigTitle": "edit photos and videos metadata for seo and gallery managing",
         "createdAt": "2025-01-31T10:10:16Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
         "featured": false,
         "featuredOrder": null,
-        "enabled": true,
         "order": 17
       }
     ],
@@ -2203,7 +2269,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2025-01-31T10:10:16Z",
         "featured": false
       },
@@ -2222,7 +2288,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2025-01-30T18:59:30Z",
         "featured": false
       },
@@ -2241,7 +2307,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2025-01-06T17:58:51Z",
         "featured": false
       },
@@ -2260,7 +2326,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2025-01-06T09:56:00Z",
         "featured": false
       },
@@ -2279,7 +2345,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-12-15T18:18:51Z",
         "featured": false
       },
@@ -2298,7 +2364,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-12-12T19:03:03Z",
         "featured": true
       },
@@ -2317,7 +2383,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-12-08T08:55:41Z",
         "featured": false
       },
@@ -2336,9 +2402,9 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-19T14:13:23Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-gallery-spanish",
@@ -2355,9 +2421,9 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-09T18:29:07Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-exceeded-expectations",
@@ -2374,7 +2440,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-08T22:07:56Z",
         "featured": true
       },
@@ -2393,7 +2459,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.3)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-07T20:02:11Z",
         "featured": true
       },
@@ -2412,9 +2478,9 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-09-27T19:47:17Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "unity-complex-ownership",
@@ -2431,7 +2497,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-29T16:57:35Z",
         "featured": true
       },
@@ -2450,9 +2516,9 @@
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-21T14:05:57Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "unity-communication",
@@ -2468,10 +2534,10 @@
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
-        "rating": 5,
-        "hasConfirmedRating": false,
+        "rating": 4,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-05T20:42:58Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "unity-fast-delivery",
@@ -2487,8 +2553,8 @@
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
-        "rating": 5,
-        "hasConfirmedRating": false,
+        "rating": 3,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-02T16:25:00Z",
         "featured": true
       },
@@ -2506,8 +2572,8 @@
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
-        "rating": 5,
-        "hasConfirmedRating": false,
+        "rating": 2,
+        "hasConfirmedRating": true,
         "createdAt": "2024-06-16T19:22:08Z",
         "featured": true
       }
@@ -2527,8 +2593,8 @@
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
-        "rating": 5,
-        "hasConfirmedRating": false,
+        "rating": 2,
+        "hasConfirmedRating": true,
         "createdAt": "2024-06-16T19:22:08Z",
         "featured": true
       },
@@ -2547,7 +2613,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.3)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-07T20:02:11Z",
         "featured": true
       },
@@ -2566,7 +2632,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-29T16:57:35Z",
         "featured": true
       },
@@ -2585,7 +2651,7 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-11-08T22:07:56Z",
         "featured": true
       },
@@ -2603,8 +2669,8 @@
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
-        "rating": 5,
-        "hasConfirmedRating": false,
+        "rating": 3,
+        "hasConfirmedRating": true,
         "createdAt": "2024-07-02T16:25:00Z",
         "featured": true
       },
@@ -2623,8 +2689,103 @@
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
-        "hasConfirmedRating": false,
+        "hasConfirmedRating": true,
         "createdAt": "2024-12-12T19:03:03Z",
+        "featured": true
+      },
+      {
+        "id": "unity-communication",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work and great communication.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 4,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-07-05T20:42:58Z",
+        "featured": true
+      },
+      {
+        "id": "unity-great-work",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work!",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-07-21T14:05:57Z",
+        "featured": true
+      },
+      {
+        "id": "unity-repeat-client",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work as always",
+        "service": "Unity UI / Game Systems",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "GS",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.36)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-09-27T19:47:17Z",
+        "featured": true
+      },
+      {
+        "id": "automation-gallery-spanish",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-11-09T18:29:07Z",
+        "featured": true
+      },
+      {
+        "id": "automation-fiverr-credit",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-11-19T14:13:23Z",
         "featured": true
       }
     ],
