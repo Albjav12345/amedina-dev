@@ -8,8 +8,8 @@ import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 const { about: profileAbout } = portfolioData.profile;
 
 const testimonialSection = profileAbout.testimonialsSection ?? {
-    title: 'Verified Fiverr Client Feedback',
-    subtitle: 'Real client feedback collected from completed Fiverr orders.',
+    title: 'Verified Client Feedback',
+    subtitle: 'Real client feedback collected from completed projects.',
 };
 
 const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => (
@@ -57,8 +57,15 @@ const GeneratedClientAvatar = ({ testimonial, sizeClassName, textClassName }) =>
 
     if (testimonial.avatarUrl) {
         return (
-            <div className={`${sizeClassName} relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5`}>
-                <img src={testimonial.avatarUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+            <div className={`${sizeClassName} relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5 shadow-[0_10px_26px_rgba(0,0,0,0.28)]`}>
+                <img
+                    src={testimonial.avatarUrl}
+                    alt=""
+                    className="testimonial-avatar-photo h-full w-full object-cover object-center"
+                    loading="lazy"
+                />
+                <div className="pointer-events-none absolute inset-0 rounded-full border border-white/10" />
+                <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),transparent_42%)] opacity-80" />
             </div>
         );
     }
@@ -438,7 +445,7 @@ const About = ({ isUiFrozen = false }) => {
                             {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
                                 <div
                                     key={i}
-                                    className={`testimonial-card w-[350px] md:w-[400px] min-h-[19rem] p-6 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                    className={`testimonial-card w-[350px] md:w-[400px] min-h-[16.25rem] p-5 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
                                         }`}
                                 >
                                     <div className="mb-4 flex items-center justify-between gap-3">
@@ -449,8 +456,8 @@ const About = ({ isUiFrozen = false }) => {
                                             {t.label}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-300 italic mb-5 leading-relaxed line-clamp-4">"{t.review}"</p>
-                                    <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5">
+                                    <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-4">"{t.review}"</p>
+                                    <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
                                         <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
                                         <div className="flex min-w-0 flex-col">
                                             <span className="text-xs font-bold text-white">{t.clientName}</span>

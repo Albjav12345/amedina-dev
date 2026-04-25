@@ -1,3 +1,8 @@
+import client1 from '../assets/testimonials/client1.png';
+import client2 from '../assets/testimonials/client2.png';
+import client3 from '../assets/testimonials/client3.png';
+import client4 from '../assets/testimonials/client4.png';
+
 const sanitizeReview = (review) => review.replace(/\s+/g, ' ').trim();
 
 const parseStarRating = (value) => {
@@ -66,6 +71,12 @@ const featuredOrder = [
 ];
 
 const featuredIds = new Set(featuredOrder);
+const generatedAvatarPool = [client1, client2, client3, client4];
+
+const getGeneratedAvatar = (testimonialId) => {
+    const hash = testimonialId.split('').reduce((total, char) => total + char.charCodeAt(0), 0);
+    return generatedAvatarPool[hash % generatedAvatarPool.length];
+};
 
 const rawFiverrTestimonials = [
     {
@@ -190,8 +201,8 @@ const rawFiverrTestimonials = [
 ];
 
 export const fiverrTestimonialsSection = {
-    title: 'Verified Fiverr Client Feedback',
-    subtitle: 'Real client feedback collected from completed Fiverr orders.',
+    title: 'Verified Client Feedback',
+    subtitle: 'Real client feedback collected from completed projects.',
 };
 
 export const allFiverrTestimonials = rawFiverrTestimonials
@@ -201,15 +212,15 @@ export const allFiverrTestimonials = rawFiverrTestimonials
 
         return {
             id: entry.id,
-            source: 'Fiverr',
-            label: 'Verified Fiverr Client',
-            orderLabel: 'From completed Fiverr order',
+            source: 'Client Review',
+            label: 'Verified Client',
+            orderLabel: 'From completed client project',
             review: sanitizeReview(entry.review),
             service: serviceProfile.service,
-            clientName: 'Fiverr Client',
+            clientName: 'Private Client',
             clientType: serviceProfile.clientType,
-            avatarType: 'generated',
-            avatarUrl: null,
+            avatarType: 'generated-photo',
+            avatarUrl: getGeneratedAvatar(entry.id),
             avatarLabel: serviceProfile.avatarLabel,
             avatarGradient: serviceProfile.avatarGradient,
             avatarAccent: serviceProfile.avatarAccent,
