@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-25T22:40:09.779Z",
+  "generatedAt": "2026-04-25T23:18:02.261Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -860,7 +860,7 @@
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-08T08:55:41Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": "FALSE",
+      "featured": "TRUE",
       "featuredOrder": "",
       "order": 11
     },
@@ -892,7 +892,7 @@
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-15T18:18:51Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": "FALSE",
+      "featured": "TRUE",
       "featuredOrder": "",
       "order": 13
     },
@@ -908,7 +908,7 @@
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T09:56:00Z",
       "avatarAssetId": "testimonial-client2",
-      "featured": "FALSE",
+      "featured": "TRUE",
       "featuredOrder": "",
       "order": 14
     },
@@ -924,7 +924,7 @@
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T17:58:51Z",
       "avatarAssetId": "testimonial-client4",
-      "featured": "FALSE",
+      "featured": "TRUE",
       "featuredOrder": "",
       "order": 15
     },
@@ -940,7 +940,7 @@
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-30T18:59:30Z",
       "avatarAssetId": "testimonial-client3",
-      "featured": "FALSE",
+      "featured": "TRUE",
       "featuredOrder": "",
       "order": 16
     },
@@ -1515,6 +1515,101 @@
             "hasConfirmedRating": true,
             "createdAt": "2024-11-19T14:13:23Z",
             "featured": true
+          },
+          {
+            "id": "automation-outstanding-work",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client3.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-12-08T08:55:41Z",
+            "featured": true
+          },
+          {
+            "id": "automation-wonderful-details",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Wonderful details",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client4.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2024-12-15T18:18:51Z",
+            "featured": true
+          },
+          {
+            "id": "automation-vigor",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Handled the task with vigor",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2025-01-06T09:56:00Z",
+            "featured": true
+          },
+          {
+            "id": "automation-fast-turnaround",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Good job and fast",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client4.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2025-01-06T17:58:51Z",
+            "featured": true
+          },
+          {
+            "id": "automation-highly-recommend",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "He's great. I highly recommend",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client3.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": true,
+            "createdAt": "2025-01-30T18:59:30Z",
+            "featured": true
           }
         ]
       },
@@ -1960,7 +2055,12 @@
       "unity-great-work",
       "unity-repeat-client",
       "automation-gallery-spanish",
-      "automation-fiverr-credit"
+      "automation-fiverr-credit",
+      "automation-outstanding-work",
+      "automation-wonderful-details",
+      "automation-vigor",
+      "automation-fast-turnaround",
+      "automation-highly-recommend"
     ],
     "testimonialEntries": [
       {
@@ -2146,7 +2246,7 @@
         "createdAt": "2024-12-08T08:55:41Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
         "order": 11
       },
@@ -2180,7 +2280,7 @@
         "createdAt": "2024-12-15T18:18:51Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
         "order": 13
       },
@@ -2197,7 +2297,7 @@
         "createdAt": "2025-01-06T09:56:00Z",
         "avatarAssetId": "testimonial-client2",
         "avatarUrl": "/assets/testimonials/client2.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
         "order": 14
       },
@@ -2214,7 +2314,7 @@
         "createdAt": "2025-01-06T17:58:51Z",
         "avatarAssetId": "testimonial-client4",
         "avatarUrl": "/assets/testimonials/client4.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
         "order": 15
       },
@@ -2231,7 +2331,7 @@
         "createdAt": "2025-01-30T18:59:30Z",
         "avatarAssetId": "testimonial-client3",
         "avatarUrl": "/assets/testimonials/client3.png",
-        "featured": false,
+        "featured": true,
         "featuredOrder": null,
         "order": 16
       },
@@ -2290,7 +2390,7 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-30T18:59:30Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-fast-turnaround",
@@ -2309,7 +2409,7 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-06T17:58:51Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-vigor",
@@ -2328,7 +2428,7 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-06T09:56:00Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-wonderful-details",
@@ -2347,7 +2447,7 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-15T18:18:51Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-communication-timelines",
@@ -2385,7 +2485,7 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-08T08:55:41Z",
-        "featured": false
+        "featured": true
       },
       {
         "id": "automation-fiverr-credit",
@@ -2786,6 +2886,101 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-19T14:13:23Z",
+        "featured": true
+      },
+      {
+        "id": "automation-outstanding-work",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-12-08T08:55:41Z",
+        "featured": true
+      },
+      {
+        "id": "automation-wonderful-details",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Wonderful details",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2024-12-15T18:18:51Z",
+        "featured": true
+      },
+      {
+        "id": "automation-vigor",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Handled the task with vigor",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2025-01-06T09:56:00Z",
+        "featured": true
+      },
+      {
+        "id": "automation-fast-turnaround",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Good job and fast",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2025-01-06T17:58:51Z",
+        "featured": true
+      },
+      {
+        "id": "automation-highly-recommend",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "He's great. I highly recommend",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": true,
+        "createdAt": "2025-01-30T18:59:30Z",
         "featured": true
       }
     ],

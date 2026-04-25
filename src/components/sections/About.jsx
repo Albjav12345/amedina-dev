@@ -11,6 +11,9 @@ const testimonialSection = profileAbout.testimonialsSection ?? {
     title: 'Verified Client Feedback',
     subtitle: 'Real client feedback collected from completed projects.',
 };
+const desktopMarqueeCloneIndexes = [0, 1];
+const desktopMarqueeViewportMargin = '360px 0px';
+const desktopMarqueeMaskImage = 'linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)';
 
 const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => {
     const normalizedRating = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
@@ -173,8 +176,12 @@ const About = ({ isUiFrozen = false }) => {
     const mobileTestimonialsRef = useRef(null);
     const desktopMarqueeRef = useRef(null);
     const [mobileTestimonialIndex, setMobileTestimonialIndex] = useState(0);
-    const isDesktopMarqueeInView = useInView(desktopMarqueeRef, { margin: '200px', amount: 0.05 });
-    const shouldAnimateDesktopMarquee = !isUiFrozen && isDesktopMarqueeInView;
+    const [hasDesktopMarqueePrimed, setHasDesktopMarqueePrimed] = useState(false);
+    const isDesktopMarqueeInView = useInView(desktopMarqueeRef, {
+        margin: desktopMarqueeViewportMargin,
+        amount: 0.01,
+    });
+    const shouldAnimateDesktopMarquee = !isUiFrozen && (hasDesktopMarqueePrimed || isDesktopMarqueeInView);
     const desktopMarqueeDuration = isLow ? 110 : 140;
 
     const stats = profileAbout.stats.map(s => {
@@ -206,6 +213,12 @@ const About = ({ isUiFrozen = false }) => {
         container.addEventListener('scroll', handleScroll, { passive: true });
         return () => container.removeEventListener('scroll', handleScroll);
     }, [profileAbout.testimonials.length]);
+
+    useEffect(() => {
+        if (isDesktopMarqueeInView) {
+            setHasDesktopMarqueePrimed(true);
+        }
+    }, [isDesktopMarqueeInView]);
 
     return (
         <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
@@ -430,49 +443,56 @@ const About = ({ isUiFrozen = false }) => {
                         </div>
                     </div>
 
-                    <div className={`testimonial-marquee-shell relative hidden md:block w-full overflow-hidden ${!isLow ? 'mask-linear-fade' : ''}`}
-                        style={!isLow ? { maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' } : {}}
+                    <div
+                        ref={desktopMarqueeRef}
+                        className="testimonial-marquee-shell relative hidden md:block w-full overflow-hidden"
+                        style={{
+                            maskImage: desktopMarqueeMaskImage,
+                            WebkitMaskImage: desktopMarqueeMaskImage,
+                            maskRepeat: 'no-repeat',
+                            WebkitMaskRepeat: 'no-repeat',
+                            maskSize: '100% 100%',
+                            WebkitMaskSize: '100% 100%',
+                        }}
                     >
-                        {/* Gradient Masks for edges - Fallback for non-mask browsers or Low Tier */}
-                        {isLow && (
-                            <>
-                                <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-dark-void to-transparent"></div>
-                                <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-dark-void to-transparent"></div>
-                            </>
-                        )}
-
                         <div
-                            ref={desktopMarqueeRef}
-                            className="testimonial-marquee-track flex gap-6 w-max transform-gpu"
+                            className="testimonial-marquee-track flex w-max transform-gpu"
                             style={{
                                 animationDuration: `${desktopMarqueeDuration}s`,
                                 animationPlayState: shouldAnimateDesktopMarquee ? 'running' : 'paused',
-                                willChange: shouldAnimateDesktopMarquee ? 'transform' : 'auto',
                             }}
                         >
-                            {[...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials, ...profileAbout.testimonials].map((t, i) => (
+                            {desktopMarqueeCloneIndexes.map((cloneIndex) => (
                                 <div
-                                    key={i}
-                                    className={`testimonial-card w-[350px] md:w-[400px] min-h-[16.25rem] p-5 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
-                                        }`}
+                                    key={`desktop-testimonial-clone-${cloneIndex}`}
+                                    aria-hidden={cloneIndex === 1 ? 'true' : undefined}
+                                    className="flex shrink-0 gap-6 pr-6"
                                 >
-                                    <div className="mb-4 flex items-center justify-between gap-3">
-                                        <div className={`flex gap-1 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
-                                            {renderStars(t.rating, 'w-3 h-3')}
+                                    {profileAbout.testimonials.map((t) => (
+                                        <div
+                                            key={`${t.id}-${cloneIndex}`}
+                                            className={`testimonial-card w-[350px] md:w-[400px] min-h-[16.25rem] p-5 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
+                                                }`}
+                                        >
+                                            <div className="mb-4 flex items-center justify-between gap-3">
+                                                <div className={`flex gap-1 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
+                                                    {renderStars(t.rating, 'w-3 h-3')}
+                                                </div>
+                                                <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                                    {t.label}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-4">"{t.review}"</p>
+                                            <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
+                                                <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
+                                                <div className="flex min-w-0 flex-col">
+                                                    <span className="text-xs font-bold text-white">{t.clientName}</span>
+                                                    <span className="text-[9px] text-gray-500 font-mono uppercase">{t.clientType}</span>
+                                                    <span className="mt-2 text-[9px] text-electric-green font-mono uppercase tracking-[0.18em]">{t.service}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
-                                            {t.label}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-4">"{t.review}"</p>
-                                    <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
-                                        <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
-                                        <div className="flex min-w-0 flex-col">
-                                            <span className="text-xs font-bold text-white">{t.clientName}</span>
-                                            <span className="text-[9px] text-gray-500 font-mono uppercase">{t.clientType}</span>
-                                            <span className="mt-2 text-[9px] text-electric-green font-mono uppercase tracking-[0.18em]">{t.service}</span>
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
                             ))}
                         </div>

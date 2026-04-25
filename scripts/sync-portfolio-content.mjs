@@ -14,6 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 
 async function main() {
   const args = new Set(process.argv.slice(2));
+  const writeWorkbookOutput = !args.has('--runtime-only');
 
   if (args.has('--init')) {
     await initPortfolioWorkbook();
@@ -29,8 +30,9 @@ async function main() {
     return;
   }
 
-  await syncPortfolioContent();
-  console.log(`[content:sync] synced workbook -> ${path.relative(path.dirname(__filename), GENERATED_JSON_PATH)}`);
+  await syncPortfolioContent({ writeWorkbookOutput });
+  const modeLabel = writeWorkbookOutput ? 'synced workbook' : 'synced runtime only';
+  console.log(`[content:sync] ${modeLabel} -> ${path.relative(path.dirname(__filename), GENERATED_JSON_PATH)}`);
 }
 
 main().catch((error) => {

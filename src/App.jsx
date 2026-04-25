@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
 import { isArchitectSectionEnabled } from './config/siteFeatures'
+import portfolioData from './data/portfolio'
 
 // Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
@@ -241,6 +242,7 @@ function App() {
     const activeSectionRef = useRef(DEFAULT_SECTION_ID);
     const navigationLockRef = useRef(createInactiveNavigationLock());
     const routeRestoreRef = useRef(createIdleRouteRestoreState());
+    const currentRuntimeGeneratedAtRef = useRef(portfolioData.meta.generatedAt ?? null)
 
     const syncPathname = (sectionId, historyMode = 'replace') => {
         if (typeof window === 'undefined' || historyMode === 'preserve' || !isSectionId(sectionId)) {
@@ -668,6 +670,62 @@ function App() {
             window.removeEventListener('close-control-panel', closePanel);
         };
     }, []);
+
+    useEffect(() => {
+        if (!import.meta.env.DEV) {
+            return undefined
+        }
+
+        let disposed = false
+        let inFlight = false
+
+        const pollLocalContentStatus = async () => {
+            if (disposed || inFlight) {
+                return
+            }
+
+            inFlight = true
+
+            try {
+                const response = await fetch('/api/dev-content-status', {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                    },
+                })
+
+                if (!response.ok) {
+                    return
+                }
+
+                const payload = await response.json()
+                if (disposed || !payload?.generatedAt) {
+                    return
+                }
+
+                const currentGeneratedAt = currentRuntimeGeneratedAtRef.current
+
+                if (currentGeneratedAt && payload.generatedAt !== currentGeneratedAt) {
+                    window.location.reload()
+                    return
+                }
+
+                currentRuntimeGeneratedAtRef.current = payload.generatedAt
+            } catch {
+                // Ignore transient local dev polling failures.
+            } finally {
+                inFlight = false
+            }
+        }
+
+        const intervalId = window.setInterval(pollLocalContentStatus, 1500)
+        pollLocalContentStatus()
+
+        return () => {
+            disposed = true
+            window.clearInterval(intervalId)
+        }
+    }, [])
 
     useEffect(() => {
         const syncViewportBucket = () => {

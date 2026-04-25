@@ -2458,6 +2458,7 @@ export async function syncPortfolioContent({
     workbookPath = WORKBOOK_PATH,
     outputWorkbookPath = workbookPath,
     writeGeneratedOutput = true,
+    writeWorkbookOutput = true,
 } = {}) {
     if (!(await pathExists(workbookPath))) {
         throw new Error(`Workbook not found at ${workbookPath}. Run "npm run content:init" first.`);
@@ -2467,7 +2468,9 @@ export async function syncPortfolioContent({
     const resolvedAssets = await resolveAssets(masterData.assetEntries, { writeAssets: true });
     const runtimeContent = buildRuntimeContent(masterData, resolvedAssets);
 
-    await writeWorkbookFromMasterData(masterData, resolvedAssets, outputWorkbookPath);
+    if (writeWorkbookOutput) {
+        await writeWorkbookFromMasterData(masterData, resolvedAssets, outputWorkbookPath);
+    }
 
     if (writeGeneratedOutput) {
         await writeGeneratedJson(runtimeContent);

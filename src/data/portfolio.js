@@ -11,8 +11,10 @@
 import { projects } from './projects.js';
 import { profile, skills } from './profile.js';
 import { ui } from './ui.js';
+import portfolioContent from './generated/portfolioContent.json' with { type: 'json' };
 
 const meta = {
+    generatedAt: portfolioContent.generatedAt,
     showcasedProjectsCount: projects.length,
     showcasedProjectTitles: projects.map(project => project.title),
 };
