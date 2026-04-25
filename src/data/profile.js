@@ -2,7 +2,7 @@
 // PROFILE & SKILLS CONFIGURATION
 // -------------------------------------------------------------------------
 
-import { featuredFiverrTestimonials, fiverrTestimonialsSection } from './fiverrTestimonials.js';
+import { featuredTestimonials, testimonialsSection } from './testimonials.js';
 
 export const profile = {
     name: "Alberto Medina Garcia",
@@ -25,8 +25,8 @@ export const profile = {
             { label: "Global Clients", value: "12+", id: "global" },
             { label: "Years Experience", value: "5+", id: "years" }
         ],
-        testimonialsSection: fiverrTestimonialsSection,
-        testimonials: featuredFiverrTestimonials
+        testimonialsSection,
+        testimonials: featuredTestimonials
     },
     social: {
         github: "https://github.com/Albjav12345",

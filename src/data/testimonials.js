@@ -3,6 +3,18 @@ import client2 from '../assets/testimonials/client2.png';
 import client3 from '../assets/testimonials/client3.png';
 import client4 from '../assets/testimonials/client4.png';
 
+// -------------------------------------------------------------------------
+// TESTIMONIALS CONFIGURATION
+// Edit this file to manage the whole client feedback section.
+//
+// Quick guide:
+// 1. Update `testimonialsSection` for the section heading.
+// 2. Add or tweak a preset inside `testimonialSourcePresets`.
+// 3. Add new entries inside `testimonialEntries`.
+// 4. Add the testimonial id to `featuredTestimonialIds` if it should show
+//    in the main marquee.
+// -------------------------------------------------------------------------
+
 const sanitizeReview = (review) => review.replace(/\s+/g, ' ').trim();
 
 const parseStarRating = (value) => {
@@ -61,7 +73,27 @@ const getServiceProfile = (gigTitle) => {
     };
 };
 
-const featuredOrder = [
+export const testimonialsSection = {
+    title: 'Verified Client Feedback',
+    subtitle: 'Real client feedback collected from completed projects.',
+};
+
+export const testimonialSourcePresets = {
+    fiverr: {
+        source: 'Fiverr',
+        label: 'Verified Fiverr Client',
+        clientName: 'Fiverr Client',
+        orderLabel: 'From completed Fiverr order',
+    },
+    direct: {
+        source: 'Direct Client',
+        label: 'Verified Client',
+        clientName: 'Private Client',
+        orderLabel: 'From completed client project',
+    },
+};
+
+export const featuredTestimonialIds = [
     'unity-progress-communication',
     'automation-seo-detail',
     'unity-complex-ownership',
@@ -70,7 +102,7 @@ const featuredOrder = [
     'automation-communication-timelines',
 ];
 
-const featuredIds = new Set(featuredOrder);
+const featuredIds = new Set(featuredTestimonialIds);
 const generatedAvatarPool = [client1, client2, client3, client4];
 
 const getGeneratedAvatar = (testimonialId) => {
@@ -78,9 +110,10 @@ const getGeneratedAvatar = (testimonialId) => {
     return generatedAvatarPool[hash % generatedAvatarPool.length];
 };
 
-const rawFiverrTestimonials = [
+export const testimonialEntries = [
     {
         id: 'unity-progress-communication',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity editor windows or game uis with uxml',
         createdAt: '2024-06-16T19:22:08Z',
         starRating: null,
@@ -88,6 +121,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'unity-fast-delivery',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity editor windows or game uis with uxml',
         createdAt: '2024-07-02T16:25:00Z',
         starRating: null,
@@ -95,6 +129,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'unity-communication',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity editor windows or game uis with uxml',
         createdAt: '2024-07-05T20:42:58Z',
         starRating: null,
@@ -102,6 +137,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'unity-great-work',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity editor windows or game uis with uxml',
         createdAt: '2024-07-21T14:05:57Z',
         starRating: null,
@@ -109,6 +145,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'unity-complex-ownership',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity game uis or editor windows with ui toolkit',
         createdAt: '2024-07-29T16:57:35Z',
         starRating: null,
@@ -116,6 +153,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'unity-repeat-client',
+        sourceKey: 'fiverr',
         gigTitle: 'create professional unity game uis or editor windows with ui toolkit',
         createdAt: '2024-09-27T19:47:17Z',
         starRating: null,
@@ -123,6 +161,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-seo-detail',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for easy gallery managing',
         createdAt: '2024-11-07T20:02:11Z',
         starRating: null,
@@ -130,6 +169,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-exceeded-expectations',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-11-08T22:07:56Z',
         starRating: null,
@@ -137,6 +177,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-gallery-spanish',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-11-09T18:29:07Z',
         starRating: null,
@@ -144,6 +185,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-fiverr-credit',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-11-19T14:13:23Z',
         starRating: null,
@@ -151,6 +193,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-outstanding-work',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-12-08T08:55:41Z',
         starRating: null,
@@ -158,6 +201,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-communication-timelines',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-12-12T19:03:03Z',
         starRating: null,
@@ -165,6 +209,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-wonderful-details',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for gallery and seo managing',
         createdAt: '2024-12-15T18:18:51Z',
         starRating: null,
@@ -172,6 +217,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-vigor',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for seo and gallery managing',
         createdAt: '2025-01-06T09:56:00Z',
         starRating: null,
@@ -179,6 +225,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-fast-turnaround',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for seo and gallery managing',
         createdAt: '2025-01-06T17:58:51Z',
         starRating: null,
@@ -186,6 +233,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-highly-recommend',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for seo and gallery managing',
         createdAt: '2025-01-30T18:59:30Z',
         starRating: null,
@@ -193,6 +241,7 @@ const rawFiverrTestimonials = [
     },
     {
         id: 'automation-nice-guy',
+        sourceKey: 'fiverr',
         gigTitle: 'edit photos and videos metadata for seo and gallery managing',
         createdAt: '2025-01-31T10:10:16Z',
         starRating: null,
@@ -200,30 +249,26 @@ const rawFiverrTestimonials = [
     },
 ];
 
-export const fiverrTestimonialsSection = {
-    title: 'Verified Client Feedback',
-    subtitle: 'Real client feedback collected from completed projects.',
-};
-
-export const allFiverrTestimonials = rawFiverrTestimonials
+export const allTestimonials = testimonialEntries
     .map((entry) => {
         const serviceProfile = getServiceProfile(entry.gigTitle);
+        const sourcePreset = testimonialSourcePresets[entry.sourceKey] ?? testimonialSourcePresets.direct;
         const confirmedRating = parseStarRating(entry.starRating);
 
         return {
             id: entry.id,
-            source: 'Client Review',
-            label: 'Verified Client',
-            orderLabel: 'From completed client project',
+            source: sourcePreset.source,
+            label: sourcePreset.label,
+            orderLabel: sourcePreset.orderLabel,
             review: sanitizeReview(entry.review),
             service: serviceProfile.service,
-            clientName: 'Private Client',
-            clientType: serviceProfile.clientType,
+            clientName: entry.clientName ?? sourcePreset.clientName,
+            clientType: entry.clientType ?? serviceProfile.clientType,
             avatarType: 'generated-photo',
-            avatarUrl: getGeneratedAvatar(entry.id),
-            avatarLabel: serviceProfile.avatarLabel,
-            avatarGradient: serviceProfile.avatarGradient,
-            avatarAccent: serviceProfile.avatarAccent,
+            avatarUrl: entry.avatarUrl ?? getGeneratedAvatar(entry.id),
+            avatarLabel: entry.avatarLabel ?? serviceProfile.avatarLabel,
+            avatarGradient: entry.avatarGradient ?? serviceProfile.avatarGradient,
+            avatarAccent: entry.avatarAccent ?? serviceProfile.avatarAccent,
             rating: confirmedRating ?? 5,
             hasConfirmedRating: confirmedRating !== null,
             createdAt: entry.createdAt,
@@ -232,6 +277,12 @@ export const allFiverrTestimonials = rawFiverrTestimonials
     })
     .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
 
-export const featuredFiverrTestimonials = featuredOrder
-    .map((testimonialId) => allFiverrTestimonials.find((testimonial) => testimonial.id === testimonialId))
+export const featuredTestimonials = featuredTestimonialIds
+    .map((testimonialId) => allTestimonials.find((testimonial) => testimonial.id === testimonialId))
     .filter(Boolean);
+
+// Backwards-compatible aliases in case another part of the app still imports
+// the old Fiverr-specific names.
+export const fiverrTestimonialsSection = testimonialsSection;
+export const allFiverrTestimonials = allTestimonials;
+export const featuredFiverrTestimonials = featuredTestimonials;
