@@ -1,0 +1,2874 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-25T13:13:34.833Z",
+  "navigationConfig": {
+    "brandFirst": "AMEDINA",
+    "brandLast": ".DEV",
+    "logoIcon": "Terminal",
+    "terminalButton": "TERM_ACCESS"
+  },
+  "navigationEntries": [
+    {
+      "id": "home",
+      "name": "Start",
+      "href": "/",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "about",
+      "name": "About",
+      "href": "/about",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "projects",
+      "name": "Systems",
+      "href": "/projects",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "tech-stack",
+      "name": "Stack",
+      "href": "/stack",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "architect",
+      "name": "Architect",
+      "href": "/architect",
+      "enabled": false,
+      "order": 5
+    },
+    {
+      "id": "contact",
+      "name": "Contact",
+      "href": "/contact",
+      "enabled": true,
+      "order": 6
+    }
+  ],
+  "profileEntry": {
+    "name": "Alberto Medina Garcia",
+    "role": "Full-Stack Developer & Automation Engineer",
+    "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
+    "avatarAssetId": "profile-avatar",
+    "aboutTitle": "Logic first. Built to be used.",
+    "philosophyLabel": "AI Philosophy",
+    "philosophyQuote": "AI does not replace good engineers. It exposes weak ones. The value is not in using it, but in knowing how to think with it, control it, and build reliable systems around it.",
+    "github": "https://github.com/Albjav12345",
+    "linkedin": "https://www.linkedin.com/in/alberto-medina-dev/"
+  },
+  "aboutBioEntries": [
+    {
+      "paragraph_id": "bio-1",
+      "text": "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
+      "order": 1
+    },
+    {
+      "paragraph_id": "bio-2",
+      "text": "That same mindset now drives my work in full-stack development, automation, and AI tooling. I like building systems that solve real operational problems, feel polished to use, and stay understandable as they grow.",
+      "order": 2
+    }
+  ],
+  "aboutStatsEntries": [
+    {
+      "id": "projects",
+      "label": "Projects Delivered",
+      "value": "25+",
+      "order": 1
+    },
+    {
+      "id": "delivery",
+      "label": "On-Time Delivery",
+      "value": "100%",
+      "order": 2
+    },
+    {
+      "id": "global",
+      "label": "Global Clients",
+      "value": "12+",
+      "order": 3
+    },
+    {
+      "id": "years",
+      "label": "Years Experience",
+      "value": "5+",
+      "order": 4
+    }
+  ],
+  "heroEntry": {
+    "priorityLabel": "SYSTEMS / AUTOMATION / AI",
+    "titleWhite": "ALBERTO",
+    "titleGreen": "MEDINA",
+    "handle": "@Albjav12345",
+    "description": "I build full-stack products, automation workflows, and AI systems that solve real operational problems and still feel polished to use.",
+    "buttonTerminal": "ACCESS_TERMINAL",
+    "buttonCv": "GET_MANIFEST.PDF",
+    "buttonCvPending": "MANIFEST_PENDING",
+    "buttonCvHref": "/manifest-test.pdf"
+  },
+  "heroMetadataEntries": [
+    {
+      "label": "Stack_Focus",
+      "value": "PYTHON / REACT / UNITY",
+      "order": 1
+    },
+    {
+      "label": "Exp_Runtime",
+      "value": "5+ YEARS SHIPPING",
+      "order": 2
+    }
+  ],
+  "terminalConfig": {
+    "headerTitle": "zsh - port-folio",
+    "welcomeMessage": "Click to access system...",
+    "tooltipTitle": "Terminal Agent",
+    "tooltipDescription": "Backed by Groq-hosted Llama 3 with live portfolio context.",
+    "tooltipUsage": "Try asking \"What have you built recently?\" or \"help me scope a system\"."
+  },
+  "terminalLineEntries": [
+    {
+      "group": "initial",
+      "text": ">>> SYSTEM_CHECK: READY",
+      "color": "electric-green",
+      "order": 1
+    },
+    {
+      "group": "initial",
+      "text": ">>> DETECTED_VISITOR: AUTH_PENDING...",
+      "color": "white",
+      "order": 2
+    },
+    {
+      "group": "initial",
+      "text": ">>> LIVE_GITHUB_SYNC: ACTIVE",
+      "color": "electric-cyan",
+      "order": 3
+    },
+    {
+      "group": "initial",
+      "text": ">>> HINT: Ask about recent builds, stack decisions, or current GitHub activity.",
+      "color": "electric-cyan",
+      "order": 4
+    },
+    {
+      "group": "initial",
+      "text": ">>> COMMANDS: ['chat', 'explore', 'github']",
+      "color": "gray",
+      "order": 5
+    },
+    {
+      "group": "initial",
+      "text": ">>> STATUS: WAITING_FOR_INPUT...",
+      "color": "electric-green",
+      "order": 6
+    },
+    {
+      "group": "initial",
+      "text": "$ ./init_session.sh --interactive",
+      "color": "white",
+      "order": 7
+    },
+    {
+      "group": "greeting",
+      "text": "> INITIALIZING GUEST SESSION...",
+      "color": "electric-green",
+      "order": 1
+    },
+    {
+      "group": "greeting",
+      "text": "> ACCESS GRANTED. AWAITING INPUT...",
+      "color": "electric-green",
+      "order": 2
+    }
+  ],
+  "terminalCapabilityEntries": [
+    {
+      "text": "Reads live portfolio content and current GitHub activity.",
+      "order": 1
+    },
+    {
+      "text": "Can navigate the site and move between sections.",
+      "order": 2
+    },
+    {
+      "text": "Answers technical questions about projects, stack, and experience.",
+      "order": 3
+    },
+    {
+      "text": "Can help scope incoming project briefs and technical direction.",
+      "order": 4
+    }
+  ],
+  "sectionHeaderEntries": [
+    {
+      "section_id": "about",
+      "id": "SYS_01",
+      "line1": "Identity",
+      "line2": "Background.",
+      "order": 1
+    },
+    {
+      "section_id": "projects",
+      "id": "SYS_02",
+      "line1": "Personal",
+      "line2": "Projects.",
+      "order": 2
+    },
+    {
+      "section_id": "tech",
+      "id": "SYS_03",
+      "line1": "Technical",
+      "line2": "Stack.",
+      "order": 3
+    },
+    {
+      "section_id": "architect",
+      "id": "SYS_04",
+      "line1": "Project",
+      "line2": "Architect.",
+      "order": 4
+    },
+    {
+      "section_id": "console",
+      "id": "SYS_00",
+      "line1": "SYSTEM",
+      "line2": "CONSOLE",
+      "order": 5
+    }
+  ],
+  "skillCategoryEntries": [
+    {
+      "category_id": "core-development",
+      "title": "Core Development",
+      "icon": "Cpu",
+      "color": "electric-green",
+      "order": 1
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "title": "AI & Vision Workflows",
+      "icon": "Brain",
+      "color": "electric-cyan",
+      "order": 2
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "title": "Frontend & Interactive Systems",
+      "icon": "Layers",
+      "color": "electric-green",
+      "order": 3
+    },
+    {
+      "category_id": "infra-delivery",
+      "title": "Infra & Delivery",
+      "icon": "Globe",
+      "color": "electric-cyan",
+      "order": 4
+    }
+  ],
+  "skillItemEntries": [
+    {
+      "category_id": "core-development",
+      "label": "Python",
+      "order": 1
+    },
+    {
+      "category_id": "core-development",
+      "label": "C#",
+      "order": 2
+    },
+    {
+      "category_id": "core-development",
+      "label": "SQL / NoSQL",
+      "order": 3
+    },
+    {
+      "category_id": "core-development",
+      "label": "Node.js",
+      "order": 4
+    },
+    {
+      "category_id": "core-development",
+      "label": "Multithreading",
+      "order": 5
+    },
+    {
+      "category_id": "core-development",
+      "label": "API Design",
+      "order": 6
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "label": "Groq (Llama 3)",
+      "order": 1
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "label": "Tesseract OCR",
+      "order": 2
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "label": "Selenium",
+      "order": 3
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "label": "Data Processing",
+      "order": 4
+    },
+    {
+      "category_id": "ai-vision-workflows",
+      "label": "Inference",
+      "order": 5
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "label": "React",
+      "order": 1
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "label": "Unity 3D",
+      "order": 2
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "label": "Tailwind CSS",
+      "order": 3
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "label": "Motion Design",
+      "order": 4
+    },
+    {
+      "category_id": "frontend-interactive-systems",
+      "label": "HLSL Shaders",
+      "order": 5
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Firebase",
+      "order": 1
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Supabase",
+      "order": 2
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Git / GitHub",
+      "order": 3
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Vercel",
+      "order": 4
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Vite",
+      "order": 5
+    },
+    {
+      "category_id": "infra-delivery",
+      "label": "Postman",
+      "order": 6
+    }
+  ],
+  "projectEntries": [
+    {
+      "id": 1,
+      "title": "Unity Developer",
+      "subtitle": "High-Fidelity Unity UX",
+      "problem": "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
+      "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
+      "githubLink": "https://github.com/Albjav12345/unity-interfaces",
+      "demoType": "video",
+      "videoAssetId": "project-1-video",
+      "thumbnailAssetId": "project-1-thumbnail",
+      "iconAssetId": "project-1-icon",
+      "iconFit": "",
+      "iconScale": 1.3,
+      "order": 1,
+      "enabled": true
+    },
+    {
+      "id": 2,
+      "title": "Smart Inbox Manager",
+      "subtitle": "Autonomous Corporate Email Triage",
+      "problem": "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
+      "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
+      "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
+      "demoType": "video",
+      "videoAssetId": "project-2-video",
+      "thumbnailAssetId": "project-2-thumbnail",
+      "iconAssetId": "project-2-icon",
+      "iconFit": "auto",
+      "iconScale": 1.25,
+      "order": 2,
+      "enabled": true
+    },
+    {
+      "id": 3,
+      "title": "Paddle Booking App",
+      "subtitle": "Reactive State & Live Synchronization",
+      "problem": "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
+      "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
+      "githubLink": "https://github.com/Albjav12345/padel-sync",
+      "demoType": "video",
+      "videoAssetId": "project-3-video",
+      "thumbnailAssetId": "project-3-thumbnail",
+      "iconAssetId": "project-3-icon",
+      "iconFit": "",
+      "iconScale": "",
+      "order": 3,
+      "enabled": true
+    },
+    {
+      "id": 4,
+      "title": "Twitch Live Analytics",
+      "subtitle": "Real-time Streamer Detection",
+      "problem": "Finding live streamers in Fortnite lobbies manually was slow, repetitive, and easy to get wrong.",
+      "solution": "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
+      "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
+      "demoType": "video",
+      "videoAssetId": "project-4-video",
+      "thumbnailAssetId": "project-4-thumbnail",
+      "iconAssetId": "project-4-icon",
+      "iconFit": "",
+      "iconScale": 1.3,
+      "order": 4,
+      "enabled": true
+    },
+    {
+      "id": 5,
+      "title": "USB Exfiltration",
+      "subtitle": "Adversary Emulation & Headless Acquisition",
+      "problem": "Red team USB collection often fails because of file locks, user friction, and the need to stay quiet on the host.",
+      "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
+      "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
+      "demoType": "video",
+      "videoAssetId": "project-5-video",
+      "thumbnailAssetId": "project-5-thumbnail",
+      "iconAssetId": "project-5-icon",
+      "iconFit": "auto",
+      "iconScale": "",
+      "order": 5,
+      "enabled": true
+    }
+  ],
+  "projectStackEntries": [
+    {
+      "project_id": 1,
+      "label": "Unity 3D",
+      "order": 1
+    },
+    {
+      "project_id": 1,
+      "label": "C#",
+      "order": 2
+    },
+    {
+      "project_id": 1,
+      "label": "HLSL Shaders",
+      "order": 3
+    },
+    {
+      "project_id": 1,
+      "label": "Motion Design",
+      "order": 4
+    },
+    {
+      "project_id": 2,
+      "label": "Python",
+      "order": 1
+    },
+    {
+      "project_id": 2,
+      "label": "Flask",
+      "order": 2
+    },
+    {
+      "project_id": 2,
+      "label": "Llama 3",
+      "order": 3
+    },
+    {
+      "project_id": 2,
+      "label": "Supabase",
+      "order": 4
+    },
+    {
+      "project_id": 3,
+      "label": "React + Vite",
+      "order": 1
+    },
+    {
+      "project_id": 3,
+      "label": "Firebase",
+      "order": 2
+    },
+    {
+      "project_id": 3,
+      "label": "Tailwind",
+      "order": 3
+    },
+    {
+      "project_id": 3,
+      "label": "Framer Motion",
+      "order": 4
+    },
+    {
+      "project_id": 4,
+      "label": "Python",
+      "order": 1
+    },
+    {
+      "project_id": 4,
+      "label": "Tesseract OCR",
+      "order": 2
+    },
+    {
+      "project_id": 4,
+      "label": "Twitch API",
+      "order": 3
+    },
+    {
+      "project_id": 4,
+      "label": "Tkinter",
+      "order": 4
+    },
+    {
+      "project_id": 5,
+      "label": "PowerShell",
+      "order": 1
+    },
+    {
+      "project_id": 5,
+      "label": "Batch",
+      "order": 2
+    },
+    {
+      "project_id": 5,
+      "label": "WMI/CIM",
+      "order": 3
+    },
+    {
+      "project_id": 5,
+      "label": "OPSEC",
+      "order": 4
+    }
+  ],
+  "projectArchEntries": [
+    {
+      "project_id": 1,
+      "label": "Unity Core",
+      "order": 1
+    },
+    {
+      "project_id": 1,
+      "label": "C# Systems",
+      "order": 2
+    },
+    {
+      "project_id": 1,
+      "label": "HLSL Shaders",
+      "order": 3
+    },
+    {
+      "project_id": 1,
+      "label": "Motion UI",
+      "order": 4
+    },
+    {
+      "project_id": 2,
+      "label": "Outlook",
+      "order": 1
+    },
+    {
+      "project_id": 2,
+      "label": "Python Backend",
+      "order": 2
+    },
+    {
+      "project_id": 2,
+      "label": "Groq Llama 3",
+      "order": 3
+    },
+    {
+      "project_id": 2,
+      "label": "Web UI",
+      "order": 4
+    },
+    {
+      "project_id": 3,
+      "label": "Serverless",
+      "order": 1
+    },
+    {
+      "project_id": 3,
+      "label": "Event Listeners",
+      "order": 2
+    },
+    {
+      "project_id": 3,
+      "label": "PWA Cache",
+      "order": 3
+    },
+    {
+      "project_id": 3,
+      "label": "Reactive State",
+      "order": 4
+    },
+    {
+      "project_id": 4,
+      "label": "Screen Capture",
+      "order": 1
+    },
+    {
+      "project_id": 4,
+      "label": "Tesseract OCR",
+      "order": 2
+    },
+    {
+      "project_id": 4,
+      "label": "Twitch API",
+      "order": 3
+    },
+    {
+      "project_id": 4,
+      "label": "Dashboard",
+      "order": 4
+    },
+    {
+      "project_id": 5,
+      "label": "Background Polling",
+      "order": 1
+    },
+    {
+      "project_id": 5,
+      "label": "UAC Evasion",
+      "order": 2
+    },
+    {
+      "project_id": 5,
+      "label": "File-Lock Bypass",
+      "order": 3
+    },
+    {
+      "project_id": 5,
+      "label": "Encrypted Exfiltration",
+      "order": 4
+    }
+  ],
+  "testimonialSourceEntries": [
+    {
+      "sourceKey": "fiverr",
+      "source": "Fiverr",
+      "label": "Verified Fiverr Client",
+      "clientName": "Fiverr Client",
+      "orderLabel": "From completed Fiverr order",
+      "order": 1
+    },
+    {
+      "sourceKey": "direct",
+      "source": "Direct Client",
+      "label": "Verified Client",
+      "clientName": "Private Client",
+      "orderLabel": "From completed client project",
+      "order": 2
+    }
+  ],
+  "testimonialEntries": [
+    {
+      "id": "unity-progress-communication",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Editor Tools",
+      "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
+      "starRating": "",
+      "gigTitle": "create professional unity editor windows or game uis with uxml",
+      "createdAt": "2024-06-16T19:22:08Z",
+      "avatarAssetId": "testimonial-client3",
+      "featured": true,
+      "featuredOrder": 1,
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "unity-fast-delivery",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Editor Tools",
+      "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
+      "starRating": "",
+      "gigTitle": "create professional unity editor windows or game uis with uxml",
+      "createdAt": "2024-07-02T16:25:00Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": true,
+      "featuredOrder": 5,
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "unity-communication",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Editor Tools",
+      "review": "Great work and great communication.",
+      "starRating": "",
+      "gigTitle": "create professional unity editor windows or game uis with uxml",
+      "createdAt": "2024-07-05T20:42:58Z",
+      "avatarAssetId": "testimonial-client1",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "unity-great-work",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Editor Tools",
+      "review": "Great work!",
+      "starRating": "",
+      "gigTitle": "create professional unity editor windows or game uis with uxml",
+      "createdAt": "2024-07-21T14:05:57Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "unity-complex-ownership",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Game Systems",
+      "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
+      "starRating": "",
+      "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
+      "createdAt": "2024-07-29T16:57:35Z",
+      "avatarAssetId": "testimonial-client3",
+      "featured": true,
+      "featuredOrder": 3,
+      "enabled": true,
+      "order": 5
+    },
+    {
+      "id": "unity-repeat-client",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Game / Unity Client",
+      "serviceOverride": "Unity UI / Game Systems",
+      "review": "Great work as always",
+      "starRating": "",
+      "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
+      "createdAt": "2024-09-27T19:47:17Z",
+      "avatarAssetId": "testimonial-client4",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 6
+    },
+    {
+      "id": "automation-seo-detail",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "Operations / Media Client",
+      "serviceOverride": "Automation / Metadata Workflow",
+      "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for easy gallery managing",
+      "createdAt": "2024-11-07T20:02:11Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": true,
+      "featuredOrder": 2,
+      "enabled": true,
+      "order": 7
+    },
+    {
+      "id": "automation-exceeded-expectations",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-11-08T22:07:56Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": true,
+      "featuredOrder": 4,
+      "enabled": true,
+      "order": 8
+    },
+    {
+      "id": "automation-gallery-spanish",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-11-09T18:29:07Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 9
+    },
+    {
+      "id": "automation-fiverr-credit",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-11-19T14:13:23Z",
+      "avatarAssetId": "testimonial-client1",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 10
+    },
+    {
+      "id": "automation-outstanding-work",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-12-08T08:55:41Z",
+      "avatarAssetId": "testimonial-client3",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 11
+    },
+    {
+      "id": "automation-communication-timelines",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-12-12T19:03:03Z",
+      "avatarAssetId": "testimonial-client4",
+      "featured": true,
+      "featuredOrder": 6,
+      "enabled": true,
+      "order": 12
+    },
+    {
+      "id": "automation-wonderful-details",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Wonderful details",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+      "createdAt": "2024-12-15T18:18:51Z",
+      "avatarAssetId": "testimonial-client4",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 13
+    },
+    {
+      "id": "automation-vigor",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Handled the task with vigor",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+      "createdAt": "2025-01-06T09:56:00Z",
+      "avatarAssetId": "testimonial-client2",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 14
+    },
+    {
+      "id": "automation-fast-turnaround",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Good job and fast",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+      "createdAt": "2025-01-06T17:58:51Z",
+      "avatarAssetId": "testimonial-client4",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 15
+    },
+    {
+      "id": "automation-highly-recommend",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "He's great. I highly recommend",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+      "createdAt": "2025-01-30T18:59:30Z",
+      "avatarAssetId": "testimonial-client3",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 16
+    },
+    {
+      "id": "automation-nice-guy",
+      "sourceKey": "fiverr",
+      "labelOverride": "",
+      "clientName": "",
+      "clientType": "SEO / Content Operations",
+      "serviceOverride": "Automation / SEO Workflow",
+      "review": "Nice guy he does his work good! Go check him out guys",
+      "starRating": "",
+      "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+      "createdAt": "2025-01-31T10:10:16Z",
+      "avatarAssetId": "testimonial-client4",
+      "featured": false,
+      "featuredOrder": "",
+      "enabled": true,
+      "order": 17
+    }
+  ],
+  "testimonialsSection": {
+    "title": "Verified Client Feedback",
+    "subtitle": "Real client feedback collected from completed projects."
+  },
+  "contactEntry": {
+    "label": "Direct Communication",
+    "titleLine1": "READY TO",
+    "titleLine2": "BUILD.",
+    "description": "If you already know what you want to build, we can scope it properly. If not, we can start from the problem and work forward.",
+    "endpointLabel": "Primary_Contact",
+    "email": "amedina.amg.dev@gmail.com",
+    "formNameLabel": "USER_IDENTITY.src",
+    "formNamePlaceholder": "Enter your name...",
+    "formEmailLabel": "RETURN_PATH.void",
+    "formEmailPlaceholder": "your@email.com",
+    "formMessageLabel": "DATA_PAYLOAD.txt",
+    "formMessagePlaceholder": "Describe your project, system, or idea...",
+    "submitIdle": "EXECUTE_TRANSMISSION",
+    "submitSending": "TRANSMITTING...",
+    "submitSuccess": "SUCCESS_CONFIRMED",
+    "submitError": "TRANSMISSION_ERROR"
+  },
+  "contactSocialEntries": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/Albjav12345",
+      "icon": "Github",
+      "order": 1,
+      "enabled": true
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/in/alberto-medina-dev/",
+      "icon": "Linkedin",
+      "order": 2,
+      "enabled": true
+    },
+    {
+      "name": "X",
+      "url": "https://x.com/Albjav12345",
+      "icon": "Twitter",
+      "order": 3,
+      "enabled": true
+    },
+    {
+      "name": "Upwork",
+      "url": "https://www.upwork.com/freelancers/~0177774c838e1e7798",
+      "icon": "Upwork",
+      "order": 4,
+      "enabled": true
+    }
+  ],
+  "contactMetadataEntries": [
+    {
+      "label": "Latency",
+      "value": "< 24H_RESP",
+      "activeValue": "SIGNAL_CALC...",
+      "order": 1
+    },
+    {
+      "label": "Encryption",
+      "value": "TLS_1.3",
+      "activeValue": "",
+      "order": 2
+    },
+    {
+      "label": "Uptime",
+      "value": "99.9%_AVAIL",
+      "activeValue": "",
+      "order": 3
+    }
+  ],
+  "footerEntry": {
+    "name": "Alberto Medina Garcia",
+    "status": "System Status: All Systems Operational",
+    "location": "SPAIN / REMOTE",
+    "vesselId": "AUTO_PORT_V2.0"
+  },
+  "assetEntries": [
+    {
+      "assetId": "profile-avatar",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/logo.svg",
+      "targetPublicPath": "/assets/logo.svg",
+      "alt": "Alberto Medina Garcia avatar",
+      "notes": "Main profile avatar",
+      "enabled": true,
+      "status": "READY -> /assets/logo.svg"
+    },
+    {
+      "assetId": "project-1-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/visual-interfaces.mp4",
+      "targetPublicPath": "/assets/projects/visual-interfaces.mp4",
+      "alt": "Unity Developer demo video",
+      "notes": "Unity Developer master video source",
+      "enabled": true,
+      "status": "READY -> /assets/projects/visual-interfaces.mp4"
+    },
+    {
+      "assetId": "project-1-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/visual-interfaces.png",
+      "targetPublicPath": "/assets/projects/visual-interfaces.png",
+      "alt": "Unity Developer thumbnail",
+      "notes": "Unity Developer poster image",
+      "enabled": true,
+      "status": "READY -> /assets/projects/visual-interfaces.png"
+    },
+    {
+      "assetId": "project-1-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/unity.webp",
+      "targetPublicPath": "/assets/projects/unity.webp",
+      "alt": "Unity Developer icon",
+      "notes": "Unity Developer icon asset",
+      "enabled": true,
+      "status": "READY -> /assets/projects/unity.webp"
+    },
+    {
+      "assetId": "project-2-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/zero-touch-ai.mp4",
+      "targetPublicPath": "/assets/projects/zero-touch-ai.mp4",
+      "alt": "Smart Inbox Manager demo video",
+      "notes": "Smart Inbox Manager master video source",
+      "enabled": true,
+      "status": "READY -> /assets/projects/zero-touch-ai.mp4"
+    },
+    {
+      "assetId": "project-2-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/zero-touch-ai.png",
+      "targetPublicPath": "/assets/projects/zero-touch-ai.png",
+      "alt": "Smart Inbox Manager thumbnail",
+      "notes": "Smart Inbox Manager poster image",
+      "enabled": true,
+      "status": "READY -> /assets/projects/zero-touch-ai.png"
+    },
+    {
+      "assetId": "project-2-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/outlook-icon.webp",
+      "targetPublicPath": "/assets/projects/outlook-icon.webp",
+      "alt": "Smart Inbox Manager icon",
+      "notes": "Smart Inbox Manager icon asset",
+      "enabled": true,
+      "status": "READY -> /assets/projects/outlook-icon.webp"
+    },
+    {
+      "assetId": "project-3-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/padel-booking.mp4",
+      "targetPublicPath": "/assets/projects/padel-booking.mp4",
+      "alt": "Paddle Booking App demo video",
+      "notes": "Paddle Booking App master video source",
+      "enabled": true,
+      "status": "READY -> /assets/projects/padel-booking.mp4"
+    },
+    {
+      "assetId": "project-3-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/padel-booking.png",
+      "targetPublicPath": "/assets/projects/padel-booking.png",
+      "alt": "Paddle Booking App thumbnail",
+      "notes": "Paddle Booking App poster image",
+      "enabled": true,
+      "status": "READY -> /assets/projects/padel-booking.png"
+    },
+    {
+      "assetId": "project-3-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/padel-booking-logo.png",
+      "targetPublicPath": "/assets/projects/padel-booking-logo.png",
+      "alt": "Paddle Booking App icon",
+      "notes": "Paddle Booking App icon asset",
+      "enabled": true,
+      "status": "READY -> /assets/projects/padel-booking-logo.png"
+    },
+    {
+      "assetId": "project-4-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/twitch-live.mp4",
+      "targetPublicPath": "/assets/projects/twitch-live.mp4",
+      "alt": "Twitch Live Analytics demo video",
+      "notes": "Twitch Live Analytics master video source",
+      "enabled": true,
+      "status": "READY -> /assets/projects/twitch-live.mp4"
+    },
+    {
+      "assetId": "project-4-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/twitch-live.png",
+      "targetPublicPath": "/assets/projects/twitch-live.png",
+      "alt": "Twitch Live Analytics thumbnail",
+      "notes": "Twitch Live Analytics poster image",
+      "enabled": true,
+      "status": "READY -> /assets/projects/twitch-live.png"
+    },
+    {
+      "assetId": "project-4-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/twitch-icon.webp",
+      "targetPublicPath": "/assets/projects/twitch-icon.webp",
+      "alt": "Twitch Live Analytics icon",
+      "notes": "Twitch Live Analytics icon asset",
+      "enabled": true,
+      "status": "READY -> /assets/projects/twitch-icon.webp"
+    },
+    {
+      "assetId": "project-5-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/usb-extraction.mp4",
+      "targetPublicPath": "/assets/projects/usb-extraction.mp4",
+      "alt": "USB Exfiltration demo video",
+      "notes": "USB Exfiltration master video source",
+      "enabled": true,
+      "status": "READY -> /assets/projects/usb-extraction.mp4"
+    },
+    {
+      "assetId": "project-5-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/usb-extraction.png",
+      "targetPublicPath": "/assets/projects/usb-extraction.png",
+      "alt": "USB Exfiltration thumbnail",
+      "notes": "USB Exfiltration poster image",
+      "enabled": true,
+      "status": "READY -> /assets/projects/usb-extraction.png"
+    },
+    {
+      "assetId": "project-5-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/terminal.ico",
+      "targetPublicPath": "/assets/projects/terminal.ico",
+      "alt": "USB Exfiltration icon",
+      "notes": "USB Exfiltration icon asset",
+      "enabled": true,
+      "status": "READY -> /assets/projects/terminal.ico"
+    },
+    {
+      "assetId": "testimonial-client3",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client3.png",
+      "targetPublicPath": "/assets/testimonials/client3.png",
+      "alt": "Fiverr Client avatar",
+      "notes": "Avatar used by testimonial unity-progress-communication",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client3.png"
+    },
+    {
+      "assetId": "testimonial-client2",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client2.png",
+      "targetPublicPath": "/assets/testimonials/client2.png",
+      "alt": "Fiverr Client avatar",
+      "notes": "Avatar used by testimonial unity-fast-delivery",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client2.png"
+    },
+    {
+      "assetId": "testimonial-client1",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client1.png",
+      "targetPublicPath": "/assets/testimonials/client1.png",
+      "alt": "Fiverr Client avatar",
+      "notes": "Avatar used by testimonial unity-communication",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client1.png"
+    },
+    {
+      "assetId": "testimonial-client4",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client4.png",
+      "targetPublicPath": "/assets/testimonials/client4.png",
+      "alt": "Fiverr Client avatar",
+      "notes": "Avatar used by testimonial unity-repeat-client",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client4.png"
+    }
+  ],
+  "runtime": {
+    "siteFeatures": {
+      "architectSection": false
+    },
+    "profile": {
+      "name": "Alberto Medina Garcia",
+      "role": "Full-Stack Developer & Automation Engineer",
+      "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
+      "about": {
+        "avatarUrl": "/assets/logo.svg",
+        "title": "Logic first. Built to be used.",
+        "bio": [
+          "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
+          "That same mindset now drives my work in full-stack development, automation, and AI tooling. I like building systems that solve real operational problems, feel polished to use, and stay understandable as they grow."
+        ],
+        "philosophy": {
+          "label": "AI Philosophy",
+          "quote": "AI does not replace good engineers. It exposes weak ones. The value is not in using it, but in knowing how to think with it, control it, and build reliable systems around it."
+        },
+        "stats": [
+          {
+            "label": "Projects Delivered",
+            "value": "25+",
+            "id": "projects"
+          },
+          {
+            "label": "On-Time Delivery",
+            "value": "100%",
+            "id": "delivery"
+          },
+          {
+            "label": "Global Clients",
+            "value": "12+",
+            "id": "global"
+          },
+          {
+            "label": "Years Experience",
+            "value": "5+",
+            "id": "years"
+          }
+        ],
+        "testimonialsSection": {
+          "title": "Verified Client Feedback",
+          "subtitle": "Real client feedback collected from completed projects."
+        },
+        "testimonials": [
+          {
+            "id": "unity-progress-communication",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
+            "service": "Unity UI / Editor Tools",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client3.png",
+            "avatarLabel": "UI",
+            "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(102, 252, 241, 0.34)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-06-16T19:22:08Z",
+            "featured": true
+          },
+          {
+            "id": "automation-seo-detail",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
+            "service": "Automation / Metadata Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "Operations / Media Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "OPS",
+            "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(102, 252, 241, 0.3)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-11-07T20:02:11Z",
+            "featured": true
+          },
+          {
+            "id": "unity-complex-ownership",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
+            "service": "Unity UI / Game Systems",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client3.png",
+            "avatarLabel": "GS",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.36)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-07-29T16:57:35Z",
+            "featured": true
+          },
+          {
+            "id": "automation-exceeded-expectations",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-11-08T22:07:56Z",
+            "featured": true
+          },
+          {
+            "id": "unity-fast-delivery",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
+            "service": "Unity UI / Editor Tools",
+            "clientName": "Fiverr Client",
+            "clientType": "Game / Unity Client",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client2.png",
+            "avatarLabel": "UI",
+            "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(102, 252, 241, 0.34)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-07-02T16:25:00Z",
+            "featured": true
+          },
+          {
+            "id": "automation-communication-timelines",
+            "source": "Fiverr",
+            "label": "Verified Fiverr Client",
+            "orderLabel": "From completed Fiverr order",
+            "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
+            "service": "Automation / SEO Workflow",
+            "clientName": "Fiverr Client",
+            "clientType": "SEO / Content Operations",
+            "avatarType": "generated-photo",
+            "avatarUrl": "/assets/testimonials/client4.png",
+            "avatarLabel": "SEO",
+            "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+            "avatarAccent": "rgba(15, 255, 153, 0.28)",
+            "rating": 5,
+            "hasConfirmedRating": false,
+            "createdAt": "2024-12-12T19:03:03Z",
+            "featured": true
+          }
+        ]
+      },
+      "social": {
+        "github": "https://github.com/Albjav12345",
+        "linkedin": "https://www.linkedin.com/in/alberto-medina-dev/"
+      }
+    },
+    "skills": {
+      "categories": [
+        {
+          "title": "Core Development",
+          "icon": "Cpu",
+          "color": "electric-green",
+          "items": [
+            "Python",
+            "C#",
+            "SQL / NoSQL",
+            "Node.js",
+            "Multithreading",
+            "API Design"
+          ]
+        },
+        {
+          "title": "AI & Vision Workflows",
+          "icon": "Brain",
+          "color": "electric-cyan",
+          "items": [
+            "Groq (Llama 3)",
+            "Tesseract OCR",
+            "Selenium",
+            "Data Processing",
+            "Inference"
+          ]
+        },
+        {
+          "title": "Frontend & Interactive Systems",
+          "icon": "Layers",
+          "color": "electric-green",
+          "items": [
+            "React",
+            "Unity 3D",
+            "Tailwind CSS",
+            "Motion Design",
+            "HLSL Shaders"
+          ]
+        },
+        {
+          "title": "Infra & Delivery",
+          "icon": "Globe",
+          "color": "electric-cyan",
+          "items": [
+            "Firebase",
+            "Supabase",
+            "Git / GitHub",
+            "Vercel",
+            "Vite",
+            "Postman"
+          ]
+        }
+      ]
+    },
+    "ui": {
+      "navigation": {
+        "brand": {
+          "first": "AMEDINA",
+          "last": ".DEV",
+          "logoIcon": "Terminal"
+        },
+        "links": [
+          {
+            "id": "home",
+            "name": "Start",
+            "href": "/",
+            "num": "01"
+          },
+          {
+            "id": "about",
+            "name": "About",
+            "href": "/about",
+            "num": "02"
+          },
+          {
+            "id": "projects",
+            "name": "Systems",
+            "href": "/projects",
+            "num": "03"
+          },
+          {
+            "id": "tech-stack",
+            "name": "Stack",
+            "href": "/stack",
+            "num": "04"
+          },
+          {
+            "id": "contact",
+            "name": "Contact",
+            "href": "/contact",
+            "num": "05"
+          }
+        ],
+        "terminalButton": "TERM_ACCESS"
+      },
+      "hero": {
+        "priorityLabel": "SYSTEMS / AUTOMATION / AI",
+        "title": {
+          "white": "ALBERTO",
+          "green": "MEDINA"
+        },
+        "handle": "@Albjav12345",
+        "description": "I build full-stack products, automation workflows, and AI systems that solve real operational problems and still feel polished to use.",
+        "buttons": {
+          "terminal": "ACCESS_TERMINAL",
+          "cv": "GET_MANIFEST.PDF",
+          "cvPending": "MANIFEST_PENDING",
+          "cvHref": "/manifest-test.pdf"
+        },
+        "metadata": [
+          {
+            "label": "Stack_Focus",
+            "value": "PYTHON / REACT / UNITY"
+          },
+          {
+            "label": "Exp_Runtime",
+            "value": "5+ YEARS SHIPPING"
+          }
+        ]
+      },
+      "terminal": {
+        "headerTitle": "zsh - port-folio",
+        "welcomeMessage": "Click to access system...",
+        "initialLines": [
+          {
+            "text": ">>> SYSTEM_CHECK: READY",
+            "color": "electric-green"
+          },
+          {
+            "text": ">>> DETECTED_VISITOR: AUTH_PENDING...",
+            "color": "white"
+          },
+          {
+            "text": ">>> LIVE_GITHUB_SYNC: ACTIVE",
+            "color": "electric-cyan"
+          },
+          {
+            "text": ">>> HINT: Ask about recent builds, stack decisions, or current GitHub activity.",
+            "color": "electric-cyan"
+          },
+          {
+            "text": ">>> COMMANDS: ['chat', 'explore', 'github']",
+            "color": "gray"
+          },
+          {
+            "text": ">>> STATUS: WAITING_FOR_INPUT...",
+            "color": "electric-green"
+          },
+          {
+            "text": "$ ./init_session.sh --interactive",
+            "color": "white"
+          }
+        ],
+        "consoleGretting": [
+          {
+            "text": "> INITIALIZING GUEST SESSION...",
+            "color": "electric-green"
+          },
+          {
+            "text": "> ACCESS GRANTED. AWAITING INPUT...",
+            "color": "electric-green"
+          }
+        ],
+        "tooltip": {
+          "title": "Terminal Agent",
+          "description": "Backed by Groq-hosted Llama 3 with live portfolio context.",
+          "capabilities": [
+            "Reads live portfolio content and current GitHub activity.",
+            "Can navigate the site and move between sections.",
+            "Answers technical questions about projects, stack, and experience.",
+            "Can help scope incoming project briefs and technical direction."
+          ],
+          "usage": "Try asking \"What have you built recently?\" or \"help me scope a system\"."
+        }
+      },
+      "sections": {
+        "about": {
+          "id": "SYS_01",
+          "line1": "Identity",
+          "line2": "Background."
+        },
+        "projects": {
+          "id": "SYS_02",
+          "line1": "Personal",
+          "line2": "Projects."
+        },
+        "tech": {
+          "id": "SYS_03",
+          "line1": "Technical",
+          "line2": "Stack."
+        },
+        "architect": {
+          "id": "SYS_04",
+          "line1": "Project",
+          "line2": "Architect."
+        },
+        "console": {
+          "id": "SYS_00",
+          "line1": "SYSTEM",
+          "line2": "CONSOLE"
+        }
+      },
+      "contact": {
+        "label": "Direct Communication",
+        "titleLine1": "READY TO",
+        "titleLine2": "BUILD.",
+        "description": "If you already know what you want to build, we can scope it properly. If not, we can start from the problem and work forward.",
+        "endpointLabel": "Primary_Contact",
+        "email": "amedina.amg.dev@gmail.com",
+        "social": [
+          {
+            "name": "GitHub",
+            "url": "https://github.com/Albjav12345",
+            "icon": "Github"
+          },
+          {
+            "name": "LinkedIn",
+            "url": "https://www.linkedin.com/in/alberto-medina-dev/",
+            "icon": "Linkedin"
+          },
+          {
+            "name": "X",
+            "url": "https://x.com/Albjav12345",
+            "icon": "Twitter"
+          },
+          {
+            "name": "Upwork",
+            "url": "https://www.upwork.com/freelancers/~0177774c838e1e7798",
+            "icon": "Upwork"
+          }
+        ],
+        "form": {
+          "name": {
+            "label": "USER_IDENTITY.src",
+            "placeholder": "Enter your name..."
+          },
+          "email": {
+            "label": "RETURN_PATH.void",
+            "placeholder": "your@email.com"
+          },
+          "message": {
+            "label": "DATA_PAYLOAD.txt",
+            "placeholder": "Describe your project, system, or idea..."
+          },
+          "submit": {
+            "idle": "EXECUTE_TRANSMISSION",
+            "sending": "TRANSMITTING...",
+            "success": "SUCCESS_CONFIRMED",
+            "error": "TRANSMISSION_ERROR"
+          }
+        },
+        "metadata": [
+          {
+            "label": "Latency",
+            "value": "< 24H_RESP",
+            "activeValue": "SIGNAL_CALC..."
+          },
+          {
+            "label": "Encryption",
+            "value": "TLS_1.3",
+            "activeValue": null
+          },
+          {
+            "label": "Uptime",
+            "value": "99.9%_AVAIL",
+            "activeValue": null
+          }
+        ]
+      },
+      "footer": {
+        "name": "Alberto Medina Garcia",
+        "status": "System Status: All Systems Operational",
+        "location": "SPAIN / REMOTE",
+        "vesselId": "AUTO_PORT_V2.0"
+      }
+    },
+    "projectSources": [
+      {
+        "id": 1,
+        "title": "Unity Developer",
+        "subtitle": "High-Fidelity Unity UX",
+        "problem": "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
+        "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
+        "stack": [
+          "Unity 3D",
+          "C#",
+          "HLSL Shaders",
+          "Motion Design"
+        ],
+        "arch": [
+          "Unity Core",
+          "C# Systems",
+          "HLSL Shaders",
+          "Motion UI"
+        ],
+        "githubLink": "https://github.com/Albjav12345/unity-interfaces",
+        "demoType": "video",
+        "videoSource": "/assets/projects/visual-interfaces.mp4",
+        "thumbnail": "/assets/projects/visual-interfaces.png",
+        "icon": "/assets/projects/unity.webp",
+        "iconFit": null,
+        "iconScale": 1.3
+      },
+      {
+        "id": 2,
+        "title": "Smart Inbox Manager",
+        "subtitle": "Autonomous Corporate Email Triage",
+        "problem": "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
+        "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
+        "stack": [
+          "Python",
+          "Flask",
+          "Llama 3",
+          "Supabase"
+        ],
+        "arch": [
+          "Outlook",
+          "Python Backend",
+          "Groq Llama 3",
+          "Web UI"
+        ],
+        "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
+        "demoType": "video",
+        "videoSource": "/assets/projects/zero-touch-ai.mp4",
+        "thumbnail": "/assets/projects/zero-touch-ai.png",
+        "icon": "/assets/projects/outlook-icon.webp",
+        "iconFit": "auto",
+        "iconScale": 1.25
+      },
+      {
+        "id": 3,
+        "title": "Paddle Booking App",
+        "subtitle": "Reactive State & Live Synchronization",
+        "problem": "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
+        "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
+        "stack": [
+          "React + Vite",
+          "Firebase",
+          "Tailwind",
+          "Framer Motion"
+        ],
+        "arch": [
+          "Serverless",
+          "Event Listeners",
+          "PWA Cache",
+          "Reactive State"
+        ],
+        "githubLink": "https://github.com/Albjav12345/padel-sync",
+        "demoType": "video",
+        "videoSource": "/assets/projects/padel-booking.mp4",
+        "thumbnail": "/assets/projects/padel-booking.png",
+        "icon": "/assets/projects/padel-booking-logo.png",
+        "iconFit": null,
+        "iconScale": null
+      },
+      {
+        "id": 4,
+        "title": "Twitch Live Analytics",
+        "subtitle": "Real-time Streamer Detection",
+        "problem": "Finding live streamers in Fortnite lobbies manually was slow, repetitive, and easy to get wrong.",
+        "solution": "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
+        "stack": [
+          "Python",
+          "Tesseract OCR",
+          "Twitch API",
+          "Tkinter"
+        ],
+        "arch": [
+          "Screen Capture",
+          "Tesseract OCR",
+          "Twitch API",
+          "Dashboard"
+        ],
+        "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
+        "demoType": "video",
+        "videoSource": "/assets/projects/twitch-live.mp4",
+        "thumbnail": "/assets/projects/twitch-live.png",
+        "icon": "/assets/projects/twitch-icon.webp",
+        "iconFit": null,
+        "iconScale": 1.3
+      },
+      {
+        "id": 5,
+        "title": "USB Exfiltration",
+        "subtitle": "Adversary Emulation & Headless Acquisition",
+        "problem": "Red team USB collection often fails because of file locks, user friction, and the need to stay quiet on the host.",
+        "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
+        "stack": [
+          "PowerShell",
+          "Batch",
+          "WMI/CIM",
+          "OPSEC"
+        ],
+        "arch": [
+          "Background Polling",
+          "UAC Evasion",
+          "File-Lock Bypass",
+          "Encrypted Exfiltration"
+        ],
+        "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
+        "demoType": "video",
+        "videoSource": "/assets/projects/usb-extraction.mp4",
+        "thumbnail": "/assets/projects/usb-extraction.png",
+        "icon": "/assets/projects/terminal.ico",
+        "iconFit": "auto",
+        "iconScale": null
+      }
+    ],
+    "testimonialsSection": {
+      "title": "Verified Client Feedback",
+      "subtitle": "Real client feedback collected from completed projects."
+    },
+    "testimonialSourcePresets": {
+      "fiverr": {
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "clientName": "Fiverr Client",
+        "orderLabel": "From completed Fiverr order"
+      },
+      "direct": {
+        "source": "Direct Client",
+        "label": "Verified Client",
+        "clientName": "Private Client",
+        "orderLabel": "From completed client project"
+      }
+    },
+    "featuredTestimonialIds": [
+      "unity-progress-communication",
+      "automation-seo-detail",
+      "unity-complex-ownership",
+      "automation-exceeded-expectations",
+      "unity-fast-delivery",
+      "automation-communication-timelines"
+    ],
+    "testimonialEntries": [
+      {
+        "id": "unity-progress-communication",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Editor Tools",
+        "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
+        "starRating": null,
+        "gigTitle": "create professional unity editor windows or game uis with uxml",
+        "createdAt": "2024-06-16T19:22:08Z",
+        "avatarAssetId": "testimonial-client3",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "featured": true,
+        "featuredOrder": 1,
+        "enabled": true,
+        "order": 1
+      },
+      {
+        "id": "unity-fast-delivery",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Editor Tools",
+        "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
+        "starRating": null,
+        "gigTitle": "create professional unity editor windows or game uis with uxml",
+        "createdAt": "2024-07-02T16:25:00Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": true,
+        "featuredOrder": 5,
+        "enabled": true,
+        "order": 2
+      },
+      {
+        "id": "unity-communication",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Editor Tools",
+        "review": "Great work and great communication.",
+        "starRating": null,
+        "gigTitle": "create professional unity editor windows or game uis with uxml",
+        "createdAt": "2024-07-05T20:42:58Z",
+        "avatarAssetId": "testimonial-client1",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 3
+      },
+      {
+        "id": "unity-great-work",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Editor Tools",
+        "review": "Great work!",
+        "starRating": null,
+        "gigTitle": "create professional unity editor windows or game uis with uxml",
+        "createdAt": "2024-07-21T14:05:57Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 4
+      },
+      {
+        "id": "unity-complex-ownership",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Game Systems",
+        "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
+        "starRating": null,
+        "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
+        "createdAt": "2024-07-29T16:57:35Z",
+        "avatarAssetId": "testimonial-client3",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "featured": true,
+        "featuredOrder": 3,
+        "enabled": true,
+        "order": 5
+      },
+      {
+        "id": "unity-repeat-client",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Game / Unity Client",
+        "serviceOverride": "Unity UI / Game Systems",
+        "review": "Great work as always",
+        "starRating": null,
+        "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
+        "createdAt": "2024-09-27T19:47:17Z",
+        "avatarAssetId": "testimonial-client4",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 6
+      },
+      {
+        "id": "automation-seo-detail",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "Operations / Media Client",
+        "serviceOverride": "Automation / Metadata Workflow",
+        "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for easy gallery managing",
+        "createdAt": "2024-11-07T20:02:11Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": true,
+        "featuredOrder": 2,
+        "enabled": true,
+        "order": 7
+      },
+      {
+        "id": "automation-exceeded-expectations",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-11-08T22:07:56Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": true,
+        "featuredOrder": 4,
+        "enabled": true,
+        "order": 8
+      },
+      {
+        "id": "automation-gallery-spanish",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-11-09T18:29:07Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 9
+      },
+      {
+        "id": "automation-fiverr-credit",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-11-19T14:13:23Z",
+        "avatarAssetId": "testimonial-client1",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 10
+      },
+      {
+        "id": "automation-outstanding-work",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-12-08T08:55:41Z",
+        "avatarAssetId": "testimonial-client3",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 11
+      },
+      {
+        "id": "automation-communication-timelines",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-12-12T19:03:03Z",
+        "avatarAssetId": "testimonial-client4",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "featured": true,
+        "featuredOrder": 6,
+        "enabled": true,
+        "order": 12
+      },
+      {
+        "id": "automation-wonderful-details",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Wonderful details",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for gallery and seo managing",
+        "createdAt": "2024-12-15T18:18:51Z",
+        "avatarAssetId": "testimonial-client4",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 13
+      },
+      {
+        "id": "automation-vigor",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Handled the task with vigor",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+        "createdAt": "2025-01-06T09:56:00Z",
+        "avatarAssetId": "testimonial-client2",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 14
+      },
+      {
+        "id": "automation-fast-turnaround",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Good job and fast",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+        "createdAt": "2025-01-06T17:58:51Z",
+        "avatarAssetId": "testimonial-client4",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 15
+      },
+      {
+        "id": "automation-highly-recommend",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "He's great. I highly recommend",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+        "createdAt": "2025-01-30T18:59:30Z",
+        "avatarAssetId": "testimonial-client3",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 16
+      },
+      {
+        "id": "automation-nice-guy",
+        "sourceKey": "fiverr",
+        "labelOverride": null,
+        "clientName": null,
+        "clientType": "SEO / Content Operations",
+        "serviceOverride": "Automation / SEO Workflow",
+        "review": "Nice guy he does his work good! Go check him out guys",
+        "starRating": null,
+        "gigTitle": "edit photos and videos metadata for seo and gallery managing",
+        "createdAt": "2025-01-31T10:10:16Z",
+        "avatarAssetId": "testimonial-client4",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "featured": false,
+        "featuredOrder": null,
+        "enabled": true,
+        "order": 17
+      }
+    ],
+    "allTestimonials": [
+      {
+        "id": "automation-nice-guy",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Nice guy he does his work good! Go check him out guys",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2025-01-31T10:10:16Z",
+        "featured": false
+      },
+      {
+        "id": "automation-highly-recommend",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "He's great. I highly recommend",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2025-01-30T18:59:30Z",
+        "featured": false
+      },
+      {
+        "id": "automation-fast-turnaround",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Good job and fast",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2025-01-06T17:58:51Z",
+        "featured": false
+      },
+      {
+        "id": "automation-vigor",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Handled the task with vigor",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2025-01-06T09:56:00Z",
+        "featured": false
+      },
+      {
+        "id": "automation-wonderful-details",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Wonderful details",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-12-15T18:18:51Z",
+        "featured": false
+      },
+      {
+        "id": "automation-communication-timelines",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-12-12T19:03:03Z",
+        "featured": true
+      },
+      {
+        "id": "automation-outstanding-work",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-12-08T08:55:41Z",
+        "featured": false
+      },
+      {
+        "id": "automation-fiverr-credit",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-19T14:13:23Z",
+        "featured": false
+      },
+      {
+        "id": "automation-gallery-spanish",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-09T18:29:07Z",
+        "featured": false
+      },
+      {
+        "id": "automation-exceeded-expectations",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-08T22:07:56Z",
+        "featured": true
+      },
+      {
+        "id": "automation-seo-detail",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
+        "service": "Automation / Metadata Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "Operations / Media Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "OPS",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.3)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-07T20:02:11Z",
+        "featured": true
+      },
+      {
+        "id": "unity-repeat-client",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work as always",
+        "service": "Unity UI / Game Systems",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "GS",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.36)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-09-27T19:47:17Z",
+        "featured": false
+      },
+      {
+        "id": "unity-complex-ownership",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
+        "service": "Unity UI / Game Systems",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "GS",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.36)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-29T16:57:35Z",
+        "featured": true
+      },
+      {
+        "id": "unity-great-work",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work!",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-21T14:05:57Z",
+        "featured": false
+      },
+      {
+        "id": "unity-communication",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Great work and great communication.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client1.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-05T20:42:58Z",
+        "featured": false
+      },
+      {
+        "id": "unity-fast-delivery",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-02T16:25:00Z",
+        "featured": true
+      },
+      {
+        "id": "unity-progress-communication",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-06-16T19:22:08Z",
+        "featured": true
+      }
+    ],
+    "featuredTestimonials": [
+      {
+        "id": "unity-progress-communication",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-06-16T19:22:08Z",
+        "featured": true
+      },
+      {
+        "id": "automation-seo-detail",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
+        "service": "Automation / Metadata Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "Operations / Media Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "OPS",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.3)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-07T20:02:11Z",
+        "featured": true
+      },
+      {
+        "id": "unity-complex-ownership",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
+        "service": "Unity UI / Game Systems",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client3.png",
+        "avatarLabel": "GS",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.36)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-29T16:57:35Z",
+        "featured": true
+      },
+      {
+        "id": "automation-exceeded-expectations",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-11-08T22:07:56Z",
+        "featured": true
+      },
+      {
+        "id": "unity-fast-delivery",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
+        "service": "Unity UI / Editor Tools",
+        "clientName": "Fiverr Client",
+        "clientType": "Game / Unity Client",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client2.png",
+        "avatarLabel": "UI",
+        "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(102, 252, 241, 0.34)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-07-02T16:25:00Z",
+        "featured": true
+      },
+      {
+        "id": "automation-communication-timelines",
+        "source": "Fiverr",
+        "label": "Verified Fiverr Client",
+        "orderLabel": "From completed Fiverr order",
+        "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
+        "service": "Automation / SEO Workflow",
+        "clientName": "Fiverr Client",
+        "clientType": "SEO / Content Operations",
+        "avatarType": "generated-photo",
+        "avatarUrl": "/assets/testimonials/client4.png",
+        "avatarLabel": "SEO",
+        "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
+        "avatarAccent": "rgba(15, 255, 153, 0.28)",
+        "rating": 5,
+        "hasConfirmedRating": false,
+        "createdAt": "2024-12-12T19:03:03Z",
+        "featured": true
+      }
+    ],
+    "assets": [
+      {
+        "assetId": "profile-avatar",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/logo.svg",
+        "targetPublicPath": "/assets/logo.svg",
+        "alt": "Alberto Medina Garcia avatar",
+        "notes": "Main profile avatar",
+        "enabled": true,
+        "resolvedUrl": "/assets/logo.svg",
+        "status": "READY -> /assets/logo.svg"
+      },
+      {
+        "assetId": "project-1-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/visual-interfaces.mp4",
+        "targetPublicPath": "/assets/projects/visual-interfaces.mp4",
+        "alt": "Unity Developer demo video",
+        "notes": "Unity Developer master video source",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/visual-interfaces.mp4",
+        "status": "READY -> /assets/projects/visual-interfaces.mp4"
+      },
+      {
+        "assetId": "project-1-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/visual-interfaces.png",
+        "targetPublicPath": "/assets/projects/visual-interfaces.png",
+        "alt": "Unity Developer thumbnail",
+        "notes": "Unity Developer poster image",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/visual-interfaces.png",
+        "status": "READY -> /assets/projects/visual-interfaces.png"
+      },
+      {
+        "assetId": "project-1-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/unity.webp",
+        "targetPublicPath": "/assets/projects/unity.webp",
+        "alt": "Unity Developer icon",
+        "notes": "Unity Developer icon asset",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/unity.webp",
+        "status": "READY -> /assets/projects/unity.webp"
+      },
+      {
+        "assetId": "project-2-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/zero-touch-ai.mp4",
+        "targetPublicPath": "/assets/projects/zero-touch-ai.mp4",
+        "alt": "Smart Inbox Manager demo video",
+        "notes": "Smart Inbox Manager master video source",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/zero-touch-ai.mp4",
+        "status": "READY -> /assets/projects/zero-touch-ai.mp4"
+      },
+      {
+        "assetId": "project-2-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/zero-touch-ai.png",
+        "targetPublicPath": "/assets/projects/zero-touch-ai.png",
+        "alt": "Smart Inbox Manager thumbnail",
+        "notes": "Smart Inbox Manager poster image",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/zero-touch-ai.png",
+        "status": "READY -> /assets/projects/zero-touch-ai.png"
+      },
+      {
+        "assetId": "project-2-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/outlook-icon.webp",
+        "targetPublicPath": "/assets/projects/outlook-icon.webp",
+        "alt": "Smart Inbox Manager icon",
+        "notes": "Smart Inbox Manager icon asset",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/outlook-icon.webp",
+        "status": "READY -> /assets/projects/outlook-icon.webp"
+      },
+      {
+        "assetId": "project-3-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/padel-booking.mp4",
+        "targetPublicPath": "/assets/projects/padel-booking.mp4",
+        "alt": "Paddle Booking App demo video",
+        "notes": "Paddle Booking App master video source",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/padel-booking.mp4",
+        "status": "READY -> /assets/projects/padel-booking.mp4"
+      },
+      {
+        "assetId": "project-3-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/padel-booking.png",
+        "targetPublicPath": "/assets/projects/padel-booking.png",
+        "alt": "Paddle Booking App thumbnail",
+        "notes": "Paddle Booking App poster image",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/padel-booking.png",
+        "status": "READY -> /assets/projects/padel-booking.png"
+      },
+      {
+        "assetId": "project-3-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/padel-booking-logo.png",
+        "targetPublicPath": "/assets/projects/padel-booking-logo.png",
+        "alt": "Paddle Booking App icon",
+        "notes": "Paddle Booking App icon asset",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/padel-booking-logo.png",
+        "status": "READY -> /assets/projects/padel-booking-logo.png"
+      },
+      {
+        "assetId": "project-4-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/twitch-live.mp4",
+        "targetPublicPath": "/assets/projects/twitch-live.mp4",
+        "alt": "Twitch Live Analytics demo video",
+        "notes": "Twitch Live Analytics master video source",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/twitch-live.mp4",
+        "status": "READY -> /assets/projects/twitch-live.mp4"
+      },
+      {
+        "assetId": "project-4-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/twitch-live.png",
+        "targetPublicPath": "/assets/projects/twitch-live.png",
+        "alt": "Twitch Live Analytics thumbnail",
+        "notes": "Twitch Live Analytics poster image",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/twitch-live.png",
+        "status": "READY -> /assets/projects/twitch-live.png"
+      },
+      {
+        "assetId": "project-4-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/twitch-icon.webp",
+        "targetPublicPath": "/assets/projects/twitch-icon.webp",
+        "alt": "Twitch Live Analytics icon",
+        "notes": "Twitch Live Analytics icon asset",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/twitch-icon.webp",
+        "status": "READY -> /assets/projects/twitch-icon.webp"
+      },
+      {
+        "assetId": "project-5-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/usb-extraction.mp4",
+        "targetPublicPath": "/assets/projects/usb-extraction.mp4",
+        "alt": "USB Exfiltration demo video",
+        "notes": "USB Exfiltration master video source",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/usb-extraction.mp4",
+        "status": "READY -> /assets/projects/usb-extraction.mp4"
+      },
+      {
+        "assetId": "project-5-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/usb-extraction.png",
+        "targetPublicPath": "/assets/projects/usb-extraction.png",
+        "alt": "USB Exfiltration thumbnail",
+        "notes": "USB Exfiltration poster image",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/usb-extraction.png",
+        "status": "READY -> /assets/projects/usb-extraction.png"
+      },
+      {
+        "assetId": "project-5-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/terminal.ico",
+        "targetPublicPath": "/assets/projects/terminal.ico",
+        "alt": "USB Exfiltration icon",
+        "notes": "USB Exfiltration icon asset",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/terminal.ico",
+        "status": "READY -> /assets/projects/terminal.ico"
+      },
+      {
+        "assetId": "testimonial-client3",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client3.png",
+        "targetPublicPath": "/assets/testimonials/client3.png",
+        "alt": "Fiverr Client avatar",
+        "notes": "Avatar used by testimonial unity-progress-communication",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client3.png",
+        "status": "READY -> /assets/testimonials/client3.png"
+      },
+      {
+        "assetId": "testimonial-client2",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client2.png",
+        "targetPublicPath": "/assets/testimonials/client2.png",
+        "alt": "Fiverr Client avatar",
+        "notes": "Avatar used by testimonial unity-fast-delivery",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client2.png",
+        "status": "READY -> /assets/testimonials/client2.png"
+      },
+      {
+        "assetId": "testimonial-client1",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client1.png",
+        "targetPublicPath": "/assets/testimonials/client1.png",
+        "alt": "Fiverr Client avatar",
+        "notes": "Avatar used by testimonial unity-communication",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client1.png",
+        "status": "READY -> /assets/testimonials/client1.png"
+      },
+      {
+        "assetId": "testimonial-client4",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client4.png",
+        "targetPublicPath": "/assets/testimonials/client4.png",
+        "alt": "Fiverr Client avatar",
+        "notes": "Avatar used by testimonial unity-repeat-client",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client4.png",
+        "status": "READY -> /assets/testimonials/client4.png"
+      }
+    ]
+  }
+}

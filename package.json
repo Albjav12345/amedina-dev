@@ -4,14 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "content:init": "node scripts/sync-portfolio-content.mjs --init",
+    "content:check": "node scripts/sync-portfolio-content.mjs --check",
+    "content:sync": "node scripts/sync-portfolio-content.mjs",
     "dev": "node scripts/dev.mjs",
-    "vite:dev": "node scripts/generate-project-media.mjs && vite",
-    "build": "node scripts/generate-project-media.mjs && vite build",
+    "vite:dev": "node scripts/sync-portfolio-content.mjs && node scripts/generate-project-media.mjs && vite",
+    "build": "node scripts/sync-portfolio-content.mjs && node scripts/generate-project-media.mjs && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
+    "exceljs": "^4.4.0",
     "ffmpeg-static": "^5.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",

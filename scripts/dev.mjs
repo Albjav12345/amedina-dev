@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { generateProjectMedia } from './generate-project-media.mjs'
 import { startLocalApiServer } from './local-api-server.mjs'
+import { syncPortfolioContent } from './lib/portfolio-content-workbook.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -47,6 +48,7 @@ async function shutdown(code = 0) {
 }
 
 try {
+  await syncPortfolioContent()
   await generateProjectMedia()
   apiServer = await startLocalApiServer({ port: apiPort })
   console.log(`[local-api] running on ${proxyTarget}`)
