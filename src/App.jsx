@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, Suspense, useRef, useState } from 'react'
+import React, { startTransition, useEffect, useLayoutEffect, Suspense, useRef, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
@@ -12,6 +12,7 @@ import ParallaxGrid from './components/common/ParallaxGrid'
 import {
     DEFAULT_SECTION_ID,
     SECTION_IDS,
+    SECTION_TARGETS,
     SECTION_NAVIGATION_EVENT,
     dispatchSectionActiveLock,
     dispatchVisibleSection,
@@ -86,6 +87,22 @@ const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
 }
 
 const SECTION_WRAPPER_IDS = SECTION_IDS.filter((sectionId) => sectionId !== DEFAULT_SECTION_ID)
+const SECTION_MODULE_LOADERS = {
+    about: loadAboutModule,
+    projects: loadFeaturedProjectsModule,
+    'tech-stack': loadTechStackModule,
+    ...(isArchitectSectionEnabled ? { architect: loadProjectArchitectModule } : {}),
+    contact: loadContactModule,
+}
+const SECTION_RENDER_ROOT_MARGINS = {
+    desktop: '720px 0px 1080px 0px',
+    mobile: '420px 0px 720px 0px',
+}
+const SECTION_WRAPPER_ID_TO_SECTION_ID = SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
+    const wrapperId = SECTION_TARGETS[sectionId] || `${sectionId}-wrapper`
+    acc[wrapperId] = sectionId
+    return acc
+}, {})
 
 function createInactiveNavigationLock() {
     return {
@@ -107,6 +124,38 @@ function createIdleRouteRestoreState() {
         rafId: null,
         observer: null,
     }
+}
+
+function createInitialRenderedSectionMap(initialSectionId) {
+    const initialRenderedIds = new Set(['about'])
+    const initialIndex = SECTION_WRAPPER_IDS.indexOf(initialSectionId)
+
+    if (initialIndex >= 0) {
+        initialRenderedIds.add(SECTION_WRAPPER_IDS[initialIndex])
+
+        if (initialIndex > 0) {
+            initialRenderedIds.add(SECTION_WRAPPER_IDS[initialIndex - 1])
+        }
+
+        if (initialIndex < SECTION_WRAPPER_IDS.length - 1) {
+            initialRenderedIds.add(SECTION_WRAPPER_IDS[initialIndex + 1])
+        }
+    }
+
+    return SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
+        acc[sectionId] = initialRenderedIds.has(sectionId)
+        return acc
+    }, {})
+}
+
+function getSectionPathIds(sectionId) {
+    const targetIndex = SECTION_WRAPPER_IDS.indexOf(sectionId)
+
+    if (targetIndex === -1) {
+        return []
+    }
+
+    return SECTION_WRAPPER_IDS.slice(0, targetIndex + 1)
 }
 
 function isEditableTarget(target) {
@@ -228,8 +277,10 @@ function App() {
     )
     const [isControlOpen, setIsControlOpen] = useState(false);
     const [isControlUiLocked, setIsControlUiLocked] = useState(false);
+    const [shouldRenderControlPlane, setShouldRenderControlPlane] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
+    const [renderedSectionMap, setRenderedSectionMap] = useState(() => createInitialRenderedSectionMap(initialSectionId))
     const [mountedSectionMap, setMountedSectionMap] = useState(() =>
         SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
             acc[sectionId] = typeof document !== 'undefined' && Boolean(document.getElementById(sectionId))
@@ -243,6 +294,63 @@ function App() {
     const navigationLockRef = useRef(createInactiveNavigationLock());
     const routeRestoreRef = useRef(createIdleRouteRestoreState());
     const currentRuntimeGeneratedAtRef = useRef(portfolioData.meta.generatedAt ?? null)
+    const renderedSectionMapRef = useRef(createInitialRenderedSectionMap(initialSectionId))
+
+    useEffect(() => {
+        renderedSectionMapRef.current = renderedSectionMap
+    }, [renderedSectionMap])
+
+    const ensureRenderedSections = (sectionIds, { defer = true } = {}) => {
+        const validSectionIds = sectionIds.filter((sectionId) => SECTION_WRAPPER_IDS.includes(sectionId))
+
+        if (!validSectionIds.length) {
+            return
+        }
+
+        validSectionIds.forEach((sectionId) => {
+            SECTION_MODULE_LOADERS[sectionId]?.()
+        })
+
+        if (validSectionIds.every((sectionId) => renderedSectionMapRef.current[sectionId])) {
+            return
+        }
+
+        const applyRender = () => {
+            setRenderedSectionMap((currentMap) => {
+                let didChange = false
+                const nextMap = { ...currentMap }
+
+                validSectionIds.forEach((sectionId) => {
+                    if (!nextMap[sectionId]) {
+                        nextMap[sectionId] = true
+                        didChange = true
+                    }
+                })
+
+                if (!didChange) {
+                    return currentMap
+                }
+
+                renderedSectionMapRef.current = nextMap
+                return nextMap
+            })
+        }
+
+        if (defer) {
+            startTransition(applyRender)
+            return
+        }
+
+        applyRender()
+    }
+
+    const ensureSectionRendered = (sectionId, options) => {
+        ensureRenderedSections([sectionId], options)
+    }
+
+    const ensureSectionPathRendered = (sectionId, options) => {
+        ensureRenderedSections(getSectionPathIds(sectionId), options)
+    }
 
     const syncPathname = (sectionId, historyMode = 'replace') => {
         if (typeof window === 'undefined' || historyMode === 'preserve' || !isSectionId(sectionId)) {
@@ -316,6 +424,7 @@ function App() {
     };
 
     const openControlPanel = () => {
+        setShouldRenderControlPlane(true)
         setIsControlUiLocked(true)
         setIsControlOpen(true)
     }
@@ -549,9 +658,10 @@ function App() {
         let attempts = 0
 
         const syncMountedSections = () => {
+            const expectedSectionIds = SECTION_WRAPPER_IDS.filter((sectionId) => renderedSectionMap[sectionId])
             let allMounted = true
 
-            SECTION_WRAPPER_IDS.forEach((sectionId) => {
+            expectedSectionIds.forEach((sectionId) => {
                 if (!document.getElementById(sectionId)) {
                     allMounted = false
                 }
@@ -590,7 +700,7 @@ function App() {
                 window.clearTimeout(timeoutId)
             }
         }
-    }, [])
+    }, [renderedSectionMap])
 
     useLayoutEffect(() => {
         if (typeof window === 'undefined') {
@@ -603,6 +713,7 @@ function App() {
         }
 
         const initialSectionId = initialSectionIdRef.current;
+        ensureSectionPathRendered(initialSectionId, { defer: false });
         commitActiveSection(initialSectionId, 'replace');
         if (shouldRestoreSectionRoute(initialSectionId, 'instant')) {
             startRouteRestore(initialSectionId);
@@ -622,29 +733,65 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const preloadSections = () => {
-            loadAboutModule()
-            loadFeaturedProjectsModule()
-            loadTechStackModule()
-            if (isArchitectSectionEnabled) {
-                loadProjectArchitectModule()
-            }
-            loadContactModule()
+        if (typeof IntersectionObserver === 'undefined') {
+            startTransition(() => {
+                setRenderedSectionMap((currentMap) => {
+                    let didChange = false
+                    const nextMap = { ...currentMap }
+
+                    SECTION_WRAPPER_IDS.forEach((sectionId) => {
+                        if (!nextMap[sectionId]) {
+                            nextMap[sectionId] = true
+                            didChange = true
+                        }
+                    })
+
+                    if (didChange) {
+                        renderedSectionMapRef.current = nextMap
+                    }
+
+                    return didChange ? nextMap : currentMap
+                })
+            })
+
+            return undefined
         }
 
-        if (typeof window.requestIdleCallback === 'function') {
-            const idleId = window.requestIdleCallback(preloadSections, { timeout: 1200 })
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    return
+                }
 
-            return () => {
-                window.cancelIdleCallback?.(idleId)
+                const sectionId = SECTION_WRAPPER_ID_TO_SECTION_ID[entry.target.id]
+                if (!sectionId) {
+                    return
+                }
+
+                ensureSectionRendered(sectionId)
+                observer.unobserve(entry.target)
+            })
+        }, {
+            root: null,
+            rootMargin: SECTION_RENDER_ROOT_MARGINS[viewportBucket] || SECTION_RENDER_ROOT_MARGINS.desktop,
+            threshold: 0.01,
+        })
+
+        SECTION_WRAPPER_IDS.forEach((sectionId) => {
+            if (renderedSectionMapRef.current[sectionId]) {
+                return
             }
-        }
 
-        const timeoutId = window.setTimeout(preloadSections, 250)
+            const wrapperElement = getSectionElement(sectionId)
+            if (wrapperElement) {
+                observer.observe(wrapperElement)
+            }
+        })
+
         return () => {
-            window.clearTimeout(timeoutId)
+            observer.disconnect()
         }
-    }, [])
+    }, [viewportBucket])
 
     useEffect(() => {
         isControlOpenRef.current = isControlOpen;
@@ -808,14 +955,24 @@ function App() {
         })
 
         const syncObservedElements = () => {
+            const expectedSectionIds = SECTION_WRAPPER_IDS.filter((sectionId) => renderedSectionMap[sectionId])
             let allSectionsObserved = true
 
             SECTION_WRAPPER_IDS.forEach((sectionId) => {
+                const shouldObserveSection = expectedSectionIds.includes(sectionId)
                 const nextElement = getSectionMeasurementElement(sectionId)
                 const currentElement = observedElements.get(sectionId)
 
-                if (!document.getElementById(sectionId)) {
+                if (shouldObserveSection && !document.getElementById(sectionId)) {
                     allSectionsObserved = false
+                }
+
+                if (!shouldObserveSection) {
+                    if (currentElement) {
+                        observer.unobserve(currentElement)
+                        observedElements.delete(sectionId)
+                    }
+                    return
                 }
 
                 if (currentElement === nextElement) {
@@ -856,7 +1013,7 @@ function App() {
             }
             observer.disconnect()
         }
-    }, [sectionWrapperHeights, viewportBucket])
+    }, [renderedSectionMap, sectionWrapperHeights, viewportBucket])
 
     useEffect(() => {
         const syncRouteFromPathname = () => {
@@ -867,6 +1024,7 @@ function App() {
                 return;
             }
 
+            ensureSectionPathRendered(sectionId, { defer: false });
             commitActiveSection(sectionId, 'preserve');
             if (shouldRestoreSectionRoute(sectionId, 'instant')) {
                 startRouteRestore(sectionId);
@@ -886,6 +1044,7 @@ function App() {
                 return;
             }
 
+            ensureSectionPathRendered(sectionId, { defer: false });
             closeControlPanel();
             document.body.style.overflow = '';
             document.body.style.overscrollBehaviorY = '';
@@ -898,7 +1057,7 @@ function App() {
                 return;
             }
 
-            const shouldRestoreTarget = shouldRestoreSectionRoute(sectionId, behavior);
+            const shouldRestoreTarget = behavior === 'instant' && shouldRestoreSectionRoute(sectionId, behavior);
 
             if (shouldRestoreTarget) {
                 startRouteRestore(sectionId);
@@ -975,48 +1134,60 @@ function App() {
 
                     {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
                     <div id="about-wrapper" style={{ minHeight: mountedSectionMap.about ? undefined : `${sectionWrapperHeights.about}px` }}>
-                        <Suspense fallback={null}>
-                            <About isUiFrozen={isControlOpen} />
-                        </Suspense>
+                        {renderedSectionMap.about ? (
+                            <Suspense fallback={null}>
+                                <About isUiFrozen={isControlOpen} />
+                            </Suspense>
+                        ) : null}
                     </div>
 
                     <div id="projects-wrapper" style={{ minHeight: mountedSectionMap.projects ? undefined : `${sectionWrapperHeights.projects}px` }}>
-                        <Suspense fallback={null}>
-                            <FeaturedProjects />
-                        </Suspense>
+                        {renderedSectionMap.projects ? (
+                            <Suspense fallback={null}>
+                                <FeaturedProjects />
+                            </Suspense>
+                        ) : null}
                     </div>
 
                     <div id="tech-stack-wrapper" style={{ minHeight: mountedSectionMap['tech-stack'] ? undefined : `${sectionWrapperHeights['tech-stack']}px` }}>
-                        <Suspense fallback={null}>
-                            <TechStack />
-                        </Suspense>
+                        {renderedSectionMap['tech-stack'] ? (
+                            <Suspense fallback={null}>
+                                <TechStack />
+                            </Suspense>
+                        ) : null}
                     </div>
 
                     {isArchitectSectionEnabled && ProjectArchitect && (
                         <div id="architect-wrapper" style={{ minHeight: mountedSectionMap.architect ? undefined : `${sectionWrapperHeights.architect}px` }}>
-                            <Suspense fallback={null}>
-                                <ProjectArchitect />
-                            </Suspense>
+                            {renderedSectionMap.architect ? (
+                                <Suspense fallback={null}>
+                                    <ProjectArchitect />
+                                </Suspense>
+                            ) : null}
                         </div>
                     )}
 
                     <div id="contact-wrapper" style={{ minHeight: mountedSectionMap.contact ? undefined : `${sectionWrapperHeights.contact}px` }}>
-                        <Suspense fallback={null}>
-                            <Contact />
-                        </Suspense>
+                        {renderedSectionMap.contact ? (
+                            <Suspense fallback={null}>
+                                <Contact />
+                            </Suspense>
+                        ) : null}
                     </div>
                 </main>
                 <Suspense fallback={null}>
                     <Footer onOpenControlPanel={openControlPanel} />
                 </Suspense>
-                <Suspense fallback={null}>
-                    <ControlPlane
-                        isOpen={isControlOpen}
-                        onOpen={openControlPanel}
-                        onClose={closeControlPanel}
-                        onExitComplete={handleControlPanelExitComplete}
-                    />
-                </Suspense>
+                {shouldRenderControlPlane ? (
+                    <Suspense fallback={null}>
+                        <ControlPlane
+                            isOpen={isControlOpen}
+                            onOpen={openControlPanel}
+                            onClose={closeControlPanel}
+                            onExitComplete={handleControlPanelExitComplete}
+                        />
+                    </Suspense>
+                ) : null}
             </div>
             <Analytics />
             <SpeedInsights />

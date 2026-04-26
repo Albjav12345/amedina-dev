@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-26T10:45:56.130Z",
+  "generatedAt": "2026-04-26T13:29:18.306Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -392,18 +392,9 @@
       "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
       "githubLink": "https://github.com/Albjav12345/unity-interfaces",
       "demoType": "video",
-      "videoAssetId": {
-        "text": "project-1-video",
-        "hyperlink": "#'ASSETS'!A10"
-      },
-      "thumbnailAssetId": {
-        "text": "project-1-thumbnail",
-        "hyperlink": "#'ASSETS'!A11"
-      },
-      "iconAssetId": {
-        "text": "project-1-icon",
-        "hyperlink": "#'ASSETS'!A12"
-      },
+      "videoAssetId": "project-1-video",
+      "thumbnailAssetId": "project-1-thumbnail",
+      "iconAssetId": "project-1-icon",
       "iconFit": null,
       "iconScale": 1.3,
       "order": 1,
@@ -417,18 +408,9 @@
       "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
       "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
       "demoType": "video",
-      "videoAssetId": {
-        "text": "project-2-video",
-        "hyperlink": "#'ASSETS'!A13"
-      },
-      "thumbnailAssetId": {
-        "text": "project-2-thumbnail",
-        "hyperlink": "#'ASSETS'!A14"
-      },
-      "iconAssetId": {
-        "text": "project-2-icon",
-        "hyperlink": "#'ASSETS'!A15"
-      },
+      "videoAssetId": "project-2-video",
+      "thumbnailAssetId": "project-2-thumbnail",
+      "iconAssetId": "project-2-icon",
       "iconFit": "auto",
       "iconScale": 1.25,
       "order": 2,
@@ -442,18 +424,9 @@
       "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
       "githubLink": "https://github.com/Albjav12345/padel-sync",
       "demoType": "video",
-      "videoAssetId": {
-        "text": "project-3-video",
-        "hyperlink": "#'ASSETS'!A16"
-      },
-      "thumbnailAssetId": {
-        "text": "project-3-thumbnail",
-        "hyperlink": "#'ASSETS'!A17"
-      },
-      "iconAssetId": {
-        "text": "project-3-icon",
-        "hyperlink": "#'ASSETS'!A18"
-      },
+      "videoAssetId": "project-3-video",
+      "thumbnailAssetId": "project-3-thumbnail",
+      "iconAssetId": "project-3-icon",
       "iconFit": null,
       "iconScale": null,
       "order": 3,
@@ -467,18 +440,9 @@
       "solution": "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
       "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
       "demoType": "video",
-      "videoAssetId": {
-        "text": "project-4-video",
-        "hyperlink": "#'ASSETS'!A19"
-      },
-      "thumbnailAssetId": {
-        "text": "project-4-thumbnail",
-        "hyperlink": "#'ASSETS'!A20"
-      },
-      "iconAssetId": {
-        "text": "project-4-icon",
-        "hyperlink": "#'ASSETS'!A21"
-      },
+      "videoAssetId": "project-4-video",
+      "thumbnailAssetId": "project-4-thumbnail",
+      "iconAssetId": "project-4-icon",
       "iconFit": null,
       "iconScale": 1.3,
       "order": 4,
@@ -492,18 +456,9 @@
       "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
       "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
       "demoType": "video",
-      "videoAssetId": {
-        "text": "project-5-video",
-        "hyperlink": "#'ASSETS'!A22"
-      },
-      "thumbnailAssetId": {
-        "text": "project-5-thumbnail",
-        "hyperlink": "#'ASSETS'!A23"
-      },
-      "iconAssetId": {
-        "text": "project-5-icon",
-        "hyperlink": "#'ASSETS'!A24"
-      },
+      "videoAssetId": "project-5-video",
+      "thumbnailAssetId": "project-5-thumbnail",
+      "iconAssetId": "project-5-icon",
       "iconFit": "auto",
       "iconScale": null,
       "order": 5,
@@ -512,324 +467,204 @@
   ],
   "projectStackEntries": [
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "Unity 3D",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "C#",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "Motion Design",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Flask",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Llama 3",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Supabase",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "React + Vite",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Firebase",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Tailwind",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Framer Motion",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Tkinter",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "PowerShell",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "Batch",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "WMI/CIM",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "OPSEC",
       "order": 4
     }
   ],
   "projectArchEntries": [
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "Unity Core",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "C# Systems",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "1",
-        "hyperlink": "#'PROJECTS'!A9"
-      },
+      "project_id": "1",
       "label": "Motion UI",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Outlook",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Python Backend",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Groq Llama 3",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "2",
-        "hyperlink": "#'PROJECTS'!A10"
-      },
+      "project_id": "2",
       "label": "Web UI",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Serverless",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Event Listeners",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "PWA Cache",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "3",
-        "hyperlink": "#'PROJECTS'!A11"
-      },
+      "project_id": "3",
       "label": "Reactive State",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Screen Capture",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "4",
-        "hyperlink": "#'PROJECTS'!A12"
-      },
+      "project_id": "4",
       "label": "Dashboard",
       "order": 4
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "Background Polling",
       "order": 1
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "UAC Evasion",
       "order": 2
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "File-Lock Bypass",
       "order": 3
     },
     {
-      "project_id": {
-        "text": "5",
-        "hyperlink": "#'PROJECTS'!A13"
-      },
+      "project_id": "5",
       "label": "Encrypted Exfiltration",
       "order": 4
     }
@@ -855,10 +690,7 @@
   "testimonialEntries": [
     {
       "id": "unity-progress-communication",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -867,10 +699,7 @@
       "starRating": "2",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-06-16T19:22:08Z",
-      "avatarAssetId": {
-        "text": "testimonial-client8",
-        "hyperlink": "#'ASSETS'!A32"
-      },
+      "avatarAssetId": "testimonial-client8",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -878,10 +707,7 @@
     },
     {
       "id": "unity-fast-delivery",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -890,10 +716,7 @@
       "starRating": "3",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-02T16:25:00Z",
-      "avatarAssetId": {
-        "text": "testimonial-client13",
-        "hyperlink": "#'ASSETS'!A40"
-      },
+      "avatarAssetId": "testimonial-client13",
       "featured": "TRUE",
       "featuredOrder": 3,
       "highlighted": "FALSE",
@@ -901,10 +724,7 @@
     },
     {
       "id": "unity-communication",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -913,10 +733,7 @@
       "starRating": "4",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-05T20:42:58Z",
-      "avatarAssetId": {
-        "text": "testimonial-client14",
-        "hyperlink": "#'ASSETS'!A41"
-      },
+      "avatarAssetId": "testimonial-client14",
       "featured": "TRUE",
       "featuredOrder": 5,
       "highlighted": "FALSE",
@@ -924,10 +741,7 @@
     },
     {
       "id": "unity-great-work",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -936,10 +750,7 @@
       "starRating": "5",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-21T14:05:57Z",
-      "avatarAssetId": {
-        "text": "testimonial-client2",
-        "hyperlink": "#'ASSETS'!A26"
-      },
+      "avatarAssetId": "testimonial-client2",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -947,10 +758,7 @@
     },
     {
       "id": "unity-complex-ownership",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -959,10 +767,7 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-07-29T16:57:35Z",
-      "avatarAssetId": {
-        "text": "testimonial-client12",
-        "hyperlink": "#'ASSETS'!A39"
-      },
+      "avatarAssetId": "testimonial-client12",
       "featured": "TRUE",
       "featuredOrder": 1,
       "highlighted": "TRUE",
@@ -970,10 +775,7 @@
     },
     {
       "id": "unity-repeat-client",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
@@ -982,10 +784,7 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-09-27T19:47:17Z",
-      "avatarAssetId": {
-        "text": "testimonial-client15",
-        "hyperlink": "#'ASSETS'!A42"
-      },
+      "avatarAssetId": "testimonial-client15",
       "featured": "TRUE",
       "featuredOrder": 7,
       "highlighted": "FALSE",
@@ -993,10 +792,7 @@
     },
     {
       "id": "automation-seo-detail",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "Operations / Media Client",
@@ -1005,10 +801,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for easy gallery managing",
       "createdAt": "2024-11-07T20:02:11Z",
-      "avatarAssetId": {
-        "text": "testimonial-client5",
-        "hyperlink": "#'ASSETS'!A29"
-      },
+      "avatarAssetId": "testimonial-client5",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1016,10 +809,7 @@
     },
     {
       "id": "automation-exceeded-expectations",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1028,10 +818,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-08T22:07:56Z",
-      "avatarAssetId": {
-        "text": "testimonial-pack-leaf",
-        "hyperlink": "#'ASSETS'!A36"
-      },
+      "avatarAssetId": "testimonial-pack-leaf",
       "featured": "TRUE",
       "featuredOrder": 2,
       "highlighted": "TRUE",
@@ -1039,10 +826,7 @@
     },
     {
       "id": "automation-gallery-spanish",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1051,10 +835,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-09T18:29:07Z",
-      "avatarAssetId": {
-        "text": "testimonial-client8",
-        "hyperlink": "#'ASSETS'!A32"
-      },
+      "avatarAssetId": "testimonial-client8",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1062,10 +843,7 @@
     },
     {
       "id": "automation-fiverr-credit",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1074,10 +852,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-19T14:13:23Z",
-      "avatarAssetId": {
-        "text": "testimonial-pack-av",
-        "hyperlink": "#'ASSETS'!A37"
-      },
+      "avatarAssetId": "testimonial-pack-av",
       "featured": "TRUE",
       "featuredOrder": 4,
       "highlighted": "TRUE",
@@ -1085,10 +860,7 @@
     },
     {
       "id": "automation-outstanding-work",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1097,10 +869,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-08T08:55:41Z",
-      "avatarAssetId": {
-        "text": "testimonial-client3",
-        "hyperlink": "#'ASSETS'!A25"
-      },
+      "avatarAssetId": "testimonial-client3",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1108,10 +877,7 @@
     },
     {
       "id": "automation-communication-timelines",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1120,10 +886,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-12T19:03:03Z",
-      "avatarAssetId": {
-        "text": "testimonial-pack-signature",
-        "hyperlink": "#'ASSETS'!A38"
-      },
+      "avatarAssetId": "testimonial-pack-signature",
       "featured": "TRUE",
       "featuredOrder": 6,
       "highlighted": "TRUE",
@@ -1131,10 +894,7 @@
     },
     {
       "id": "automation-wonderful-details",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1143,10 +903,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-15T18:18:51Z",
-      "avatarAssetId": {
-        "text": "testimonial-client4",
-        "hyperlink": "#'ASSETS'!A28"
-      },
+      "avatarAssetId": "testimonial-client4",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1154,10 +911,7 @@
     },
     {
       "id": "automation-vigor",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1166,10 +920,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T09:56:00Z",
-      "avatarAssetId": {
-        "text": "testimonial-client7",
-        "hyperlink": "#'ASSETS'!A31"
-      },
+      "avatarAssetId": "testimonial-client7",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1177,10 +928,7 @@
     },
     {
       "id": "automation-fast-turnaround",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1189,10 +937,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T17:58:51Z",
-      "avatarAssetId": {
-        "text": "testimonial-client6",
-        "hyperlink": "#'ASSETS'!A30"
-      },
+      "avatarAssetId": "testimonial-client6",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1200,10 +945,7 @@
     },
     {
       "id": "automation-highly-recommend",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1212,10 +954,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-30T18:59:30Z",
-      "avatarAssetId": {
-        "text": "testimonial-client11",
-        "hyperlink": "#'ASSETS'!A35"
-      },
+      "avatarAssetId": "testimonial-client11",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
@@ -1223,10 +962,7 @@
     },
     {
       "id": "automation-nice-guy",
-      "sourceKey": {
-        "text": "fiverr",
-        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
-      },
+      "sourceKey": "fiverr",
       "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
@@ -1235,10 +971,7 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-31T10:10:16Z",
-      "avatarAssetId": {
-        "text": "testimonial-client1",
-        "hyperlink": "#'ASSETS'!A27"
-      },
+      "avatarAssetId": "testimonial-client1",
       "featured": "FALSE",
       "featuredOrder": null,
       "highlighted": "FALSE",
