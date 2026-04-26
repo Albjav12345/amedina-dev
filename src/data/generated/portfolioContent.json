@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-26T09:57:19.786Z",
+  "generatedAt": "2026-04-26T10:45:56.130Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -392,10 +392,19 @@
       "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
       "githubLink": "https://github.com/Albjav12345/unity-interfaces",
       "demoType": "video",
-      "videoAssetId": "project-1-video",
-      "thumbnailAssetId": "project-1-thumbnail",
-      "iconAssetId": "project-1-icon",
-      "iconFit": "",
+      "videoAssetId": {
+        "text": "project-1-video",
+        "hyperlink": "#'ASSETS'!A10"
+      },
+      "thumbnailAssetId": {
+        "text": "project-1-thumbnail",
+        "hyperlink": "#'ASSETS'!A11"
+      },
+      "iconAssetId": {
+        "text": "project-1-icon",
+        "hyperlink": "#'ASSETS'!A12"
+      },
+      "iconFit": null,
       "iconScale": 1.3,
       "order": 1,
       "enabled": "TRUE"
@@ -408,9 +417,18 @@
       "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
       "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
       "demoType": "video",
-      "videoAssetId": "project-2-video",
-      "thumbnailAssetId": "project-2-thumbnail",
-      "iconAssetId": "project-2-icon",
+      "videoAssetId": {
+        "text": "project-2-video",
+        "hyperlink": "#'ASSETS'!A13"
+      },
+      "thumbnailAssetId": {
+        "text": "project-2-thumbnail",
+        "hyperlink": "#'ASSETS'!A14"
+      },
+      "iconAssetId": {
+        "text": "project-2-icon",
+        "hyperlink": "#'ASSETS'!A15"
+      },
       "iconFit": "auto",
       "iconScale": 1.25,
       "order": 2,
@@ -424,11 +442,20 @@
       "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
       "githubLink": "https://github.com/Albjav12345/padel-sync",
       "demoType": "video",
-      "videoAssetId": "project-3-video",
-      "thumbnailAssetId": "project-3-thumbnail",
-      "iconAssetId": "project-3-icon",
-      "iconFit": "",
-      "iconScale": "",
+      "videoAssetId": {
+        "text": "project-3-video",
+        "hyperlink": "#'ASSETS'!A16"
+      },
+      "thumbnailAssetId": {
+        "text": "project-3-thumbnail",
+        "hyperlink": "#'ASSETS'!A17"
+      },
+      "iconAssetId": {
+        "text": "project-3-icon",
+        "hyperlink": "#'ASSETS'!A18"
+      },
+      "iconFit": null,
+      "iconScale": null,
       "order": 3,
       "enabled": "TRUE"
     },
@@ -440,10 +467,19 @@
       "solution": "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
       "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
       "demoType": "video",
-      "videoAssetId": "project-4-video",
-      "thumbnailAssetId": "project-4-thumbnail",
-      "iconAssetId": "project-4-icon",
-      "iconFit": "",
+      "videoAssetId": {
+        "text": "project-4-video",
+        "hyperlink": "#'ASSETS'!A19"
+      },
+      "thumbnailAssetId": {
+        "text": "project-4-thumbnail",
+        "hyperlink": "#'ASSETS'!A20"
+      },
+      "iconAssetId": {
+        "text": "project-4-icon",
+        "hyperlink": "#'ASSETS'!A21"
+      },
+      "iconFit": null,
       "iconScale": 1.3,
       "order": 4,
       "enabled": "TRUE"
@@ -456,215 +492,344 @@
       "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
       "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
       "demoType": "video",
-      "videoAssetId": "project-5-video",
-      "thumbnailAssetId": "project-5-thumbnail",
-      "iconAssetId": "project-5-icon",
+      "videoAssetId": {
+        "text": "project-5-video",
+        "hyperlink": "#'ASSETS'!A22"
+      },
+      "thumbnailAssetId": {
+        "text": "project-5-thumbnail",
+        "hyperlink": "#'ASSETS'!A23"
+      },
+      "iconAssetId": {
+        "text": "project-5-icon",
+        "hyperlink": "#'ASSETS'!A24"
+      },
       "iconFit": "auto",
-      "iconScale": "",
+      "iconScale": null,
       "order": 5,
       "enabled": "TRUE"
     }
   ],
   "projectStackEntries": [
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Unity 3D",
       "order": 1
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "C#",
       "order": 2
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Motion Design",
       "order": 4
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Flask",
       "order": 2
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Llama 3",
       "order": 3
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Supabase",
       "order": 4
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "React + Vite",
       "order": 1
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Firebase",
       "order": 2
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Tailwind",
       "order": 3
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Framer Motion",
       "order": 4
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tkinter",
       "order": 4
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "PowerShell",
       "order": 1
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Batch",
       "order": 2
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "WMI/CIM",
       "order": 3
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "OPSEC",
       "order": 4
     }
   ],
   "projectArchEntries": [
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Unity Core",
       "order": 1
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "C# Systems",
       "order": 2
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Motion UI",
       "order": 4
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Outlook",
       "order": 1
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Python Backend",
       "order": 2
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Groq Llama 3",
       "order": 3
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Web UI",
       "order": 4
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Serverless",
       "order": 1
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Event Listeners",
       "order": 2
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "PWA Cache",
       "order": 3
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Reactive State",
       "order": 4
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Screen Capture",
       "order": 1
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Dashboard",
       "order": 4
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Background Polling",
       "order": 1
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "UAC Evasion",
       "order": 2
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "File-Lock Bypass",
       "order": 3
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Encrypted Exfiltration",
       "order": 4
     }
@@ -690,8 +855,11 @@
   "testimonialEntries": [
     {
       "id": "unity-progress-communication",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
@@ -699,15 +867,22 @@
       "starRating": "2",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-06-16T19:22:08Z",
-      "avatarAssetId": "testimonial-client8",
+      "avatarAssetId": {
+        "text": "testimonial-client8",
+        "hyperlink": "#'ASSETS'!A32"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 1
     },
     {
       "id": "unity-fast-delivery",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
@@ -715,15 +890,22 @@
       "starRating": "3",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-02T16:25:00Z",
-      "avatarAssetId": "testimonial-client7",
+      "avatarAssetId": {
+        "text": "testimonial-client13",
+        "hyperlink": "#'ASSETS'!A40"
+      },
       "featured": "TRUE",
       "featuredOrder": 3,
+      "highlighted": "FALSE",
       "order": 2
     },
     {
       "id": "unity-communication",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
@@ -731,15 +913,22 @@
       "starRating": "4",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-05T20:42:58Z",
-      "avatarAssetId": "testimonial-client6",
+      "avatarAssetId": {
+        "text": "testimonial-client14",
+        "hyperlink": "#'ASSETS'!A41"
+      },
       "featured": "TRUE",
       "featuredOrder": 5,
+      "highlighted": "FALSE",
       "order": 3
     },
     {
       "id": "unity-great-work",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
@@ -747,15 +936,22 @@
       "starRating": "5",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-21T14:05:57Z",
-      "avatarAssetId": "testimonial-client2",
+      "avatarAssetId": {
+        "text": "testimonial-client2",
+        "hyperlink": "#'ASSETS'!A26"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 4
     },
     {
       "id": "unity-complex-ownership",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
@@ -763,15 +959,22 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-07-29T16:57:35Z",
-      "avatarAssetId": "testimonial-client10",
+      "avatarAssetId": {
+        "text": "testimonial-client12",
+        "hyperlink": "#'ASSETS'!A39"
+      },
       "featured": "TRUE",
       "featuredOrder": 1,
+      "highlighted": "TRUE",
       "order": 5
     },
     {
       "id": "unity-repeat-client",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
@@ -779,15 +982,22 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-09-27T19:47:17Z",
-      "avatarAssetId": "testimonial-client10",
+      "avatarAssetId": {
+        "text": "testimonial-client15",
+        "hyperlink": "#'ASSETS'!A42"
+      },
       "featured": "TRUE",
       "featuredOrder": 7,
+      "highlighted": "FALSE",
       "order": 6
     },
     {
       "id": "automation-seo-detail",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "Operations / Media Client",
       "serviceOverride": "Automation / Metadata Workflow",
@@ -795,15 +1005,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for easy gallery managing",
       "createdAt": "2024-11-07T20:02:11Z",
-      "avatarAssetId": "testimonial-client5",
+      "avatarAssetId": {
+        "text": "testimonial-client5",
+        "hyperlink": "#'ASSETS'!A29"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 7
     },
     {
       "id": "automation-exceeded-expectations",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -811,15 +1028,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-08T22:07:56Z",
-      "avatarAssetId": "testimonial-client11",
+      "avatarAssetId": {
+        "text": "testimonial-pack-leaf",
+        "hyperlink": "#'ASSETS'!A36"
+      },
       "featured": "TRUE",
       "featuredOrder": 2,
+      "highlighted": "TRUE",
       "order": 8
     },
     {
       "id": "automation-gallery-spanish",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -827,15 +1051,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-09T18:29:07Z",
-      "avatarAssetId": "testimonial-client8",
+      "avatarAssetId": {
+        "text": "testimonial-client8",
+        "hyperlink": "#'ASSETS'!A32"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 9
     },
     {
       "id": "automation-fiverr-credit",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -843,15 +1074,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-19T14:13:23Z",
-      "avatarAssetId": "testimonial-client9",
+      "avatarAssetId": {
+        "text": "testimonial-pack-av",
+        "hyperlink": "#'ASSETS'!A37"
+      },
       "featured": "TRUE",
       "featuredOrder": 4,
+      "highlighted": "TRUE",
       "order": 10
     },
     {
       "id": "automation-outstanding-work",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -859,15 +1097,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-08T08:55:41Z",
-      "avatarAssetId": "testimonial-client3",
+      "avatarAssetId": {
+        "text": "testimonial-client3",
+        "hyperlink": "#'ASSETS'!A25"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 11
     },
     {
       "id": "automation-communication-timelines",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -875,15 +1120,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-12T19:03:03Z",
-      "avatarAssetId": "testimonial-client5",
+      "avatarAssetId": {
+        "text": "testimonial-pack-signature",
+        "hyperlink": "#'ASSETS'!A38"
+      },
       "featured": "TRUE",
       "featuredOrder": 6,
+      "highlighted": "TRUE",
       "order": 12
     },
     {
       "id": "automation-wonderful-details",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -891,15 +1143,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-15T18:18:51Z",
-      "avatarAssetId": "testimonial-client4",
+      "avatarAssetId": {
+        "text": "testimonial-client4",
+        "hyperlink": "#'ASSETS'!A28"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 13
     },
     {
       "id": "automation-vigor",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -907,15 +1166,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T09:56:00Z",
-      "avatarAssetId": "testimonial-client7",
+      "avatarAssetId": {
+        "text": "testimonial-client7",
+        "hyperlink": "#'ASSETS'!A31"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 14
     },
     {
       "id": "automation-fast-turnaround",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -923,15 +1189,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T17:58:51Z",
-      "avatarAssetId": "testimonial-client6",
+      "avatarAssetId": {
+        "text": "testimonial-client6",
+        "hyperlink": "#'ASSETS'!A30"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 15
     },
     {
       "id": "automation-highly-recommend",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -939,15 +1212,22 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-30T18:59:30Z",
-      "avatarAssetId": "testimonial-client11",
+      "avatarAssetId": {
+        "text": "testimonial-client11",
+        "hyperlink": "#'ASSETS'!A35"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 16
     },
     {
       "id": "automation-nice-guy",
-      "sourceKey": "fiverr",
-      "labelOverride": "",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
+      "labelOverride": null,
       "clientName": null,
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
@@ -955,9 +1235,13 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-31T10:10:16Z",
-      "avatarAssetId": "testimonial-client1",
+      "avatarAssetId": {
+        "text": "testimonial-client1",
+        "hyperlink": "#'ASSETS'!A27"
+      },
       "featured": "FALSE",
-      "featuredOrder": "",
+      "featuredOrder": null,
+      "highlighted": "FALSE",
       "order": 17
     }
   ],
@@ -1023,13 +1307,13 @@
     {
       "label": "Encryption",
       "value": "TLS_1.3",
-      "activeValue": "",
+      "activeValue": null,
       "order": 2
     },
     {
       "label": "Uptime",
       "value": "99.9%_AVAIL",
-      "activeValue": "",
+      "activeValue": null,
       "order": 3
     }
   ],
@@ -1336,6 +1620,105 @@
       "notes": "Synthetic avatar used by anonymized Fiverr testimonials",
       "enabled": true,
       "status": "READY -> /assets/testimonials/client11.jpg"
+    },
+    {
+      "assetId": "testimonial-pack-leaf",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/pack-leaf.svg",
+      "targetPublicPath": "/assets/testimonials/pack-leaf.svg",
+      "alt": "Anonymized Fiverr client icon avatar",
+      "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/pack-leaf.svg"
+    },
+    {
+      "assetId": "testimonial-pack-av",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/pack-av.svg",
+      "targetPublicPath": "/assets/testimonials/pack-av.svg",
+      "alt": "Anonymized Fiverr client icon avatar",
+      "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/pack-av.svg"
+    },
+    {
+      "assetId": "testimonial-pack-signature",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/pack-signature-v2.svg",
+      "targetPublicPath": "/assets/testimonials/pack-signature-v2.svg",
+      "alt": "Anonymized Fiverr client icon avatar",
+      "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/pack-signature-v2.svg"
+    },
+    {
+      "assetId": "testimonial-client12",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client12.jpg",
+      "targetPublicPath": "/assets/testimonials/client12.jpg",
+      "alt": "Anonymized Fiverr client avatar",
+      "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client12.jpg"
+    },
+    {
+      "assetId": "testimonial-client13",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client13.jpg",
+      "targetPublicPath": "/assets/testimonials/client13.jpg",
+      "alt": "Anonymized Fiverr client avatar",
+      "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client13.jpg"
+    },
+    {
+      "assetId": "testimonial-client14",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client14.jpg",
+      "targetPublicPath": "/assets/testimonials/client14.jpg",
+      "alt": "Anonymized Fiverr client avatar",
+      "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client14.jpg"
+    },
+    {
+      "assetId": "testimonial-client15",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/client15.jpg",
+      "targetPublicPath": "/assets/testimonials/client15.jpg",
+      "alt": "Anonymized Fiverr client avatar",
+      "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/client15.jpg"
+    },
+    {
+      "assetId": "testimonial-pack-smark",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/pack-smark.svg",
+      "targetPublicPath": "/assets/testimonials/pack-smark.svg",
+      "alt": "Anonymized Fiverr client icon avatar",
+      "notes": "Provided icon avatar available for anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/pack-smark.svg"
+    },
+    {
+      "assetId": "testimonial-pack-mountain",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/testimonials/pack-mountain.svg",
+      "targetPublicPath": "/assets/testimonials/pack-mountain.svg",
+      "alt": "Anonymized Fiverr client icon avatar",
+      "notes": "Provided icon avatar available for anonymized Fiverr testimonials",
+      "enabled": true,
+      "status": "READY -> /assets/testimonials/pack-mountain.svg"
     }
   ],
   "runtime": {
@@ -1394,14 +1777,16 @@
             "clientName": "Fiverr Client",
             "clientType": "Game / Unity Client",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client10.jpg",
+            "avatarPresentation": "photo",
+            "avatarUrl": "/assets/testimonials/client12.jpg",
             "avatarLabel": "GS",
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.36)",
             "rating": 5,
             "hasConfirmedRating": true,
             "createdAt": "2024-07-29T16:57:35Z",
-            "featured": true
+            "featured": true,
+            "highlighted": true
           },
           {
             "id": "automation-exceeded-expectations",
@@ -1413,14 +1798,16 @@
             "clientName": "Fiverr Client",
             "clientType": "SEO / Content Operations",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client11.jpg",
+            "avatarPresentation": "brand",
+            "avatarUrl": "/assets/testimonials/pack-leaf.svg",
             "avatarLabel": "SEO",
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.28)",
             "rating": 5,
             "hasConfirmedRating": true,
             "createdAt": "2024-11-08T22:07:56Z",
-            "featured": true
+            "featured": true,
+            "highlighted": true
           },
           {
             "id": "unity-fast-delivery",
@@ -1432,14 +1819,16 @@
             "clientName": "Fiverr Client",
             "clientType": "Game / Unity Client",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client7.jpg",
+            "avatarPresentation": "photo",
+            "avatarUrl": "/assets/testimonials/client13.jpg",
             "avatarLabel": "UI",
             "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(102, 252, 241, 0.34)",
             "rating": 3,
             "hasConfirmedRating": true,
             "createdAt": "2024-07-02T16:25:00Z",
-            "featured": true
+            "featured": true,
+            "highlighted": false
           },
           {
             "id": "automation-fiverr-credit",
@@ -1451,14 +1840,16 @@
             "clientName": "Fiverr Client",
             "clientType": "SEO / Content Operations",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client9.jpg",
+            "avatarPresentation": "brand",
+            "avatarUrl": "/assets/testimonials/pack-av.svg",
             "avatarLabel": "SEO",
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.28)",
             "rating": 5,
             "hasConfirmedRating": true,
             "createdAt": "2024-11-19T14:13:23Z",
-            "featured": true
+            "featured": true,
+            "highlighted": true
           },
           {
             "id": "unity-communication",
@@ -1470,14 +1861,16 @@
             "clientName": "Fiverr Client",
             "clientType": "Game / Unity Client",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client6.jpg",
+            "avatarPresentation": "photo",
+            "avatarUrl": "/assets/testimonials/client14.jpg",
             "avatarLabel": "UI",
             "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(102, 252, 241, 0.34)",
             "rating": 4,
             "hasConfirmedRating": true,
             "createdAt": "2024-07-05T20:42:58Z",
-            "featured": true
+            "featured": true,
+            "highlighted": false
           },
           {
             "id": "automation-communication-timelines",
@@ -1489,14 +1882,16 @@
             "clientName": "Fiverr Client",
             "clientType": "SEO / Content Operations",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client5.jpg",
+            "avatarPresentation": "brand",
+            "avatarUrl": "/assets/testimonials/pack-signature-v2.svg",
             "avatarLabel": "SEO",
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.28)",
             "rating": 5,
             "hasConfirmedRating": true,
             "createdAt": "2024-12-12T19:03:03Z",
-            "featured": true
+            "featured": true,
+            "highlighted": true
           },
           {
             "id": "unity-repeat-client",
@@ -1508,14 +1903,16 @@
             "clientName": "Fiverr Client",
             "clientType": "Game / Unity Client",
             "avatarType": "generated-photo",
-            "avatarUrl": "/assets/testimonials/client10.jpg",
+            "avatarPresentation": "photo",
+            "avatarUrl": "/assets/testimonials/client15.jpg",
             "avatarLabel": "GS",
             "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
             "avatarAccent": "rgba(15, 255, 153, 0.36)",
             "rating": 5,
             "hasConfirmedRating": true,
             "createdAt": "2024-09-27T19:47:17Z",
-            "featured": true
+            "featured": true,
+            "highlighted": false
           }
         ]
       },
@@ -1975,6 +2372,7 @@
         "avatarUrl": "/assets/testimonials/client8.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 1
       },
       {
@@ -1988,10 +2386,11 @@
         "starRating": 3,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-07-02T16:25:00Z",
-        "avatarAssetId": "testimonial-client7",
-        "avatarUrl": "/assets/testimonials/client7.jpg",
+        "avatarAssetId": "testimonial-client13",
+        "avatarUrl": "/assets/testimonials/client13.jpg",
         "featured": true,
         "featuredOrder": 3,
+        "highlighted": false,
         "order": 2
       },
       {
@@ -2005,10 +2404,11 @@
         "starRating": 4,
         "gigTitle": "create professional unity editor windows or game uis with uxml",
         "createdAt": "2024-07-05T20:42:58Z",
-        "avatarAssetId": "testimonial-client6",
-        "avatarUrl": "/assets/testimonials/client6.jpg",
+        "avatarAssetId": "testimonial-client14",
+        "avatarUrl": "/assets/testimonials/client14.jpg",
         "featured": true,
         "featuredOrder": 5,
+        "highlighted": false,
         "order": 3
       },
       {
@@ -2026,6 +2426,7 @@
         "avatarUrl": "/assets/testimonials/client2.png",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 4
       },
       {
@@ -2039,10 +2440,11 @@
         "starRating": 5,
         "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
         "createdAt": "2024-07-29T16:57:35Z",
-        "avatarAssetId": "testimonial-client10",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarAssetId": "testimonial-client12",
+        "avatarUrl": "/assets/testimonials/client12.jpg",
         "featured": true,
         "featuredOrder": 1,
+        "highlighted": true,
         "order": 5
       },
       {
@@ -2056,10 +2458,11 @@
         "starRating": 5,
         "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
         "createdAt": "2024-09-27T19:47:17Z",
-        "avatarAssetId": "testimonial-client10",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarAssetId": "testimonial-client15",
+        "avatarUrl": "/assets/testimonials/client15.jpg",
         "featured": true,
         "featuredOrder": 7,
+        "highlighted": false,
         "order": 6
       },
       {
@@ -2077,6 +2480,7 @@
         "avatarUrl": "/assets/testimonials/client5.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 7
       },
       {
@@ -2090,10 +2494,11 @@
         "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-11-08T22:07:56Z",
-        "avatarAssetId": "testimonial-client11",
-        "avatarUrl": "/assets/testimonials/client11.jpg",
+        "avatarAssetId": "testimonial-pack-leaf",
+        "avatarUrl": "/assets/testimonials/pack-leaf.svg",
         "featured": true,
         "featuredOrder": 2,
+        "highlighted": true,
         "order": 8
       },
       {
@@ -2111,6 +2516,7 @@
         "avatarUrl": "/assets/testimonials/client8.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 9
       },
       {
@@ -2124,10 +2530,11 @@
         "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-11-19T14:13:23Z",
-        "avatarAssetId": "testimonial-client9",
-        "avatarUrl": "/assets/testimonials/client9.jpg",
+        "avatarAssetId": "testimonial-pack-av",
+        "avatarUrl": "/assets/testimonials/pack-av.svg",
         "featured": true,
         "featuredOrder": 4,
+        "highlighted": true,
         "order": 10
       },
       {
@@ -2145,6 +2552,7 @@
         "avatarUrl": "/assets/testimonials/client3.png",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 11
       },
       {
@@ -2158,10 +2566,11 @@
         "starRating": 5,
         "gigTitle": "edit photos and videos metadata for gallery and seo managing",
         "createdAt": "2024-12-12T19:03:03Z",
-        "avatarAssetId": "testimonial-client5",
-        "avatarUrl": "/assets/testimonials/client5.jpg",
+        "avatarAssetId": "testimonial-pack-signature",
+        "avatarUrl": "/assets/testimonials/pack-signature-v2.svg",
         "featured": true,
         "featuredOrder": 6,
+        "highlighted": true,
         "order": 12
       },
       {
@@ -2179,6 +2588,7 @@
         "avatarUrl": "/assets/testimonials/client4.png",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 13
       },
       {
@@ -2196,6 +2606,7 @@
         "avatarUrl": "/assets/testimonials/client7.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 14
       },
       {
@@ -2213,6 +2624,7 @@
         "avatarUrl": "/assets/testimonials/client6.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 15
       },
       {
@@ -2230,6 +2642,7 @@
         "avatarUrl": "/assets/testimonials/client11.jpg",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 16
       },
       {
@@ -2247,6 +2660,7 @@
         "avatarUrl": "/assets/testimonials/client1.png",
         "featured": false,
         "featuredOrder": null,
+        "highlighted": false,
         "order": 17
       }
     ],
@@ -2261,6 +2675,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client1.png",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2268,7 +2683,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-31T10:10:16Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-highly-recommend",
@@ -2280,6 +2696,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client11.jpg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2287,7 +2704,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-30T18:59:30Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-fast-turnaround",
@@ -2299,6 +2717,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client6.jpg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2306,7 +2725,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-06T17:58:51Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-vigor",
@@ -2318,6 +2738,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client7.jpg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2325,7 +2746,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2025-01-06T09:56:00Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-wonderful-details",
@@ -2337,6 +2759,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client4.png",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2344,7 +2767,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-15T18:18:51Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-communication-timelines",
@@ -2356,14 +2780,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client5.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-signature-v2.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-12T19:03:03Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "automation-outstanding-work",
@@ -2375,6 +2801,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client3.png",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2382,7 +2809,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-08T08:55:41Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-fiverr-credit",
@@ -2394,14 +2822,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client9.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-av.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-19T14:13:23Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "automation-gallery-spanish",
@@ -2413,6 +2843,7 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client8.jpg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2420,7 +2851,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-09T18:29:07Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "automation-exceeded-expectations",
@@ -2432,14 +2864,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client11.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-leaf.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-08T22:07:56Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "automation-seo-detail",
@@ -2451,6 +2885,7 @@
         "clientName": "Fiverr Client",
         "clientType": "Operations / Media Client",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client5.jpg",
         "avatarLabel": "OPS",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.22) 0%, rgba(15, 255, 153, 0.15) 50%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2458,7 +2893,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-07T20:02:11Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "unity-repeat-client",
@@ -2470,14 +2906,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client15.jpg",
         "avatarLabel": "GS",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-09-27T19:47:17Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       },
       {
         "id": "unity-complex-ownership",
@@ -2489,14 +2927,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client12.jpg",
         "avatarLabel": "GS",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-29T16:57:35Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "unity-great-work",
@@ -2508,6 +2948,7 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client2.png",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2515,7 +2956,8 @@
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-21T14:05:57Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       },
       {
         "id": "unity-communication",
@@ -2527,14 +2969,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client6.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client14.jpg",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
         "rating": 4,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-05T20:42:58Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       },
       {
         "id": "unity-fast-delivery",
@@ -2546,14 +2990,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client7.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client13.jpg",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
         "rating": 3,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-02T16:25:00Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       },
       {
         "id": "unity-progress-communication",
@@ -2565,6 +3011,7 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
+        "avatarPresentation": "photo",
         "avatarUrl": "/assets/testimonials/client8.jpg",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
@@ -2572,7 +3019,8 @@
         "rating": 2,
         "hasConfirmedRating": true,
         "createdAt": "2024-06-16T19:22:08Z",
-        "featured": false
+        "featured": false,
+        "highlighted": false
       }
     ],
     "featuredTestimonials": [
@@ -2586,14 +3034,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client12.jpg",
         "avatarLabel": "GS",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-29T16:57:35Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "automation-exceeded-expectations",
@@ -2605,14 +3055,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client11.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-leaf.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-08T22:07:56Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "unity-fast-delivery",
@@ -2624,14 +3076,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client7.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client13.jpg",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
         "rating": 3,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-02T16:25:00Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       },
       {
         "id": "automation-fiverr-credit",
@@ -2643,14 +3097,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client9.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-av.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-11-19T14:13:23Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "unity-communication",
@@ -2662,14 +3118,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client6.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client14.jpg",
         "avatarLabel": "UI",
         "avatarGradient": "linear-gradient(135deg, rgba(102, 252, 241, 0.24) 0%, rgba(15, 255, 153, 0.16) 52%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(102, 252, 241, 0.34)",
         "rating": 4,
         "hasConfirmedRating": true,
         "createdAt": "2024-07-05T20:42:58Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       },
       {
         "id": "automation-communication-timelines",
@@ -2681,14 +3139,16 @@
         "clientName": "Fiverr Client",
         "clientType": "SEO / Content Operations",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client5.jpg",
+        "avatarPresentation": "brand",
+        "avatarUrl": "/assets/testimonials/pack-signature-v2.svg",
         "avatarLabel": "SEO",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.26) 0%, rgba(41, 196, 255, 0.14) 48%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.28)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-12-12T19:03:03Z",
-        "featured": true
+        "featured": true,
+        "highlighted": true
       },
       {
         "id": "unity-repeat-client",
@@ -2700,14 +3160,16 @@
         "clientName": "Fiverr Client",
         "clientType": "Game / Unity Client",
         "avatarType": "generated-photo",
-        "avatarUrl": "/assets/testimonials/client10.jpg",
+        "avatarPresentation": "photo",
+        "avatarUrl": "/assets/testimonials/client15.jpg",
         "avatarLabel": "GS",
         "avatarGradient": "linear-gradient(135deg, rgba(15, 255, 153, 0.28) 0%, rgba(102, 252, 241, 0.2) 55%, rgba(11, 12, 16, 0.96) 100%)",
         "avatarAccent": "rgba(15, 255, 153, 0.36)",
         "rating": 5,
         "hasConfirmedRating": true,
         "createdAt": "2024-09-27T19:47:17Z",
-        "featured": true
+        "featured": true,
+        "highlighted": false
       }
     ],
     "assets": [
@@ -3034,6 +3496,114 @@
         "enabled": true,
         "resolvedUrl": "/assets/testimonials/client11.jpg",
         "status": "READY -> /assets/testimonials/client11.jpg"
+      },
+      {
+        "assetId": "testimonial-pack-leaf",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/pack-leaf.svg",
+        "targetPublicPath": "/assets/testimonials/pack-leaf.svg",
+        "alt": "Anonymized Fiverr client icon avatar",
+        "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/pack-leaf.svg",
+        "status": "READY -> /assets/testimonials/pack-leaf.svg"
+      },
+      {
+        "assetId": "testimonial-pack-av",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/pack-av.svg",
+        "targetPublicPath": "/assets/testimonials/pack-av.svg",
+        "alt": "Anonymized Fiverr client icon avatar",
+        "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/pack-av.svg",
+        "status": "READY -> /assets/testimonials/pack-av.svg"
+      },
+      {
+        "assetId": "testimonial-pack-signature",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/pack-signature-v2.svg",
+        "targetPublicPath": "/assets/testimonials/pack-signature-v2.svg",
+        "alt": "Anonymized Fiverr client icon avatar",
+        "notes": "Provided icon avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/pack-signature-v2.svg",
+        "status": "READY -> /assets/testimonials/pack-signature-v2.svg"
+      },
+      {
+        "assetId": "testimonial-client12",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client12.jpg",
+        "targetPublicPath": "/assets/testimonials/client12.jpg",
+        "alt": "Anonymized Fiverr client avatar",
+        "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client12.jpg",
+        "status": "READY -> /assets/testimonials/client12.jpg"
+      },
+      {
+        "assetId": "testimonial-client13",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client13.jpg",
+        "targetPublicPath": "/assets/testimonials/client13.jpg",
+        "alt": "Anonymized Fiverr client avatar",
+        "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client13.jpg",
+        "status": "READY -> /assets/testimonials/client13.jpg"
+      },
+      {
+        "assetId": "testimonial-client14",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client14.jpg",
+        "targetPublicPath": "/assets/testimonials/client14.jpg",
+        "alt": "Anonymized Fiverr client avatar",
+        "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client14.jpg",
+        "status": "READY -> /assets/testimonials/client14.jpg"
+      },
+      {
+        "assetId": "testimonial-client15",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/client15.jpg",
+        "targetPublicPath": "/assets/testimonials/client15.jpg",
+        "alt": "Anonymized Fiverr client avatar",
+        "notes": "Generated profile avatar used by anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/client15.jpg",
+        "status": "READY -> /assets/testimonials/client15.jpg"
+      },
+      {
+        "assetId": "testimonial-pack-smark",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/pack-smark.svg",
+        "targetPublicPath": "/assets/testimonials/pack-smark.svg",
+        "alt": "Anonymized Fiverr client icon avatar",
+        "notes": "Provided icon avatar available for anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/pack-smark.svg",
+        "status": "READY -> /assets/testimonials/pack-smark.svg"
+      },
+      {
+        "assetId": "testimonial-pack-mountain",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/testimonials/pack-mountain.svg",
+        "targetPublicPath": "/assets/testimonials/pack-mountain.svg",
+        "alt": "Anonymized Fiverr client icon avatar",
+        "notes": "Provided icon avatar available for anonymized Fiverr testimonials",
+        "enabled": true,
+        "resolvedUrl": "/assets/testimonials/pack-mountain.svg",
+        "status": "READY -> /assets/testimonials/pack-mountain.svg"
       }
     ]
   }

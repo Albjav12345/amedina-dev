@@ -377,6 +377,85 @@ const SKILL_COLORS = ['electric-green', 'electric-cyan'];
 const SKILL_ICONS = ['Cpu', 'Brain', 'Layers', 'Globe'];
 const SOCIAL_ICONS = ['Github', 'Linkedin', 'Twitter', 'Upwork'];
 const PREVIEWABLE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
+const DEFAULT_HIGHLIGHTED_TESTIMONIAL_IDS = new Set([
+    'unity-complex-ownership',
+    'automation-exceeded-expectations',
+    'automation-fiverr-credit',
+    'automation-communication-timelines',
+]);
+const TESTIMONIAL_WORKBOOK_DEFAULTS = {
+    'automation-exceeded-expectations': {
+        avatarAssetId: 'testimonial-pack-leaf',
+        legacyAvatarAssetIds: ['', 'testimonial-client11', 'testimonial-brand-lumenseo'],
+    },
+    'automation-fiverr-credit': {
+        avatarAssetId: 'testimonial-pack-av',
+        legacyAvatarAssetIds: ['', 'testimonial-client9', 'testimonial-brand-rankframe'],
+    },
+    'automation-communication-timelines': {
+        avatarAssetId: 'testimonial-pack-signature',
+        legacyAvatarAssetIds: ['', 'testimonial-client5', 'testimonial-brand-workflow'],
+    },
+};
+const BRAND_TESTIMONIAL_ASSET_IDS = new Set([
+    'testimonial-pack-leaf',
+    'testimonial-pack-av',
+    'testimonial-pack-signature',
+    'testimonial-pack-smark',
+    'testimonial-pack-mountain',
+]);
+const DEFAULT_TESTIMONIAL_ASSET_ENTRIES = [
+    {
+        assetId: 'testimonial-pack-leaf',
+        kind: 'image',
+        mode: 'existing_public',
+        sourceValue: '/assets/testimonials/pack-leaf.svg',
+        targetPublicPath: '/assets/testimonials/pack-leaf.svg',
+        alt: 'Anonymized Fiverr client logo avatar',
+        notes: 'Provided icon avatar for anonymized Fiverr testimonials',
+        enabled: 'TRUE',
+    },
+    {
+        assetId: 'testimonial-pack-av',
+        kind: 'image',
+        mode: 'existing_public',
+        sourceValue: '/assets/testimonials/pack-av.svg',
+        targetPublicPath: '/assets/testimonials/pack-av.svg',
+        alt: 'Anonymized Fiverr client logo avatar',
+        notes: 'Provided icon avatar for anonymized Fiverr testimonials',
+        enabled: 'TRUE',
+    },
+    {
+        assetId: 'testimonial-pack-signature',
+        kind: 'image',
+        mode: 'existing_public',
+        sourceValue: '/assets/testimonials/pack-signature-v2.svg',
+        targetPublicPath: '/assets/testimonials/pack-signature-v2.svg',
+        alt: 'Anonymized Fiverr client logo avatar',
+        notes: 'Provided icon avatar for anonymized Fiverr testimonials',
+        enabled: 'TRUE',
+    },
+    {
+        assetId: 'testimonial-pack-smark',
+        kind: 'image',
+        mode: 'existing_public',
+        sourceValue: '/assets/testimonials/pack-smark.svg',
+        targetPublicPath: '/assets/testimonials/pack-smark.svg',
+        alt: 'Anonymized Fiverr client logo avatar',
+        notes: 'Provided icon avatar for anonymized Fiverr testimonials',
+        enabled: 'TRUE',
+    },
+    {
+        assetId: 'testimonial-pack-mountain',
+        kind: 'image',
+        mode: 'existing_public',
+        sourceValue: '/assets/testimonials/pack-mountain.svg',
+        targetPublicPath: '/assets/testimonials/pack-mountain.svg',
+        alt: 'Anonymized Fiverr client logo avatar',
+        notes: 'Provided icon avatar for anonymized Fiverr testimonials',
+        enabled: 'TRUE',
+    },
+];
 
 const SHEET_HEADER_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F1720' } };
 const REQUIRED_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF173124' } };
@@ -532,6 +611,39 @@ function buildStatusMap(rows, getKey, getStatus) {
     );
 }
 
+function applyWorkbookTestimonialDefaults(entries) {
+    return entries.map((entry) => {
+        const testimonialId = asString(entry.id);
+        const defaults = TESTIMONIAL_WORKBOOK_DEFAULTS[testimonialId];
+        const normalizedHighlighted = asString(entry.highlighted).toUpperCase();
+        const currentAvatarAssetId = asString(entry.avatarAssetId);
+
+        return {
+            ...entry,
+            highlighted: KNOWN_BOOLEAN_VALUES.includes(normalizedHighlighted)
+                ? normalizedHighlighted
+                : (DEFAULT_HIGHLIGHTED_TESTIMONIAL_IDS.has(testimonialId) ? 'TRUE' : 'FALSE'),
+            avatarAssetId: defaults?.avatarAssetId && defaults.legacyAvatarAssetIds.includes(currentAvatarAssetId)
+                ? defaults.avatarAssetId
+                : entry.avatarAssetId,
+        };
+    });
+}
+
+function mergeDefaultTestimonialAssetEntries(assetEntries) {
+    const existingAssetIds = new Set(assetEntries.map((entry) => asString(entry.assetId)));
+    const missingDefaults = DEFAULT_TESTIMONIAL_ASSET_ENTRIES.filter((entry) => !existingAssetIds.has(entry.assetId));
+    return [...assetEntries, ...missingDefaults];
+}
+
+function getTestimonialAvatarPresentation(avatarAssetId, avatarUrl) {
+    if (BRAND_TESTIMONIAL_ASSET_IDS.has(asString(avatarAssetId))) {
+        return 'brand';
+    }
+
+    return path.extname(asString(avatarUrl)).toLowerCase() === '.svg' ? 'brand' : 'photo';
+}
+
 function createRowStatusMaps(masterData, resolvedAssets) {
     return {
         [SHEET_NAMES.navigationConfig]: new Map([['singleton', 'READY']]),
@@ -606,7 +718,10 @@ function createRowStatusMaps(masterData, resolvedAssets) {
         [SHEET_NAMES.testimonials]: buildStatusMap(
             masterData.testimonialEntries,
             (row) => asString(row.id),
-            (row) => (parseBoolean(row.featured, false) ? 'FEATURED' : 'LIBRARY'),
+            (row) => {
+                const statusBase = parseBoolean(row.featured, false) ? 'FEATURED' : 'LIBRARY';
+                return parseBoolean(row.highlighted, false) ? `${statusBase} / HIGHLIGHTED` : statusBase;
+            },
         ),
         [SHEET_NAMES.contact]: new Map([['singleton', 'READY']]),
         [SHEET_NAMES.contactSocial]: buildStatusMap(
@@ -1514,7 +1629,7 @@ function createReadmeSheet(workbook, generatedAt) {
         endRow: 18,
         endColumn: 8,
         title: 'ADD A TESTIMONIAL',
-        body: '1. Add a row in TESTIMONIALS.\n2. Reuse or add a source preset in TESTIMONIAL_SOURCES.\n3. Set featured = TRUE to show it on the site.\n4. Use featuredOrder to control visible order.\n5. Run content:sync.',
+        body: '1. Add a row in TESTIMONIALS.\n2. Reuse or add a source preset in TESTIMONIAL_SOURCES.\n3. Set featured = TRUE to show it on the site.\n4. Use featuredOrder to control visible order and highlighted = TRUE to visually emphasize it.\n5. Run content:sync.',
         accentColor: 'FF22C55E',
     });
     createGuidePanel({
@@ -2182,6 +2297,7 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             { key: 'avatarAssetId', header: 'avatarAssetId', width: 24, validation: { lookup: 'assetIds' } },
             { key: 'featured', header: 'featured', width: 12, required: true, validation: { lookup: 'booleanValues' } },
             { key: 'featuredOrder', header: 'featuredOrder', width: 14, validation: { type: 'whole', operator: 'greaterThan', formulae: [0] } },
+            { key: 'highlighted', header: 'highlighted', width: 14, required: true, validation: { lookup: 'booleanValues' } },
             { key: 'order', header: 'order', width: 10, required: true, validation: { type: 'whole', operator: 'greaterThan', formulae: [0] } },
             { key: 'rowStatus', header: 'rowStatus', width: 20, generated: true },
         ],
@@ -2421,7 +2537,9 @@ async function readWorkbookToMasterData(workbookPath = WORKBOOK_PATH) {
         projectStackEntries: readSheetRowsCompat(workbook, SHEET_NAMES.projectStack, ['project_id', 'label', 'order']),
         projectArchEntries: readSheetRowsCompat(workbook, SHEET_NAMES.projectArch, ['project_id', 'label', 'order']),
         testimonialSourceEntries: readSheetRowsCompat(workbook, SHEET_NAMES.testimonialSources, ['sourceKey', 'source', 'label', 'clientName']),
-        testimonialEntries: readSheetRowsCompat(workbook, SHEET_NAMES.testimonials, ['id', 'sourceKey', 'review', 'gigTitle', 'order']),
+        testimonialEntries: applyWorkbookTestimonialDefaults(
+            readSheetRowsCompat(workbook, SHEET_NAMES.testimonials, ['id', 'sourceKey', 'review', 'gigTitle', 'order']),
+        ),
         testimonialsSection: {
             title: asString(profileRow.testimonialsTitle, 'Verified Client Feedback'),
             subtitle: asString(profileRow.testimonialsSubtitle, 'Real client feedback collected from completed projects.'),
@@ -2430,7 +2548,9 @@ async function readWorkbookToMasterData(workbookPath = WORKBOOK_PATH) {
         contactSocialEntries: readSheetRowsCompat(workbook, SHEET_NAMES.contactSocial, ['name', 'url', 'icon', 'order', 'enabled']),
         contactMetadataEntries: readSheetRowsCompat(workbook, SHEET_NAMES.contactMetadata, ['label', 'value', 'activeValue', 'order']),
         footerEntry: stripGeneratedFields(footerRow),
-        assetEntries: readSheetRowsCompat(workbook, SHEET_NAMES.assets, ['assetId', 'kind', 'mode', 'sourceValue', 'enabled']),
+        assetEntries: mergeDefaultTestimonialAssetEntries(
+            readSheetRowsCompat(workbook, SHEET_NAMES.assets, ['assetId', 'kind', 'mode', 'sourceValue', 'enabled']),
+        ),
     };
 }
 
@@ -2862,6 +2982,7 @@ export async function loadCurrentSourceContent() {
             avatarAssetId,
             featured: featuredOrderMap.has(entry.id),
             featuredOrder: featuredOrderMap.get(entry.id) ?? '',
+            highlighted: parseBoolean(entry.highlighted ?? resolved?.highlighted, false),
             order: index + 1,
         };
     });
@@ -3363,6 +3484,7 @@ function buildRuntimeContent(masterData, resolvedAssets) {
             avatarUrl: resolveAssetUrl(entry.avatarAssetId, `TESTIMONIALS.avatarAssetId for ${entry.id}`, { optional: true }) || null,
             featured: parseBoolean(entry.featured, false),
             featuredOrder: parseOptionalNumber(entry.featuredOrder),
+            highlighted: parseBoolean(entry.highlighted, false),
             order: parseRequiredNumber(entry.order, `TESTIMONIALS.order for ${entry.id}`),
         }));
 
@@ -3382,6 +3504,7 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 clientName: entry.clientName ?? sourcePreset.clientName,
                 clientType: entry.clientType ?? serviceProfile.clientType,
                 avatarType: entry.avatarUrl ? 'generated-photo' : 'generated',
+                avatarPresentation: entry.avatarUrl ? getTestimonialAvatarPresentation(entry.avatarAssetId, entry.avatarUrl) : 'generated',
                 avatarUrl: entry.avatarUrl,
                 avatarLabel: serviceProfile.avatarLabel,
                 avatarGradient: serviceProfile.avatarGradient,
@@ -3390,6 +3513,7 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 hasConfirmedRating: confirmedRating !== null,
                 createdAt: entry.createdAt,
                 featured: entry.featured,
+                highlighted: entry.highlighted,
             };
         })
         .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));

@@ -14,6 +14,23 @@ const testimonialSection = profileAbout.testimonialsSection ?? {
 const desktopMarqueeCloneIndexes = [0, 1];
 const desktopMarqueeViewportMargin = '360px 0px';
 const desktopMarqueeMaskImage = 'linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)';
+const highlightedEyebrowClassName = 'inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.24em] text-electric-cyan/80';
+
+const getTestimonialCardSurface = (highlighted, isLow) => {
+    if (highlighted) {
+        return isLow
+            ? 'border-electric-cyan/20 bg-dark-slate shadow-[0_18px_42px_rgba(0,0,0,0.24)]'
+            : 'border-electric-cyan/16 bg-white/[0.065] shadow-[0_18px_42px_rgba(0,0,0,0.24)] hover:bg-white/[0.085]';
+    }
+
+    return isLow ? 'border-white/10 bg-dark-slate' : 'border-white/5 bg-white/5 hover:bg-white/10';
+};
+
+const getServiceChipClassName = (highlighted) => (
+    highlighted
+        ? 'border-electric-green/24 bg-electric-green/12 text-electric-green'
+        : 'border-electric-green/20 bg-electric-green/10 text-electric-green'
+);
 
 const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => {
     const normalizedRating = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
@@ -65,17 +82,16 @@ const GeneratedClientAvatar = ({ testimonial, sizeClassName, textClassName }) =>
     const highlightId = `${avatarId}-avatar-highlight`;
     const variant = getAvatarVariant(testimonial);
     const avatarLabel = testimonial.avatarLabel || testimonial.clientName.slice(0, 2);
-
     if (testimonial.avatarUrl) {
         return (
-            <div className={`${sizeClassName} relative shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/5 shadow-[0_10px_26px_rgba(0,0,0,0.28)]`}>
+            <div className={`${sizeClassName} relative shrink-0 overflow-hidden rounded-full border ${testimonial.highlighted ? 'border-electric-cyan/22' : 'border-white/10'} bg-white/5 shadow-[0_10px_26px_rgba(0,0,0,0.28)]`}>
                 <img
                     src={testimonial.avatarUrl}
                     alt=""
                     className="testimonial-avatar-photo h-full w-full object-cover object-center"
                     loading="lazy"
                 />
-                <div className="pointer-events-none absolute inset-0 rounded-full border border-white/10" />
+                <div className={`pointer-events-none absolute inset-0 rounded-full border ${testimonial.highlighted ? 'border-electric-cyan/18' : 'border-white/10'}`} />
                 <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),transparent_42%)] opacity-80" />
             </div>
         );
@@ -399,23 +415,36 @@ const About = ({ isUiFrozen = false }) => {
                                 <div
                                     key={`mobile-${i}`}
                                     data-testimonial-card
-                                    className="w-[calc(100vw-4.25rem)] max-w-none min-h-[22rem] shrink-0 snap-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-5 flex flex-col justify-between"
+                                    className={`relative w-[calc(100vw-4.25rem)] max-w-none min-h-[22rem] shrink-0 snap-center overflow-hidden rounded-2xl px-5 py-5 flex flex-col justify-between ${getTestimonialCardSurface(t.highlighted, isLow)}`}
                                 >
-                                    <div className="mb-4 flex items-center justify-between gap-3">
+                                    {t.highlighted && (
+                                        <>
+                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(102,252,241,0.08),transparent_30%),linear-gradient(180deg,rgba(102,252,241,0.04),transparent_24%)]" />
+                                            <div className="pointer-events-none absolute left-5 top-0 h-px w-24 bg-gradient-to-r from-electric-cyan/85 to-transparent" />
+                                            <div className="pointer-events-none absolute left-0 top-7 h-14 w-px bg-gradient-to-b from-electric-cyan/70 via-electric-green/45 to-transparent" />
+                                        </>
+                                    )}
+                                    {t.highlighted && (
+                                        <div className={`relative z-10 mb-3 ${highlightedEyebrowClassName}`}>
+                                            <span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />
+                                            <span>Featured Review</span>
+                                        </div>
+                                    )}
+                                    <div className="relative z-10 mb-4 flex items-center justify-between gap-3">
                                         <div className="flex gap-1">{renderStars(t.rating, 'w-3.5 h-3.5')}</div>
                                         <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
                                             {t.label}
                                         </span>
                                     </div>
-                                    <p className="text-[1rem] leading-[1.65] text-gray-100 italic mb-5">
+                                    <p className={`relative z-10 text-[1rem] leading-[1.65] italic mb-5 ${t.highlighted ? 'text-white font-medium' : 'text-gray-100'}`}>
                                         "{t.review}"
                                     </p>
-                                    <div className="mt-auto flex items-start gap-3 pt-4 border-t border-white/5">
+                                    <div className="relative z-10 mt-auto flex items-start gap-3 pt-4 border-t border-white/5">
                                         <GeneratedClientAvatar testimonial={t} sizeClassName="w-12 h-12" textClassName="text-[10px]" />
                                         <div className="min-w-0">
                                             <div className="text-[1.05rem] font-bold text-white leading-tight truncate">{t.clientName}</div>
                                             <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{t.clientType}</div>
-                                            <div className="mt-3 inline-flex max-w-full rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
+                                            <div className={`mt-3 inline-flex max-w-full rounded-full px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] ${getServiceChipClassName(t.highlighted)}`}>
                                                 {t.service}
                                             </div>
                                         </div>
@@ -471,10 +500,22 @@ const About = ({ isUiFrozen = false }) => {
                                     {profileAbout.testimonials.map((t) => (
                                         <div
                                             key={`${t.id}-${cloneIndex}`}
-                                            className={`testimonial-card w-[350px] md:w-[400px] min-h-[16.25rem] p-5 rounded-xl flex flex-col justify-between transition-colors cursor-default group border border-white/5 shrink-0 ${isLow ? 'bg-dark-slate' : 'bg-white/5 hover:bg-white/10'
-                                                }`}
+                                            className={`testimonial-card relative w-[350px] md:w-[400px] min-h-[16.25rem] overflow-hidden rounded-xl p-5 flex flex-col justify-between transition-colors cursor-default group shrink-0 ${getTestimonialCardSurface(t.highlighted, isLow)}`}
                                         >
-                                            <div className="mb-4 flex items-center justify-between gap-3">
+                                            {t.highlighted && (
+                                                <>
+                                                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(102,252,241,0.08),transparent_30%),linear-gradient(180deg,rgba(102,252,241,0.04),transparent_24%)]" />
+                                                    <div className="pointer-events-none absolute left-5 top-0 h-px w-24 bg-gradient-to-r from-electric-cyan/85 to-transparent" />
+                                                    <div className="pointer-events-none absolute left-0 top-7 h-14 w-px bg-gradient-to-b from-electric-cyan/70 via-electric-green/45 to-transparent" />
+                                                </>
+                                            )}
+                                            {t.highlighted && (
+                                                <div className={`relative z-10 mb-3 ${highlightedEyebrowClassName}`}>
+                                                    <span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />
+                                                    <span>Featured Review</span>
+                                                </div>
+                                            )}
+                                            <div className="relative z-10 mb-4 flex items-center justify-between gap-3">
                                                 <div className={`flex gap-1 transition-opacity ${isLow ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
                                                     {renderStars(t.rating, 'w-3 h-3')}
                                                 </div>
@@ -482,13 +523,15 @@ const About = ({ isUiFrozen = false }) => {
                                                     {t.label}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-300 italic mb-4 leading-relaxed line-clamp-4">"{t.review}"</p>
-                                            <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
+                                            <p className={`relative z-10 mb-4 text-sm italic leading-relaxed line-clamp-4 ${t.highlighted ? 'text-white font-medium' : 'text-gray-300'}`}>
+                                                "{t.review}"
+                                            </p>
+                                            <div className="relative z-10 flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
                                                 <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
                                                 <div className="flex min-w-0 flex-col">
                                                     <span className="text-xs font-bold text-white">{t.clientName}</span>
                                                     <span className="text-[9px] text-gray-500 font-mono uppercase">{t.clientType}</span>
-                                                    <span className="mt-2 text-[9px] text-electric-green font-mono uppercase tracking-[0.18em]">{t.service}</span>
+                                                    <span className={`mt-2 text-[9px] font-mono uppercase tracking-[0.18em] ${t.highlighted ? 'text-electric-cyan' : 'text-electric-green'}`}>{t.service}</span>
                                                 </div>
                                             </div>
                                         </div>

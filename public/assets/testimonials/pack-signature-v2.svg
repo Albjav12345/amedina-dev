@@ -1,0 +1,16 @@
+<svg width="1280" height="1280" viewBox="0 0 1280 1280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sig-bg" x1="160" y1="164" x2="1128" y2="1118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0C1830"/>
+      <stop offset="1" stop-color="#071324"/>
+    </linearGradient>
+    <linearGradient id="sig-stroke" x1="266" y1="654" x2="926" y2="410" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#223A57"/>
+      <stop offset="1" stop-color="#35506F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="1280" fill="url(#sig-bg)"/>
+  <path d="M222 782C368 622 570 481 890 390" stroke="url(#sig-stroke)" stroke-width="102" stroke-linecap="round" opacity="0.62"/>
+  <path d="M332 744C376 697 414 642 458 595C481 570 522 536 553 536C583 536 584 583 588 605C595 688 603 772 612 849C618 893 622 930 631 972C637 998 647 1000 661 982C699 938 720 791 747 713C764 664 801 554 839 554C864 554 871 615 877 642C897 728 899 822 904 912" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M919 680C966 630 1036 548 1124 520" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,41 @@
+<svg width="1280" height="1280" viewBox="0 0 1280 1280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="leaf-bg" x1="0" y1="0" x2="1280" y2="1280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8F2E9"/>
+      <stop offset="1" stop-color="#F5EEE4"/>
+    </linearGradient>
+    <linearGradient id="wash" x1="170" y1="880" x2="830" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C7CDBE" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#E8E3D1" stop-opacity="0.45"/>
+    </linearGradient>
+    <linearGradient id="leaf-main" x1="260" y1="300" x2="650" y2="830" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#667053"/>
+      <stop offset="1" stop-color="#22321F"/>
+    </linearGradient>
+    <linearGradient id="leaf-soft" x1="404" y1="184" x2="756" y2="705" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#AAA57B"/>
+      <stop offset="1" stop-color="#E1DBC1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="1280" fill="url(#leaf-bg)"/>
+  <path d="M148 612C204 562 253 566 311 640C366 708 420 769 496 775C563 779 645 743 715 762C801 784 875 858 853 944C829 1042 719 1058 628 1040C567 1028 516 991 450 975C359 951 248 975 181 907C117 842 97 694 148 612Z" fill="url(#wash)" fill-opacity="0.85"/>
+  <path d="M162 635C184 703 226 756 254 823C287 897 329 978 398 1027" stroke="#DFD9C8" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+  <g transform="translate(185 112)">
+    <path d="M249 912C244 742 245 613 247 462C249 311 253 196 259 64" stroke="#293422" stroke-width="10" stroke-linecap="round"/>
+    <path d="M253 717C204 633 143 565 79 498" stroke="#2B3724" stroke-width="9" stroke-linecap="round"/>
+    <path d="M252 615C317 548 394 486 489 428" stroke="#2B3724" stroke-width="9" stroke-linecap="round"/>
+    <path d="M254 489C214 413 170 336 129 250" stroke="#2B3724" stroke-width="9" stroke-linecap="round"/>
+    <path d="M256 420C324 346 392 259 456 183" stroke="#2B3724" stroke-width="9" stroke-linecap="round"/>
+    <path d="M251 408C243 298 244 188 252 78" stroke="#2B3724" stroke-width="9" stroke-linecap="round"/>
+    <path d="M123 249C149 257 174 273 190 297C207 322 216 352 215 384C185 377 157 364 135 343C113 322 98 295 92 266C100 257 111 252 123 249Z" fill="url(#leaf-main)"/>
+    <path d="M90 498C138 505 185 531 216 573C247 616 261 668 255 718C204 711 157 688 120 652C83 616 61 572 64 527C71 514 79 504 90 498Z" fill="url(#leaf-main)"/>
+    <path d="M243 78C271 83 294 98 307 120C320 143 324 169 319 194C293 187 271 173 259 152C247 131 241 104 243 78Z" fill="#797A53"/>
+    <path d="M453 182C493 184 533 198 565 225C597 251 617 286 623 322C581 321 540 309 503 284C467 259 442 226 433 187C438 184 445 182 453 182Z" fill="url(#leaf-soft)"/>
+    <path d="M489 428C520 432 547 449 563 473C579 498 584 527 577 555C548 549 521 536 501 516C481 496 469 471 468 444C474 435 481 430 489 428Z" fill="url(#leaf-soft)"/>
+    <path d="M126 252L188 383" stroke="#AAB29A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M96 528L223 682" stroke="#AAB29A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M449 190L514 302" stroke="#8E8B67" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M484 439L553 530" stroke="#A9A386" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <text x="725" y="846" fill="#2E3A28" font-family="Georgia, 'Times New Roman', serif" font-size="592" font-weight="400">L</text>
+</svg>
