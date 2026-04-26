@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-26T13:29:18.306Z",
+  "generatedAt": "2026-04-26T14:29:01.572Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -395,7 +395,7 @@
       "videoAssetId": "project-1-video",
       "thumbnailAssetId": "project-1-thumbnail",
       "iconAssetId": "project-1-icon",
-      "iconFit": null,
+      "iconFit": "",
       "iconScale": 1.3,
       "order": 1,
       "enabled": "TRUE"
@@ -427,8 +427,8 @@
       "videoAssetId": "project-3-video",
       "thumbnailAssetId": "project-3-thumbnail",
       "iconAssetId": "project-3-icon",
-      "iconFit": null,
-      "iconScale": null,
+      "iconFit": "",
+      "iconScale": "",
       "order": 3,
       "enabled": "TRUE"
     },
@@ -443,7 +443,7 @@
       "videoAssetId": "project-4-video",
       "thumbnailAssetId": "project-4-thumbnail",
       "iconAssetId": "project-4-icon",
-      "iconFit": null,
+      "iconFit": "",
       "iconScale": 1.3,
       "order": 4,
       "enabled": "TRUE"
@@ -460,7 +460,7 @@
       "thumbnailAssetId": "project-5-thumbnail",
       "iconAssetId": "project-5-icon",
       "iconFit": "auto",
-      "iconScale": null,
+      "iconScale": "",
       "order": 5,
       "enabled": "TRUE"
     }
@@ -691,8 +691,8 @@
     {
       "id": "unity-progress-communication",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "It's been a pleasure working with Alberto. He has been great at communicating the the progress of the project, sharing updates and asking for feedback to ensure requirements where meet. He has been pleasant to work with and delivered a very professional job. Will definitely recommend for UI Unity projects and hope to work with again.",
@@ -701,15 +701,15 @@
       "createdAt": "2024-06-16T19:22:08Z",
       "avatarAssetId": "testimonial-client8",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 1
     },
     {
       "id": "unity-fast-delivery",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Very professional job. Sent timely updates during the project. Asked for clarification when needed and delivered sooner than we originally agreed.",
@@ -725,8 +725,8 @@
     {
       "id": "unity-communication",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Great work and great communication.",
@@ -742,8 +742,8 @@
     {
       "id": "unity-great-work",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Editor Tools",
       "review": "Great work!",
@@ -752,15 +752,15 @@
       "createdAt": "2024-07-21T14:05:57Z",
       "avatarAssetId": "testimonial-client2",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 4
     },
     {
       "id": "unity-complex-ownership",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
       "review": "Much better than expected. He did a good job with somewhat complex tasks and overcame them quite well. He has not only limited himself to the main stuff, but contributed with ideas and helped me in other aspects of the project. He's done his work against the clock, with commitment and eagerness to do a well done job, so I hope we could work soon again together!",
@@ -776,8 +776,8 @@
     {
       "id": "unity-repeat-client",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Game / Unity Client",
       "serviceOverride": "Unity UI / Game Systems",
       "review": "Great work as always",
@@ -793,8 +793,8 @@
     {
       "id": "automation-seo-detail",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "Operations / Media Client",
       "serviceOverride": "Automation / Metadata Workflow",
       "review": "I had a fantastic experience working with this professional. The attention to detail in optimizing my images for SEO, including the meticulous work with geotags, keywords, and descriptions, was exceptional. Every instruction I provided was followed precisely, and the final files were delivered in perfect order. Highly recommended for anyone looking to enhance their visual content for better search engine performance. I will definitely use their services again!",
@@ -803,15 +803,15 @@
       "createdAt": "2024-11-07T20:02:11Z",
       "avatarAssetId": "testimonial-client5",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 7
     },
     {
       "id": "automation-exceeded-expectations",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto Medina truly exceeded my expectations with his attention to detail and professionalism. Working with him was a pleasure; he was cooperative, went above and beyond, and remained polite throughout. Highly recommend! 👏",
@@ -827,8 +827,8 @@
     {
       "id": "automation-gallery-spanish",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Muy satisfecho con el servicio. Este vendedor hizo un excelente trabajo ajustando los metadatos de 30 fotos para que se ordenen correctamente en mi galería. Fue rápido y eficiente, justo lo que necesitaba. Estaré encantado de volver a trabajar con el en un futuro!",
@@ -837,15 +837,15 @@
       "createdAt": "2024-11-09T18:29:07Z",
       "avatarAssetId": "testimonial-client8",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 9
     },
     {
       "id": "automation-fiverr-credit",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto is a real credit to Fiverr. Exceptional talent. Highly recommended. Hope to work with him again.",
@@ -861,8 +861,8 @@
     {
       "id": "automation-outstanding-work",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Thank you very much, I am surprised by the very, very good work, it exceeded my expectations. I will let Alberto do more projects. Thanks again for your outstanding work!",
@@ -871,15 +871,15 @@
       "createdAt": "2024-12-08T08:55:41Z",
       "avatarAssetId": "testimonial-client3",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 11
     },
     {
       "id": "automation-communication-timelines",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Alberto is exceptional, quick understanding, excellent communication and meeting expectations and timelines. He did any revisions needed with no hassle. Highly recommended.",
@@ -895,8 +895,8 @@
     {
       "id": "automation-wonderful-details",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Wonderful details",
@@ -905,15 +905,15 @@
       "createdAt": "2024-12-15T18:18:51Z",
       "avatarAssetId": "testimonial-client4",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 13
     },
     {
       "id": "automation-vigor",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Handled the task with vigor",
@@ -922,15 +922,15 @@
       "createdAt": "2025-01-06T09:56:00Z",
       "avatarAssetId": "testimonial-client7",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 14
     },
     {
       "id": "automation-fast-turnaround",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Good job and fast",
@@ -939,15 +939,15 @@
       "createdAt": "2025-01-06T17:58:51Z",
       "avatarAssetId": "testimonial-client6",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 15
     },
     {
       "id": "automation-highly-recommend",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "He's great. I highly recommend",
@@ -956,15 +956,15 @@
       "createdAt": "2025-01-30T18:59:30Z",
       "avatarAssetId": "testimonial-client11",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 16
     },
     {
       "id": "automation-nice-guy",
       "sourceKey": "fiverr",
-      "labelOverride": null,
-      "clientName": null,
+      "labelOverride": "",
+      "clientName": "",
       "clientType": "SEO / Content Operations",
       "serviceOverride": "Automation / SEO Workflow",
       "review": "Nice guy he does his work good! Go check him out guys",
@@ -973,7 +973,7 @@
       "createdAt": "2025-01-31T10:10:16Z",
       "avatarAssetId": "testimonial-client1",
       "featured": "FALSE",
-      "featuredOrder": null,
+      "featuredOrder": "",
       "highlighted": "FALSE",
       "order": 17
     }
@@ -1040,13 +1040,13 @@
     {
       "label": "Encryption",
       "value": "TLS_1.3",
-      "activeValue": null,
+      "activeValue": "",
       "order": 2
     },
     {
       "label": "Uptime",
       "value": "99.9%_AVAIL",
-      "activeValue": null,
+      "activeValue": "",
       "order": 3
     }
   ],
@@ -1061,12 +1061,12 @@
       "assetId": "profile-avatar",
       "kind": "image",
       "mode": "existing_public",
-      "sourceValue": "/assets/logo.svg",
-      "targetPublicPath": "/assets/logo.svg",
+      "sourceValue": "/assets/alberto.png",
+      "targetPublicPath": "/assets/alberto.png",
       "alt": "Alberto Medina Garcia avatar",
       "notes": "Main profile avatar",
       "enabled": true,
-      "status": "READY -> /assets/logo.svg"
+      "status": "READY -> /assets/alberto.png"
     },
     {
       "assetId": "project-1-video",
@@ -1463,7 +1463,7 @@
       "role": "Full-Stack Developer & Automation Engineer",
       "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
       "about": {
-        "avatarUrl": "/assets/logo.svg",
+        "avatarUrl": "/assets/alberto.png",
         "title": "Logic first. Built to be used.",
         "bio": [
           "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
@@ -2910,13 +2910,13 @@
         "assetId": "profile-avatar",
         "kind": "image",
         "mode": "existing_public",
-        "sourceValue": "/assets/logo.svg",
-        "targetPublicPath": "/assets/logo.svg",
+        "sourceValue": "/assets/alberto.png",
+        "targetPublicPath": "/assets/alberto.png",
         "alt": "Alberto Medina Garcia avatar",
         "notes": "Main profile avatar",
         "enabled": true,
-        "resolvedUrl": "/assets/logo.svg",
-        "status": "READY -> /assets/logo.svg"
+        "resolvedUrl": "/assets/alberto.png",
+        "status": "READY -> /assets/alberto.png"
       },
       {
         "assetId": "project-1-video",

@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..', '..');
 
 export const WORKBOOK_PATH = path.join(rootDir, 'src', 'data', 'content', 'portfolio-master.xlsx');
+export const WORKBOOK_PREVIEW_FALLBACK_PATH = path.join(rootDir, 'node_modules', '.cache', 'portfolio-master.preview.xlsx');
 export const GENERATED_JSON_PATH = path.join(rootDir, 'src', 'data', 'generated', 'portfolioContent.json');
 export const CONTENT_README_PATH = path.join(rootDir, 'src', 'data', 'content', 'README.md');
 
@@ -2466,7 +2467,18 @@ async function writeWorkbookFromMasterData(masterData, resolvedAssets, workbookP
         await workbook.xlsx.writeFile(workbookPath);
     } catch (error) {
         if (error?.code === 'EBUSY') {
-            throw new Error(`Cannot write ${workbookPath} because the workbook is open in Excel. Close the file and run content:sync again.`);
+            let fallbackMessage = '';
+
+            try {
+                await ensureDir(path.dirname(WORKBOOK_PREVIEW_FALLBACK_PATH));
+                await workbook.xlsx.writeFile(WORKBOOK_PREVIEW_FALLBACK_PATH);
+                fallbackMessage = ` A preview-enabled copy was written to ${WORKBOOK_PREVIEW_FALLBACK_PATH}.`;
+            } catch (fallbackError) {
+                const fallbackDetails = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+                fallbackMessage = ` A preview fallback copy could not be written: ${fallbackDetails}.`;
+            }
+
+            throw new Error(`Cannot write ${workbookPath} because the workbook is open in Excel. Close the file and run content:sync again.${fallbackMessage}`);
         }
         throw error;
     }
