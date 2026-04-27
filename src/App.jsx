@@ -34,6 +34,7 @@ const loadFeaturedProjectsModule = () => import('./components/sections/FeaturedP
 const loadTechStackModule = () => import('./components/sections/TechStack')
 const loadContactModule = () => import('./components/sections/Contact')
 const loadProjectArchitectModule = () => import('./components/sections/ProjectArchitect')
+const loadControlPlaneModule = () => import('./components/sections/ControlPlane')
 
 const About = React.lazy(() =>
     loadAboutModule().then(module => ({ default: module.About }))
@@ -58,7 +59,7 @@ const ProjectArchitect = isArchitectSectionEnabled
     : null
 
 const ControlPlane = React.lazy(() =>
-    import('./components/sections/ControlPlane').then(module => ({ default: module.ControlPlane }))
+    loadControlPlaneModule().then(module => ({ default: module.ControlPlane }))
 )
 
 const Footer = React.lazy(() =>
@@ -427,6 +428,10 @@ function App() {
         setShouldRenderControlPlane(true)
         setIsControlUiLocked(true)
         setIsControlOpen(true)
+    }
+
+    const preloadControlPlane = () => {
+        void loadControlPlaneModule()
     }
 
     const closeControlPanel = () => {
@@ -1178,6 +1183,26 @@ function App() {
                 <Suspense fallback={null}>
                     <Footer onOpenControlPanel={openControlPanel} />
                 </Suspense>
+                {!shouldRenderControlPlane && !isControlOpen ? (
+                    <button
+                        type="button"
+                        onClick={openControlPanel}
+                        onMouseEnter={preloadControlPlane}
+                        onFocus={preloadControlPlane}
+                        onPointerDown={preloadControlPlane}
+                        aria-label="Open SYS PANEL"
+                        className="fixed bottom-5 right-5 z-[90] rounded-full border border-electric-green/25 bg-[#0b0d11]/90 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-[border-color,color,box-shadow,background-color,transform,opacity] duration-120 hover:border-electric-cyan/35 hover:text-electric-cyan"
+                        style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                        <span className="inline-flex items-center gap-2">
+                            <span className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full rounded-full bg-electric-green opacity-60 animate-ping" />
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-electric-green" />
+                            </span>
+                            SYS PANEL
+                        </span>
+                    </button>
+                ) : null}
                 {shouldRenderControlPlane ? (
                     <Suspense fallback={null}>
                         <ControlPlane

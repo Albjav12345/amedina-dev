@@ -10,11 +10,18 @@ const { Workbook } = ExcelJS;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..', '..');
+const devWorkbookHost = process.env.VITE_HOST || '127.0.0.1';
+const devWorkbookPort = String(process.env.VITE_PORT || '5173');
+const devWorkbookBaseUrl = `http://${devWorkbookHost}:${devWorkbookPort}`;
+const devWorkbookAssetPreviewUrl = `${devWorkbookBaseUrl}/__dev/asset-preview`;
+const devWorkbookAssetSourceUrl = `${devWorkbookBaseUrl}/__dev/asset-source`;
+const devWorkbookAssetResolvedUrl = `${devWorkbookBaseUrl}/__dev/asset-resolved`;
 
 export const WORKBOOK_PATH = path.join(rootDir, 'src', 'data', 'content', 'portfolio-master.xlsx');
 export const WORKBOOK_PREVIEW_FALLBACK_PATH = path.join(rootDir, 'node_modules', '.cache', 'portfolio-master.preview.xlsx');
 export const GENERATED_JSON_PATH = path.join(rootDir, 'src', 'data', 'generated', 'portfolioContent.json');
 export const CONTENT_README_PATH = path.join(rootDir, 'src', 'data', 'content', 'README.md');
+export const PORTFOLIO_ROOT_DIR = rootDir;
 
 const LOOKUP_SHEET = '_LOOKUPS';
 const PREVIEW_SHEET = 'ASSET_PREVIEW';
@@ -151,7 +158,7 @@ const SHEET_META = {
     },
     [SHEET_NAMES.assets]: {
         title: 'Assets',
-        subtitle: 'Central asset registry, source links, resolved paths, usage context, and preview access.',
+        subtitle: 'Central asset registry. For existing_public assets, edit sourceValue as the canonical path; targetPublicPath is mainly for import_local copies.',
         group: 'assets',
         primary: true,
         tabColor: 'FF8B5CF6',
@@ -159,7 +166,7 @@ const SHEET_META = {
         tableStartRow: 9,
         bufferRows: 10,
         relatedSheets: [PREVIEW_SHEET, SHEET_NAMES.projects, SHEET_NAMES.testimonials],
-        generatedColumns: ['rowStatus', 'openSource', 'openResolved', 'usedBy', 'previewLink'],
+        generatedColumns: ['resolvedUrl', 'rowStatus', 'openSource', 'openResolved', 'usedBy', 'previewLink'],
     },
     [PREVIEW_SHEET]: {
         title: 'Asset Preview Index',
@@ -509,7 +516,7 @@ Important:
 
 Asset modes:
 
-- \`existing_public\`: keep an asset already inside \`public/\`
+- \`existing_public\`: keep an asset already inside \`public/\` and edit \`sourceValue\` as the canonical public path
 - \`import_local\`: copy a local file into \`public/\`
 - \`external_url\`: point directly to a public URL
 `;
@@ -549,6 +556,41 @@ function getDataSheetMeta(sheetName) {
 
 function getGeneratedKeysForSheet(sheetName) {
     return [...new Set(['rowStatus', ...(getDataSheetMeta(sheetName).generatedColumns || [])])];
+}
+
+function getPlannedDataRowCount(definition) {
+    const meta = getDataSheetMeta(definition.name);
+    return Math.max(definition.rows.length + meta.bufferRows, definition.singleRow ? 3 : 8);
+}
+
+function toExcelStringLiteral(value) {
+    return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function getColumnLetterForKey(columns, key) {
+    const columnIndex = getColumnIndexByKey(columns, key);
+    if (!columnIndex) {
+        throw new Error(`Column "${key}" is not defined.`);
+    }
+
+    let current = columnIndex;
+    let letter = '';
+
+    while (current > 0) {
+        const remainder = (current - 1) % 26;
+        letter = String.fromCharCode(65 + remainder) + letter;
+        current = Math.floor((current - 1) / 26);
+    }
+
+    return letter;
+}
+
+function toSheetCellReference(columns, key, rowNumber) {
+    return `$${getColumnLetterForKey(columns, key)}${rowNumber}`;
+}
+
+function buildWorkbookAssetUrlFormula(baseUrl, rowReferences) {
+    return `${toExcelStringLiteral(baseUrl)}&"?assetId="&ENCODEURL(${rowReferences.assetId})&"&sig="&ENCODEURL(${rowReferences.kind}&"|"&${rowReferences.mode}&"|"&${rowReferences.sourceValue}&"|"&${rowReferences.targetPublicPath}&"|"&${rowReferences.enabled})`;
 }
 
 function makeInternalLink(sheetName, cellAddress = 'A1', text) {
@@ -1681,7 +1723,7 @@ function createReadmeSheet(workbook, generatedAt) {
     return worksheet;
 }
 
-function createPreviewSheet(workbook, resolvedAssets, previewIndex, assetUsageIndex, generatedAt, sheetRowMaps) {
+function createPreviewSheet(workbook, assetDefinition, resolvedAssets, previewIndex, assetUsageIndex, generatedAt, sheetRowMaps) {
     const meta = getSheetMeta(PREVIEW_SHEET);
     const worksheet = workbook.addWorksheet(PREVIEW_SHEET);
     worksheet.properties.tabColor = { argb: meta.tabColor };
@@ -1711,6 +1753,7 @@ function createPreviewSheet(workbook, resolvedAssets, previewIndex, assetUsageIn
     decorateDataSheetChrome(worksheet, config, generatedAt);
     const headerRow = getDataSheetMeta(PREVIEW_SHEET).headerRow ?? 8;
     const startRow = (getDataSheetMeta(PREVIEW_SHEET).tableStartRow ?? 9);
+    const plannedRowCount = assetDefinition ? getPlannedDataRowCount(assetDefinition) : resolvedAssets.length;
 
     config.columns.forEach((column, columnIndex) => {
         const headerCell = worksheet.getCell(headerRow, columnIndex + 1);
@@ -1720,22 +1763,23 @@ function createPreviewSheet(workbook, resolvedAssets, previewIndex, assetUsageIn
         applyCellTextStyle(headerCell, { color: 'FFFFFFFF', bold: true, size: 11 });
     });
 
-    resolvedAssets.forEach((asset, index) => {
-        const preview = previewIndex.get(asset.assetId);
-        const usageList = assetUsageIndex.get(asset.assetId) ?? [];
+    for (let index = 0; index < plannedRowCount; index += 1) {
+        const asset = resolvedAssets[index] ?? null;
+        const preview = asset ? previewIndex.get(asset.assetId) : null;
+        const usageList = asset ? (assetUsageIndex.get(asset.assetId) ?? []) : [];
         const firstUsage = usageList[0];
         const rowNumber = startRow + index;
         const row = worksheet.getRow(rowNumber);
 
         row.height = 86;
         [
-            { key: 'assetId', value: asset.assetId },
-            { key: 'kind', value: `${asset.kind.toUpperCase()} | ${preview?.previewLabel ?? asset.kind.toUpperCase()}` },
-            { key: 'preview', value: preview?.previewMode === 'placeholder' ? 'Illustrated preview card' : 'Embedded preview' },
-            { key: 'resolvedUrl', value: asset.resolvedUrl || 'Unavailable' },
-            { key: 'usedBy', value: usageList.length ? usageList.map((entry) => entry.label).join('\n') : 'No active references' },
-            { key: 'openSource', value: preview?.sourceHref ? { text: 'Open source', hyperlink: preview.sourceHref } : 'No source' },
-            { key: 'openResolved', value: preview?.resolvedHref ? { text: 'Open resolved', hyperlink: preview.resolvedHref } : 'Unavailable' },
+            { key: 'assetId', value: asset?.assetId ?? '' },
+            { key: 'kind', value: asset ? `${asset.kind.toUpperCase()} | ${preview?.previewLabel ?? asset.kind.toUpperCase()}` : '' },
+            { key: 'preview', value: asset ? (preview?.previewMode === 'placeholder' ? 'Illustrated preview card' : 'Embedded preview') : '' },
+            { key: 'resolvedUrl', value: asset?.resolvedUrl || '' },
+            { key: 'usedBy', value: usageList.length ? usageList.map((entry) => entry.label).join('\n') : '' },
+            { key: 'openSource', value: preview?.sourceHref ? { text: 'Open source', hyperlink: preview.sourceHref } : '' },
+            { key: 'openResolved', value: preview?.resolvedHref ? { text: 'Open resolved', hyperlink: preview.resolvedHref } : '' },
         ].forEach((entry, columnIndex) => {
             const cell = row.getCell(columnIndex + 1);
             const rowFill = index % 2 === 0 ? BODY_ROW_FILL : BODY_ROW_ALT_FILL;
@@ -1748,26 +1792,13 @@ function createPreviewSheet(workbook, resolvedAssets, previewIndex, assetUsageIn
             }
         });
 
-        if (firstUsage) {
+        if (asset && firstUsage) {
             const targetRow = sheetRowMaps[firstUsage.sheetName]?.get(firstUsage.rowKey);
             if (targetRow) {
                 setLinkedCell(row.getCell(5), makeInternalLink(firstUsage.sheetName, `A${targetRow}`, row.getCell(5).value));
             }
         }
-
-        if (preview?.previewPath) {
-            const imageId = workbook.addImage({
-                filename: preview.previewPath,
-                extension: 'png',
-            });
-
-            worksheet.addImage(imageId, {
-                tl: { col: 2.1, row: rowNumber - 0.85 },
-                ext: { width: 124, height: 78 },
-                editAs: 'oneCell',
-            });
-        }
-    });
+    }
 
     worksheet.autoFilter = {
         from: { row: headerRow, column: 1 },
@@ -1786,6 +1817,191 @@ function buildPreviewRowMap(resolvedAssets) {
 
 function getColumnIndexByKey(columns, key) {
     return columns.findIndex((column) => column.key === key) + 1;
+}
+
+function setFormulaCell(cell, formula, result, {
+    fill = BODY_GENERATED_FILL,
+    alignment = { vertical: 'top', horizontal: 'left', wrapText: true },
+    fontColor = 'FFE5EEF5',
+    underline = false,
+} = {}) {
+    cell.value = { formula, result };
+    cell.fill = fill;
+    cell.border = BORDER_STYLE;
+    cell.alignment = alignment;
+    applyCellTextStyle(cell, { color: fontColor, size: 10, underline });
+}
+
+function applyAssetSheetRuntimeBindings(workbook, assetDefinition, resolvedAssets) {
+    if (!assetDefinition) return;
+
+    const worksheet = workbook.getWorksheet(SHEET_NAMES.assets);
+    if (!worksheet) return;
+
+    const meta = getDataSheetMeta(SHEET_NAMES.assets);
+    const previewMeta = getDataSheetMeta(PREVIEW_SHEET);
+    const startRow = meta.tableStartRow ?? 9;
+    const previewStartRow = previewMeta.tableStartRow ?? 9;
+    const totalRows = getPlannedDataRowCount(assetDefinition);
+    const assetsByRow = new Map(
+        resolvedAssets.map((asset, index) => [startRow + index, asset]),
+    );
+    const columns = assetDefinition.columns;
+    const accentColor = getAccentColor('assets');
+
+    for (let rowNumber = startRow; rowNumber < startRow + totalRows; rowNumber += 1) {
+        const asset = assetsByRow.get(rowNumber) ?? null;
+        const previewRowNumber = previewStartRow + (rowNumber - startRow);
+        const refs = {
+            assetId: toSheetCellReference(columns, 'assetId', rowNumber),
+            kind: toSheetCellReference(columns, 'kind', rowNumber),
+            mode: toSheetCellReference(columns, 'mode', rowNumber),
+            sourceValue: toSheetCellReference(columns, 'sourceValue', rowNumber),
+            targetPublicPath: toSheetCellReference(columns, 'targetPublicPath', rowNumber),
+            enabled: toSheetCellReference(columns, 'enabled', rowNumber),
+            resolvedUrl: toSheetCellReference(columns, 'resolvedUrl', rowNumber),
+        };
+        const enabledIsFalse = `UPPER(${refs.enabled})<>"TRUE"`;
+        const externalUrlIsValid = `OR(LEFT(LOWER(${refs.sourceValue}),7)="http://",LEFT(LOWER(${refs.sourceValue}),8)="https://")`;
+        const existingPublicPath = `IF(${refs.sourceValue}<>"",${refs.sourceValue},${refs.targetPublicPath})`;
+        const resolvedFormula = `IF(${refs.assetId}="","",IF(${enabledIsFalse},"",IF(${refs.mode}="import_local",IF(${refs.targetPublicPath}<>"",${refs.targetPublicPath},""),IF(${refs.mode}="external_url",${refs.sourceValue},IF(${existingPublicPath}<>"",${existingPublicPath},"")))))`;
+        const rowStatusFormula = `IF(${refs.assetId}="","",IF(${enabledIsFalse},"DISABLED",IF(${refs.mode}="external_url",IF(${externalUrlIsValid},"READY -> "&${refs.resolvedUrl},"NEEDS HTTP URL"),IF(${refs.mode}="import_local",IF(${refs.sourceValue}="","NEEDS SOURCE FILE",IF(${refs.targetPublicPath}="","NEEDS TARGET PATH","READY -> "&${refs.resolvedUrl})),IF(${refs.mode}="existing_public",IF(${existingPublicPath}<>"","READY -> "&${refs.resolvedUrl},"NEEDS PUBLIC PATH"),"CHECK MODE")))))`;
+        const sourceLinkFormula = `IF(${refs.assetId}="","",IF(${enabledIsFalse},"Disabled",HYPERLINK(${buildWorkbookAssetUrlFormula(devWorkbookAssetSourceUrl, refs)},"Open source")))`;
+        const resolvedLinkFormula = `IF(${refs.assetId}="","",IF(OR(${enabledIsFalse},${refs.resolvedUrl}=""),"Unavailable",HYPERLINK(${buildWorkbookAssetUrlFormula(devWorkbookAssetResolvedUrl, refs)},"Open resolved")))`;
+        const previewLinkFormula = `IF(${refs.assetId}="","",HYPERLINK("#'${PREVIEW_SHEET}'!A${previewRowNumber}","Open preview"))`;
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'resolvedUrl')),
+            resolvedFormula,
+            asset?.resolvedUrl ?? '',
+            { fill: BODY_GENERATED_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true } },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'openSource')),
+            sourceLinkFormula,
+            asset ? (asset.enabled ? 'Open source' : 'Disabled') : '',
+            { fill: GENERATED_FILL, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, fontColor: 'FF7DD3FC', underline: false },
+        );
+        applyChipCellStyle(worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'openSource')), accentColor);
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'openResolved')),
+            resolvedLinkFormula,
+            asset ? (asset.resolvedUrl ? 'Open resolved' : 'Unavailable') : '',
+            { fill: GENERATED_FILL, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, fontColor: 'FF7DD3FC', underline: false },
+        );
+        applyChipCellStyle(worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'openResolved')), accentColor);
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'previewLink')),
+            previewLinkFormula,
+            asset?.assetId ? 'Open preview' : '',
+            { fill: GENERATED_FILL, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, fontColor: 'FF7DD3FC', underline: false },
+        );
+        applyChipCellStyle(worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'previewLink')), accentColor);
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, getColumnIndexByKey(columns, 'rowStatus')),
+            rowStatusFormula,
+            asset?.status ?? '',
+            { fill: BODY_STATUS_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true }, fontColor: 'FF94F1CF' },
+        );
+    }
+}
+
+function applyPreviewSheetRuntimeBindings(workbook, assetDefinition, resolvedAssets) {
+    if (!assetDefinition) return;
+
+    const worksheet = workbook.getWorksheet(PREVIEW_SHEET);
+    if (!worksheet) return;
+
+    const previewMeta = getDataSheetMeta(PREVIEW_SHEET);
+    const assetMeta = getDataSheetMeta(SHEET_NAMES.assets);
+    const startRow = previewMeta.tableStartRow ?? 9;
+    const assetStartRow = assetMeta.tableStartRow ?? 9;
+    const totalRows = getPlannedDataRowCount(assetDefinition);
+    const assetsByRow = new Map(
+        resolvedAssets.map((asset, index) => [assetStartRow + index, asset]),
+    );
+    const columns = assetDefinition.columns;
+    const previewColumns = {
+        assetId: 1,
+        kind: 2,
+        preview: 3,
+        resolvedUrl: 4,
+        usedBy: 5,
+        openSource: 6,
+        openResolved: 7,
+    };
+
+    for (let rowNumber = startRow; rowNumber < startRow + totalRows; rowNumber += 1) {
+        const assetRowNumber = assetStartRow + (rowNumber - startRow);
+        const asset = assetsByRow.get(assetRowNumber) ?? null;
+        const refs = {
+            assetId: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'assetId', assetRowNumber)}`,
+            kind: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'kind', assetRowNumber)}`,
+            mode: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'mode', assetRowNumber)}`,
+            sourceValue: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'sourceValue', assetRowNumber)}`,
+            targetPublicPath: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'targetPublicPath', assetRowNumber)}`,
+            enabled: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'enabled', assetRowNumber)}`,
+            resolvedUrl: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'resolvedUrl', assetRowNumber)}`,
+            usedBy: `'${SHEET_NAMES.assets}'!${toSheetCellReference(columns, 'usedBy', assetRowNumber)}`,
+        };
+        const enabledIsFalse = `UPPER(${refs.enabled})<>"TRUE"`;
+        const previewUrlFormula = buildWorkbookAssetUrlFormula(devWorkbookAssetPreviewUrl, refs);
+        const sourceUrlFormula = buildWorkbookAssetUrlFormula(devWorkbookAssetSourceUrl, refs);
+        const resolvedUrlFormula = buildWorkbookAssetUrlFormula(devWorkbookAssetResolvedUrl, refs);
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.assetId),
+            `IF(${refs.assetId}="","",HYPERLINK("#'${SHEET_NAMES.assets}'!A${assetRowNumber}",${refs.assetId}))`,
+            asset?.assetId ?? '',
+            { fill: REQUIRED_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true }, fontColor: 'FF7DD3FC', underline: true },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.kind),
+            `IF(${refs.assetId}="","",UPPER(${refs.kind}))`,
+            asset?.kind?.toUpperCase?.() ?? '',
+            { fill: BODY_ROW_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true } },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.preview),
+            `IF(${refs.assetId}="","",IMAGE(${previewUrlFormula},"Preview"))`,
+            asset?.assetId ? 'Preview' : '',
+            { fill: BODY_GENERATED_FILL, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true } },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.resolvedUrl),
+            `IF(${refs.assetId}="","",${refs.resolvedUrl})`,
+            asset?.resolvedUrl ?? '',
+            { fill: BODY_ROW_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true } },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.usedBy),
+            `IF(${refs.assetId}="","",${refs.usedBy})`,
+            '',
+            { fill: BODY_ROW_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true } },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.openSource),
+            `IF(${refs.assetId}="","",IF(${enabledIsFalse},"Disabled",HYPERLINK(${sourceUrlFormula},"Open source")))`,
+            asset ? (asset.enabled ? 'Open source' : 'Disabled') : '',
+            { fill: BODY_ROW_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true }, fontColor: 'FF7DD3FC', underline: true },
+        );
+
+        setFormulaCell(
+            worksheet.getCell(rowNumber, previewColumns.openResolved),
+            `IF(${refs.assetId}="","",IF(OR(${enabledIsFalse},${refs.resolvedUrl}=""),"Unavailable",HYPERLINK(${resolvedUrlFormula},"Open resolved")))`,
+            asset ? (asset.resolvedUrl ? 'Open resolved' : 'Unavailable') : '',
+            { fill: BODY_ROW_FILL, alignment: { vertical: 'top', horizontal: 'left', wrapText: true }, fontColor: 'FF7DD3FC', underline: true },
+        );
+    }
 }
 
 function applyWorkbookCrossLinks(workbook, sheetDefinitions, masterData, resolvedAssets, previewIndex, assetUsageIndex) {
@@ -2383,6 +2599,7 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             alt: asset.alt,
             notes: asset.notes,
             enabled: asset.enabled ? 'TRUE' : 'FALSE',
+            resolvedUrl: asset.resolvedUrl,
         })),
         columns: [
             { key: 'assetId', header: 'assetId', width: 28, required: true },
@@ -2393,6 +2610,7 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             { key: 'alt', header: 'alt', width: 32 },
             { key: 'notes', header: 'notes', width: 46, wrap: true },
             { key: 'enabled', header: 'enabled', width: 12, required: true, validation: { lookup: 'booleanValues' } },
+            { key: 'resolvedUrl', header: 'resolvedUrl', width: 42, generated: true, wrap: true },
             { key: 'openSource', header: 'openSource', width: 18, generated: true },
             { key: 'openResolved', header: 'openResolved', width: 18, generated: true },
             { key: 'usedBy', header: 'usedBy', width: 32, generated: true, wrap: true },
@@ -2416,6 +2634,7 @@ async function writeWorkbookFromMasterData(masterData, resolvedAssets, workbookP
     const assetUsageIndex = buildAssetUsageIndex(masterData);
     const rowStatusMaps = createRowStatusMaps(masterData, resolvedAssets);
     const sheetDefinitions = getSheetDefinitions(masterData, resolvedAssets);
+    const assetDefinition = sheetDefinitions.find((definition) => definition.name === SHEET_NAMES.assets) ?? null;
     const primaryDefinitions = PRIMARY_SHEET_ORDER
         .filter((sheetName) => ![HOME_SHEET, README_SHEET, PREVIEW_SHEET].includes(sheetName))
         .map((sheetName) => sheetDefinitions.find((definition) => definition.name === sheetName))
@@ -2446,7 +2665,7 @@ async function writeWorkbookFromMasterData(masterData, resolvedAssets, workbookP
         ]),
     );
 
-    createPreviewSheet(workbook, resolvedAssets, previewIndex, assetUsageIndex, generatedAt, sheetRowMaps);
+    createPreviewSheet(workbook, assetDefinition, resolvedAssets, previewIndex, assetUsageIndex, generatedAt, sheetRowMaps);
 
     advancedDefinitions.forEach((sheetDefinition) => {
         buildDataSheet(workbook, sheetDefinition, lookupFormulas, rowStatusMaps, { generatedAt });
@@ -2460,6 +2679,8 @@ async function writeWorkbookFromMasterData(masterData, resolvedAssets, workbookP
         previewIndex,
         assetUsageIndex,
     );
+    applyAssetSheetRuntimeBindings(workbook, assetDefinition, resolvedAssets);
+    applyPreviewSheetRuntimeBindings(workbook, assetDefinition, resolvedAssets);
     validateWorkbookPresentation(workbook, [...primaryDefinitions, ...advancedDefinitions], resolvedAssets);
 
     await ensureDir(path.dirname(workbookPath));
@@ -2501,7 +2722,9 @@ function readSheetRowsCompat(workbook, sheetName, expectedHeaders) {
         headerRow: meta.headerRow ?? 8,
         fallbackHeaderRow: 1,
         expectedHeaders,
-    }).map((row) => stripGeneratedFields(row, getGeneratedKeysForSheet(sheetName)));
+    })
+        .map((row) => stripGeneratedFields(row, getGeneratedKeysForSheet(sheetName)))
+        .filter((row) => Object.values(row).some((value) => asString(value) !== ''));
 }
 
 function readSingleSheetRowCompat(workbook, sheetName, expectedHeaders) {
@@ -2623,6 +2846,18 @@ export async function checkPortfolioContent() {
     return buildRuntimeContent(masterData, resolvedAssets);
 }
 
+export async function buildWorkbookAssetPreviewState(workbookPath = WORKBOOK_PATH) {
+    const masterData = await readWorkbookToMasterData(workbookPath);
+    const resolvedAssets = await resolveAssets(masterData.assetEntries, { writeAssets: false });
+    const previewIndex = await buildAssetPreviewIndex(masterData, resolvedAssets, { rootDir });
+
+    return {
+        masterData,
+        resolvedAssets,
+        previewIndex,
+    };
+}
+
 function slugify(value) {
     return String(value || '')
         .trim()
@@ -2652,6 +2887,12 @@ function asString(value, fallback = '') {
         return value.toISOString();
     }
     if (typeof value === 'object') {
+        if ('formula' in value) {
+            if (value.result === null || value.result === undefined) {
+                return fallback;
+            }
+            return asString(value.result, fallback);
+        }
         if (typeof value.text === 'string') {
             return value.text.trim();
         }
@@ -3169,11 +3410,7 @@ function getSheetRows(worksheet, { headerRow = 1, fallbackHeaderRow = null, expe
 
         const values = headerValues.map((_, index) => row.getCell(index + 1).value);
         const object = rowObject(values, headerValues);
-        const hasMeaningfulValue = values.some((value) => {
-            if (value === null || value === undefined) return false;
-            if (typeof value === 'string' && !value.trim()) return false;
-            return true;
-        });
+        const hasMeaningfulValue = values.some((value) => asString(value) !== '');
 
         if (hasMeaningfulValue) {
             rows.push(object);
@@ -3250,7 +3487,7 @@ async function resolveAssets(assetEntries, { writeAssets = false } = {}) {
             }
 
             if (mode === 'existing_public') {
-                const publicPath = ensurePublicPath(targetPublicPath || sourceValue);
+                const publicPath = ensurePublicPath(sourceValue || targetPublicPath);
                 if (!publicPath) {
                     throw new Error(`Asset "${assetId}" needs targetPublicPath or sourceValue when mode is existing_public.`);
                 }

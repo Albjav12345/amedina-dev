@@ -25,7 +25,7 @@ Important:
 
 Asset modes:
 
-- `existing_public`: keep an asset already inside `public/`
+- `existing_public`: keep an asset already inside `public/` and edit `sourceValue` as the canonical public path
 - `import_local`: copy a local file into `public/`
 - `external_url`: point directly to a public URL
 
