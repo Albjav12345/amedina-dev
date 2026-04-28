@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { containWheelOnOverflow } from '../../utils/scrolling';
 import { clearOpsTelemetry, getOpsTelemetry, subscribeOpsTelemetry } from '../../utils/opsTelemetry';
+import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
 const statusMap = {
     operational: { label: 'Operational', className: 'border-electric-green/25 bg-electric-green/10 text-electric-green', icon: CheckCircle2 },
@@ -1068,6 +1069,7 @@ function LazyPanelBlock({ root, eager = false, minHeight = 320, skeleton, childr
 }
 
 function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
+    const quality = useHardwareQuality();
     const [backend, setBackend] = useState(null);
     const [session, setSession] = useState(() => getOpsTelemetry());
     const [selectedRunId, setSelectedRunId] = useState('');
@@ -1075,18 +1077,12 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isContentReady, setIsContentReady] = useState(false);
     const [isBodyVisible, setIsBodyVisible] = useState(false);
-    const [isMobileSheet, setIsMobileSheet] = useState(() => {
-        if (typeof window === 'undefined') {
-            return false;
-        }
-
-        return window.innerWidth < 640;
-    });
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
     const [isDraggingSheet, setIsDraggingSheet] = useState(false);
     const [runtimeTab, setRuntimeTab] = useState('latency');
     const [mobileView, setMobileView] = useState('overview');
     const [scrollRoot, setScrollRoot] = useState(null);
+    const isMobileSheet = quality.isCompactViewport;
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
     const sheetAnimationRef = useRef(null);
@@ -1115,18 +1111,6 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
             dragFrameRef.current = 0;
         }
     };
-
-    useEffect(() => {
-        const syncViewport = () => {
-            if (typeof window === 'undefined') return;
-            setIsMobileSheet(window.innerWidth < 640);
-        };
-
-        syncViewport();
-        window.addEventListener('resize', syncViewport);
-
-        return () => window.removeEventListener('resize', syncViewport);
-    }, []);
 
     useEffect(() => {
         if (!isOpen) return undefined;
@@ -1465,71 +1449,96 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
                             animate={asideAnimate}
                             exit={asideExit}
                             transition={asideTransition}
-                            className={`fixed inset-x-2 bottom-2 top-4 z-[1210] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? (isDraggingSheet ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]') : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
+                            className={`fixed z-[1210] mx-auto max-w-7xl transform-gpu border border-white/10 ${
+                                isMobileSheet
+                                    ? `inset-x-2 bottom-2 top-4 rounded-[24px] ${isDraggingSheet ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]'}`
+                                    : 'inset-x-4 bottom-4 top-16 rounded-[28px] bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:top-20'
+                            }`}
                             data-lenis-prevent
                             data-lenis-prevent-touch
                             style={isMobileSheet ? { y: sheetY, touchAction: 'auto', willChange: 'transform', backfaceVisibility: 'hidden' } : undefined}
                         >
-                            <div className="flex h-full flex-col overflow-hidden rounded-[24px] sm:rounded-[28px]">
+                            <div className={`flex h-full flex-col overflow-hidden ${isMobileSheet ? 'rounded-[24px]' : 'rounded-[28px]'}`}>
                                 <div
-                                    className="touch-none border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 sm:touch-auto md:px-8"
+                                    className={`border-b border-white/10 ${
+                                        isMobileSheet
+                                            ? 'touch-none px-4 py-4'
+                                            : 'px-6 py-5 md:px-8'
+                                    }`}
                                     onPointerDown={handleMobileHeaderPointerDown}
                                 >
-                                    <div className="mb-3 flex justify-center sm:hidden">
-                                        <button
-                                            type="button"
-                                            onPointerDown={startHeaderDrag}
-                                            className="touch-none cursor-grab active:cursor-grabbing"
-                                            aria-label="Drag down to close observability panel"
-                                        >
-                                            <div className="h-1.5 w-16 rounded-full bg-white/10" />
-                                        </button>
-                                    </div>
+                                    {isMobileSheet && (
+                                        <div className="mb-3 flex justify-center">
+                                            <button
+                                                type="button"
+                                                onPointerDown={startHeaderDrag}
+                                                className="touch-none cursor-grab active:cursor-grabbing"
+                                                aria-label="Drag down to close observability panel"
+                                            >
+                                                <div className="h-1.5 w-16 rounded-full bg-white/10" />
+                                            </button>
+                                        </div>
+                                    )}
                                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                         <div>
                                             <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green">
                                                 <Activity className="h-3 w-3" />
                                                 Live System Control
                                             </div>
-                                            <h2 className="mt-4 text-[2.15rem] font-bold leading-[0.95] tracking-tight text-white sm:text-3xl md:text-4xl">Observability panel</h2>
-                                            <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:hidden">
-                                                Live probes, session telemetry, and request flow for the systems behind the site.
-                                            </p>
-                                            <p className="mt-3 hidden max-w-3xl text-sm leading-relaxed text-gray-400 md:text-base sm:block">
-                                                Real backend probes, current integration modes, session telemetry, and request lifecycle for the systems that actually drive the site.
-                                            </p>
+                                            <h2 className={`mt-4 font-bold leading-[0.95] tracking-tight text-white ${
+                                                isMobileSheet ? 'text-[2rem]' : 'text-[2.15rem] sm:text-3xl md:text-4xl'
+                                            }`}>Observability panel</h2>
+                                            {isMobileSheet ? (
+                                                <p className="mt-3 text-sm leading-relaxed text-gray-400">
+                                                    Live probes, session telemetry, and request flow for the systems behind the site.
+                                                </p>
+                                            ) : (
+                                                <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-400 md:text-base">
+                                                    Real backend probes, current integration modes, session telemetry, and request lifecycle for the systems that actually drive the site.
+                                                </p>
+                                            )}
                                         </div>
-                                        <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
-                                            <button
-                                                type="button"
-                                                onClick={() => { void requestClose(); }}
-                                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer sm:hidden"
-                                                aria-label="Close observability panel"
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </button>
+                                        <div className={`flex items-center gap-3 ${
+                                            isMobileSheet ? 'w-full justify-between' : 'w-full sm:w-auto sm:justify-end'
+                                        }`}>
+                                            {isMobileSheet && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { void requestClose(); }}
+                                                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer"
+                                                    aria-label="Close observability panel"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            )}
 
-                                            <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-none sm:justify-end sm:gap-3">
+                                            <div className={`min-w-0 gap-2 ${
+                                                isMobileSheet
+                                                    ? 'grid flex-1 grid-cols-2'
+                                                    : 'grid flex-1 grid-cols-2 sm:flex sm:w-auto sm:flex-none sm:justify-end sm:gap-3'
+                                            }`}>
                                                 <button
                                                     type="button"
                                                     onClick={() => {
                                                         clearOpsTelemetry();
                                                         setSelectedRunId('');
                                                     }}
-                                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer sm:px-5 sm:text-xs sm:tracking-[0.18em]"
+                                                    className={`inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 font-mono uppercase text-gray-300 transition-colors hover:border-red-400/35 hover:text-red-200 cursor-pointer ${
+                                                        isMobileSheet ? 'text-[10px] tracking-[0.16em]' : 'sm:px-5 text-[10px] sm:text-xs tracking-[0.16em] sm:tracking-[0.18em]'
+                                                    }`}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
-                                                    <span className="hidden sm:inline">Clear Session</span>
-                                                    <span className="sm:hidden">Clear</span>
+                                                    <span>{isMobileSheet ? 'Clear' : 'Clear Session'}</span>
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => refreshBackend()}
-                                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 text-[10px] font-mono uppercase tracking-[0.16em] text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer sm:px-5 sm:text-xs sm:tracking-[0.18em]"
+                                                    className={`inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-3 font-mono uppercase text-gray-300 transition-colors hover:border-electric-cyan/35 hover:text-electric-cyan cursor-pointer ${
+                                                        isMobileSheet ? 'text-[10px] tracking-[0.16em]' : 'sm:px-5 text-[10px] sm:text-xs tracking-[0.16em] sm:tracking-[0.18em]'
+                                                    }`}
                                                 >
                                                     <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                                    <span className="hidden sm:inline">Refresh</span>
-                                                    <span className="sm:hidden">Reload</span>
+                                                    <span>{isMobileSheet ? 'Reload' : 'Refresh'}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -1540,7 +1549,9 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
                                     initial={false}
                                     animate={isBodyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                                     transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                                    className="panel-scrollbar flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8"
+                                    className={`panel-scrollbar flex-1 overflow-y-auto ${
+                                        isMobileSheet ? 'px-4 py-4' : 'px-6 py-6 md:px-8'
+                                    }`}
                                     data-lenis-prevent
                                     data-lenis-prevent-touch
                                     style={{

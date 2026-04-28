@@ -464,11 +464,6 @@ const FeaturedProjects = () => {
             setSelectedId(null);
             setClosingCardId(null);
             setElevatedCardId(null);
-            setIsMobileSheetBodyVisible(false);
-            setIsMobileSheetClosingFromDrag(false);
-            setIsMobileSheetDragging(false);
-            mobileSheetY.set(0);
-            stopMobileSheetAnimation();
             return;
         }
 
