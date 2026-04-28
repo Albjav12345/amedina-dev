@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import {
     Activity,
@@ -1066,7 +1067,7 @@ function LazyPanelBlock({ root, eager = false, minHeight = 320, skeleton, childr
     );
 }
 
-function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
+function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
     const [backend, setBackend] = useState(null);
     const [session, setSession] = useState(() => getOpsTelemetry());
     const [selectedRunId, setSelectedRunId] = useState('');
@@ -1074,10 +1075,15 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isContentReady, setIsContentReady] = useState(false);
     const [isBodyVisible, setIsBodyVisible] = useState(false);
-    const [isMobileSheet, setIsMobileSheet] = useState(false);
+    const [isMobileSheet, setIsMobileSheet] = useState(() => {
+        if (typeof window === 'undefined') {
+            return false;
+        }
+
+        return window.innerWidth < 640;
+    });
     const [isClosingFromDrag, setIsClosingFromDrag] = useState(false);
     const [isDraggingSheet, setIsDraggingSheet] = useState(false);
-    const [isLauncherPressed, setIsLauncherPressed] = useState(false);
     const [runtimeTab, setRuntimeTab] = useState('latency');
     const [mobileView, setMobileView] = useState('overview');
     const [scrollRoot, setScrollRoot] = useState(null);
@@ -1087,9 +1093,6 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
     const dragCleanupRef = useRef(null);
     const dragFrameRef = useRef(0);
     const pendingSheetYRef = useRef(0);
-    const launcherPressRef = useRef({ pointerId: null, startX: 0, startY: 0, moved: false });
-    const lastLauncherOpenRef = useRef(0);
-
     useEffect(() => subscribeOpsTelemetry(setSession), []);
 
     const stopSheetAnimation = () => {
@@ -1427,60 +1430,8 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
         startHeaderDrag(event);
     };
 
-    const warmBackendSnapshot = () => {
-        if (backend || isRefreshing) return;
-        void refreshBackend({ silent: true });
-    };
-
-    const openLauncherPanel = () => {
-        const now = Date.now();
-        if (isOpen || now - lastLauncherOpenRef.current < 320) return;
-        lastLauncherOpenRef.current = now;
-        setIsLauncherPressed(false);
-        onOpen();
-    };
-
-    const handleLauncherPointerDown = (event) => {
-        setIsLauncherPressed(true);
-        warmBackendSnapshot();
-
-        launcherPressRef.current = {
-            pointerId: event.pointerId,
-            startX: event.clientX,
-            startY: event.clientY,
-            moved: false,
-        };
-    };
-
-    const handleLauncherPointerMove = (event) => {
-        const press = launcherPressRef.current;
-        if (press.pointerId !== event.pointerId || press.moved) return;
-
-        if (Math.abs(event.clientX - press.startX) > 14 || Math.abs(event.clientY - press.startY) > 14) {
-            launcherPressRef.current = { ...press, moved: true };
-            setIsLauncherPressed(false);
-        }
-    };
-
-    const handleLauncherPointerUp = (event) => {
-        const press = launcherPressRef.current;
-        setIsLauncherPressed(false);
-
-        if (press.pointerId !== event.pointerId) return;
-        launcherPressRef.current = { pointerId: null, startX: 0, startY: 0, moved: false };
-
-        if ((event.pointerType === 'touch' || event.pointerType === 'pen') && !press.moved) {
-            openLauncherPanel();
-        }
-    };
-
-    const handleLauncherPointerCancel = () => {
-        launcherPressRef.current = { pointerId: null, startX: 0, startY: 0, moved: false };
-        setIsLauncherPressed(false);
-    };
-
     const asideInitial = isMobileSheet
-        ? { y: 0 }
+        ? false
         : { opacity: 0, y: 18 };
 
     const asideAnimate = isMobileSheet
@@ -1495,30 +1446,8 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
         ? { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
         : { duration: 0.18, ease: [0.22, 1, 0.36, 1] };
 
-    return (
+    const panelTree = (
         <>
-            <button
-                type="button"
-                onClick={openLauncherPanel}
-                onMouseEnter={warmBackendSnapshot}
-                onFocus={warmBackendSnapshot}
-                onPointerDown={handleLauncherPointerDown}
-                onPointerMove={handleLauncherPointerMove}
-                onPointerUp={handleLauncherPointerUp}
-                onPointerCancel={handleLauncherPointerCancel}
-                onPointerLeave={() => setIsLauncherPressed(false)}
-                className={`fixed bottom-5 right-5 z-[90] rounded-full border px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] backdrop-blur-xl transition-[border-color,color,box-shadow,background-color,transform,opacity] duration-120 cursor-pointer ${isLauncherPressed ? 'scale-[0.985] border-electric-cyan/32 bg-white/[0.07] text-electric-cyan shadow-[0_12px_28px_rgba(0,0,0,0.38)]' : 'border-electric-green/25 bg-[#0b0d11]/90 text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] hover:border-electric-cyan/35 hover:text-electric-cyan'}`}
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-            >
-                <span className="inline-flex items-center gap-2">
-                    <span className="relative flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full rounded-full bg-electric-green opacity-60 animate-ping" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-electric-green" />
-                    </span>
-                    SYS PANEL
-                </span>
-            </button>
-
             <AnimatePresence onExitComplete={onExitComplete}>
                 {isOpen && (
                     <>
@@ -1527,7 +1456,7 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => { void requestClose(); }}
-                            className={`fixed inset-0 z-[95] ${isMobileSheet ? 'bg-black/68' : 'bg-black/52 backdrop-blur-sm'}`}
+                            className={`fixed inset-0 z-[1200] ${isMobileSheet ? 'bg-black/68' : 'bg-black/52 backdrop-blur-sm'}`}
                             style={isMobileSheet ? { opacity: overlayOpacity, willChange: 'opacity' } : undefined}
                         />
 
@@ -1536,7 +1465,7 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
                             animate={asideAnimate}
                             exit={asideExit}
                             transition={asideTransition}
-                            className={`fixed inset-x-2 bottom-2 top-4 z-[100] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? (isDraggingSheet ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]') : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
+                            className={`fixed inset-x-2 bottom-2 top-4 z-[1210] mx-auto max-w-7xl transform-gpu rounded-[24px] border border-white/10 ${isMobileSheet ? (isDraggingSheet ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]') : 'bg-[#0b0d11]/94 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'} sm:inset-x-4 sm:bottom-4 sm:top-16 sm:rounded-[28px] md:top-20`}
                             data-lenis-prevent
                             data-lenis-prevent-touch
                             style={isMobileSheet ? { y: sheetY, touchAction: 'auto', willChange: 'transform', backfaceVisibility: 'hidden' } : undefined}
@@ -1792,6 +1721,12 @@ function ControlPlane({ isOpen, onOpen, onClose, onExitComplete = () => {} }) {
             </AnimatePresence>
         </>
     );
+
+    if (typeof document === 'undefined') {
+        return panelTree;
+    }
+
+    return createPortal(panelTree, document.body);
 }
 
 export { ControlPlane };

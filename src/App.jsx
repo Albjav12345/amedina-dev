@@ -9,6 +9,7 @@ import portfolioData from './data/portfolio'
 import Hero from './components/sections/Hero'
 import Navbar from './components/layout/Navbar'
 import ParallaxGrid from './components/common/ParallaxGrid'
+import { Footer } from './components/layout/Footer'
 import {
     DEFAULT_SECTION_ID,
     SECTION_IDS,
@@ -62,11 +63,7 @@ const ControlPlane = React.lazy(() =>
     loadControlPlaneModule().then(module => ({ default: module.ControlPlane }))
 )
 
-const Footer = React.lazy(() =>
-    import('./components/layout/Footer').then(module => ({ default: module.Footer }))
-)
-
-const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v2'
+const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v3'
 const ROUTE_RESTORE_DEADLINE_MS = 2400
 const ROUTE_RESTORE_LAYOUT_SETTLE_MS = 140
 
@@ -76,14 +73,14 @@ const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
         projects: 1480,
         'tech-stack': 1180,
         architect: 1720,
-        contact: 980,
+        contact: 1180,
     },
     mobile: {
         about: 1980,
         projects: 1180,
         'tech-stack': 1560,
         architect: 2180,
-        contact: 1260,
+        contact: 1380,
     },
 }
 
@@ -279,6 +276,7 @@ function App() {
     const [isControlOpen, setIsControlOpen] = useState(false);
     const [isControlUiLocked, setIsControlUiLocked] = useState(false);
     const [shouldRenderControlPlane, setShouldRenderControlPlane] = useState(false);
+    const [isControlLauncherPressed, setIsControlLauncherPressed] = useState(false);
     const [viewportBucket, setViewportBucket] = useState(initialViewportBucket)
     const [sectionWrapperHeights, setSectionWrapperHeights] = useState(() => readSectionHeightCache(initialViewportBucket))
     const [renderedSectionMap, setRenderedSectionMap] = useState(() => createInitialRenderedSectionMap(initialSectionId))
@@ -296,6 +294,7 @@ function App() {
     const routeRestoreRef = useRef(createIdleRouteRestoreState());
     const currentRuntimeGeneratedAtRef = useRef(portfolioData.meta.generatedAt ?? null)
     const renderedSectionMapRef = useRef(createInitialRenderedSectionMap(initialSectionId))
+    const controlLauncherPressRef = useRef({ pointerId: null, startX: 0, startY: 0, moved: false })
 
     useEffect(() => {
         renderedSectionMapRef.current = renderedSectionMap
@@ -425,6 +424,7 @@ function App() {
     };
 
     const openControlPanel = () => {
+        setIsControlLauncherPressed(false)
         setShouldRenderControlPlane(true)
         setIsControlUiLocked(true)
         setIsControlOpen(true)
@@ -432,6 +432,36 @@ function App() {
 
     const preloadControlPlane = () => {
         void loadControlPlaneModule()
+    }
+
+    const handleControlLauncherPointerDown = (event) => {
+        preloadControlPlane()
+        setIsControlLauncherPressed(true)
+
+        controlLauncherPressRef.current = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            moved: false,
+        }
+    }
+
+    const handleControlLauncherPointerMove = (event) => {
+        const press = controlLauncherPressRef.current
+
+        if (press.pointerId !== event.pointerId || press.moved) {
+            return
+        }
+
+        if (Math.abs(event.clientX - press.startX) > 14 || Math.abs(event.clientY - press.startY) > 14) {
+            controlLauncherPressRef.current = { ...press, moved: true }
+            setIsControlLauncherPressed(false)
+        }
+    }
+
+    const resetControlLauncherPress = () => {
+        controlLauncherPressRef.current = { pointerId: null, startX: 0, startY: 0, moved: false }
+        setIsControlLauncherPressed(false)
     }
 
     const closeControlPanel = () => {
@@ -1180,18 +1210,22 @@ function App() {
                         ) : null}
                     </div>
                 </main>
-                <Suspense fallback={null}>
-                    <Footer onOpenControlPanel={openControlPanel} />
-                </Suspense>
-                {!shouldRenderControlPlane && !isControlOpen ? (
+                <Footer onOpenControlPanel={openControlPanel} />
+                {!isControlOpen ? (
                     <button
                         type="button"
                         onClick={openControlPanel}
                         onMouseEnter={preloadControlPlane}
                         onFocus={preloadControlPlane}
-                        onPointerDown={preloadControlPlane}
+                        onPointerDown={handleControlLauncherPointerDown}
+                        onPointerMove={handleControlLauncherPointerMove}
+                        onPointerUp={resetControlLauncherPress}
+                        onPointerCancel={resetControlLauncherPress}
+                        onPointerLeave={resetControlLauncherPress}
                         aria-label="Open SYS PANEL"
-                        className="fixed bottom-5 right-5 z-[90] rounded-full border border-electric-green/25 bg-[#0b0d11]/90 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-[border-color,color,box-shadow,background-color,transform,opacity] duration-120 hover:border-electric-cyan/35 hover:text-electric-cyan"
+                        className={`fixed bottom-5 right-5 z-[90] rounded-full border px-4 py-3 text-[10px] font-mono uppercase tracking-[0.2em] backdrop-blur-xl transition-[border-color,color,box-shadow,background-color,transform,opacity] duration-120 cursor-pointer ${isControlLauncherPressed
+                            ? 'scale-[0.985] border-electric-cyan/32 bg-white/[0.07] text-electric-cyan shadow-[0_12px_28px_rgba(0,0,0,0.38)]'
+                            : 'border-electric-green/25 bg-[#0b0d11]/90 text-electric-green shadow-[0_18px_40px_rgba(0,0,0,0.45)] hover:border-electric-cyan/35 hover:text-electric-cyan'}`}
                         style={{ WebkitTapHighlightColor: 'transparent' }}
                     >
                         <span className="inline-flex items-center gap-2">
@@ -1207,7 +1241,6 @@ function App() {
                     <Suspense fallback={null}>
                         <ControlPlane
                             isOpen={isControlOpen}
-                            onOpen={openControlPanel}
                             onClose={closeControlPanel}
                             onExitComplete={handleControlPanelExitComplete}
                         />
