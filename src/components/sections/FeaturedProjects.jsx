@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
 import { Code2, ArrowUpRight, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { viewportConfig } from '../../utils/animations';
@@ -52,14 +53,18 @@ const FeaturedProjects = () => {
     const [closingCardId, setClosingCardId] = useState(null);
     const [isContentReady, setContentReady] = useState(false);
     const [isContentClosing, setIsContentClosing] = useState(false);
+    const [isMobileSheetBodyVisible, setIsMobileSheetBodyVisible] = useState(false);
+    const [isMobileSheetClosingFromDrag, setIsMobileSheetClosingFromDrag] = useState(false);
+    const [isMobileSheetDragging, setIsMobileSheetDragging] = useState(false);
     const [isSectionNearViewport, setIsSectionNearViewport] = useState(false);
     const [isScrollIdle, setIsScrollIdle] = useState(false);
     const [cardStatus, setCardStatus] = useState({});
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
-    const useCompactProjectModal = quality.useCompactProjectModal;
+    const useCompactProjectModal = quality.useCompactProjectModal || quality.isCompactViewport;
+    const useMobileProjectSheet = quality.isCompactViewport;
     const useWideProjectLayout = quality.useWideProjectModalLayout;
-    const shouldUseDesktopProjectTransition = !useCompactProjectModal;
+    const shouldUseDesktopProjectTransition = !useMobileProjectSheet && !useCompactProjectModal;
 
     const cardRefs = useRef({});
     const sectionRef = useRef(null);
@@ -68,7 +73,35 @@ const FeaturedProjects = () => {
     const lastScrollYRef = useRef(null);
     const closeFrameRef = useRef(null);
     const isClosingRef = useRef(false);
+    const mobileSheetAnimationRef = useRef(null);
+    const mobileSheetDragCleanupRef = useRef(null);
+    const mobileSheetDragFrameRef = useRef(0);
+    const pendingMobileSheetYRef = useRef(0);
+    const mobileSheetY = useMotionValue(0);
+    const mobileSheetOverlayOpacity = useTransform(mobileSheetY, [0, 260], [1, 0]);
     const isProjectTransitionActive = selectedId !== null || closingCardId !== null;
+
+    const stopMobileSheetAnimation = () => {
+        mobileSheetAnimationRef.current?.stop?.();
+        mobileSheetAnimationRef.current = null;
+    };
+
+    const runMobileSheetAnimation = (target, options) => {
+        stopMobileSheetAnimation();
+        const controls = animate(mobileSheetY, target, options);
+        mobileSheetAnimationRef.current = controls;
+        return controls;
+    };
+
+    const clearMobileSheetDrag = () => {
+        mobileSheetDragCleanupRef.current?.();
+        mobileSheetDragCleanupRef.current = null;
+
+        if (mobileSheetDragFrameRef.current) {
+            window.cancelAnimationFrame(mobileSheetDragFrameRef.current);
+            mobileSheetDragFrameRef.current = 0;
+        }
+    };
 
     useEffect(() => {
         const node = sectionRef.current;
@@ -129,8 +162,48 @@ const FeaturedProjects = () => {
             if (idleTimeoutRef.current !== null) {
                 window.clearTimeout(idleTimeoutRef.current);
             }
+
+            stopMobileSheetAnimation();
+            clearMobileSheetDrag();
         };
     }, []);
+
+    useEffect(() => {
+        if (!selectedId || !useMobileProjectSheet) {
+            setIsMobileSheetClosingFromDrag(false);
+            setIsMobileSheetDragging(false);
+            setIsMobileSheetBodyVisible(false);
+            mobileSheetY.set(0);
+            return undefined;
+        }
+
+        setIsMobileSheetClosingFromDrag(false);
+        setIsMobileSheetDragging(false);
+
+        const entryOffset = Math.min(window.innerHeight * 0.09, 84);
+        mobileSheetY.set(entryOffset);
+        const controls = runMobileSheetAnimation(0, {
+            duration: 0.22,
+            ease: [0.22, 1, 0.36, 1],
+        });
+
+        return () => controls.stop();
+    }, [mobileSheetY, selectedId, useMobileProjectSheet]);
+
+    useEffect(() => {
+        if (!selectedId || !useMobileProjectSheet) {
+            setIsMobileSheetBodyVisible(false);
+            return undefined;
+        }
+
+        setIsMobileSheetBodyVisible(false);
+
+        const revealTimeout = window.setTimeout(() => {
+            setIsMobileSheetBodyVisible(true);
+        }, 90);
+
+        return () => window.clearTimeout(revealTimeout);
+    }, [selectedId, useMobileProjectSheet]);
 
     useEffect(() => {
         if (selectedId || !isSectionNearViewport || !isScrollIdle) {
@@ -317,7 +390,7 @@ const FeaturedProjects = () => {
 
     useEffect(() => {
         const handleExternalClose = () => {
-            handleProjectClose();
+            void handleProjectClose();
         };
 
         window.addEventListener('close-project-modal', handleExternalClose);
@@ -347,6 +420,11 @@ const FeaturedProjects = () => {
 
         isClosingRef.current = false;
         setIsContentClosing(false);
+        setIsMobileSheetClosingFromDrag(false);
+        setIsMobileSheetDragging(false);
+        setIsMobileSheetBodyVisible(false);
+        stopMobileSheetAnimation();
+        clearMobileSheetDrag();
         allowedVideoIdsRef.current = [];
         setAllowedVideoIds([]);
         setIsScrollIdle(false);
@@ -355,7 +433,7 @@ const FeaturedProjects = () => {
         setSelectedId(projectId);
     };
 
-    const handleProjectClose = () => {
+    const handleProjectClose = async () => {
         if (!selectedId) {
             return;
         }
@@ -363,6 +441,22 @@ const FeaturedProjects = () => {
         if (closeFrameRef.current !== null) {
             window.cancelAnimationFrame(closeFrameRef.current);
             closeFrameRef.current = null;
+        }
+
+        if (useMobileProjectSheet) {
+            clearMobileSheetDrag();
+            setIsMobileSheetDragging(false);
+            setIsMobileSheetClosingFromDrag(true);
+            await runMobileSheetAnimation(window.innerHeight, {
+                duration: 0.16,
+                ease: [0.22, 1, 0.36, 1],
+            });
+            isClosingRef.current = false;
+            setIsContentClosing(false);
+            setSelectedId(null);
+            setClosingCardId(null);
+            setElevatedCardId(null);
+            return;
         }
 
         if (useCompactProjectModal) {
@@ -382,6 +476,348 @@ const FeaturedProjects = () => {
             setSelectedId(null);
         });
     };
+
+    const handleMobileSheetDragRelease = async (velocity = 0, offset = mobileSheetY.get()) => {
+        const shouldClose = offset > 96 || velocity > 700;
+
+        if (shouldClose) {
+            await handleProjectClose();
+            return;
+        }
+
+        setIsMobileSheetClosingFromDrag(false);
+        setIsMobileSheetDragging(false);
+        runMobileSheetAnimation(0, {
+            type: 'spring',
+            stiffness: 420,
+            damping: 36,
+        });
+    };
+
+    const startMobileSheetDrag = (event) => {
+        if (!useMobileProjectSheet) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+        stopMobileSheetAnimation();
+        setIsMobileSheetClosingFromDrag(false);
+        setIsMobileSheetDragging(true);
+
+        const dragState = {
+            pointerId: event.pointerId,
+            startY: event.clientY,
+            lastY: event.clientY,
+            lastTime: performance.now(),
+            velocity: 0,
+        };
+
+        clearMobileSheetDrag();
+
+        const handlePointerMove = (moveEvent) => {
+            if (moveEvent.pointerId !== dragState.pointerId) return;
+
+            const offset = Math.max(0, moveEvent.clientY - dragState.startY);
+            const now = performance.now();
+            const elapsed = Math.max(now - dragState.lastTime, 1);
+
+            dragState.velocity = ((moveEvent.clientY - dragState.lastY) / elapsed) * 1000;
+            dragState.lastY = moveEvent.clientY;
+            dragState.lastTime = now;
+
+            pendingMobileSheetYRef.current = offset;
+            if (!mobileSheetDragFrameRef.current) {
+                mobileSheetDragFrameRef.current = window.requestAnimationFrame(() => {
+                    mobileSheetY.set(pendingMobileSheetYRef.current);
+                    mobileSheetDragFrameRef.current = 0;
+                });
+            }
+
+            moveEvent.preventDefault();
+        };
+
+        const handlePointerEnd = async (endEvent) => {
+            if (endEvent.pointerId !== dragState.pointerId) return;
+
+            const offset = Math.max(0, endEvent.clientY - dragState.startY);
+            clearMobileSheetDrag();
+            await handleMobileSheetDragRelease(dragState.velocity, offset);
+        };
+
+        mobileSheetDragCleanupRef.current = () => {
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerEnd);
+            window.removeEventListener('pointercancel', handlePointerEnd);
+        };
+
+        window.addEventListener('pointermove', handlePointerMove, { passive: false });
+        window.addEventListener('pointerup', handlePointerEnd);
+        window.addEventListener('pointercancel', handlePointerEnd);
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        event.preventDefault();
+    };
+
+    const handleMobileSheetHeaderPointerDown = (event) => {
+        if (!useMobileProjectSheet) return;
+
+        const target = event.target;
+        if (target instanceof Element && target.closest('button, a, input, textarea, select, [data-no-drag="true"]')) {
+            return;
+        }
+
+        startMobileSheetDrag(event);
+    };
+
+    const projectDetailPanels = activeProject ? (
+        <>
+            <div className={projectInfoPanelClass}>
+                <div className="space-y-8 flex-grow">
+                    <div className="space-y-4">
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-2 md:space-y-4 md:flex-grow">
+                                <div className="flex items-center gap-3">
+                                    <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
+                                        Active_Module
+                                    </span>
+                                    <div className="h-px w-8 bg-white/10 hidden md:block"></div>
+                                </div>
+
+                                <h2 className={projectTitleClass}>
+                                    {activeProject.title}
+                                </h2>
+                            </div>
+
+                            {activeProject.icon && (
+                                <div className={`shrink-0 flex items-center justify-center rounded-2xl md:mt-4 lg:mt-6 transition-all duration-300 ${
+                                    iconMap[activeProject.icon] || activeProject.iconFit !== 'auto'
+                                        ? "w-12 h-12 md:w-24 md:h-24 bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden"
+                                        : "h-12 md:h-24 w-auto overflow-visible"
+                                }`}>
+                                    {iconMap[activeProject.icon] ? (
+                                        <div className="flex items-center justify-center w-full h-full p-3 md:p-5">
+                                            {iconMap[activeProject.icon]}
+                                        </div>
+                                    ) : (
+                                        <img
+                                            src={activeProject.icon}
+                                            alt="Project Icon"
+                                            style={activeProject.iconScale ? { transform: `scale(${activeProject.iconScale})` } : {}}
+                                            className={activeProject.iconFit === 'auto'
+                                                ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]"
+                                                : "w-full h-full object-cover"}
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <p className="text-base md:text-lg text-gray-400 font-medium leading-relaxed">
+                            {activeProject.subtitle}
+                        </p>
+                    </div>
+
+                    <div className={projectProblemGridClass}>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] uppercase tracking-widest">
+                                <Cpu className="w-3 h-3 text-electric-cyan" />
+                                Context_Problem
+                            </div>
+                            <p className="text-sm text-gray-400 leading-relaxed">
+                                {activeProject.problem}
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-electric-green font-mono text-[10px] uppercase tracking-widest">
+                                <Terminal className="w-3 h-3" />
+                                Engineered_Solution
+                            </div>
+                            <p className="text-sm text-gray-400 leading-relaxed border-l border-electric-green/20 pl-4 py-1">
+                                {activeProject.solution}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest block pb-2 border-b border-white/5">Tech_Arsenal</span>
+                        <div className="flex flex-wrap gap-2">
+                            {activeProject.stack.map((tech) => (
+                                <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px] text-gray-300">
+                                    {tech}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
+                    <a
+                        href={activeProject.githubLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-grow btn-system inline-flex items-center justify-center gap-3 px-8 py-4 group"
+                    >
+                        <span className="font-mono text-sm tracking-widest uppercase">Access_Repo</span>
+                        <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    </a>
+                </div>
+            </div>
+
+            <div className={projectMediaPanelClass}>
+                <div className="space-y-4 flex-grow">
+                    <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
+                        Live_Stream_Demo
+                        <ExternalLink className="w-3 h-3 opacity-50" />
+                    </span>
+                    <div className={`relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl ${useWideProjectLayout ? '' : 'max-h-[min(46vh,28rem)]'}`}>
+                        {activeProject.demoType === 'video' ? (
+                            <video
+                                src={activeProject.media.modalVideo}
+                                poster={activeProject.media.poster}
+                                controls
+                                preload="metadata"
+                                playsInline
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <img
+                                src={activeProject.media.poster || activeProject.thumbnail}
+                                alt="Demo Preview"
+                                className="w-full h-full object-cover"
+                            />
+                        )}
+
+                        <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
+
+                        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
+                            <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
+                            <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
+                                HD_SOURCE_ACTIVE
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={projectFlowPanelClass}>
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
+                        <div className="flex gap-1">
+                            <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
+                            <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
+                            <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
+                        <WorkflowDiagram steps={activeProject.arch} />
+                    </div>
+                </div>
+            </div>
+        </>
+    ) : null;
+
+    const handleProjectModalExitComplete = () => {
+        setContentReady(false);
+        setIsContentClosing(false);
+        setIsMobileSheetBodyVisible(false);
+        setIsMobileSheetClosingFromDrag(false);
+        setIsMobileSheetDragging(false);
+        isClosingRef.current = false;
+        setClosingCardId(null);
+        setElevatedCardId(null);
+        stopMobileSheetAnimation();
+        clearMobileSheetDrag();
+    };
+
+    const mobileProjectSheet = selectedId && activeProject && useMobileProjectSheet ? (
+        <React.Fragment key={`project-sheet-${selectedId}`}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => { void handleProjectClose(); }}
+                className="fixed inset-0 z-[1200] bg-black/68"
+                style={{ opacity: mobileSheetOverlayOpacity, willChange: 'opacity' }}
+            />
+
+            <motion.aside
+                initial={false}
+                animate={{ y: 0 }}
+                exit={isMobileSheetClosingFromDrag ? { opacity: 1 } : { y: 0 }}
+                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                className={`fixed inset-x-2 bottom-2 top-4 z-[1210] mx-auto max-w-[860px] transform-gpu rounded-[24px] border border-white/10 ${isMobileSheetDragging ? 'bg-[#0b0d11]/98 shadow-[0_12px_28px_rgba(0,0,0,0.28)]' : 'bg-[#0b0d11]/98 shadow-[0_20px_70px_rgba(0,0,0,0.42)]'}`}
+                style={{ y: mobileSheetY, touchAction: 'auto', willChange: 'transform', backfaceVisibility: 'hidden' }}
+                data-lenis-prevent
+                data-lenis-prevent-touch
+            >
+                <div className="flex h-full flex-col overflow-hidden rounded-[24px]">
+                    <div
+                        className="touch-none border-b border-white/10 px-4 py-4"
+                        onPointerDown={handleMobileSheetHeaderPointerDown}
+                    >
+                        <div className="mb-3 flex justify-center">
+                            <button
+                                type="button"
+                                onPointerDown={startMobileSheetDrag}
+                                className="touch-none cursor-grab active:cursor-grabbing"
+                                aria-label="Drag down to close project panel"
+                            >
+                                <div className="h-1.5 w-16 rounded-full bg-white/10" />
+                            </button>
+                        </div>
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green">
+                                    <Code2 className="h-3 w-3" />
+                                    Active Project
+                                </div>
+                                <h2 className="mt-4 text-[2rem] font-bold leading-[0.95] tracking-tight text-white">
+                                    {activeProject.title}
+                                </h2>
+                                <p className="mt-3 text-sm leading-relaxed text-gray-400">
+                                    {activeProject.subtitle}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => { void handleProjectClose(); }}
+                                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-gray-300 transition-colors hover:border-white/20 hover:text-white cursor-pointer"
+                                aria-label="Close project panel"
+                                data-no-drag="true"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <motion.div
+                        initial={false}
+                        animate={isMobileSheetBodyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                        className="panel-scrollbar flex-1 overflow-y-auto"
+                        data-lenis-prevent
+                        data-lenis-prevent-touch
+                        style={{
+                            WebkitOverflowScrolling: 'touch',
+                            overscrollBehaviorY: 'contain',
+                            touchAction: 'pan-y',
+                        }}
+                    >
+                        <div className="flex flex-col">
+                            {projectDetailPanels}
+                        </div>
+                    </motion.div>
+                </div>
+            </motion.aside>
+        </React.Fragment>
+    ) : null;
+
+    const mobileProjectSheetPortal = typeof document !== 'undefined'
+        ? createPortal(
+            <AnimatePresence onExitComplete={handleProjectModalExitComplete}>
+                {mobileProjectSheet}
+            </AnimatePresence>,
+            document.body,
+        )
+        : null;
 
     return (
         <section
@@ -483,238 +919,91 @@ const FeaturedProjects = () => {
                 </div>
             </div>
 
-            <AnimatePresence
-                onExitComplete={() => {
-                    setContentReady(false);
-                    setIsContentClosing(false);
-                    isClosingRef.current = false;
-                    setClosingCardId(null);
-                    setElevatedCardId(null);
-                }}
-            >
-                {selectedId && activeProject && (
-                    <div className={modalViewportClass}>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={handleProjectClose}
-                            transition={useCompactProjectModal
-                                ? { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
-                                : quality.modalTransition}
-                            className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
-                        />
-
-                        <motion.button
-                            initial={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
-                            animate={useCompactProjectModal ? { opacity: 1, scale: 1 } : { opacity: 1 }}
-                            exit={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
-                            transition={useCompactProjectModal
-                                ? { duration: 0.2, delay: 0.08, ease: [0.16, 1, 0.3, 1] }
-                                : { duration: 0.2, delay: 0.1 }}
-                            onClick={handleProjectClose}
-                            className={modalCloseClass}
-                        >
-                            <X className="w-6 h-6" />
-                        </motion.button>
-
-                        <motion.div
-                            layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
-                            initial={compactModalMotion?.initial}
-                            animate={compactModalMotion?.animate ?? desktopShellAnimate}
-                            exit={compactModalMotion?.exit}
-                            transition={desktopShellTransition}
-                            onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => {
-                                if (!isClosingRef.current) {
-                                    setIsContentClosing(false);
-                                    setContentReady(true);
-                                }
-                            }}
-                            className={modalShellClass}
-                            style={useCompactProjectModal ? { transformOrigin: '50% 0%' } : undefined}
-                        >
-                            {shouldUseDesktopProjectTransition && (
+            {!useMobileProjectSheet ? (
+                <AnimatePresence onExitComplete={handleProjectModalExitComplete}>
+                    {selectedId && activeProject && (
+                        <div className={modalViewportClass}>
                                 <motion.div
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] bg-gradient-to-b from-dark-void via-dark-void/78 via-30% to-dark-void/10"
-                                    initial={false}
-                                    animate={{ opacity: isContentClosing ? 1 : 0 }}
-                                    transition={isContentClosing
-                                        ? {
-                                            duration: 0.28,
-                                            delay: 0.08,
-                                            ease: [0.32, 0, 0.67, 0],
-                                        }
-                                        : {
-                                            duration: 0.18,
-                                            ease: [0.16, 1, 0.3, 1],
-                                        }}
-                                />
-                            )}
-                            {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
-                                <motion.div
-                                    initial={compactContentMotion?.initial ?? { opacity: 0 }}
-                                    animate={useCompactProjectModal
-                                        ? (compactContentMotion?.animate ?? { opacity: 1 })
-                                        : (isContentClosing
-                                            ? { opacity: 0 }
-                                            : { opacity: 1 })}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => { void handleProjectClose(); }}
                                     transition={useCompactProjectModal
-                                        ? (compactContentMotion?.transition ?? { duration: 0.3 })
-                                        : (isContentClosing
-                                            ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
-                                            : { duration: 0.3, ease: [0.16, 1, 0.3, 1] })}
-                                    className="contents"
+                                        ? { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+                                        : quality.modalTransition}
+                                    className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
+                                />
+
+                                <motion.button
+                                    initial={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
+                                    animate={useCompactProjectModal ? { opacity: 1, scale: 1 } : { opacity: 1 }}
+                                    exit={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
+                                    transition={useCompactProjectModal
+                                        ? { duration: 0.2, delay: 0.08, ease: [0.16, 1, 0.3, 1] }
+                                        : { duration: 0.2, delay: 0.1 }}
+                                    onClick={() => { void handleProjectClose(); }}
+                                    className={modalCloseClass}
                                 >
-                                    <div className={projectInfoPanelClass}>
-                                        <div className="space-y-8 flex-grow">
-                                            <div className="space-y-4">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div className="space-y-2 md:space-y-4 md:flex-grow">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="font-mono text-[10px] text-electric-green bg-electric-green/10 px-2 py-0.5 rounded border border-electric-green/20 uppercase tracking-widest">
-                                                                Active_Module
-                                                            </span>
-                                                            <div className="h-px w-8 bg-white/10 hidden md:block"></div>
-                                                        </div>
+                                    <X className="w-6 h-6" />
+                                </motion.button>
 
-                                                        <h2 className={projectTitleClass}>
-                                                            {activeProject.title}
-                                                        </h2>
-                                                    </div>
-
-                                                    {activeProject.icon && (
-                                                        <div className={`shrink-0 flex items-center justify-center rounded-2xl md:mt-4 lg:mt-6 transition-all duration-300 ${
-                                                            iconMap[activeProject.icon] || activeProject.iconFit !== 'auto'
-                                                                ? "w-12 h-12 md:w-24 md:h-24 bg-white/5 border border-white/10 shadow-glow-green/20 overflow-hidden"
-                                                                : "h-12 md:h-24 w-auto overflow-visible"
-                                                        }`}>
-                                                            {iconMap[activeProject.icon] ? (
-                                                                <div className="flex items-center justify-center w-full h-full p-3 md:p-5">
-                                                                    {iconMap[activeProject.icon]}
-                                                                </div>
-                                                            ) : (
-                                                                <img
-                                                                    src={activeProject.icon}
-                                                                    alt="Project Icon"
-                                                                    style={activeProject.iconScale ? { transform: `scale(${activeProject.iconScale})` } : {}}
-                                                                    className={activeProject.iconFit === 'auto'
-                                                                        ? "h-full w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]"
-                                                                        : "w-full h-full object-cover"}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                <p className="text-base md:text-lg text-gray-400 font-medium leading-relaxed">
-                                                    {activeProject.subtitle}
-                                                </p>
-                                            </div>
-
-                                            <div className={projectProblemGridClass}>
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] uppercase tracking-widest">
-                                                        <Cpu className="w-3 h-3 text-electric-cyan" />
-                                                        Context_Problem
-                                                    </div>
-                                                    <p className="text-sm text-gray-400 leading-relaxed">
-                                                        {activeProject.problem}
-                                                    </p>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center gap-2 text-electric-green font-mono text-[10px] uppercase tracking-widest">
-                                                        <Terminal className="w-3 h-3" />
-                                                        Engineered_Solution
-                                                    </div>
-                                                    <p className="text-sm text-gray-400 leading-relaxed border-l border-electric-green/20 pl-4 py-1">
-                                                        {activeProject.solution}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest block pb-2 border-b border-white/5">Tech_Arsenal</span>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {activeProject.stack.map((tech) => (
-                                                        <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-md font-mono text-[10px] text-gray-300">
-                                                            {tech}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
-                                            <a
-                                                href={activeProject.githubLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex-grow btn-system inline-flex items-center justify-center gap-3 px-8 py-4 group"
-                                            >
-                                                <span className="font-mono text-sm tracking-widest uppercase">Access_Repo</span>
-                                                <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div className={projectMediaPanelClass}>
-                                        <div className="space-y-4 flex-grow">
-                                            <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
-                                                Live_Stream_Demo
-                                                <ExternalLink className="w-3 h-3 opacity-50" />
-                                            </span>
-                                            <div className={`relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl ${useWideProjectLayout ? '' : 'max-h-[min(46vh,28rem)]'}`}>
-                                                {activeProject.demoType === 'video' ? (
-                                                    <video
-                                                        src={activeProject.media.modalVideo}
-                                                        poster={activeProject.media.poster}
-                                                        controls
-                                                        preload="metadata"
-                                                        playsInline
-                                                        className="w-full h-full object-contain"
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src={activeProject.media.poster || activeProject.thumbnail}
-                                                        alt="Demo Preview"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                )}
-
-                                                <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
-
-                                                <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
-                                                    <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
-                                                    <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
-                                                        HD_SOURCE_ACTIVE
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className={projectFlowPanelClass}>
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest">System_Arch_Flow</span>
-                                                <div className="flex gap-1">
-                                                    <div className="w-1 h-1 rounded-full bg-electric-green animate-pulse"></div>
-                                                    <div className="w-1 h-1 rounded-full bg-electric-green delay-100 animate-pulse"></div>
-                                                    <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
-                                                </div>
-                                            </div>
-                                            <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
-                                                <WorkflowDiagram steps={activeProject.arch} />
-                                            </div>
-                                        </div>
-                                    </div>
+                                <motion.div
+                                    layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
+                                    initial={compactModalMotion?.initial}
+                                    animate={compactModalMotion?.animate ?? desktopShellAnimate}
+                                    exit={compactModalMotion?.exit}
+                                    transition={desktopShellTransition}
+                                    onLayoutAnimationComplete={useCompactProjectModal ? undefined : () => {
+                                        if (!isClosingRef.current) {
+                                            setIsContentClosing(false);
+                                            setContentReady(true);
+                                        }
+                                    }}
+                                    className={modalShellClass}
+                                    style={useCompactProjectModal ? { transformOrigin: '50% 0%' } : undefined}
+                                >
+                                    {shouldUseDesktopProjectTransition && (
+                                        <motion.div
+                                            aria-hidden="true"
+                                            className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] bg-gradient-to-b from-dark-void via-dark-void/78 via-30% to-dark-void/10"
+                                            initial={false}
+                                            animate={{ opacity: isContentClosing ? 1 : 0 }}
+                                            transition={isContentClosing
+                                                ? {
+                                                    duration: 0.28,
+                                                    delay: 0.08,
+                                                    ease: [0.32, 0, 0.67, 0],
+                                                }
+                                                : {
+                                                    duration: 0.18,
+                                                    ease: [0.16, 1, 0.3, 1],
+                                                }}
+                                        />
+                                    )}
+                                    {(isContentReady || quality.tier === 'high' || useCompactProjectModal) && (
+                                        <motion.div
+                                            initial={compactContentMotion?.initial ?? { opacity: 0 }}
+                                            animate={useCompactProjectModal
+                                                ? (compactContentMotion?.animate ?? { opacity: 1 })
+                                                : (isContentClosing
+                                                    ? { opacity: 0 }
+                                                    : { opacity: 1 })}
+                                            transition={useCompactProjectModal
+                                                ? (compactContentMotion?.transition ?? { duration: 0.3 })
+                                                : (isContentClosing
+                                                    ? { duration: 0.2, ease: [0.4, 0, 1, 1] }
+                                                    : { duration: 0.3, ease: [0.16, 1, 0.3, 1] })}
+                                            className="contents"
+                                        >
+                                            {projectDetailPanels}
+                                        </motion.div>
+                                    )}
                                 </motion.div>
-                            )}
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                        </div>
+                    )}
+                </AnimatePresence>
+            ) : null}
+            {useMobileProjectSheet ? mobileProjectSheetPortal : null}
         </section>
     );
 };
