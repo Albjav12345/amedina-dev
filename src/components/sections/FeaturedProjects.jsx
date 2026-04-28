@@ -169,6 +169,10 @@ const FeaturedProjects = () => {
     }, []);
 
     useEffect(() => {
+        if (isMobileSheetClosingFromDrag) {
+            return undefined;
+        }
+
         if (!selectedId || !useMobileProjectSheet) {
             setIsMobileSheetClosingFromDrag(false);
             setIsMobileSheetDragging(false);
@@ -188,9 +192,13 @@ const FeaturedProjects = () => {
         });
 
         return () => controls.stop();
-    }, [mobileSheetY, selectedId, useMobileProjectSheet]);
+    }, [isMobileSheetClosingFromDrag, mobileSheetY, selectedId, useMobileProjectSheet]);
 
     useEffect(() => {
+        if (isMobileSheetClosingFromDrag) {
+            return undefined;
+        }
+
         if (!selectedId || !useMobileProjectSheet) {
             setIsMobileSheetBodyVisible(false);
             return undefined;
@@ -203,7 +211,7 @@ const FeaturedProjects = () => {
         }, 90);
 
         return () => window.clearTimeout(revealTimeout);
-    }, [selectedId, useMobileProjectSheet]);
+    }, [isMobileSheetClosingFromDrag, selectedId, useMobileProjectSheet]);
 
     useEffect(() => {
         if (selectedId || !isSectionNearViewport || !isScrollIdle) {
@@ -456,6 +464,11 @@ const FeaturedProjects = () => {
             setSelectedId(null);
             setClosingCardId(null);
             setElevatedCardId(null);
+            setIsMobileSheetBodyVisible(false);
+            setIsMobileSheetClosingFromDrag(false);
+            setIsMobileSheetDragging(false);
+            mobileSheetY.set(0);
+            stopMobileSheetAnimation();
             return;
         }
 
@@ -720,6 +733,7 @@ const FeaturedProjects = () => {
         setIsMobileSheetBodyVisible(false);
         setIsMobileSheetClosingFromDrag(false);
         setIsMobileSheetDragging(false);
+        mobileSheetY.set(0);
         isClosingRef.current = false;
         setClosingCardId(null);
         setElevatedCardId(null);
@@ -810,13 +824,8 @@ const FeaturedProjects = () => {
         </React.Fragment>
     ) : null;
 
-    const mobileProjectSheetPortal = typeof document !== 'undefined'
-        ? createPortal(
-            <AnimatePresence onExitComplete={handleProjectModalExitComplete}>
-                {mobileProjectSheet}
-            </AnimatePresence>,
-            document.body,
-        )
+    const mobileProjectSheetPortal = typeof document !== 'undefined' && mobileProjectSheet
+        ? createPortal(mobileProjectSheet, document.body)
         : null;
 
     return (
@@ -853,7 +862,7 @@ const FeaturedProjects = () => {
                         const isAllowedToPlay = allowedVideoIds.includes(project.id);
                         const currentStatus = isSelected ? "visible" : (cardStatus[project.id] || "below");
                         const isElevatedCard = elevatedCardId === project.id;
-                        const shouldHideGalleryCard = isSelected;
+                        const shouldHideGalleryCard = !useMobileProjectSheet && isSelected;
 
                         return (
                             <motion.div
