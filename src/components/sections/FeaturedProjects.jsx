@@ -61,8 +61,8 @@ const FeaturedProjects = () => {
     const [cardStatus, setCardStatus] = useState({});
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
-    const useCompactProjectModal = quality.useCompactProjectModal || quality.isCompactViewport;
-    const useMobileProjectSheet = quality.isCompactViewport;
+    const useCompactProjectModal = quality.useCompactProjectModal || quality.useVerticalSheetLayout;
+    const useMobileProjectSheet = quality.useVerticalSheetLayout;
     const useWideProjectLayout = quality.useWideProjectModalLayout;
     const shouldUseDesktopProjectTransition = !useMobileProjectSheet && !useCompactProjectModal;
 

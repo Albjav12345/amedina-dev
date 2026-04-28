@@ -1082,7 +1082,7 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
     const [runtimeTab, setRuntimeTab] = useState('latency');
     const [mobileView, setMobileView] = useState('overview');
     const [scrollRoot, setScrollRoot] = useState(null);
-    const isMobileSheet = quality.isCompactViewport;
+    const isMobileSheet = quality.useVerticalSheetLayout;
     const sheetY = useMotionValue(0);
     const overlayOpacity = useTransform(sheetY, [0, 260], [1, 0]);
     const sheetAnimationRef = useRef(null);

@@ -4,6 +4,7 @@ const defaultQuality = {
     tier: 'mid',
     isDesktopViewport: true,
     isCompactViewport: false,
+    useVerticalSheetLayout: false,
     useWideProjectModalLayout: true,
     allowBlur: true,
     simplePhysics: false,
@@ -38,6 +39,7 @@ function buildQualityState() {
         && viewportWidth <= 1100
         && viewportHeight >= 900
         && viewportHeight > viewportWidth;
+    const useVerticalSheetLayout = isCompactViewport || isPortraitTabletViewport;
     const hasCoarsePointer = typeof window.matchMedia === 'function'
         && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     const hasTouchPoints = (navigator.maxTouchPoints || 0) > 0;
@@ -86,6 +88,7 @@ function buildQualityState() {
         tier,
         isDesktopViewport,
         isCompactViewport,
+        useVerticalSheetLayout,
         useWideProjectModalLayout,
         allowBlur,
         simplePhysics: tier === 'low',
@@ -107,6 +110,7 @@ function shallowEqualQuality(a, b) {
     return a.tier === b.tier
         && a.isDesktopViewport === b.isDesktopViewport
         && a.isCompactViewport === b.isCompactViewport
+        && a.useVerticalSheetLayout === b.useVerticalSheetLayout
         && a.useWideProjectModalLayout === b.useWideProjectModalLayout
         && a.allowBlur === b.allowBlur
         && a.simplePhysics === b.simplePhysics
