@@ -1467,8 +1467,8 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
                                     }`}
                                     onPointerDown={handleMobileHeaderPointerDown}
                                 >
-                                    {isMobileSheet && (
-                                        <div className="mb-3 flex justify-center">
+                                    <div className="mb-3 flex justify-center">
+                                        {isMobileSheet ? (
                                             <button
                                                 type="button"
                                                 onPointerDown={startHeaderDrag}
@@ -1477,8 +1477,13 @@ function ControlPlane({ isOpen, onClose, onExitComplete = () => {} }) {
                                             >
                                                 <div className="h-1.5 w-16 rounded-full bg-white/10" />
                                             </button>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <div
+                                                aria-hidden="true"
+                                                className="h-1.5 w-16 rounded-full bg-white/10"
+                                            />
+                                        )}
+                                    </div>
                                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                         <div>
                                             <div className="inline-flex items-center gap-2 rounded-full border border-electric-green/20 bg-electric-green/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-electric-green">

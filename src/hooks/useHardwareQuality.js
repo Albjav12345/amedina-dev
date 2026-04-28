@@ -35,11 +35,13 @@ function buildQualityState() {
     const viewportHeight = window.innerHeight;
     const isDesktopViewport = viewportWidth >= 1024;
     const isCompactViewport = viewportWidth < 768;
+    const verticalViewportRatio = viewportHeight / Math.max(viewportWidth, 1);
     const isPortraitTabletViewport = viewportWidth >= 768
         && viewportWidth <= 1100
         && viewportHeight >= 900
         && viewportHeight > viewportWidth;
-    const useVerticalSheetLayout = isCompactViewport || isPortraitTabletViewport;
+    const isVerticalViewport = verticalViewportRatio >= 0.8 && viewportHeight >= 820;
+    const useVerticalSheetLayout = isCompactViewport || isVerticalViewport;
     const hasCoarsePointer = typeof window.matchMedia === 'function'
         && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     const hasTouchPoints = (navigator.maxTouchPoints || 0) > 0;
