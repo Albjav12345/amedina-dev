@@ -165,7 +165,7 @@ const Contact = () => {
                                 <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gray-500">{contact.endpointLabel}</span>
                                 <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl group/email relative hover:border-electric-green/30 transition-all">
                                     <span className="text-sm md:text-lg font-mono font-bold text-white tracking-tight">{email}</span>
-                                    <button onClick={handleCopy} className="p-1.5 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green transition-colors" title="Copy to clipboard">
+                                    <button type="button" onClick={handleCopy} className="p-1.5 rounded-lg bg-white/5 hover:bg-electric-green/20 text-gray-400 hover:text-electric-green transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green" title="Copy to clipboard" aria-label={copied ? 'Email copied' : 'Copy email address'}>
                                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                     </button>
                                 </div>
@@ -202,8 +202,9 @@ const Contact = () => {
                     </motion.div>
 
                     <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={scaleIn} className="glass-card p-6 md:p-10 border-white/10 relative bg-gradient-to-br from-white/[0.05] to-transparent gpu-accelerated lg:max-w-lg w-full">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6" aria-busy={status === 'sending'}>
                             <input
+                                name="company"
                                 type="text"
                                 value={formState.company}
                                 onChange={(event) => updateField('company', event.target.value)}
@@ -215,10 +216,13 @@ const Contact = () => {
 
                             <div className="space-y-4">
                                 <div className="space-y-2 group">
-                                    <label className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-name" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
                                         <User className="w-3 h-3" /> {form.name.label}
                                     </label>
                                     <input
+                                        id="contact-name"
+                                        name="name"
+                                        autoComplete="name"
                                         required
                                         type="text"
                                         value={formState.name}
@@ -229,10 +233,13 @@ const Contact = () => {
                                 </div>
 
                                 <div className="space-y-2 group">
-                                    <label className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-cyan transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-email" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-cyan transition-colors flex items-center gap-2">
                                         <Mail className="w-3 h-3" /> {form.email.label}
                                     </label>
                                     <input
+                                        id="contact-email"
+                                        name="email"
+                                        autoComplete="email"
                                         required
                                         type="email"
                                         value={formState.email}
@@ -243,11 +250,13 @@ const Contact = () => {
                                 </div>
 
                                 <div className="space-y-2 group">
-                                    <label className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-message" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
                                         <MessageSquare className="w-3 h-3" /> {form.message.label}
                                     </label>
                                     <div className="rounded-xl border border-white/10 bg-white/5 pr-1.5 overflow-hidden transition-all focus-within:border-electric-green/50 focus-within:bg-white/[0.08]">
                                         <textarea
+                                            id="contact-message"
+                                            name="message"
                                             required
                                             rows="6"
                                             value={formState.message}
@@ -260,7 +269,7 @@ const Contact = () => {
                                 </div>
                             </div>
 
-                            <button type="submit" disabled={status !== 'idle' && status !== 'error'} className={`w-full relative group px-6 py-4 overflow-hidden rounded-xl font-mono font-bold uppercase tracking-widest transition-all ${status === 'success' ? 'bg-green-500 text-white cursor-default' : status === 'error' ? 'bg-red-500 text-white cursor-pointer' : status === 'sending' ? 'cursor-wait bg-electric-green/90 text-dark-void' : 'bg-electric-green text-dark-void hover:scale-[1.01] active:scale-[0.99] cursor-pointer'}`}>
+                            <button type="submit" disabled={status !== 'idle' && status !== 'error'} aria-live="polite" className={`w-full relative group px-6 py-4 overflow-hidden rounded-xl font-mono font-bold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-dark-void ${status === 'success' ? 'bg-green-500 text-white cursor-default' : status === 'error' ? 'bg-red-500 text-white cursor-pointer' : status === 'sending' ? 'cursor-wait bg-electric-green/90 text-dark-void' : 'bg-electric-green text-dark-void hover:scale-[1.01] active:scale-[0.99] cursor-pointer'}`}>
                                 <div className="relative z-10 flex items-center justify-center gap-3">
                                     <AnimatePresence mode="wait">
                                         {status === 'idle' && (

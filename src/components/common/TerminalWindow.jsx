@@ -56,6 +56,9 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
 
     return (
         <motion.div
+            role={!isExpanded ? 'button' : undefined}
+            tabIndex={!isExpanded ? 0 : undefined}
+            aria-label={!isExpanded ? 'Open interactive terminal' : undefined}
             initial={false}
             animate={{
                 // PC Landscape: auto | Mobile: 350->450 | PC Portrait/Others: 320->384
@@ -64,6 +67,12 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                     : (isDesktopLandscape ? 'auto' : (isMobile ? 350 : 320))
             }}
             onClick={() => !isExpanded && setIsExpanded(true)}
+            onKeyDown={(event) => {
+                if (!isExpanded && (event.key === 'Enter' || event.key === ' ')) {
+                    event.preventDefault();
+                    setIsExpanded(true);
+                }
+            }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden gpu-accelerated ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
@@ -91,6 +100,8 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                             {/* Info Tooltip Trigger */}
                             <div className="relative group">
                                 <button
+                                    type="button"
+                                    aria-label="About the interactive terminal"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (!hasCursor) setShowTooltip(!showTooltip);
@@ -125,6 +136,8 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                             </div>
 
                             <button
+                                type="button"
+                                aria-label="Close interactive terminal"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setIsExpanded(false);
@@ -428,6 +441,7 @@ const InteractiveConsole = ({ onClose }) => {
                     <input
                         ref={inputRef}
                         type="text"
+                        aria-label="Terminal command"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}

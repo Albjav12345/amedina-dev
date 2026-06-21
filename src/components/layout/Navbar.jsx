@@ -258,6 +258,7 @@ const Navbar = ({ isUiObscured = false }) => {
 
     return (
         <nav
+            aria-label="Primary navigation"
             className={`fixed top-0 w-full z-[1000] isolate transition-[background-color,border-color,padding-top,padding-bottom,backdrop-filter] duration-300 ${getNavClasses()}`}
             style={{
                 paddingRight: 'var(--viewport-scrollbar-compensation, 0px)',
@@ -286,6 +287,7 @@ const Navbar = ({ isUiObscured = false }) => {
                         <motion.a
                             key={link.id}
                             href={link.href}
+                            aria-current={activeSection === link.id ? 'page' : undefined}
                             onClick={(event) => handleSectionNavigation(event, link.id)}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -308,6 +310,7 @@ const Navbar = ({ isUiObscured = false }) => {
                         </motion.a>
                     ))}
                     <motion.button
+                        type="button"
                         onClick={handleTerminalAccess}
                         className="btn-system text-[10px] py-1.5 px-3 uppercase tracking-widest flex items-center gap-2 ml-4 cursor-pointer"
                         whileHover={{ scale: 1.05 }}
@@ -321,8 +324,11 @@ const Navbar = ({ isUiObscured = false }) => {
                 </div>
 
                 <button
-                    className="lg:hidden text-white focus:outline-none"
+                    type="button"
+                    className="lg:hidden rounded-lg p-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green"
                     aria-label="Toggle navigation menu"
+                    aria-expanded={isMobileMenuOpen}
+                    aria-controls="mobile-navigation"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                     {isMobileMenuOpen ? <X /> : <Menu />}
@@ -332,6 +338,7 @@ const Navbar = ({ isUiObscured = false }) => {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
+                        id="mobile-navigation"
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
@@ -342,6 +349,7 @@ const Navbar = ({ isUiObscured = false }) => {
                                 <a
                                     key={link.id}
                                     href={link.href}
+                                    aria-current={activeSection === link.id ? 'page' : undefined}
                                     onClick={(event) => handleSectionNavigation(event, link.id, {
                                         forceSpaNavigation: true,
                                         behavior: 'smooth',
@@ -355,6 +363,7 @@ const Navbar = ({ isUiObscured = false }) => {
                                 </a>
                             ))}
                             <motion.button
+                                type="button"
                                 onClick={handleTerminalAccess}
                                 className="btn-system text-[10px] py-3 px-3 uppercase tracking-widest flex items-center justify-center gap-2 mt-4 cursor-pointer w-full"
                             >

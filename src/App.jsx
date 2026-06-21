@@ -26,6 +26,7 @@ import {
     normalizePathname,
 } from './utils/sectionRouting'
 import { subscribeScrollRuntime } from './utils/scrollRuntime'
+import { syncDocumentMetadata } from './utils/seo'
 
 // Safe Lazy Loading for Named Exports
 // Pattern: React.lazy(() => import('path').then(module => ({ default: module.ComponentByName })))
@@ -93,8 +94,8 @@ const SECTION_MODULE_LOADERS = {
     contact: loadContactModule,
 }
 const SECTION_RENDER_ROOT_MARGINS = {
-    desktop: '720px 0px 1080px 0px',
-    mobile: '420px 0px 720px 0px',
+    desktop: '0px',
+    mobile: '0px',
 }
 const SECTION_WRAPPER_ID_TO_SECTION_ID = SECTION_WRAPPER_IDS.reduce((acc, sectionId) => {
     const wrapperId = SECTION_TARGETS[sectionId] || `${sectionId}-wrapper`
@@ -125,7 +126,7 @@ function createIdleRouteRestoreState() {
 }
 
 function createInitialRenderedSectionMap(initialSectionId) {
-    const initialRenderedIds = new Set(['about'])
+    const initialRenderedIds = new Set(initialSectionId === DEFAULT_SECTION_ID ? [] : ['about'])
     const initialIndex = SECTION_WRAPPER_IDS.indexOf(initialSectionId)
 
     if (initialIndex >= 0) {
@@ -385,6 +386,7 @@ function App() {
         const previousSectionId = activeSectionRef.current;
         activeSectionRef.current = sectionId;
         syncPathname(sectionId, historyMode);
+        syncDocumentMetadata(sectionId);
 
         if (previousSectionId !== sectionId) {
             dispatchVisibleSection(sectionId);
@@ -635,8 +637,9 @@ function App() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isCoarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches;
+        const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
         const isDesktopViewport = window.innerWidth >= 1024;
-        const shouldPreferNativeTouchScroll = isIOS || (isCoarsePointer && !isDesktopViewport);
+        const shouldPreferNativeTouchScroll = prefersReducedMotion || isIOS || (isCoarsePointer && !isDesktopViewport);
 
         // Keep premium smooth scroll on desktop, even on touch-capable Windows hardware.
         if (!shouldPreferNativeTouchScroll) {

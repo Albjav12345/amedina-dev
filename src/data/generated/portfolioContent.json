@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-21T22:41:09.476Z",
+  "generatedAt": "2026-06-21T23:42:40.487Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -53,12 +53,12 @@
   ],
   "profileEntry": {
     "name": "Alberto Medina Garcia",
-    "role": "Full-Stack Developer & Automation Engineer",
+    "role": "Full-Stack Systems & Automation Engineer",
     "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
     "avatarAssetId": "profile-avatar",
     "aboutTitle": "Logic first. Built to be used.",
     "philosophyLabel": "AI Philosophy",
-    "philosophyQuote": "AI does not replace good engineers. It exposes weak ones. The value is not in using it, but in knowing how to think with it, control it, and build reliable systems around it.",
+    "philosophyQuote": "AI amplifies engineering judgment. The real value comes from framing the problem well, controlling the system, and making the result reliable in production.",
     "github": "https://github.com/Albjav12345",
     "linkedin": "https://www.linkedin.com/in/alberto-medina-dev/"
   },
@@ -101,25 +101,25 @@
     }
   ],
   "heroEntry": {
-    "priorityLabel": "SYSTEMS / AUTOMATION / AI",
+    "priorityLabel": "FULL-STACK SYSTEMS / AUTOMATION / AI",
     "titleWhite": "ALBERTO",
     "titleGreen": "MEDINA",
     "handle": "@Albjav12345",
-    "description": "I build full-stack products, automation workflows, and AI systems that solve real operational problems and still feel polished to use.",
+    "description": "I design and ship full-stack products, automation workflows, and AI systems—from polished interfaces to reliable backend operations.",
     "buttonTerminal": "ACCESS_TERMINAL",
-    "buttonCv": "GET_MANIFEST.PDF",
-    "buttonCvPending": "MANIFEST_PENDING",
+    "buttonCv": "DOWNLOAD_CV.PDF",
+    "buttonCvPending": "CV_PENDING",
     "buttonCvHref": "/manifest-test.pdf"
   },
   "heroMetadataEntries": [
     {
-      "label": "Stack_Focus",
-      "value": "PYTHON / REACT / UNITY",
+      "label": "Delivery_Focus",
+      "value": "PRODUCTS / AUTOMATION / AI",
       "order": 1
     },
     {
-      "label": "Exp_Runtime",
-      "value": "5+ YEARS SHIPPING",
+      "label": "Work_Mode",
+      "value": "SPAIN / REMOTE",
       "order": 2
     }
   ],
@@ -215,8 +215,8 @@
     {
       "section_id": "projects",
       "id": "SYS_02",
-      "line1": "Personal",
-      "line2": "Projects.",
+      "line1": "Selected",
+      "line2": "Systems.",
       "order": 2
     },
     {
@@ -386,8 +386,8 @@
   "projectEntries": [
     {
       "id": 1,
-      "title": "Unity Developer",
-      "subtitle": "High-Fidelity Unity UX",
+      "title": "Unity Interface Systems",
+      "subtitle": "High-Fidelity Real-Time UX",
       "problem": "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
       "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
       "githubLink": "https://github.com/Albjav12345/unity-interfaces",
@@ -436,8 +436,8 @@
     },
     {
       "id": 3,
-      "title": "Paddle Booking App",
-      "subtitle": "Reactive State & Live Synchronization",
+      "title": "Padel Booking Platform",
+      "subtitle": "Live Availability & Conflict-Free Booking",
       "problem": "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
       "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
       "githubLink": "https://github.com/Albjav12345/padel-sync",
@@ -486,10 +486,10 @@
     },
     {
       "id": 5,
-      "title": "USB Exfiltration",
-      "subtitle": "Adversary Emulation & Headless Acquisition",
-      "problem": "Red team USB collection often fails because of file locks, user friction, and the need to stay quiet on the host.",
-      "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
+      "title": "Authorized USB Acquisition Lab",
+      "subtitle": "Controlled Security Research & Endpoint Automation",
+      "problem": "Authorized endpoint collection can fail because of file locks, manual steps, and inconsistent evidence handling during controlled security exercises.",
+      "solution": "I built a Windows-based acquisition workflow for authorized lab and red-team scenarios, combining native system polling, explicit operator controls, and low-friction evidence collection.",
       "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
       "demoType": "video",
       "videoAssetId": {
@@ -1253,7 +1253,7 @@
     "label": "Direct Communication",
     "titleLine1": "READY TO",
     "titleLine2": "BUILD.",
-    "description": "If you already know what you want to build, we can scope it properly. If not, we can start from the problem and work forward.",
+    "description": "For product engineering roles, freelance builds, or systems work, share the context and the outcome you need. We can scope the next step from there.",
     "endpointLabel": "Primary_Contact",
     "email": "amedina.amg.dev@gmail.com",
     "formNameLabel": "USER_IDENTITY.src",
@@ -1328,12 +1328,12 @@
       "assetId": "profile-avatar",
       "kind": "image",
       "mode": "existing_public",
-      "sourceValue": "/assets/alberto.png",
-      "targetPublicPath": "/assets/alberto.png",
+      "sourceValue": "/assets/alberto.webp",
+      "targetPublicPath": "/assets/alberto.webp",
       "alt": "Alberto Medina Garcia avatar",
       "notes": "Main profile avatar",
       "enabled": true,
-      "status": "READY -> /assets/alberto.png"
+      "status": "READY -> /assets/alberto.webp"
     },
     {
       "assetId": "project-1-video",
@@ -1727,10 +1727,10 @@
     },
     "profile": {
       "name": "Alberto Medina Garcia",
-      "role": "Full-Stack Developer & Automation Engineer",
+      "role": "Full-Stack Systems & Automation Engineer",
       "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
       "about": {
-        "avatarUrl": "/assets/alberto.png",
+        "avatarUrl": "/assets/alberto.webp",
         "title": "Logic first. Built to be used.",
         "bio": [
           "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
@@ -1738,7 +1738,7 @@
         ],
         "philosophy": {
           "label": "AI Philosophy",
-          "quote": "AI does not replace good engineers. It exposes weak ones. The value is not in using it, but in knowing how to think with it, control it, and build reliable systems around it."
+          "quote": "AI amplifies engineering judgment. The real value comes from framing the problem well, controlling the system, and making the result reliable in production."
         },
         "stats": [
           {
@@ -2017,27 +2017,27 @@
         "terminalButton": "TERM_ACCESS"
       },
       "hero": {
-        "priorityLabel": "SYSTEMS / AUTOMATION / AI",
+        "priorityLabel": "FULL-STACK SYSTEMS / AUTOMATION / AI",
         "title": {
           "white": "ALBERTO",
           "green": "MEDINA"
         },
         "handle": "@Albjav12345",
-        "description": "I build full-stack products, automation workflows, and AI systems that solve real operational problems and still feel polished to use.",
+        "description": "I design and ship full-stack products, automation workflows, and AI systems—from polished interfaces to reliable backend operations.",
         "buttons": {
           "terminal": "ACCESS_TERMINAL",
-          "cv": "GET_MANIFEST.PDF",
-          "cvPending": "MANIFEST_PENDING",
+          "cv": "DOWNLOAD_CV.PDF",
+          "cvPending": "CV_PENDING",
           "cvHref": "/manifest-test.pdf"
         },
         "metadata": [
           {
-            "label": "Stack_Focus",
-            "value": "PYTHON / REACT / UNITY"
+            "label": "Delivery_Focus",
+            "value": "PRODUCTS / AUTOMATION / AI"
           },
           {
-            "label": "Exp_Runtime",
-            "value": "5+ YEARS SHIPPING"
+            "label": "Work_Mode",
+            "value": "SPAIN / REMOTE"
           }
         ]
       },
@@ -2104,8 +2104,8 @@
         },
         "projects": {
           "id": "SYS_02",
-          "line1": "Personal",
-          "line2": "Projects."
+          "line1": "Selected",
+          "line2": "Systems."
         },
         "tech": {
           "id": "SYS_03",
@@ -2127,7 +2127,7 @@
         "label": "Direct Communication",
         "titleLine1": "READY TO",
         "titleLine2": "BUILD.",
-        "description": "If you already know what you want to build, we can scope it properly. If not, we can start from the problem and work forward.",
+        "description": "For product engineering roles, freelance builds, or systems work, share the context and the outcome you need. We can scope the next step from there.",
         "endpointLabel": "Primary_Contact",
         "email": "amedina.amg.dev@gmail.com",
         "social": [
@@ -2200,8 +2200,8 @@
     "projectSources": [
       {
         "id": 1,
-        "title": "Unity Developer",
-        "subtitle": "High-Fidelity Unity UX",
+        "title": "Unity Interface Systems",
+        "subtitle": "High-Fidelity Real-Time UX",
         "problem": "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
         "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
         "stack": [
@@ -2252,8 +2252,8 @@
       },
       {
         "id": 3,
-        "title": "Paddle Booking App",
-        "subtitle": "Reactive State & Live Synchronization",
+        "title": "Padel Booking Platform",
+        "subtitle": "Live Availability & Conflict-Free Booking",
         "problem": "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
         "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
         "stack": [
@@ -2304,10 +2304,10 @@
       },
       {
         "id": 5,
-        "title": "USB Exfiltration",
-        "subtitle": "Adversary Emulation & Headless Acquisition",
-        "problem": "Red team USB collection often fails because of file locks, user friction, and the need to stay quiet on the host.",
-        "solution": "I built a stealth-focused Windows payload for controlled security research, combining native WMI polling and low-friction background collection.",
+        "title": "Authorized USB Acquisition Lab",
+        "subtitle": "Controlled Security Research & Endpoint Automation",
+        "problem": "Authorized endpoint collection can fail because of file locks, manual steps, and inconsistent evidence handling during controlled security exercises.",
+        "solution": "I built a Windows-based acquisition workflow for authorized lab and red-team scenarios, combining native system polling, explicit operator controls, and low-friction evidence collection.",
         "stack": [
           "PowerShell",
           "Batch",
@@ -3177,13 +3177,13 @@
         "assetId": "profile-avatar",
         "kind": "image",
         "mode": "existing_public",
-        "sourceValue": "/assets/alberto.png",
-        "targetPublicPath": "/assets/alberto.png",
+        "sourceValue": "/assets/alberto.webp",
+        "targetPublicPath": "/assets/alberto.webp",
         "alt": "Alberto Medina Garcia avatar",
         "notes": "Main profile avatar",
         "enabled": true,
-        "resolvedUrl": "/assets/alberto.png",
-        "status": "READY -> /assets/alberto.png"
+        "resolvedUrl": "/assets/alberto.webp",
+        "status": "READY -> /assets/alberto.webp"
       },
       {
         "assetId": "project-1-video",

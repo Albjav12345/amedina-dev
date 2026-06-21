@@ -7,9 +7,10 @@
     "content:init": "node scripts/sync-portfolio-content.mjs --init",
     "content:check": "node scripts/sync-portfolio-content.mjs --check",
     "content:sync": "node scripts/sync-portfolio-content.mjs",
+    "site:media": "node scripts/generate-site-media.mjs",
     "dev": "node scripts/dev.mjs",
-    "vite:dev": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-project-media.mjs && vite",
-    "build": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-project-media.mjs && vite build",
+    "vite:dev": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && vite",
+    "build": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && vite build && node scripts/prune-build-media.mjs",
     "preview": "vite preview"
   },
   "devDependencies": {

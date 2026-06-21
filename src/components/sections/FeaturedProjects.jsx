@@ -7,6 +7,7 @@ import { viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import SmartThumbnail from './SmartThumbnail';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
+import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 
 import portfolioData from '../../data/portfolio';
 
@@ -77,6 +78,9 @@ const FeaturedProjects = () => {
     const mobileSheetDragCleanupRef = useRef(null);
     const mobileSheetDragFrameRef = useRef(0);
     const pendingMobileSheetYRef = useRef(0);
+    const modalDialogRef = useRef(null);
+    const modalCloseButtonRef = useRef(null);
+    const previousFocusRef = useRef(null);
     const mobileSheetY = useMotionValue(0);
     const mobileSheetOverlayOpacity = useTransform(mobileSheetY, [0, 260], [1, 0]);
     const isProjectTransitionActive = selectedId !== null || closingCardId !== null;
@@ -416,7 +420,7 @@ const FeaturedProjects = () => {
 
     const activeProject = projects.find((project) => project.id === selectedId);
 
-    const handleProjectOpen = (projectId) => {
+    const handleProjectOpen = (projectId, triggerElement) => {
         if (closeFrameRef.current !== null) {
             window.cancelAnimationFrame(closeFrameRef.current);
             closeFrameRef.current = null;
@@ -436,6 +440,7 @@ const FeaturedProjects = () => {
         allowedVideoIdsRef.current = [];
         setAllowedVideoIds([]);
         setIsScrollIdle(false);
+        previousFocusRef.current = triggerElement || document.activeElement;
         setClosingCardId(null);
         setElevatedCardId(useCompactProjectModal ? null : projectId);
         setSelectedId(projectId);
@@ -484,6 +489,57 @@ const FeaturedProjects = () => {
             setSelectedId(null);
         });
     };
+
+    useEffect(() => {
+        if (!selectedId) {
+            previousFocusRef.current?.focus?.();
+            previousFocusRef.current = null;
+            return undefined;
+        }
+
+        const focusFrame = window.requestAnimationFrame(() => {
+            modalCloseButtonRef.current?.focus();
+        });
+
+        const handleDialogKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                void handleProjectClose();
+                return;
+            }
+
+            if (event.key !== 'Tab' || !modalDialogRef.current) return;
+
+            const dialogFocusables = [...modalDialogRef.current.querySelectorAll(
+                'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            )];
+            const focusable = [modalCloseButtonRef.current, ...dialogFocusables]
+                .filter((element, index, elements) => element
+                    && !element.hasAttribute('aria-hidden')
+                    && elements.indexOf(element) === index);
+
+            if (!focusable.length) {
+                event.preventDefault();
+                return;
+            }
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        window.addEventListener('keydown', handleDialogKeyDown);
+        return () => {
+            window.cancelAnimationFrame(focusFrame);
+            window.removeEventListener('keydown', handleDialogKeyDown);
+        };
+    }, [selectedId]);
 
     const handleMobileSheetDragRelease = async (velocity = 0, offset = mobileSheetY.get()) => {
         const shouldClose = offset > 96 || velocity > 700;
@@ -748,6 +804,10 @@ const FeaturedProjects = () => {
             />
 
             <motion.aside
+                ref={modalDialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Project details: ${activeProject.title}`}
                 initial={false}
                 animate={{ y: 0 }}
                 exit={isMobileSheetClosingFromDrag ? { opacity: 1 } : { y: 0 }}
@@ -764,6 +824,7 @@ const FeaturedProjects = () => {
                     >
                         <div className="mb-3 flex justify-center">
                             <button
+                                ref={modalCloseButtonRef}
                                 type="button"
                                 onPointerDown={startMobileSheetDrag}
                                 className="touch-none cursor-grab active:cursor-grabbing"
@@ -849,6 +910,9 @@ const FeaturedProjects = () => {
                         {projectsHeader.line1} <br />
                         <span className="text-electric-green">{projectsHeader.line2}</span>
                     </h2>
+                    <p className="mt-5 max-w-2xl text-base md:text-lg leading-relaxed text-gray-400">
+                        A focused selection of interface, automation, AI, and real-time systems—each framed around the problem, the engineering decisions, and the delivered workflow.
+                    </p>
                 </motion.div>
 
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
@@ -860,9 +924,11 @@ const FeaturedProjects = () => {
                         const shouldHideGalleryCard = !useMobileProjectSheet && isSelected;
 
                         return (
-                            <motion.div
+                            <motion.button
                                 ref={(element) => { cardRefs.current[project.id] = element; }}
                                 key={project.id}
+                                type="button"
+                                aria-label={`Open project: ${project.title}`}
                                 layoutId={useCompactProjectModal ? undefined : `project-${project.id}`}
                                 initial="below"
                                 animate={currentStatus}
@@ -870,8 +936,8 @@ const FeaturedProjects = () => {
                                 onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
-                                onClick={() => handleProjectOpen(project.id)}
-                                className={`gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/5 bg-dark-high/90'}`}
+                                onClick={(event) => handleProjectOpen(project.id, event.currentTarget)}
+                                className={`gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/5 bg-dark-high/90'}`}
                                 style={isElevatedCard ? { zIndex: 80 } : undefined}
                             >
                                 <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
@@ -900,7 +966,10 @@ const FeaturedProjects = () => {
                                                 <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
                                                     <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
                                                 </div>
-                                                <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-electric-green transition-colors" />
+                                                <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.14em] text-gray-500 group-hover:text-electric-green transition-colors">
+                                                    <span className="hidden md:inline">View system</span>
+                                                    <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4" />
+                                                </span>
                                             </div>
                                             <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
                                             <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
@@ -917,9 +986,28 @@ const FeaturedProjects = () => {
 
                                     <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
                                 </div>
-                            </motion.div>
+                            </motion.button>
                         );
                     })}
+                </div>
+
+                <div className="mt-12 md:mt-16 flex flex-col md:flex-row md:items-center md:justify-between gap-5 rounded-2xl border border-white/10 bg-white/[0.025] px-6 py-6 md:px-8">
+                    <div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-electric-cyan">Next_System</div>
+                        <p className="mt-2 text-lg font-semibold text-white">Building something with similar constraints?</p>
+                    </div>
+                    <a
+                        href="/contact"
+                        onClick={(event) => {
+                            if (!isPlainLeftClick(event)) return;
+                            event.preventDefault();
+                            dispatchSectionNavigation('contact');
+                        }}
+                        className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl border border-electric-green/30 bg-electric-green/10 px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.16em] text-electric-green transition-colors hover:border-electric-cyan/40 hover:bg-electric-cyan/10 hover:text-electric-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan"
+                    >
+                        Discuss the brief
+                        <ArrowUpRight className="h-4 w-4" />
+                    </a>
                 </div>
             </div>
 
@@ -939,6 +1027,9 @@ const FeaturedProjects = () => {
                                 />
 
                                 <motion.button
+                                    ref={modalCloseButtonRef}
+                                    type="button"
+                                    aria-label="Close project details"
                                     initial={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
                                     animate={useCompactProjectModal ? { opacity: 1, scale: 1 } : { opacity: 1 }}
                                     exit={useCompactProjectModal ? { opacity: 0, scale: 0.96 } : { opacity: 0 }}
@@ -952,6 +1043,10 @@ const FeaturedProjects = () => {
                                 </motion.button>
 
                                 <motion.div
+                                    ref={modalDialogRef}
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-label={`Project details: ${activeProject.title}`}
                                     layoutId={useCompactProjectModal ? undefined : `project-${selectedId}`}
                                     initial={compactModalMotion?.initial}
                                     animate={compactModalMotion?.animate ?? desktopShellAnimate}

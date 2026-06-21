@@ -90,6 +90,7 @@ const GeneratedClientAvatar = ({ testimonial, sizeClassName, textClassName }) =>
                     alt=""
                     className="testimonial-avatar-photo h-full w-full object-cover object-center"
                     loading="lazy"
+                    decoding="async"
                 />
                 <div className={`pointer-events-none absolute inset-0 rounded-full border ${testimonial.highlighted ? 'border-electric-cyan/18' : 'border-white/10'}`} />
                 <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),transparent_42%)] opacity-80" />
@@ -284,6 +285,10 @@ const About = ({ isUiFrozen = false }) => {
                                         src={profileAbout.avatarUrl}
                                         alt="Alberto Medina"
                                         className="w-full h-full object-cover object-center scale-110 transform"
+                                        width="160"
+                                        height="160"
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                 </div>
                                 {/* Avatar Glow - Hide on Low Tier */}

@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { MotionConfig } from 'framer-motion'
 import App from './App'
 import { HardwareQualityProvider } from './hooks/useHardwareQuality'
 import './styles/global.css'
@@ -11,8 +12,10 @@ if ('scrollRestoration' in history) {
 
 ReactDOM.createRoot(document.getElementById('app')).render(
     <React.StrictMode>
-        <HardwareQualityProvider>
-            <App />
-        </HardwareQualityProvider>
+        <MotionConfig reducedMotion="user">
+            <HardwareQualityProvider>
+                <App />
+            </HardwareQualityProvider>
+        </MotionConfig>
     </React.StrictMode>,
 )

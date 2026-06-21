@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { generateProjectMedia } from './generate-project-media.mjs'
+import { generateSiteMedia } from './generate-site-media.mjs'
 import { startLocalApiServer } from './local-api-server.mjs'
 import { WORKBOOK_PATH, syncPortfolioContent } from './lib/portfolio-content-workbook.mjs'
 
@@ -81,6 +82,7 @@ function readWorkbookSignature() {
 async function refreshRuntimeFromWorkbook(trigger, attempt = 0) {
   try {
     await syncPortfolioContent({ writeWorkbookOutput: false })
+    await generateSiteMedia()
     await generateProjectMedia()
     console.log(`[dev] workbook refresh complete (${trigger})`)
     return true

@@ -1,14 +1,20 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Download, Cpu } from 'lucide-react';
+import { ArrowRight, Download, Cpu, MessageSquare, Terminal } from 'lucide-react';
 import TerminalWindow from '../common/TerminalWindow';
-import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { viewportConfig } from '../../utils/animations';
+import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 import portfolioData from '../../data/portfolio';
 
 const Hero = ({ isUiFrozen = false }) => {
     const { hero, sections } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
     const isCvAvailable = Boolean(hero.buttons.cvHref);
+    const handleSectionLink = (event, sectionId) => {
+        if (!isPlainLeftClick(event)) return;
+        event.preventDefault();
+        dispatchSectionNavigation(sectionId);
+    };
 
     return (
         <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
@@ -120,38 +126,57 @@ const Hero = ({ isUiFrozen = false }) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.5 }}
-                            className="flex flex-wrap gap-4 pt-4 gpu-accelerated"
+                            className="space-y-4 pt-3 gpu-accelerated"
                         >
-                            <button
-                                onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
-                                className="group relative px-8 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
-                            >
-                                <span className="relative z-10 flex items-center gap-2">
-                                    {hero.buttons.terminal}
-                                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                            </button>
-
-                            {isCvAvailable ? (
+                            <div className="flex flex-col sm:flex-row gap-3">
                                 <a
-                                    href={hero.buttons.cvHref}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-8 py-4 border border-white/10 hover:border-electric-green/50 hover:bg-electric-green/5 text-white font-mono font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer"
+                                    href="/projects"
+                                    onClick={(event) => handleSectionLink(event, 'projects')}
+                                    className="group relative min-h-14 px-7 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-xl overflow-hidden transition-all hover:scale-[1.015] active:scale-[0.985] inline-flex items-center justify-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-dark-void"
                                 >
-                                    <Download className="w-4 h-4" />
-                                    {hero.buttons.cv}
+                                    <span className="relative z-10">VIEW_SELECTED_WORK</span>
+                                    <ArrowRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                    <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                                 </a>
-                            ) : (
-                                <div className="px-8 py-4 border border-white/10 text-gray-500 font-mono font-bold rounded-lg flex items-center gap-3 cursor-not-allowed bg-white/[0.02]">
-                                    <Download className="w-4 h-4" />
-                                    <div className="flex flex-col items-start leading-none gap-1">
-                                        <span>{hero.buttons.cv}</span>
-                                        <span className="text-[9px] tracking-[0.2em] text-electric-cyan/80">{hero.buttons.cvPending}</span>
-                                    </div>
-                                </div>
-                            )}
+                                <a
+                                    href="/contact"
+                                    onClick={(event) => handleSectionLink(event, 'contact')}
+                                    className="min-h-14 px-7 py-4 border border-white/15 hover:border-electric-cyan/45 hover:bg-electric-cyan/[0.07] text-white font-mono font-bold rounded-xl transition-all inline-flex items-center justify-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-dark-void"
+                                >
+                                    <MessageSquare className="w-4 h-4 text-electric-cyan" />
+                                    START_A_CONVERSATION
+                                </a>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[11px] font-mono">
+                                <button
+                                    type="button"
+                                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
+                                    className="inline-flex items-center gap-2 text-gray-300 transition-colors hover:text-electric-green cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green rounded-md px-1.5 py-1"
+                                >
+                                    <Terminal className="w-4 h-4" />
+                                    {hero.buttons.terminal}
+                                </button>
+
+                                {isCvAvailable ? (
+                                    <a
+                                        href={hero.buttons.cvHref}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="CV for recruitment and administrative review"
+                                        className="inline-flex items-center gap-2 text-gray-300 transition-colors hover:text-electric-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan rounded-md px-1.5 py-1"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        {hero.buttons.cv}
+                                        <span className="hidden md:inline text-[9px] uppercase tracking-[0.16em] text-gray-500">Recruitment document</span>
+                                    </a>
+                                ) : (
+                                    <span className="inline-flex items-center gap-2 text-gray-500 px-1.5 py-1">
+                                        <Download className="w-4 h-4" />
+                                        {hero.buttons.cvPending}
+                                    </span>
+                                )}
+                            </div>
                         </motion.div>
 
                         {/* Quick Metadata */}
@@ -163,7 +188,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         >
                             {hero.metadata.map((item, i) => (
                                 <div key={i} className="flex flex-col gap-1">
-                                    <span className="text-[10px] text-gray-600 font-mono uppercase">{item.label}</span>
+                                    <span className="text-[10px] text-gray-500 font-mono uppercase tracking-[0.08em]">{item.label}</span>
                                     <span className="text-xs font-mono text-gray-300">{item.value}</span>
                                 </div>
                             ))}
