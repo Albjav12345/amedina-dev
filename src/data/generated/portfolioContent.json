@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-21T23:42:40.487Z",
+  "generatedAt": "2026-06-22T17:52:20.452Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -109,7 +109,7 @@
     "buttonTerminal": "ACCESS_TERMINAL",
     "buttonCv": "DOWNLOAD_CV.PDF",
     "buttonCvPending": "CV_PENDING",
-    "buttonCvHref": "/manifest-test.pdf"
+    "buttonCvHref": "/Alberto_Medina_CV_2026.pdf"
   },
   "heroMetadataEntries": [
     {
@@ -2028,7 +2028,7 @@
           "terminal": "ACCESS_TERMINAL",
           "cv": "DOWNLOAD_CV.PDF",
           "cvPending": "CV_PENDING",
-          "cvHref": "/manifest-test.pdf"
+          "cvHref": "/Alberto_Medina_CV_2026.pdf"
         },
         "metadata": [
           {
