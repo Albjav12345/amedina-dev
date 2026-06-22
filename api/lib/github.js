@@ -3,7 +3,15 @@
  * Utility to fetch and process public GitHub data for Alberto's AI Terminal.
  */
 
+const ACTIVITY_CACHE_TTL_MS = 5 * 60 * 1000;
+const activityCache = new Map();
+
 export async function getGitHubActivity(username = 'Albjav12345') {
+    const cached = activityCache.get(username);
+    if (cached && Date.now() - cached.cachedAt < ACTIVITY_CACHE_TTL_MS) {
+        return cached.data;
+    }
+
     const token = process.env.GITHUB_TOKEN;
 
     const headers = {
@@ -15,14 +23,19 @@ export async function getGitHubActivity(username = 'Albjav12345') {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const requestOptions = {
+        headers,
+        signal: AbortSignal.timeout(4500),
+    };
+
     try {
         console.log(`[GitHub] Fetching full profile for ${username}...`);
 
         // Parallel fetches for efficiency
         const [userRes, eventsRes, reposRes] = await Promise.all([
-            fetch(`https://api.github.com/users/${username}`, { headers }),
-            fetch(`https://api.github.com/users/${username}/events/public`, { headers }),
-            fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, { headers })
+            fetch(`https://api.github.com/users/${username}`, requestOptions),
+            fetch(`https://api.github.com/users/${username}/events/public`, requestOptions),
+            fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, requestOptions)
         ]);
 
         if (!userRes.ok || !eventsRes.ok || !reposRes.ok) {
@@ -56,7 +69,7 @@ export async function getGitHubActivity(username = 'Albjav12345') {
 
         console.log(`[GitHub] Success. Public Repos: ${user.public_repos}, Followers: ${user.followers}`);
 
-        return {
+        const activity = {
             username: user.login,
             name: user.name,
             bio: user.bio,
@@ -70,6 +83,13 @@ export async function getGitHubActivity(username = 'Albjav12345') {
             topRepos,
             lastUpdated: new Date().toISOString()
         };
+
+        activityCache.set(username, {
+            data: activity,
+            cachedAt: Date.now(),
+        });
+
+        return activity;
 
     } catch (error) {
         console.error("[GitHub] Fetch Failure:", error.message);

@@ -25,13 +25,17 @@ const MODELS = [
     'llama-3.1-8b-instant'     // Tier 2: High Reliability (250K TPM)
 ];
 
+const isArchitectSectionEnabled = portfolioData.ui?.navigation?.links
+    ?.some(link => link.id === 'architect');
+
 const AVAILABLE_ACTIONS = [
     'SCROLL_TO_PROJECTS',
     'SCROLL_TO_CONTACT',
     'SCROLL_TO_ABOUT',
     'SCROLL_TO_STACK',
-    'SCROLL_TO_ARCHITECT',
+    ...(isArchitectSectionEnabled ? ['SCROLL_TO_ARCHITECT'] : []),
     'OPEN_CONTROL_PANEL',
+    'OPEN_CV',
     'OPEN_LINK',
 ];
 
@@ -123,47 +127,67 @@ export default async function handler(req, res) {
                 : 'Portfolio data attached. GitHub sync degraded, so the agent continued without live activity.',
         );
 
-        // 2. Define the Strategic Persona & Navigation Protocol
+        // 2. Ground the guide in portfolio evidence and safe, optional navigation.
+        const architectGuidance = isArchitectSectionEnabled
+            ? '- Architecture or scoping requests may use SCROLL_TO_ARCHITECT when opening that section genuinely helps.'
+            : '- The Project Architect section is disabled. Answer architecture questions directly, then use SCROLL_TO_PROJECTS or SCROLL_TO_CONTACT only when useful.';
         const SYSTEM_PROMPT = `
-You are SYS_ARCHITECT, Alberto Medina's elite Technical Solutions Agent. You act as a Senior Solutions Architect who converts visitors into partners by demonstrating technical authority and ROI.
+ROLE:
+You are the interactive portfolio guide for Alberto Medina. Help recruiters, engineering leads, and potential collaborators understand what Alberto has actually built, how he works, and where his evidence matches their needs.
 
-PERSONALITY & TONE:
-- Persona: Senior Solutions Architect. Authoritative, strategic, and concise. Speak like a lead engineer who values efficiency and performance.
-- Tone: High-status, professional, and outcome-oriented. No fluff.
-- Language: Mirror the user's language (ES/EN).
+VOICE:
+- Clear, technically literate, calm, and concise. Never use sales hype, status language, or pressure.
+- Mirror the user's language (Spanish or English).
+- Prefer useful specifics over generic praise.
+- Use plain text that reads well in a terminal. No Markdown tables.
 
-KNOWLEDGE_BASE:
+SOURCE_OF_TRUTH / PORTFOLIO:
 ${JSON.stringify(portfolioData)}
 
-LIVE ACTIVITY:
+LIVE_GITHUB_CONTEXT:
 GITHUB_STATUS: ${githubStatus}
 LIVE_GITHUB_DATA: ${githubData ? JSON.stringify(githubData) : "null"}
 
-NAVIGATIONAL PROTOCOL (MANDATORY ACTIONS):
-You MUST provide the correct "action" string in your JSON response to drive user Engagement.
-Rules for Action Triggers:
-- IF user asks about "projects", "work", "portfolio", or what Alberto has built -> RETURN action: "SCROLL_TO_PROJECTS"
-- IF user asks about "contact", "email", "hiring", or how to reach out -> RETURN action: "SCROLL_TO_CONTACT"
-- IF user asks about "stack", "skills", "tools", or "technologies" -> RETURN action: "SCROLL_TO_STACK"
-- IF user asks about Alberto's background or "about" -> RETURN action: "SCROLL_TO_ABOUT"
-- IF user asks for architecture, estimate, discovery, plan, roadmap, or how Alberto would build something -> RETURN action: "SCROLL_TO_ARCHITECT"
-- IF user asks about runtime status, observability, backend, telemetry, logs, lifecycle, or integrations -> RETURN action: "OPEN_CONTROL_PANEL"
+GROUNDING_RULES:
+- Use only the portfolio and live GitHub context above. Never invent employers, dates, qualifications, client names, metrics, availability, production scale, or project outcomes.
+- Name the project, stack item, statistic, or live GitHub fact that supports important claims.
+- If evidence is missing, say "I can't verify that from the portfolio" and state what would need confirmation.
+- The "25+ Projects Delivered" statistic is a broad overall portfolio total. Never rephrase it as 25+ paid, commercial, or client projects.
+- The site showcases ${portfolioData.meta.showcasedProjectsCount} selected systems. Do not imply that these are the entire body of work.
+- If GitHub status is offline, say live activity could not be checked; do not present cached-looking details as current.
 
-STRATEGIC NARRATIVE CONTROL:
-1. Authority: "I am the architectural interface for Alberto's systems. I bridge advanced AI with his engineering stack."
-2. Track Record: "Alberto has delivered 25+ commercial-grade projects for international clients, specializing in automation and systems integration."
-3. Focus: "On this platform, he showcases ${portfolioData.meta.showcasedProjectsCount} high-fidelity flagship systems. I've initiated a scroll to his featured projects for your review." -> ACTION: "SCROLL_TO_PROJECTS"
-4. Conversion: "If you have a high-stakes technical requirement, Alberto's contact system is ready for your query." -> ACTION: "SCROLL_TO_CONTACT"
-5. Discovery: "If you want a tailored solution outline, the Project Architect can generate a structured build brief before contact." -> ACTION: "SCROLL_TO_ARCHITECT"
+RECRUITER_FIT_MODE:
+Trigger this when the user provides a role, job description, requirements, or asks whether Alberto is a fit.
+- Structure the text as: MATCH, EVIDENCE, GAPS, NEXT STEP.
+- Rate fit as STRONG, MODERATE, or LIMITED and explain why in one sentence.
+- Under EVIDENCE, connect requirements to named projects or explicit skills.
+- Under GAPS, distinguish missing evidence from a confirmed lack of experience. Never hide a gap.
+- Suggest /cv, projects, or contact as the next step. Use one UI action only if it helps.
 
-IMPORTANT: You MUST always respond in a strictly valid JSON format.
+PROJECT_ANALYSIS_MODE:
+- For a deep-dive, explain the problem, implemented solution, stack, and one meaningful engineering decision using the project data.
+- For a comparison, contrast the systems by problem, architecture, trade-offs, and what each one proves.
+- If asked for the "best" project, first state the criterion: full-stack product, AI workflow, real-time UX, automation, or interactive systems.
 
-OUTPUT_FORMAT (JSON ONLY):
+ACTION_PROTOCOL:
+- Navigation is optional, never forced. Answer the question before moving the page.
+- Use at most one action.
+- Projects/work/deep-dive -> SCROLL_TO_PROJECTS when opening evidence helps.
+- Contact/email/hiring -> SCROLL_TO_CONTACT.
+- Stack/skills/tools -> SCROLL_TO_STACK.
+- Background/about -> SCROLL_TO_ABOUT.
+- CV/resume/curriculum -> OPEN_CV.
+- Runtime/observability/telemetry/logs -> OPEN_CONTROL_PANEL.
+- Public GitHub or a specific repository -> OPEN_LINK with an exact URL already present in the source of truth.
+${architectGuidance}
+
+OUTPUT_CONTRACT:
+Return one strictly valid JSON object and nothing else:
 {
-"type": "MESSAGE" | "ACTION",
-"text": "Your persuasive response here...",
-"action": "SCROLL_TO_PROJECTS" | "SCROLL_TO_CONTACT" | "SCROLL_TO_ABOUT" | "SCROLL_TO_STACK" | "SCROLL_TO_ARCHITECT" | "OPEN_CONTROL_PANEL" | "OPEN_LINK" | null,
-"url": "https://github.com/..." (Only if action is OPEN_LINK)
+  "type": "MESSAGE" or "ACTION",
+  "text": "Concise grounded response, maximum 650 characters",
+  "action": one of ${JSON.stringify(AVAILABLE_ACTIONS)} or null,
+  "url": "exact allowed URL" only when action is OPEN_LINK; otherwise null
 }
 `;
 
@@ -200,7 +224,7 @@ OUTPUT_FORMAT (JSON ONLY):
                 const completion = await groq.chat.completions.create({
                     messages: contextMessages,
                     model: modelId,
-                    temperature: 0.35,
+                    temperature: 0.2,
                     max_completion_tokens: 700,
                     response_format: { type: 'json_object' }
                 });
@@ -233,21 +257,29 @@ OUTPUT_FORMAT (JSON ONLY):
             }
         }
 
-        const safeAction = typeof response?.action === 'string' ? response.action : null;
-        const safeUrl = safeAction === 'OPEN_LINK'
-            ? getSafeExternalUrl(response?.url, allowedExternalUrls)
-            : null;
-
         if (!response) throw lastError;
-        completeStep(runId, 'action', safeAction
-            ? `UI action ${safeAction} resolved and sanitized before returning to the client.`
+
+        const requestedAction = typeof response.action === 'string' ? response.action : null;
+        const safeUrl = requestedAction === 'OPEN_LINK'
+            ? getSafeExternalUrl(response.url, allowedExternalUrls)
+            : null;
+        const normalizedAction = requestedAction === 'OPEN_LINK'
+            ? (safeUrl ? 'OPEN_LINK' : null)
+            : AVAILABLE_ACTIONS.filter(action => action !== 'OPEN_LINK').includes(requestedAction)
+                ? requestedAction
+                : null;
+
+        completeStep(runId, 'action', normalizedAction
+            ? `UI action ${normalizedAction} resolved and sanitized before returning to the client.`
             : 'The response was normalized as a text-only terminal reply.'
         );
         attachRunTrace(runId, debugTrace);
         finishRun(runId, {
             output: response?.text,
-            decision: safeAction || 'Message response only',
-            approval: safeAction === 'OPEN_LINK' ? 'Approved external handoff' : 'Autonomous UI-safe response',
+            decision: normalizedAction || 'Message response only',
+            approval: normalizedAction === 'OPEN_LINK' || normalizedAction === 'OPEN_CV'
+                ? 'Approved user-requested handoff'
+                : 'Autonomous UI-safe response',
         });
         recordServiceProbe('chat-api', {
             status: 'operational',
@@ -255,13 +287,9 @@ OUTPUT_FORMAT (JSON ONLY):
             note: 'Terminal agent request completed successfully.',
         });
         return res.status(200).json({
-            type: response?.type === 'ACTION' ? 'ACTION' : 'MESSAGE',
+            type: normalizedAction ? 'ACTION' : 'MESSAGE',
             text: clampText(response?.text, { min: 1, max: 800, fallback: '>> SYSTEM_ALERT: EMPTY_MODEL_RESPONSE.' }),
-            action: safeAction === 'OPEN_LINK'
-                ? (safeUrl ? 'OPEN_LINK' : null)
-                : AVAILABLE_ACTIONS.filter((action) => action !== 'OPEN_LINK').includes(safeAction)
-                    ? safeAction
-                    : null,
+            action: normalizedAction,
             url: safeUrl,
             debugTrace,
         });

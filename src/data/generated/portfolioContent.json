@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-22T17:52:20.452Z",
+  "generatedAt": "2026-06-22T21:10:00.172Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -124,83 +124,65 @@
     }
   ],
   "terminalConfig": {
-    "headerTitle": "zsh - port-folio",
-    "welcomeMessage": "Click to access system...",
-    "tooltipTitle": "Terminal Agent",
-    "tooltipDescription": "Backed by Groq-hosted Llama 3 with live portfolio context.",
-    "tooltipUsage": "Try asking \"What have you built recently?\" or \"help me scope a system\"."
+    "headerTitle": "portfolio-agent -- evidence-mode",
+    "welcomeMessage": "Open the portfolio guide...",
+    "tooltipTitle": "Portfolio Guide",
+    "tooltipDescription": "Grounded in selected projects, CV routes, and live GitHub context when available.",
+    "tooltipUsage": "Use /help, paste a role after /fit, or ask to compare two systems."
   },
   "terminalLineEntries": [
     {
       "group": "initial",
-      "text": ">>> SYSTEM_CHECK: READY",
+      "text": ">>> PORTFOLIO_AGENT: READY",
       "color": "electric-green",
       "order": 1
     },
     {
       "group": "initial",
-      "text": ">>> DETECTED_VISITOR: AUTH_PENDING...",
-      "color": "white",
+      "text": ">>> CONTEXT: PROJECTS + CV + LIVE_GITHUB",
+      "color": "electric-cyan",
       "order": 2
     },
     {
       "group": "initial",
-      "text": ">>> LIVE_GITHUB_SYNC: ACTIVE",
-      "color": "electric-cyan",
+      "text": ">>> MODES: ASK / COMPARE / RECRUITER_FIT",
+      "color": "white",
       "order": 3
     },
     {
       "group": "initial",
-      "text": ">>> HINT: Ask about recent builds, stack decisions, or current GitHub activity.",
-      "color": "electric-cyan",
+      "text": ">>> COMMANDS: /help /fit /projects /cv /github /contact",
+      "color": "gray",
       "order": 4
     },
     {
-      "group": "initial",
-      "text": ">>> COMMANDS: ['chat', 'explore', 'github']",
-      "color": "gray",
-      "order": 5
-    },
-    {
-      "group": "initial",
-      "text": ">>> STATUS: WAITING_FOR_INPUT...",
-      "color": "electric-green",
-      "order": 6
-    },
-    {
-      "group": "initial",
-      "text": "$ ./init_session.sh --interactive",
-      "color": "white",
-      "order": 7
-    },
-    {
       "group": "greeting",
-      "text": "> INITIALIZING GUEST SESSION...",
+      "text": "> GUEST_SESSION READY",
       "color": "electric-green",
       "order": 1
     },
     {
       "group": "greeting",
-      "text": "> ACCESS GRANTED. AWAITING INPUT...",
+      "text": "> ASK NATURALLY OR RUN /HELP",
       "color": "electric-green",
       "order": 2
     }
   ],
   "terminalCapabilityEntries": [
     {
-      "text": "Reads live portfolio content and current GitHub activity.",
+      "text": "Maps role requirements to specific project evidence and honest gaps.",
       "order": 1
     },
     {
-      "text": "Can navigate the site and move between sections.",
+      "text": "Compares projects, architecture choices, and engineering trade-offs.",
       "order": 2
     },
     {
-      "text": "Answers technical questions about projects, stack, and experience.",
+      "text": "Opens the CV, selected systems, GitHub, stack, and contact routes.",
       "order": 3
     },
     {
-      "text": "Can help scope incoming project briefs and technical direction.",
+      "text": "Uses live GitHub activity when available and falls back to portfolio evidence.",
       "order": 4
     }
   ],
@@ -2042,58 +2024,46 @@
         ]
       },
       "terminal": {
-        "headerTitle": "zsh - port-folio",
-        "welcomeMessage": "Click to access system...",
+        "headerTitle": "portfolio-agent -- evidence-mode",
+        "welcomeMessage": "Open the portfolio guide...",
         "initialLines": [
           {
-            "text": ">>> SYSTEM_CHECK: READY",
+            "text": ">>> PORTFOLIO_AGENT: READY",
             "color": "electric-green"
           },
           {
-            "text": ">>> DETECTED_VISITOR: AUTH_PENDING...",
+            "text": ">>> CONTEXT: PROJECTS + CV + LIVE_GITHUB",
+            "color": "electric-cyan"
+          },
+          {
+            "text": ">>> MODES: ASK / COMPARE / RECRUITER_FIT",
             "color": "white"
           },
           {
-            "text": ">>> LIVE_GITHUB_SYNC: ACTIVE",
-            "color": "electric-cyan"
-          },
-          {
-            "text": ">>> HINT: Ask about recent builds, stack decisions, or current GitHub activity.",
-            "color": "electric-cyan"
-          },
-          {
-            "text": ">>> COMMANDS: ['chat', 'explore', 'github']",
+            "text": ">>> COMMANDS: /help /fit /projects /cv /github /contact",
             "color": "gray"
-          },
-          {
-            "text": ">>> STATUS: WAITING_FOR_INPUT...",
-            "color": "electric-green"
-          },
-          {
-            "text": "$ ./init_session.sh --interactive",
-            "color": "white"
           }
         ],
         "consoleGretting": [
           {
-            "text": "> INITIALIZING GUEST SESSION...",
+            "text": "> GUEST_SESSION READY",
             "color": "electric-green"
           },
           {
-            "text": "> ACCESS GRANTED. AWAITING INPUT...",
+            "text": "> ASK NATURALLY OR RUN /HELP",
             "color": "electric-green"
           }
         ],
         "tooltip": {
-          "title": "Terminal Agent",
-          "description": "Backed by Groq-hosted Llama 3 with live portfolio context.",
+          "title": "Portfolio Guide",
+          "description": "Grounded in selected projects, CV routes, and live GitHub context when available.",
           "capabilities": [
-            "Reads live portfolio content and current GitHub activity.",
-            "Can navigate the site and move between sections.",
-            "Answers technical questions about projects, stack, and experience.",
-            "Can help scope incoming project briefs and technical direction."
+            "Maps role requirements to specific project evidence and honest gaps.",
+            "Compares projects, architecture choices, and engineering trade-offs.",
+            "Opens the CV, selected systems, GitHub, stack, and contact routes.",
+            "Uses live GitHub activity when available and falls back to portfolio evidence."
           ],
-          "usage": "Try asking \"What have you built recently?\" or \"help me scope a system\"."
+          "usage": "Use /help, paste a role after /fit, or ask to compare two systems."
         }
       },
       "sections": {

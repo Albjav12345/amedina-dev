@@ -5,33 +5,232 @@ import portfolioData from '../../data/portfolio';
 import { recordOpsRun } from '../../utils/opsTelemetry';
 import { dispatchSectionNavigation } from '../../utils/sectionRouting';
 
+const IDLE_PROMPTS = [
+    'MATCH A ROLE TO REAL PROJECT EVIDENCE',
+    'COMPARE SYSTEMS AND ENGINEERING TRADE-OFFS',
+    'FIND THE STRONGEST PROJECT FOR YOUR TEAM',
+    'OPEN THE CV, GITHUB, PROJECTS OR CONTACT',
+    'ASK WHAT ALBERTO COULD SHIP IN 90 DAYS',
+];
+
+const PIPELINE_SUGGESTIONS = [
+    'TRY: /fit frontend role using React, Node and SQL',
+    'ASK: Which project best proves end-to-end ownership?',
+    'COMPARE: Smart Inbox Manager vs Padel Booking Platform',
+    'RUN: /cv /projects /github /contact',
+    'ASK: What could Alberto contribute in his first 90 days?',
+];
+
+const PIPELINE_SUGGESTION_RESERVE = PIPELINE_SUGGESTIONS.reduce(
+    (longest, suggestion) => suggestion.length > longest.length ? suggestion : longest,
+    '',
+);
+
+const IDLE_SEQUENCE_HOLD_MS = 8200;
+const IDLE_FIRST_LINE_DELAY_MS = 700;
+const IDLE_LINE_INTERVAL_MS = 1500;
+const IDLE_LAST_LINE_HOLD_MS = 1100;
+const IDLE_FOOTER_REVEAL_DELAY_MS = 1400;
+
+const SOFT_FLOAT_TRANSITION = {
+    duration: 0.46,
+    ease: [0.22, 1, 0.36, 1],
+};
+
+const INPUT_PLACEHOLDERS = [
+    'Ask about a project...',
+    'Try /fit <role>...',
+    'Compare two systems...',
+    'Type /help for commands...',
+];
+
+const QUICK_ACTIONS = [
+    { label: 'ROLE MATCH', command: '/fit ', submit: false },
+    { label: 'BEST PROJECT', command: 'Which project best demonstrates end-to-end ownership?', submit: true },
+    { label: 'VIEW CV', command: '/cv', submit: true },
+    { label: 'CONTACT', command: '/contact', submit: true },
+];
+
+const useRotatingIndex = (length, { paused = false, delay = 4400 } = {}) => {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        if (paused || length < 2) return undefined;
+
+        const interval = window.setInterval(() => {
+            setIndex(current => (current + 1) % length);
+        }, delay);
+
+        return () => window.clearInterval(interval);
+    }, [delay, length, paused]);
+
+    return index;
+};
+
+const getTerminalLayoutState = () => {
+    if (typeof window === 'undefined') {
+        return {
+            isDesktopLandscape: false,
+            isMobile: false,
+            hasCursor: true,
+        };
+    }
+
+    const hasCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    return {
+        isDesktopLandscape: window.innerWidth > window.innerHeight && window.innerWidth >= 768,
+        isMobile: !hasCursor && window.innerWidth < 768,
+        hasCursor,
+    };
+};
+
+const normalizeSearchText = (value = '') => value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+const openInNewTab = (url) => {
+    if (!url || typeof window === 'undefined') return;
+
+    const openedWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (openedWindow) openedWindow.opener = null;
+};
+
+const getRelevantProjects = (query) => {
+    const normalizedQuery = normalizeSearchText(query);
+    const tokens = normalizedQuery
+        .split(/[^a-z0-9+#.]+/)
+        .filter(token => token.length > 2)
+        .filter(token => !['the', 'and', 'for', 'with', 'que', 'para', 'con', 'una', 'del'].includes(token));
+
+    return portfolioData.projects
+        .map(project => {
+            const corpus = normalizeSearchText([
+                project.title,
+                project.subtitle,
+                project.problem,
+                project.solution,
+                ...(project.stack || []),
+            ].join(' '));
+            const score = tokens.reduce((total, token) => total + (corpus.includes(token) ? 1 : 0), 0);
+            return { project, score };
+        })
+        .sort((left, right) => right.score - left.score);
+};
+
+const buildFallbackResponse = (query) => {
+    const normalizedQuery = normalizeSearchText(query);
+    const rankedProjects = getRelevantProjects(query);
+    const matchingProjects = rankedProjects.filter(item => item.score > 0).slice(0, 2);
+    const githubUrl = portfolioData.profile?.social?.github;
+
+    if (normalizedQuery.includes('cv') || normalizedQuery.includes('resume') || normalizedQuery.includes('curriculum')) {
+        return {
+            text: 'LOCAL_ROUTE: The current CV is ready. Opening the PDF now.',
+            action: 'OPEN_CV',
+        };
+    }
+
+    if (normalizedQuery.includes('contact') || normalizedQuery.includes('email') || normalizedQuery.includes('hire')) {
+        return {
+            text: `LOCAL_ROUTE: Direct contact is available at ${portfolioData.ui.contact.email}. Opening the contact section.`,
+            action: 'SCROLL_TO_CONTACT',
+        };
+    }
+
+    if (normalizedQuery.includes('github') || normalizedQuery.includes('repository') || normalizedQuery.includes('repositorio')) {
+        return {
+            text: 'LOCAL_ROUTE: Opening Alberto\'s public GitHub profile. Live AI analysis is temporarily unavailable.',
+            action: 'OPEN_LINK',
+            url: githubUrl,
+        };
+    }
+
+    if (normalizedQuery.includes('/fit') || normalizedQuery.includes('role') || normalizedQuery.includes('puesto') || normalizedQuery.includes('encaja')) {
+        const selected = matchingProjects.length
+            ? matchingProjects
+            : rankedProjects.filter(({ project }) => ['Smart Inbox Manager', 'Padel Booking Platform'].includes(project.title));
+        const matchedSkills = portfolioData.skills.categories
+            .flatMap(category => category.items)
+            .filter(skill => normalizeSearchText(skill)
+                .split(/[^a-z0-9+#]+/)
+                .some(term => term.length > 2 && normalizedQuery.includes(term)));
+        const evidence = selected
+            .slice(0, 2)
+            .map(({ project }) => `- ${project.title} [${project.stack.join(', ')}]: ${project.solution}`)
+            .join('\n');
+        const skillOverlap = matchedSkills.length
+            ? matchedSkills.join(', ')
+            : 'No explicit skill overlap could be extracted from the short role description.';
+        return {
+            text: `ROLE_MATCH / LOCAL_EVIDENCE_MODE\nMATCHED_SKILLS\n- ${skillOverlap}\nEVIDENCE\n${evidence}\nGAPS\n- A full requirement-by-requirement assessment needs the live agent. No missing skill will be guessed.\nNEXT\n- Review the selected systems or run /cv.`,
+            action: 'SCROLL_TO_PROJECTS',
+        };
+    }
+
+    if (normalizedQuery.includes('stack') || normalizedQuery.includes('skills') || normalizedQuery.includes('technology')) {
+        const categorySummary = portfolioData.skills.categories
+            .map(category => `${category.title}: ${category.items.join(', ')}`)
+            .join('\n');
+        return {
+            text: `LOCAL_EVIDENCE_MODE\n${categorySummary}`,
+            action: 'SCROLL_TO_STACK',
+        };
+    }
+
+    if (normalizedQuery.includes('project') || normalizedQuery.includes('portfolio') || normalizedQuery.includes('built') || normalizedQuery.includes('compare')) {
+        const selected = matchingProjects.length
+            ? matchingProjects
+            : rankedProjects.filter(({ project }) => ['Smart Inbox Manager', 'Padel Booking Platform'].includes(project.title));
+        const evidence = selected
+            .slice(0, 2)
+            .map(({ project }) => `- ${project.title}: ${project.solution}\n  Stack: ${project.stack.join(', ')}`)
+            .join('\n');
+        return {
+            text: `PROJECT_EVIDENCE / LOCAL_MODE\n${evidence}\nOpen Systems for architecture and demos.`,
+            action: 'SCROLL_TO_PROJECTS',
+        };
+    }
+
+    if (normalizedQuery.includes('about') || normalizedQuery.includes('alberto') || normalizedQuery.includes('quien')) {
+        return {
+            text: `LOCAL_EVIDENCE_MODE: ${portfolioData.profile.tagline} Opening the background section for verified context.`,
+            action: 'SCROLL_TO_ABOUT',
+        };
+    }
+
+    return {
+        text: 'LIVE_AGENT_UNAVAILABLE: Local commands still work. Try /help, /projects, /cv, /github or /contact.',
+        action: null,
+    };
+};
+
 const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const { terminal } = portfolioData.ui;
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
+    const idlePromptIndex = useRotatingIndex(IDLE_PROMPTS.length, {
+        paused: isUiFrozen || isExpanded,
+        delay: 4800,
+    });
 
     useEffect(() => {
         onStateChange?.(isExpanded);
     }, [isExpanded, onStateChange]);
-    const [isDesktopLandscape, setIsDesktopLandscape] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-    const [hasCursor, setHasCursor] = useState(true);
+    const [layoutState, setLayoutState] = useState(getTerminalLayoutState);
+    const { isDesktopLandscape, isMobile, hasCursor } = layoutState;
 
     useEffect(() => {
         const checkLayout = () => {
-            if (typeof window !== 'undefined') {
-                const isLandscape = window.innerWidth > window.innerHeight;
-                const isWide = window.innerWidth >= 768;
-                const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-                // Detect real mobile (not narrow desktop)
-                setIsMobile(!hasMouse && window.innerWidth < 768);
-                setHasCursor(hasMouse);
-
-                // Allow auto-growth on any wide landscape screen (Desktop & Tablets)
-                setIsDesktopLandscape(isLandscape && isWide);
-            }
+            const nextLayoutState = getTerminalLayoutState();
+            setLayoutState(currentLayoutState => (
+                currentLayoutState.isDesktopLandscape === nextLayoutState.isDesktopLandscape
+                && currentLayoutState.isMobile === nextLayoutState.isMobile
+                && currentLayoutState.hasCursor === nextLayoutState.hasCursor
+                    ? currentLayoutState
+                    : nextLayoutState
+            ));
         };
 
         checkLayout();
@@ -73,7 +272,9 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                     setIsExpanded(true);
                 }
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{
+                height: { type: 'spring', stiffness: 210, damping: 26, mass: 0.8 },
+            }}
             className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden gpu-accelerated ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
             style={{
@@ -92,7 +293,13 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                     <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{windowTitle}</span>
+                    <span
+                        title={windowTitle}
+                        className="text-[9px] font-mono text-gray-500 uppercase tracking-[0.16em] sm:text-[10px] sm:tracking-widest"
+                    >
+                        <span className="sm:hidden">portfolio-agent</span>
+                        <span className="hidden sm:inline">{windowTitle}</span>
+                    </span>
                 </div>
                 <div className="flex items-center justify-end gap-2 w-16">
                     {isExpanded && (
@@ -165,10 +372,36 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                             transition={{ duration: 0.2 }}
                             className="relative h-full"
                         >
-                            <AnimatedPipeline isFrozen={isUiFrozen} />
-                            <div className="absolute bottom-3 left-4 md:static md:mt-4 text-[10px] text-gray-600 animate-pulse">
-                                {terminal.welcomeMessage}
-                            </div>
+                            <AnimatedPipeline isFrozen={isUiFrozen}>
+                                <motion.div
+                                    key="idle-footer"
+                                    initial={{ opacity: 0, y: 12, height: 0 }}
+                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                    exit={{ opacity: 0, y: 8, height: 0 }}
+                                    transition={{
+                                        ...SOFT_FLOAT_TRANSITION,
+                                        height: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                                    }}
+                                    className="absolute bottom-3 left-4 right-4 md:static md:mt-0 flex items-center gap-2 text-[10px] tracking-wide text-gray-500"
+                                    style={{ overflow: 'hidden' }}
+                                >
+                                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-electric-green shadow-[0_0_10px_rgba(15,255,153,0.75)]" />
+                                    <span className="text-gray-600">OPEN CONSOLE</span>
+                                    <span className="text-gray-700">/</span>
+                                    <AnimatePresence mode="wait" initial={false}>
+                                        <motion.span
+                                            key={idlePromptIndex}
+                                            initial={{ opacity: 0, y: 3 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -3 }}
+                                            transition={{ duration: 0.22 }}
+                                            className="truncate text-gray-500"
+                                        >
+                                            {IDLE_PROMPTS[idlePromptIndex] || terminal.welcomeMessage}
+                                        </motion.span>
+                                    </AnimatePresence>
+                                </motion.div>
+                            </AnimatedPipeline>
                         </motion.div>
                     ) : (
                         <motion.div
@@ -196,6 +429,12 @@ const InteractiveConsole = ({ onClose }) => {
     const inputRef = useRef(null);
     const scrollRef = useRef(null);
     const isAutoScrollRef = useRef(true);
+    const placeholderIndex = useRotatingIndex(INPUT_PLACEHOLDERS.length, {
+        paused: Boolean(input) || isLoading,
+        delay: 4200,
+    });
+    const cvHref = portfolioData.ui.hero?.buttons?.cvHref;
+    const githubHref = portfolioData.profile?.social?.github;
 
     useEffect(() => {
         if (inputRef.current) inputRef.current.focus();
@@ -231,150 +470,299 @@ const InteractiveConsole = ({ onClose }) => {
         }
     };
 
-    const handleKeyDown = async (e) => {
-        if (e.key === 'Enter') {
-            if (!input.trim()) return;
-            const cmd = input.trim();
-            const startedAt = new Date().toISOString();
-            const startedAtMs = Date.now();
+    const executeUiAction = (action, url, delay = 0) => {
+        if (!action) return;
 
-            // Add user command to history
-            setHistory(prev => [...prev, { type: 'input', content: cmd }]);
-            setInput("");
-            setIsLoading(true);
-
-            // Re-engage auto-scroll on new message
-            isAutoScrollRef.current = true;
-            if (scrollRef.current) {
-                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-            }
-
-            // Local commands override
-            if (cmd.toLowerCase() === 'clear') {
-                setHistory([]);
-                setIsLoading(false);
-                return;
-            }
-            if (cmd.toLowerCase() === 'exit') {
-                onClose();
-                return;
-            }
-
-            try {
-                // Send history along with message for context
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: cmd,
-                        history: history.slice(-5) // Send last 5 entries for context
-                    })
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    let errorMessage = `>> ERROR ${res.status}: NEURAL LINK FAILURE.`;
-                    let errorTrace = null;
-                    try {
-                        const errorJson = JSON.parse(errorText);
-                        if (errorJson.text) errorMessage = errorJson.text;
-                        errorTrace = errorJson.debugTrace || null;
-                    } catch (e) { }
-
-                    console.error("API Error:", errorText);
-                    setHistory(prev => [...prev, { type: 'output', content: errorMessage }]);
-                    recordOpsRun({
-                        channel: 'terminal',
-                        title: 'Terminal Agent Request',
-                        status: 'error',
-                        startedAt,
-                        completedAt: new Date().toISOString(),
-                        latencyMs: Date.now() - startedAtMs,
-                        input: cmd,
-                        output: errorMessage,
-                        decision: `HTTP ${res.status} failure`,
-                        approval: 'Request failed before action dispatch',
-                        tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
-                        trace: errorTrace,
-                        steps: [
-                            { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
-                            { key: 'validation', label: 'VALIDATION', detail: 'The backend rejected or failed the request.', state: 'error', at: new Date().toISOString() },
-                        ],
-                    });
-                    setIsLoading(false);
-                    return;
-                }
-
-                const data = await res.json();
-
-                // Add AI response to history
-                setHistory(prev => [...prev, { type: 'output', content: data.text }]);
-
-                // Execute Action
-                if (data.action) {
-                    if (data.action === 'OPEN_LINK' && data.url) {
-                        window.open(data.url, '_blank');
-                    } else if (data.action === 'OPEN_CONTROL_PANEL') {
-                        window.dispatchEvent(new CustomEvent('open-control-panel'));
-                    } else {
-                        const sectionId = data.action.replace('SCROLL_TO_', '').toLowerCase().replace('_', '-');
-                        const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
-
-                        setTimeout(() => {
-                            dispatchSectionNavigation(targetId, {
-                                historyMode: 'push',
-                                behavior: 'smooth',
-                            });
-                        }, 500);
-                    }
-                }
-
-                recordOpsRun({
-                    channel: 'terminal',
-                    title: 'Terminal Agent Request',
-                    status: 'success',
-                    startedAt,
-                    completedAt: new Date().toISOString(),
-                    latencyMs: Date.now() - startedAtMs,
-                    input: cmd,
-                    output: data.text,
-                    decision: data.action ? `Resolved ${data.action}` : 'Returned message response',
-                    approval: data.action === 'OPEN_LINK' ? 'External link handoff approved' : 'Autonomous UI-safe response',
-                    tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
-                    trace: data.debugTrace || null,
-                    steps: [
-                        { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
-                        { key: 'validation', label: 'VALIDATION', detail: 'Payload accepted and sanitized by the backend.', state: 'complete', at: startedAt },
-                        { key: 'context', label: 'CONTEXT HYDRATION', detail: 'Portfolio and GitHub context attached to the request.', state: 'complete', at: new Date().toISOString() },
-                        { key: 'inference', label: 'AGENT REASONING', detail: 'Groq generated the response and next action.', state: 'complete', at: new Date().toISOString() },
-                        { key: 'action', label: 'ACTION RESOLUTION', detail: data.action ? `Frontend resolved ${data.action}.` : 'No UI action was required.', state: 'complete', at: new Date().toISOString() },
-                        { key: 'response', label: 'RESPONSE', detail: 'The terminal response was committed to the session log.', state: 'complete', at: new Date().toISOString() },
-                    ],
-                });
-
-            } catch (error) {
-                setHistory(prev => [...prev, { type: 'output', content: ">> ERROR: SERVER DISCONNECTED. PLEASE CHECK CONNECTION." }]);
-                recordOpsRun({
-                    channel: 'terminal',
-                    title: 'Terminal Agent Request',
-                    status: 'error',
-                    startedAt,
-                    completedAt: new Date().toISOString(),
-                    latencyMs: Date.now() - startedAtMs,
-                    input: cmd,
-                    output: '>> ERROR: SERVER DISCONNECTED. PLEASE CHECK CONNECTION.',
-                    decision: 'Network or server disconnect',
-                    approval: 'No backend response returned',
-                    tools: ['Terminal API'],
-                    steps: [
-                        { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
-                        { key: 'validation', label: 'VALIDATION', detail: 'The request failed before a valid backend response returned.', state: 'error', at: new Date().toISOString() },
-                    ],
-                });
-            } finally {
-                setIsLoading(false);
-            }
+        if (action === 'OPEN_CV') {
+            openInNewTab(cvHref);
+            return;
         }
+
+        if (action === 'OPEN_LINK' && url) {
+            openInNewTab(url);
+            return;
+        }
+
+        if (action === 'OPEN_CONTROL_PANEL') {
+            window.dispatchEvent(new CustomEvent('open-control-panel'));
+            return;
+        }
+
+        if (!action.startsWith('SCROLL_TO_')) return;
+
+        const sectionId = action.replace('SCROLL_TO_', '').toLowerCase().replaceAll('_', '-');
+        const targetId = sectionId === 'stack' ? 'tech-stack' : sectionId;
+
+        window.setTimeout(() => {
+            dispatchSectionNavigation(targetId, {
+                historyMode: 'push',
+                behavior: 'smooth',
+            });
+        }, delay);
+    };
+
+    const resolveLocalCommand = (cmd) => {
+        const [rawCommand, ...args] = cmd.split(/\s+/);
+        const command = rawCommand.toLowerCase();
+        const argument = args.join(' ').trim();
+
+        if (command === '/help' || command === 'help') {
+            return {
+                text: [
+                    'AVAILABLE_COMMANDS',
+                    '/fit <role>                      Evidence, gaps, next step',
+                    '/projects /cv /github /contact  Direct routes',
+                    '/stack /about                   Portfolio context',
+                    '/clear /exit                    Session controls',
+                    'Or ask naturally for a comparison, deep-dive, or role fit.',
+                ].join('\n'),
+                decision: 'Displayed the local command guide',
+            };
+        }
+
+        if (command === '/fit' && !argument) {
+            return {
+                text: 'ROLE_MATCH_READY\nPaste a role or its key requirements after /fit.\nExample: /fit junior full-stack role using React, Node and SQL',
+                decision: 'Requested role context before analysis',
+            };
+        }
+
+        if (command === '/cv') {
+            return {
+                text: 'CV_ROUTE: Opening Alberto\'s current CV in a new tab.',
+                action: 'OPEN_CV',
+                decision: 'Opened the current CV',
+            };
+        }
+
+        if (command === '/projects') {
+            return {
+                text: 'SYSTEMS_ROUTE: Opening selected projects, architecture notes and demos.',
+                action: 'SCROLL_TO_PROJECTS',
+                decision: 'Navigated to selected projects',
+            };
+        }
+
+        if (command === '/contact') {
+            return {
+                text: `CONTACT_ROUTE: ${portfolioData.ui.contact.email}`,
+                action: 'SCROLL_TO_CONTACT',
+                decision: 'Navigated to direct contact',
+            };
+        }
+
+        if (command === '/github') {
+            return {
+                text: 'GITHUB_ROUTE: Opening public repositories and activity.',
+                action: 'OPEN_LINK',
+                url: githubHref,
+                decision: 'Opened the public GitHub profile',
+            };
+        }
+
+        if (command === '/stack') {
+            return {
+                text: 'STACK_ROUTE: Opening the technical stack grouped by capability.',
+                action: 'SCROLL_TO_STACK',
+                decision: 'Navigated to the technical stack',
+            };
+        }
+
+        if (command === '/about') {
+            return {
+                text: 'ABOUT_ROUTE: Opening Alberto\'s background and verified client feedback.',
+                action: 'SCROLL_TO_ABOUT',
+                decision: 'Navigated to background and evidence',
+            };
+        }
+
+        if (command === '/status') {
+            return {
+                text: 'STATUS: PORTFOLIO_CONTEXT_READY\nLOCAL_ROUTES: ONLINE\nLIVE_AGENT: CHECKED_ON_QUERY\nRun /help to see available actions.',
+                decision: 'Displayed terminal status',
+            };
+        }
+
+        return null;
+    };
+
+    const recordLocalCommand = ({ cmd, result, startedAt, startedAtMs }) => {
+        recordOpsRun({
+            channel: 'terminal',
+            title: 'Terminal Local Command',
+            status: 'success',
+            startedAt,
+            completedAt: new Date().toISOString(),
+            latencyMs: Date.now() - startedAtMs,
+            input: cmd,
+            output: result.text,
+            decision: result.decision || result.action || 'Resolved locally',
+            approval: result.action === 'OPEN_LINK' || result.action === 'OPEN_CV'
+                ? 'User-triggered handoff'
+                : 'Autonomous UI-safe response',
+            tools: ['Local Command Router', 'Portfolio Context'],
+            steps: [
+                { key: 'ingress', label: 'COMMAND ENTERS', detail: 'Command received by the local terminal router.', state: 'complete', at: startedAt },
+                { key: 'action', label: 'ACTION RESOLUTION', detail: result.decision || 'Local response prepared.', state: 'complete', at: new Date().toISOString() },
+                { key: 'response', label: 'RESPONSE', detail: 'Result committed to the current terminal session.', state: 'complete', at: new Date().toISOString() },
+            ],
+        });
+    };
+
+    const recordFallback = ({ cmd, fallback, startedAt, startedAtMs, status, trace = null }) => {
+        recordOpsRun({
+            channel: 'terminal',
+            title: 'Terminal Agent Fallback',
+            status: 'error',
+            startedAt,
+            completedAt: new Date().toISOString(),
+            latencyMs: Date.now() - startedAtMs,
+            input: cmd,
+            output: fallback.text,
+            decision: `${status}; resolved with grounded local fallback`,
+            approval: fallback.action === 'OPEN_LINK' || fallback.action === 'OPEN_CV'
+                ? 'User-triggered fallback handoff'
+                : 'UI-safe local fallback',
+            tools: ['Terminal API', 'Local Evidence Fallback'],
+            trace,
+            steps: [
+                { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
+                { key: 'inference', label: 'LIVE AGENT', detail: status, state: 'error', at: new Date().toISOString() },
+                { key: 'response', label: 'LOCAL FALLBACK', detail: 'Portfolio evidence and deterministic routes remained available.', state: 'complete', at: new Date().toISOString() },
+            ],
+        });
+    };
+
+    const executeCommand = async (rawCommand) => {
+        const cmd = rawCommand.trim();
+        if (!cmd || isLoading) return;
+
+        const normalizedCommand = cmd.toLowerCase();
+        if (normalizedCommand === '/clear' || normalizedCommand === 'clear') {
+            setHistory([]);
+            setInput('');
+            return;
+        }
+        if (normalizedCommand === '/exit' || normalizedCommand === 'exit') {
+            setInput('');
+            onClose();
+            return;
+        }
+
+        const startedAt = new Date().toISOString();
+        const startedAtMs = Date.now();
+        const localResult = resolveLocalCommand(cmd);
+
+        setInput('');
+        setHistory(previous => [...previous, { type: 'input', content: cmd }]);
+        isAutoScrollRef.current = true;
+
+        if (localResult) {
+            setHistory(previous => [...previous, { type: 'output', content: localResult.text }]);
+            executeUiAction(localResult.action, localResult.url);
+            recordLocalCommand({ cmd, result: localResult, startedAt, startedAtMs });
+            return;
+        }
+
+        setIsLoading(true);
+        const fitArgument = normalizedCommand.startsWith('/fit ')
+            ? cmd.slice(cmd.indexOf(' ') + 1).trim()
+            : null;
+        const requestMessage = fitArgument
+            ? `Recruiter fit analysis requested. Role or requirements: ${fitArgument}`
+            : cmd;
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: requestMessage,
+                    history: history.slice(-5),
+                }),
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                let errorTrace = null;
+                try {
+                    errorTrace = JSON.parse(errorText).debugTrace || null;
+                } catch { /* The fallback does not depend on the server error body. */ }
+
+                console.error('Terminal API Error:', errorText);
+                const fallback = buildFallbackResponse(cmd);
+                setHistory(previous => [...previous, { type: 'output', content: fallback.text }]);
+                executeUiAction(fallback.action, fallback.url, 250);
+                recordFallback({
+                    cmd,
+                    fallback,
+                    startedAt,
+                    startedAtMs,
+                    status: `HTTP ${res.status} from the live agent`,
+                    trace: errorTrace,
+                });
+                return;
+            }
+
+            const data = await res.json();
+            setHistory(previous => [...previous, { type: 'output', content: data.text }]);
+            executeUiAction(data.action, data.url, 350);
+
+            recordOpsRun({
+                channel: 'terminal',
+                title: 'Terminal Agent Request',
+                status: 'success',
+                startedAt,
+                completedAt: new Date().toISOString(),
+                latencyMs: Date.now() - startedAtMs,
+                input: cmd,
+                output: data.text,
+                decision: data.action ? `Resolved ${data.action}` : 'Returned message response',
+                approval: data.action === 'OPEN_LINK' || data.action === 'OPEN_CV'
+                    ? 'User-triggered handoff approved'
+                    : 'Autonomous UI-safe response',
+                tools: ['Terminal API', 'Groq LLM', 'GitHub Context'],
+                trace: data.debugTrace || null,
+                steps: [
+                    { key: 'ingress', label: 'REQUEST ENTERS', detail: 'Terminal request dispatched from the client.', state: 'complete', at: startedAt },
+                    { key: 'validation', label: 'VALIDATION', detail: 'Payload accepted and sanitized by the backend.', state: 'complete', at: startedAt },
+                    { key: 'context', label: 'CONTEXT HYDRATION', detail: 'Portfolio and GitHub context attached to the request.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'inference', label: 'AGENT REASONING', detail: 'Groq generated a grounded response and optional next action.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'action', label: 'ACTION RESOLUTION', detail: data.action ? `Frontend resolved ${data.action}.` : 'No UI action was required.', state: 'complete', at: new Date().toISOString() },
+                    { key: 'response', label: 'RESPONSE', detail: 'The terminal response was committed to the session log.', state: 'complete', at: new Date().toISOString() },
+                ],
+            });
+        } catch (error) {
+            console.error('Terminal connection error:', error);
+            const fallback = buildFallbackResponse(cmd);
+            setHistory(previous => [...previous, { type: 'output', content: fallback.text }]);
+            executeUiAction(fallback.action, fallback.url, 250);
+            recordFallback({
+                cmd,
+                fallback,
+                startedAt,
+                startedAtMs,
+                status: 'Network or server disconnect',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        executeCommand(input);
+    };
+
+    const handleQuickAction = (quickAction) => {
+        if (quickAction.submit) {
+            executeCommand(quickAction.command);
+            return;
+        }
+
+        setInput(quickAction.command);
+        window.requestAnimationFrame(() => inputRef.current?.focus());
     };
 
     const handleWheel = (e) => {
@@ -432,7 +820,25 @@ const InteractiveConsole = ({ onClose }) => {
                 {isLoading && (
                     <div className="flex gap-2 leading-relaxed text-gray-400 animate-pulse">
                         <span className="shrink-0">{">"}</span>
-                        <span>SYSTEM_THINKING...</span>
+                        <span>CHECKING_PROJECT_EVIDENCE...</span>
+                    </div>
+                )}
+
+                {history.length === 0 && !isLoading && (
+                    <div className="my-1 flex flex-wrap gap-2" aria-label="Suggested terminal actions">
+                        {QUICK_ACTIONS.map(quickAction => (
+                            <button
+                                key={quickAction.label}
+                                type="button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleQuickAction(quickAction);
+                                }}
+                                className="rounded-md border border-white/10 bg-white/[0.025] px-2.5 py-1.5 text-[9px] font-semibold tracking-[0.12em] text-gray-400 transition-colors hover:border-electric-cyan/40 hover:text-electric-cyan focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-electric-cyan"
+                            >
+                                {quickAction.label}
+                            </button>
+                        ))}
                     </div>
                 )}
 
@@ -450,7 +856,7 @@ const InteractiveConsole = ({ onClose }) => {
                         autoComplete="off"
                         autoCapitalize="off"
                         spellCheck="false"
-                        placeholder="Type 'help'..."
+                        placeholder={INPUT_PLACEHOLDERS[placeholderIndex]}
                         style={{ minWidth: '0px' }}
                     />
                 </div>
@@ -459,66 +865,166 @@ const InteractiveConsole = ({ onClose }) => {
     );
 };
 
-const TypewriterEffect = ({ text, speed = 20 }) => {
-    // Mobile Detection: If < 768px, render instantly for LCP Optimization
+const TypewriterEffect = ({ text, speed = 8 }) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-    // Initial state: If mobile, show full text. If desktop, start empty.
     const [displayedText, setDisplayedText] = useState(isMobile ? text : "");
     const [index, setIndex] = useState(0);
+    const chunkSize = Math.max(1, Math.ceil(text.length / 140));
 
-    // Effect: Only run typing animation if NOT mobile
     useEffect(() => {
-        if (isMobile) {
-            setDisplayedText(text); // Ensure sync if prop changes
-            return;
-        }
+        setDisplayedText(isMobile ? text : '');
+        setIndex(isMobile ? text.length : 0);
+    }, [isMobile, text]);
 
-        if (index < text.length) {
-            const timeout = setTimeout(() => {
-                setDisplayedText((prev) => prev + text.charAt(index));
-                setIndex((prev) => prev + 1);
-            }, speed);
-            return () => clearTimeout(timeout);
-        }
-    }, [index, text, speed, isMobile]);
+    useEffect(() => {
+        if (isMobile || index >= text.length) return undefined;
+
+        const timeout = window.setTimeout(() => {
+            const nextIndex = Math.min(text.length, index + chunkSize);
+            setDisplayedText(text.slice(0, nextIndex));
+            setIndex(nextIndex);
+        }, speed);
+
+        return () => window.clearTimeout(timeout);
+    }, [chunkSize, index, isMobile, speed, text]);
 
     return <span>{displayedText}</span>;
 };
 
-export const AnimatedPipeline = ({ isFrozen = false }) => {
+export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
     const { terminal } = portfolioData.ui;
-    const [lineIdx, setLineIdx] = useState(0);
     const lines = terminal.initialLines;
+    const [visibleLineCount, setVisibleLineCount] = useState(isFrozen ? lines.length : 0);
+    const [sequencePhase, setSequencePhase] = useState(isFrozen ? 'complete' : 'lines');
+    const isSuggestionVisible = sequencePhase !== 'lines';
+    const isFooterVisible = sequencePhase === 'complete';
+    const suggestionIndex = useRotatingIndex(PIPELINE_SUGGESTIONS.length, {
+        paused: isFrozen || !isSuggestionVisible,
+        delay: 4600,
+    });
 
-    // Cyclic idle animation with original timing
     useEffect(() => {
-        if (isFrozen) return undefined;
+        if (isFrozen) {
+            setVisibleLineCount(lines.length);
+            setSequencePhase('complete');
+            return undefined;
+        }
 
-        const interval = setInterval(() => {
-            setLineIdx(prev => (prev + 1) % (lines.length + 1));
-        }, 2500); // Original slow timing for idle effect
-        return () => clearInterval(interval);
-    }, [isFrozen, lines.length]);
+        if (sequencePhase === 'lines' && visibleLineCount < lines.length) {
+            const timeout = window.setTimeout(() => {
+                setVisibleLineCount(current => Math.min(lines.length, current + 1));
+            }, visibleLineCount === 0 ? IDLE_FIRST_LINE_DELAY_MS : IDLE_LINE_INTERVAL_MS);
+
+            return () => window.clearTimeout(timeout);
+        }
+
+        if (sequencePhase === 'lines') {
+            const timeout = window.setTimeout(() => {
+                setSequencePhase('suggestion');
+            }, IDLE_LAST_LINE_HOLD_MS);
+
+            return () => window.clearTimeout(timeout);
+        }
+
+        if (sequencePhase === 'suggestion') {
+            const timeout = window.setTimeout(() => {
+                setSequencePhase('complete');
+            }, IDLE_FOOTER_REVEAL_DELAY_MS);
+
+            return () => window.clearTimeout(timeout);
+        }
+
+        return undefined;
+    }, [isFrozen, lines.length, sequencePhase, visibleLineCount]);
+
+    useEffect(() => {
+        if (isFrozen || !isFooterVisible) return undefined;
+
+        const timeout = window.setTimeout(() => {
+            setSequencePhase('lines');
+            setVisibleLineCount(0);
+        }, IDLE_SEQUENCE_HOLD_MS);
+
+        return () => window.clearTimeout(timeout);
+    }, [isFooterVisible, isFrozen]);
 
     return (
         <div className="flex flex-col gap-1">
-            {lines.slice(0, lineIdx).map((line, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={line.color === 'electric-green' ? 'text-electric-green' :
-                        line.color === 'electric-cyan' ? 'text-electric-cyan' :
-                            line.color === 'gray' ? 'text-gray-500' : 'text-white'}
-                >
-                    {i === lineIdx - 1 ? (
-                        <TypewriterEffect text={line.text} speed={15} />
-                    ) : (
-                        <span>{line.text}</span>
-                    )}
-                </motion.div>
-            ))}
+            <AnimatePresence initial={false}>
+                {lines.slice(0, visibleLineCount).map((line, i) => (
+                    <motion.div
+                        key={`${line.text}-${i}`}
+                        initial={{ opacity: 0, y: 7, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{
+                            opacity: 0,
+                            y: -6,
+                            height: 0,
+                            transition: {
+                                duration: 0.3,
+                                delay: (lines.length - i - 1) * 0.035,
+                                ease: [0.4, 0, 0.6, 1],
+                            },
+                        }}
+                        transition={{
+                            opacity: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+                            y: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
+                            height: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
+                        }}
+                        className={line.color === 'electric-green' ? 'text-electric-green' :
+                            line.color === 'electric-cyan' ? 'text-electric-cyan' :
+                                line.color === 'gray' ? 'text-gray-500' : 'text-white'}
+                        style={{ overflow: 'hidden' }}
+                    >
+                        <div className="relative min-w-0">
+                            <span aria-hidden="true" className="invisible block">
+                                {line.text}
+                            </span>
+                            <span className="absolute inset-0 block">
+                                {i === visibleLineCount - 1 ? (
+                                    <TypewriterEffect text={line.text} speed={10} />
+                                ) : (
+                                    line.text
+                                )}
+                            </span>
+                        </div>
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+
+            <AnimatePresence initial={false}>
+                {isSuggestionVisible && (
+                    <motion.div
+                        key="idle-suggestion-row"
+                        initial={{ opacity: 0, y: 11, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: -7, height: 0 }}
+                        transition={{
+                            ...SOFT_FLOAT_TRANSITION,
+                            height: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                        }}
+                        className="relative mt-1 min-w-0"
+                        style={{ overflow: 'hidden' }}
+                    >
+                        <span aria-hidden="true" className="invisible block">
+                            {`>>> ${PIPELINE_SUGGESTION_RESERVE}`}
+                        </span>
+                        <AnimatePresence mode="sync" initial={false}>
+                            <motion.div
+                                key={suggestionIndex}
+                                initial={{ opacity: 0, x: -6 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 6 }}
+                                transition={{ duration: 0.24 }}
+                                className="absolute inset-0 text-electric-cyan"
+                            >
+                                <TypewriterEffect text={`>>> ${PIPELINE_SUGGESTIONS[suggestionIndex]}`} speed={8} />
+                            </motion.div>
+                        </AnimatePresence>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {isFrozen ? (
                 <span className="w-2 h-4 bg-electric-green/50 inline-block ml-1 align-middle mt-2" />
             ) : (
@@ -528,6 +1034,12 @@ export const AnimatedPipeline = ({ isFrozen = false }) => {
                     className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2"
                 />
             )}
+
+            <span aria-hidden="true" className="h-4 shrink-0" />
+
+            <AnimatePresence initial={false}>
+                {isFooterVisible ? children : null}
+            </AnimatePresence>
         </div>
     );
 }
