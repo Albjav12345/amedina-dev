@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "document": {
+    "versionLabel": "AM / CV 2026",
+    "title": "Alberto Medina - CV 2026 | v14",
+    "language": "en",
+    "footerName": "Alberto Medina",
+    "footerPage": "01 / 01"
+  },
+  "identity": {
+    "firstName": "Alberto",
+    "lastName": "Medina",
+    "role": "Computer Engineering student · Client-ready problem solver",
+    "topline": "Client work · English · Technology",
+    "availability": "OPEN TO OPPORTUNITIES",
+    "intro": [
+      "I am a technology-minded student about to begin a Computer Engineering degree, with practical experience delivering paid digital work to clients. I bring [[advanced working English, care with detail and a genuinely helpful attitude]] to every role.",
+      "I am looking for responsible part-time opportunities where I can contribute with organisation, client communication and reliable follow-through."
+    ]
+  },
+  "assets": {
+    "portraitUrl": "/assets/alberto.webp",
+    "portraitAlt": "Portrait of Alberto Medina"
+  },
+  "contacts": [
+    {
+      "id": "email",
+      "icon": "mail",
+      "label": "Email",
+      "value": "amedina.amg.dev@gmail.com",
+      "href": "mailto:amedina.amg.dev@gmail.com"
+    },
+    {
+      "id": "location",
+      "icon": "location",
+      "label": "Location",
+      "value": "Madrid, Spain",
+      "href": ""
+    },
+    {
+      "id": "portfolio",
+      "icon": "code",
+      "label": "Portfolio",
+      "value": "amedina.dev",
+      "href": "https://amedina.dev/"
+    },
+    {
+      "id": "linkedin",
+      "icon": "linkedin",
+      "label": "LinkedIn",
+      "value": "LinkedIn profile",
+      "href": "https://www.linkedin.com/in/alberto-medina-dev/"
+    }
+  ],
+  "rail": {
+    "howIWorkTitle": "How I work",
+    "howIWork": "Curious by default. I enjoy understanding how things work, improving the small details and turning ideas into useful, well-organised results.",
+    "bestFitTitle": "Best fit",
+    "bestFit": [
+      "PART-TIME",
+      "FREELANCE",
+      "EVENTS / OPERATIONS",
+      "DIGITAL PROJECTS"
+    ],
+    "strengthsTitle": "Core strengths",
+    "strengths": [
+      "Clear, thoughtful communication in Spanish and English.",
+      "Reliable with timing, procedures and client follow-up.",
+      "Calm, practical problem-solving and fast learning."
+    ],
+    "extraSections": []
+  },
+  "education": {
+    "number": "01",
+    "title": "Education & English",
+    "items": [
+      {
+        "id": "degree",
+        "year": "2026 - 2030",
+        "title": "Computer Engineering degree - starting in 2026",
+        "description": "University studies focused on software, computing systems and engineering foundations, while I continue developing a practical portfolio alongside my degree."
+      },
+      {
+        "id": "bachillerato",
+        "year": "2026",
+        "title": "Spanish Baccalaureate (Bachillerato) - completed",
+        "description": "Completed upper-secondary education and the university entrance process while pursuing independent creative and technical projects outside class."
+      },
+      {
+        "id": "cambridge",
+        "year": "Jun 2026",
+        "title": "Cambridge English: C1 Advanced - examination completed",
+        "description": "Result pending. Confident in written and spoken English: formal writing, reports, instructions, proposals and real-time conversation."
+      }
+    ]
+  },
+  "profileStrip": {
+    "languagesTitle": "Languages",
+    "languages": [
+      {
+        "id": "spanish",
+        "name": "Spanish",
+        "level": "Native"
+      },
+      {
+        "id": "english",
+        "name": "English",
+        "level": "B2+ / C1 working proficiency"
+      }
+    ],
+    "workingStyleTitle": "Working style",
+    "workingStyle": [
+      "Professional, friendly communication.",
+      "Care with procedures and accuracy.",
+      "Quick learning with new systems and tools.",
+      "Visual, user-focused problem-solving."
+    ]
+  },
+  "experience": {
+    "number": "02",
+    "title": "Practical experience",
+    "items": [
+      {
+        "id": "fiverr",
+        "kicker": "Fiverr freelance experience",
+        "title": "Freelance digital creator & client delivery",
+        "date": "2024 - 2025",
+        "description": "Completed paid digital projects for international clients, independently managing **briefs, requirements, revisions, deadlines and final delivery**. My work combined creative and technology-focused tasks, SEO-ready media content and bilingual client communication.",
+        "metrics": [
+          {
+            "id": "projects",
+            "value": "19",
+            "label": "Completed paid projects"
+          },
+          {
+            "id": "reviews",
+            "value": "17",
+            "label": "Written client reviews"
+          },
+          {
+            "id": "languages",
+            "value": "EN / ES",
+            "label": "Bilingual client communication"
+          }
+        ]
+      }
+    ]
+  },
+  "portfolio": {
+    "kicker": "Portfolio & project samples",
+    "main": "See selected work, background and the projects I am building at {{amedina.dev}}.",
+    "sub": "Scan the QR code or visit the website for my professional portfolio.",
+    "url": "https://amedina.dev/",
+    "label": "Portfolio",
+    "displayUrl": "amedina.dev"
+  },
+  "publication": {
+    "updatedAt": "2026-06-23T22:37:29.396Z",
+    "revision": 16
+  }
+}

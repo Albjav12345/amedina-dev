@@ -2,11 +2,20 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "framework": "vite",
     "trailingSlash": false,
+    "functions": {
+        "api/cv-admin.js": {
+            "includeFiles": [
+                "src/data/cv/published.json",
+                "public/assets/alberto.webp"
+            ]
+        }
+    },
     "rewrites": [
         { "source": "/about", "destination": "/" },
         { "source": "/projects", "destination": "/" },
         { "source": "/stack", "destination": "/" },
         { "source": "/architect", "destination": "/" },
-        { "source": "/contact", "destination": "/" }
+        { "source": "/contact", "destination": "/" },
+        { "source": "/cv-studio", "destination": "/" }
     ]
 }
