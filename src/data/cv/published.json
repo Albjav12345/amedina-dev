@@ -76,7 +76,7 @@
     "items": [
       {
         "id": "degree",
-        "year": "2026 - 2030",
+        "year": "2026 - 2031",
         "title": "Computer Engineering degree - starting in 2026",
         "description": "University studies focused on software, computing systems and engineering foundations, while I continue developing a practical portfolio alongside my degree."
       },
@@ -155,7 +155,7 @@
     "displayUrl": "amedina.dev"
   },
   "publication": {
-    "updatedAt": "2026-06-23T22:37:29.396Z",
-    "revision": 16
+    "updatedAt": "2026-06-23T23:02:15.768Z",
+    "revision": 17
   }
 }
