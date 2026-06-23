@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
@@ -27,10 +27,8 @@ const PIPELINE_SUGGESTION_RESERVE = PIPELINE_SUGGESTIONS.reduce(
 );
 
 const IDLE_SEQUENCE_HOLD_MS = 8200;
-const IDLE_FIRST_LINE_DELAY_MS = 700;
-const IDLE_LINE_INTERVAL_MS = 1500;
-const IDLE_LAST_LINE_HOLD_MS = 1100;
-const IDLE_FOOTER_REVEAL_DELAY_MS = 1400;
+const IDLE_FIRST_LINE_DELAY_MS = 900;
+const IDLE_LINE_HOLD_MS = 1200;
 
 const SOFT_FLOAT_TRANSITION = {
     duration: 0.46,
@@ -210,10 +208,50 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const windowTitle = title || terminal.headerTitle;
     const [isExpanded, setIsExpanded] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
+    const [lockedHeight, setLockedHeight] = useState(null);
+    const terminalWindowRef = useRef(null);
+    const openingFrameRef = useRef(null);
     const idlePromptIndex = useRotatingIndex(IDLE_PROMPTS.length, {
         paused: isUiFrozen || isExpanded,
         delay: 4800,
     });
+
+    const clearOpeningFrame = useCallback(() => {
+        if (openingFrameRef.current !== null) {
+            window.cancelAnimationFrame(openingFrameRef.current);
+            openingFrameRef.current = null;
+        }
+
+    }, []);
+
+    const openTerminal = useCallback(() => {
+        if (isExpanded) return;
+
+        clearOpeningFrame();
+        const currentHeight = terminalWindowRef.current?.getBoundingClientRect().height;
+
+        if (!currentHeight) {
+            setIsExpanded(true);
+            return;
+        }
+
+        // Preserve the exact idle height while its content is exchanged. Without
+        // this brief lock, `auto` can be remeasured after the idle panel leaves.
+        setLockedHeight(currentHeight);
+        openingFrameRef.current = window.requestAnimationFrame(() => {
+            setIsExpanded(true);
+            openingFrameRef.current = window.requestAnimationFrame(() => {
+                setLockedHeight(null);
+                openingFrameRef.current = null;
+            });
+        });
+    }, [clearOpeningFrame, isExpanded]);
+
+    const closeTerminal = useCallback(() => {
+        clearOpeningFrame();
+        setLockedHeight(null);
+        setIsExpanded(false);
+    }, [clearOpeningFrame]);
 
     useEffect(() => {
         onStateChange?.(isExpanded);
@@ -239,7 +277,10 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     }, []);
 
     useEffect(() => {
-        const handleToggle = () => setIsExpanded(prev => !prev);
+        const handleToggle = () => {
+            if (isExpanded) closeTerminal();
+            else openTerminal();
+        };
         const handleClickOutside = () => setShowTooltip(false);
 
         window.addEventListener('toggle-terminal', handleToggle);
@@ -249,31 +290,37 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
             window.removeEventListener('toggle-terminal', handleToggle);
             window.removeEventListener('click', handleClickOutside);
         };
-    }, []);
+    }, [closeTerminal, isExpanded, openTerminal]);
+
+    useEffect(() => () => clearOpeningFrame(), [clearOpeningFrame]);
 
     // Placeholder for global safety CSS removed (now in global.css)
 
     return (
         <motion.div
+            ref={terminalWindowRef}
             role={!isExpanded ? 'button' : undefined}
             tabIndex={!isExpanded ? 0 : undefined}
             aria-label={!isExpanded ? 'Open interactive terminal' : undefined}
             initial={false}
             animate={{
                 // PC Landscape: auto | Mobile: 350->450 | PC Portrait/Others: 320->384
-                height: isExpanded
+                height: lockedHeight ?? (isExpanded
                     ? (isMobile ? 450 : 384)
-                    : (isDesktopLandscape ? 'auto' : (isMobile ? 350 : 320))
+                    : (isDesktopLandscape ? 'auto' : (isMobile ? 350 : 320)))
             }}
-            onClick={() => !isExpanded && setIsExpanded(true)}
+            onClick={openTerminal}
             onKeyDown={(event) => {
                 if (!isExpanded && (event.key === 'Enter' || event.key === ' ')) {
                     event.preventDefault();
-                    setIsExpanded(true);
+                    openTerminal();
                 }
             }}
             transition={{
-                height: { type: 'spring', stiffness: 210, damping: 26, mass: 0.8 },
+                height: {
+                    duration: isExpanded ? 0.48 : 0.52,
+                    ease: [0.22, 1, 0.36, 1],
+                },
             }}
             className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden gpu-accelerated ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
@@ -286,7 +333,7 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
             }}
         >
             {/* Window Header */}
-            <div className="flex-none bg-white/5 border-b border-white/10 px-4 py-2 flex items-center justify-between relative z-50 rounded-t-xl">
+            <div className="flex-none h-10 bg-white/5 border-b border-white/10 px-4 flex items-center justify-between relative z-50 rounded-t-xl">
                 <div className="flex gap-1.5 w-16">
                     <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -302,8 +349,16 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                     </span>
                 </div>
                 <div className="flex items-center justify-end gap-2 w-16">
-                    {isExpanded && (
-                        <>
+                    <AnimatePresence initial={false}>
+                        {isExpanded && (
+                            <motion.div
+                                key="terminal-controls"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.16, ease: 'linear' }}
+                                className="flex items-center justify-end gap-2"
+                            >
                             {/* Info Tooltip Trigger */}
                             <div className="relative group">
                                 <button
@@ -347,14 +402,15 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                                 aria-label="Close interactive terminal"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setIsExpanded(false);
+                                    closeTerminal();
                                 }}
                                 className="text-gray-500 hover:text-white transition-colors cursor-pointer p-1"
                             >
                                 <X size={14} />
                             </button>
-                        </>
-                    )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
@@ -369,20 +425,21 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: 0.18, ease: 'linear' }}
                             className="relative h-full"
                         >
                             <AnimatedPipeline isFrozen={isUiFrozen}>
                                 <motion.div
                                     key="idle-footer"
-                                    initial={{ opacity: 0, y: 12, height: 0 }}
-                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                                    exit={{ opacity: 0, y: 8, height: 0 }}
+                                    initial={{ opacity: 0, y: 12, height: 0, marginTop: 0 }}
+                                    animate={{ opacity: 1, y: 0, height: 'auto', marginTop: isMobile ? 0 : 4 }}
+                                    exit={{ opacity: 0, y: 8, height: 0, marginTop: 0 }}
                                     transition={{
                                         ...SOFT_FLOAT_TRANSITION,
                                         height: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                                        marginTop: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
                                     }}
-                                    className="absolute bottom-3 left-4 right-4 md:static md:mt-0 flex items-center gap-2 text-[10px] tracking-wide text-gray-500"
+                                    className="absolute bottom-3 left-4 right-4 md:static flex items-center gap-2 text-[10px] tracking-wide text-gray-500"
                                     style={{ overflow: 'hidden' }}
                                 >
                                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-electric-green shadow-[0_0_10px_rgba(15,255,153,0.75)]" />
@@ -406,13 +463,13 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                     ) : (
                         <motion.div
                             key="active"
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            transition={{ duration: 0.2 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.22, ease: 'linear' }}
                             className="h-full flex flex-col"
                         >
-                            <InteractiveConsole onClose={() => setIsExpanded(false)} />
+                            <InteractiveConsole onClose={closeTerminal} />
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -865,16 +922,31 @@ const InteractiveConsole = ({ onClose }) => {
     );
 };
 
-const TypewriterEffect = ({ text, speed = 8 }) => {
+const TypewriterEffect = ({ text, speed = 8, onComplete = null }) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const [displayedText, setDisplayedText] = useState(isMobile ? text : "");
     const [index, setIndex] = useState(0);
     const chunkSize = Math.max(1, Math.ceil(text.length / 140));
+    const onCompleteRef = useRef(onComplete);
+    const hasCompletedRef = useRef(false);
 
     useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
+
+    useEffect(() => {
+        hasCompletedRef.current = false;
         setDisplayedText(isMobile ? text : '');
         setIndex(isMobile ? text.length : 0);
     }, [isMobile, text]);
+
+    useEffect(() => {
+        if (!isMobile && index < text.length) return;
+        if (hasCompletedRef.current) return;
+
+        hasCompletedRef.current = true;
+        onCompleteRef.current?.();
+    }, [index, isMobile, text.length]);
 
     useEffect(() => {
         if (isMobile || index >= text.length) return undefined;
@@ -895,6 +967,8 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
     const { terminal } = portfolioData.ui;
     const lines = terminal.initialLines;
     const [visibleLineCount, setVisibleLineCount] = useState(isFrozen ? lines.length : 0);
+    const [completedLineCount, setCompletedLineCount] = useState(isFrozen ? lines.length : 0);
+    const [isSuggestionComplete, setIsSuggestionComplete] = useState(isFrozen);
     const [sequencePhase, setSequencePhase] = useState(isFrozen ? 'complete' : 'lines');
     const isSuggestionVisible = sequencePhase !== 'lines';
     const isFooterVisible = sequencePhase === 'complete';
@@ -906,36 +980,46 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
     useEffect(() => {
         if (isFrozen) {
             setVisibleLineCount(lines.length);
+            setCompletedLineCount(lines.length);
+            setIsSuggestionComplete(true);
             setSequencePhase('complete');
             return undefined;
         }
 
-        if (sequencePhase === 'lines' && visibleLineCount < lines.length) {
+        if (sequencePhase === 'lines' && visibleLineCount === 0) {
             const timeout = window.setTimeout(() => {
-                setVisibleLineCount(current => Math.min(lines.length, current + 1));
-            }, visibleLineCount === 0 ? IDLE_FIRST_LINE_DELAY_MS : IDLE_LINE_INTERVAL_MS);
+                setVisibleLineCount(1);
+            }, IDLE_FIRST_LINE_DELAY_MS);
 
             return () => window.clearTimeout(timeout);
         }
 
         if (sequencePhase === 'lines') {
+            if (completedLineCount < visibleLineCount) return undefined;
+
             const timeout = window.setTimeout(() => {
-                setSequencePhase('suggestion');
-            }, IDLE_LAST_LINE_HOLD_MS);
+                if (visibleLineCount < lines.length) {
+                    setVisibleLineCount(current => Math.min(lines.length, current + 1));
+                } else {
+                    setSequencePhase('suggestion');
+                }
+            }, IDLE_LINE_HOLD_MS);
 
             return () => window.clearTimeout(timeout);
         }
 
         if (sequencePhase === 'suggestion') {
+            if (!isSuggestionComplete) return undefined;
+
             const timeout = window.setTimeout(() => {
                 setSequencePhase('complete');
-            }, IDLE_FOOTER_REVEAL_DELAY_MS);
+            }, IDLE_LINE_HOLD_MS);
 
             return () => window.clearTimeout(timeout);
         }
 
         return undefined;
-    }, [isFrozen, lines.length, sequencePhase, visibleLineCount]);
+    }, [completedLineCount, isFrozen, isSuggestionComplete, lines.length, sequencePhase, visibleLineCount]);
 
     useEffect(() => {
         if (isFrozen || !isFooterVisible) return undefined;
@@ -943,23 +1027,30 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
         const timeout = window.setTimeout(() => {
             setSequencePhase('lines');
             setVisibleLineCount(0);
+            setCompletedLineCount(0);
+            setIsSuggestionComplete(false);
         }, IDLE_SEQUENCE_HOLD_MS);
 
         return () => window.clearTimeout(timeout);
     }, [isFooterVisible, isFrozen]);
 
     return (
-        <div className="flex flex-col gap-1">
+        <div
+            className="flex flex-col"
+            data-idle-phase={sequencePhase}
+            data-idle-line-count={visibleLineCount}
+        >
             <AnimatePresence initial={false}>
                 {lines.slice(0, visibleLineCount).map((line, i) => (
                     <motion.div
                         key={`${line.text}-${i}`}
-                        initial={{ opacity: 0, y: 7, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        initial={{ opacity: 0, y: 7, height: 0, marginBottom: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto', marginBottom: 4 }}
                         exit={{
                             opacity: 0,
                             y: -6,
                             height: 0,
+                            marginBottom: 0,
                             transition: {
                                 duration: 0.3,
                                 delay: (lines.length - i - 1) * 0.035,
@@ -970,6 +1061,7 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
                             opacity: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
                             y: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
                             height: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
+                            marginBottom: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
                         }}
                         className={line.color === 'electric-green' ? 'text-electric-green' :
                             line.color === 'electric-cyan' ? 'text-electric-cyan' :
@@ -982,7 +1074,11 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
                             </span>
                             <span className="absolute inset-0 block">
                                 {i === visibleLineCount - 1 ? (
-                                    <TypewriterEffect text={line.text} speed={10} />
+                                    <TypewriterEffect
+                                        text={line.text}
+                                        speed={12}
+                                        onComplete={() => setCompletedLineCount(current => Math.max(current, i + 1))}
+                                    />
                                 ) : (
                                     line.text
                                 )}
@@ -996,14 +1092,16 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
                 {isSuggestionVisible && (
                     <motion.div
                         key="idle-suggestion-row"
-                        initial={{ opacity: 0, y: 11, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                        exit={{ opacity: 0, y: -7, height: 0 }}
+                        initial={{ opacity: 0, y: 11, height: 0, marginTop: 0, marginBottom: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto', marginTop: 4, marginBottom: 4 }}
+                        exit={{ opacity: 0, y: -7, height: 0, marginTop: 0, marginBottom: 0 }}
                         transition={{
                             ...SOFT_FLOAT_TRANSITION,
                             height: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                            marginTop: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+                            marginBottom: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
                         }}
-                        className="relative mt-1 min-w-0"
+                        className="relative min-w-0"
                         style={{ overflow: 'hidden' }}
                     >
                         <span aria-hidden="true" className="invisible block">
@@ -1018,7 +1116,11 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
                                 transition={{ duration: 0.24 }}
                                 className="absolute inset-0 text-electric-cyan"
                             >
-                                <TypewriterEffect text={`>>> ${PIPELINE_SUGGESTIONS[suggestionIndex]}`} speed={8} />
+                                <TypewriterEffect
+                                    text={`>>> ${PIPELINE_SUGGESTIONS[suggestionIndex]}`}
+                                    speed={10}
+                                    onComplete={() => setIsSuggestionComplete(true)}
+                                />
                             </motion.div>
                         </AnimatePresence>
                     </motion.div>
@@ -1026,12 +1128,12 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
             </AnimatePresence>
 
             {isFrozen ? (
-                <span className="w-2 h-4 bg-electric-green/50 inline-block ml-1 align-middle mt-2" />
+                <span className="w-2 h-4 bg-electric-green/50 inline-block ml-1 align-middle mt-2 mb-1" />
             ) : (
                 <motion.span
                     animate={{ opacity: [0, 1] }}
                     transition={{ repeat: Infinity, duration: 0.8 }}
-                    className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2"
+                    className="w-2 h-4 bg-electric-green inline-block ml-1 align-middle mt-2 mb-1"
                 />
             )}
 
