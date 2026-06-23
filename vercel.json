@@ -4,10 +4,7 @@
     "trailingSlash": false,
     "functions": {
         "api/cv-admin.js": {
-            "includeFiles": [
-                "src/data/cv/published.json",
-                "public/assets/alberto.webp"
-            ]
+            "includeFiles": "{src/data/cv/published.json,public/assets/alberto.webp}"
         }
     },
     "rewrites": [
