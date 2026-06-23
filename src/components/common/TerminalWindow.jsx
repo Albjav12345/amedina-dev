@@ -29,6 +29,8 @@ const PIPELINE_SUGGESTION_RESERVE = PIPELINE_SUGGESTIONS.reduce(
 const IDLE_SEQUENCE_HOLD_MS = 8200;
 const IDLE_FIRST_LINE_DELAY_MS = 900;
 const IDLE_LINE_HOLD_MS = 1200;
+const IDLE_COLLAPSE_DURATION_MS = 600;
+const DESKTOP_IDLE_COLLAPSED_HEIGHT = 134;
 
 const SOFT_FLOAT_TRANSITION = {
     duration: 0.46,
@@ -209,6 +211,7 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const [lockedHeight, setLockedHeight] = useState(null);
+    const [isIdleCollapsing, setIsIdleCollapsing] = useState(false);
     const terminalWindowRef = useRef(null);
     const openingFrameRef = useRef(null);
     const idlePromptIndex = useRotatingIndex(IDLE_PROMPTS.length, {
@@ -307,7 +310,9 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                 // PC Landscape: auto | Mobile: 350->450 | PC Portrait/Others: 320->384
                 height: lockedHeight ?? (isExpanded
                     ? (isMobile ? 450 : 384)
-                    : (isDesktopLandscape ? 'auto' : (isMobile ? 350 : 320)))
+                    : (isDesktopLandscape
+                        ? (isIdleCollapsing ? DESKTOP_IDLE_COLLAPSED_HEIGHT : 'auto')
+                        : (isMobile ? 350 : 320)))
             }}
             onClick={openTerminal}
             onKeyDown={(event) => {
@@ -428,7 +433,10 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
                             transition={{ duration: 0.18, ease: 'linear' }}
                             className="relative h-full"
                         >
-                            <AnimatedPipeline isFrozen={isUiFrozen}>
+                            <AnimatedPipeline
+                                isFrozen={isUiFrozen}
+                                onCollapseChange={setIsIdleCollapsing}
+                            >
                                 <motion.div
                                     key="idle-footer"
                                     initial={{ opacity: 0, y: 12, height: 0, marginTop: 0 }}
@@ -963,12 +971,13 @@ const TypewriterEffect = ({ text, speed = 8, onComplete = null }) => {
     return <span>{displayedText}</span>;
 };
 
-export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
+export const AnimatedPipeline = ({ isFrozen = false, onCollapseChange = null, children = null }) => {
     const { terminal } = portfolioData.ui;
     const lines = terminal.initialLines;
     const [visibleLineCount, setVisibleLineCount] = useState(isFrozen ? lines.length : 0);
     const [completedLineCount, setCompletedLineCount] = useState(isFrozen ? lines.length : 0);
     const [isSuggestionComplete, setIsSuggestionComplete] = useState(isFrozen);
+    const [isCollapsing, setIsCollapsing] = useState(false);
     const [sequencePhase, setSequencePhase] = useState(isFrozen ? 'complete' : 'lines');
     const isSuggestionVisible = sequencePhase !== 'lines';
     const isFooterVisible = sequencePhase === 'complete';
@@ -979,6 +988,8 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
 
     useEffect(() => {
         if (isFrozen) {
+            setIsCollapsing(false);
+            onCollapseChange?.(false);
             setVisibleLineCount(lines.length);
             setCompletedLineCount(lines.length);
             setIsSuggestionComplete(true);
@@ -1019,12 +1030,14 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
         }
 
         return undefined;
-    }, [completedLineCount, isFrozen, isSuggestionComplete, lines.length, sequencePhase, visibleLineCount]);
+    }, [completedLineCount, isFrozen, isSuggestionComplete, lines.length, onCollapseChange, sequencePhase, visibleLineCount]);
 
     useEffect(() => {
         if (isFrozen || !isFooterVisible) return undefined;
 
         const timeout = window.setTimeout(() => {
+            setIsCollapsing(true);
+            onCollapseChange?.(true);
             setSequencePhase('lines');
             setVisibleLineCount(0);
             setCompletedLineCount(0);
@@ -1032,14 +1045,23 @@ export const AnimatedPipeline = ({ isFrozen = false, children = null }) => {
         }, IDLE_SEQUENCE_HOLD_MS);
 
         return () => window.clearTimeout(timeout);
-    }, [isFooterVisible, isFrozen]);
+    }, [isFooterVisible, isFrozen, onCollapseChange]);
+
+    useEffect(() => {
+        if (!isCollapsing) return undefined;
+
+        const timeout = window.setTimeout(() => {
+            setIsCollapsing(false);
+            onCollapseChange?.(false);
+        }, IDLE_COLLAPSE_DURATION_MS);
+
+        return () => window.clearTimeout(timeout);
+    }, [isCollapsing, onCollapseChange]);
+
+    useEffect(() => () => onCollapseChange?.(false), [onCollapseChange]);
 
     return (
-        <div
-            className="flex flex-col"
-            data-idle-phase={sequencePhase}
-            data-idle-line-count={visibleLineCount}
-        >
+        <div className="flex flex-col">
             <AnimatePresence initial={false}>
                 {lines.slice(0, visibleLineCount).map((line, i) => (
                     <motion.div
