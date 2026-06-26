@@ -9,6 +9,12 @@ const ICONS = {
 };
 
 export const CV_ICON_OPTIONS = Object.keys(ICONS);
+export const CV_TEMPLATE_TOKENS = {
+  portraitUrl: '{{CV_PORTRAIT_URL}}',
+  qrUrl: '{{CV_QR_URL}}',
+  documentTitle: '{{CV_DOCUMENT_TITLE}}',
+  language: '{{CV_LANGUAGE}}',
+};
 
 export function escapeHtml(value = '') {
   return String(value)
@@ -88,7 +94,7 @@ function renderExperience(items = []) {
   </div>`).join('');
 }
 
-export function buildCvHtml(data, options = {}) {
+export function buildDefaultCvHtml(data, options = {}) {
   const portraitUrl = escapeHtml(options.portraitUrl || data.assets?.portraitUrl || '/assets/alberto.webp');
   const qrUrl = escapeHtml(options.qrUrl || '');
   const documentTitle = escapeHtml(data.document?.title || 'Curriculum vitae');
@@ -233,4 +239,27 @@ export function buildCvHtml(data, options = {}) {
 </section>
 </body>
 </html>`;
+}
+
+export function applyCvTemplateTokens(html = '', data = {}, options = {}) {
+  const replacements = {
+    [CV_TEMPLATE_TOKENS.portraitUrl]: escapeHtml(options.portraitUrl || data.assets?.portraitUrl || '/assets/alberto.webp'),
+    [CV_TEMPLATE_TOKENS.qrUrl]: escapeHtml(options.qrUrl || ''),
+    [CV_TEMPLATE_TOKENS.documentTitle]: escapeHtml(data.document?.title || 'Curriculum vitae'),
+    [CV_TEMPLATE_TOKENS.language]: escapeHtml(data.document?.language || 'en'),
+  };
+
+  return Object.entries(replacements).reduce(
+    (current, [token, value]) => current.replaceAll(token, value),
+    String(html),
+  );
+}
+
+export function buildCvHtml(data, options = {}) {
+  const override = data.templateOverride;
+  if (!options.ignoreTemplateOverride && override?.enabled && typeof override.html === 'string' && override.html.trim()) {
+    return applyCvTemplateTokens(override.html, data, options);
+  }
+
+  return buildDefaultCvHtml(data, options);
 }

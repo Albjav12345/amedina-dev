@@ -19,7 +19,7 @@ import { publishCvArtifacts } from './lib/cv-publish.js';
 
 export const config = { maxDuration: 60 };
 
-const MAX_DOCUMENT_BYTES = 120_000;
+const MAX_DOCUMENT_BYTES = 300_000;
 
 function getAction(req) {
     return String(req.query?.action || req.body?.action || '').trim().toLowerCase();

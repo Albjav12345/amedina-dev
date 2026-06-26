@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowDown, ArrowUp, Download, Eye, FileCheck2, LogOut, Plus, RotateCcw, Save, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Code2, Download, Eye, FileCheck2, LogOut, Plus, RotateCcw, Save, Trash2, X } from 'lucide-react';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import publishedCv from '../../data/cv/published.json';
-import { buildCvHtml, CV_ICON_OPTIONS } from '../../../shared/cv/template.js';
+import { buildCvHtml, buildDefaultCvHtml, CV_ICON_OPTIONS, CV_TEMPLATE_TOKENS } from '../../../shared/cv/template.js';
 import './CvStudio.css';
 
 const DRAFT_KEY = 'amedina.cv-studio.draft.v1';
@@ -14,6 +14,7 @@ const SECTIONS = [
     ['profile', 'Languages & style'],
     ['experience', 'Experience'],
     ['portfolio', 'Portfolio'],
+    ['code', 'PDF code'],
 ];
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
@@ -200,6 +201,11 @@ export default function CvStudio() {
     const hasUnpublishedChanges = fingerprint !== publishedFingerprint;
     const isPreviewCurrent = previewedFingerprint === fingerprint;
     const absoluteAsset = (path) => new URL(path, window.location.origin).href;
+    const templateOverride = data.templateOverride || { enabled: false, html: '' };
+    const generatedTemplateHtml = useMemo(() => buildDefaultCvHtml(data, {
+        portraitUrl: CV_TEMPLATE_TOKENS.portraitUrl,
+        qrUrl: CV_TEMPLATE_TOKENS.qrUrl,
+    }), [data]);
     const previewHtml = useMemo(() => buildCvHtml(data, {
         portraitUrl: absoluteAsset(data.assets?.portraitUrl || '/assets/alberto.webp'),
         qrUrl: absoluteAsset('/assets/cv/qr-portfolio.png'),
@@ -267,6 +273,17 @@ export default function CvStudio() {
 
     const removeObjectItem = (path, index) => update(path, getAtPath(data, path).filter((_, itemIndex) => itemIndex !== index));
     const addObjectItem = (path, value) => update(path, [...getAtPath(data, path), value]);
+    const updateTemplateOverride = (patch) => update(['templateOverride'], { ...templateOverride, ...patch });
+
+    const loadGeneratedTemplate = () => {
+        updateTemplateOverride({ enabled: true, html: generatedTemplateHtml });
+        setStatus('Generated PDF code loaded. Custom code mode is active.');
+    };
+
+    const disableTemplateOverride = () => {
+        updateTemplateOverride({ enabled: false });
+        setStatus('Custom PDF code disabled. The structured CV fields are driving the layout again.');
+    };
 
     const checkFit = () => {
         const documentRef = iframeRef.current?.contentDocument;
@@ -355,7 +372,33 @@ export default function CvStudio() {
 
         if (activeSection === 'experience') return <Card title="Practical experience"><div className="cv-grid two"><Field label="Section number" value={data.experience.number} onChange={value => update(['experience', 'number'], value)} /><Field label="Section title" value={data.experience.title} onChange={value => update(['experience', 'title'], value)} /></div><button className="cv-add" type="button" onClick={() => addObjectItem(['experience', 'items'], { id: newId('experience'), kicker: 'Category', title: 'New experience', date: 'Date', description: 'Description', metrics: [] })}><Plus size={14} /> Add experience</button>{data.experience.items.map((item, index) => <div className="cv-object-item" key={item.id}><ItemActions index={index} length={data.experience.items.length} onMove={(itemIndex, direction) => moveObjectItem(['experience', 'items'], itemIndex, direction)} onRemove={itemIndex => removeObjectItem(['experience', 'items'], itemIndex)} /><div className="cv-grid two"><Field label="Kicker" value={item.kicker} onChange={value => updateObjectItem(['experience', 'items'], index, 'kicker', value)} /><Field label="Date" value={item.date} onChange={value => updateObjectItem(['experience', 'items'], index, 'date', value)} /></div><Field label="Title" value={item.title} onChange={value => updateObjectItem(['experience', 'items'], index, 'title', value)} /><Field label="Description" multiline value={item.description} onChange={value => updateObjectItem(['experience', 'items'], index, 'description', value)} hint="Use **text** for bold." /><TextList title="Metrics (value | label)" values={(item.metrics || []).map(metric => `${metric.value} | ${metric.label}`)} onChange={values => updateObjectItem(['experience', 'items'], index, 'metrics', values.map((value, metricIndex) => { const [metricValue, ...label] = value.split('|'); return { id: item.metrics?.[metricIndex]?.id || newId('metric'), value: metricValue.trim(), label: label.join('|').trim() }; }))} placeholder="Value | Label" /></div>)}</Card>;
 
-        return <Card title="Portfolio footer"><Field label="Kicker" value={data.portfolio.kicker} onChange={value => update(['portfolio', 'kicker'], value)} /><Field label="Main line" value={data.portfolio.main} onChange={value => update(['portfolio', 'main'], value)} hint="Use {{text}} for the green highlight." /><Field label="Supporting line" value={data.portfolio.sub} onChange={value => update(['portfolio', 'sub'], value)} /><div className="cv-grid two"><Field label="URL" value={data.portfolio.url} onChange={value => update(['portfolio', 'url'], value)} /><Field label="QR label" value={data.portfolio.label} onChange={value => update(['portfolio', 'label'], value)} /><Field label="Displayed URL" value={data.portfolio.displayUrl} onChange={value => update(['portfolio', 'displayUrl'], value)} /></div></Card>;
+        if (activeSection === 'portfolio') return <Card title="Portfolio footer"><Field label="Kicker" value={data.portfolio.kicker} onChange={value => update(['portfolio', 'kicker'], value)} /><Field label="Main line" value={data.portfolio.main} onChange={value => update(['portfolio', 'main'], value)} hint="Use {{text}} for the green highlight." /><Field label="Supporting line" value={data.portfolio.sub} onChange={value => update(['portfolio', 'sub'], value)} /><div className="cv-grid two"><Field label="URL" value={data.portfolio.url} onChange={value => update(['portfolio', 'url'], value)} /><Field label="QR label" value={data.portfolio.label} onChange={value => update(['portfolio', 'label'], value)} /><Field label="Displayed URL" value={data.portfolio.displayUrl} onChange={value => update(['portfolio', 'displayUrl'], value)} /></div></Card>;
+
+        const codeEditorValue = templateOverride.html || generatedTemplateHtml;
+        return <Card title="Advanced PDF code">
+            <div className={`cv-code-status ${templateOverride.enabled ? 'active' : ''}`}>
+                <Code2 size={16} />
+                <div>
+                    <strong>{templateOverride.enabled ? 'Custom code is active' : 'Structured template is active'}</strong>
+                    <span>{templateOverride.enabled ? 'Preview and publish will use this HTML/CSS after replacing the asset tokens.' : 'You are viewing the generated HTML. Edit it or load it below to create a custom override.'}</span>
+                </div>
+            </div>
+            <div className="cv-code-actions">
+                <button type="button" onClick={loadGeneratedTemplate}><Code2 size={14} /> Load generated code as custom</button>
+                <button type="button" onClick={disableTemplateOverride} disabled={!templateOverride.enabled}>Use structured template</button>
+                <button type="button" className="danger" onClick={() => updateTemplateOverride({ enabled: false, html: '' })} disabled={!templateOverride.html}>Clear custom code</button>
+            </div>
+            <label className="cv-field cv-code-field">
+                <span>Full PDF HTML/CSS</span>
+                <textarea
+                    value={codeEditorValue}
+                    onChange={(event) => updateTemplateOverride({ enabled: true, html: event.target.value })}
+                    spellCheck="false"
+                    rows={28}
+                />
+                <small>Keep {CV_TEMPLATE_TOKENS.portraitUrl} and {CV_TEMPLATE_TOKENS.qrUrl} if you want the portrait and QR to work in both local preview and Vercel PDF generation.</small>
+            </label>
+        </Card>;
     };
 
     return (
@@ -376,6 +419,7 @@ export default function CvStudio() {
                 <section className="cv-preview-pane">
                     <div className="cv-preview-toolbar">
                         <div className={`cv-fit ${fitStatus.rail && fitStatus.main ? 'ok' : 'warning'}`}>{fitStatus.rail && fitStatus.main ? 'A4 content fits' : 'Possible overflow - review PDF'}</div>
+                        {templateOverride.enabled ? <div className="cv-fit custom">Custom PDF code active</div> : null}
                         <button type="button" onClick={requestPdfPreview} disabled={Boolean(busy)}><Eye size={16} /> {busy === 'preview' ? 'Generating…' : 'Generate PDF preview'}</button>
                         <button type="button" className="publish" onClick={publish} disabled={!isPreviewCurrent || Boolean(busy)} title={!isPreviewCurrent ? 'Generate a fresh PDF preview first' : ''}><FileCheck2 size={16} /> {busy === 'publish' ? 'Publishing…' : 'Publish approved version'}</button>
                     </div>
