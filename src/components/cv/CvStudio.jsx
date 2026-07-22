@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, Code2, Download, Eye, FileCheck2, LogOut, Plus, Rot
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import publishedCv from '../../data/cv/published.json';
-import { buildCvHtml, buildDefaultCvHtml, CV_ICON_OPTIONS, CV_TEMPLATE_TOKENS } from '../../../shared/cv/template.js';
+import { buildCvHtml, buildDefaultCvHtml, CV_ICON_OPTIONS } from '../../../shared/cv/template.js';
 import './CvStudio.css';
 
 const DRAFT_KEY = 'amedina.cv-studio.draft.v1';
@@ -14,13 +14,62 @@ const SECTIONS = [
     ['profile', 'Languages & style'],
     ['experience', 'Experience'],
     ['portfolio', 'Portfolio'],
-    ['code', 'PDF code'],
+    ['source', 'Source'],
 ];
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 function clone(value) {
     return structuredClone(value);
+}
+
+function normalizeCvData(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        throw new Error('The CV source must be a JSON object.');
+    }
+    if (value.schemaVersion !== 1) {
+        throw new Error('schemaVersion must be 1.');
+    }
+    const requiredObjects = ['document', 'assets', 'identity', 'rail', 'education', 'profileStrip', 'experience', 'portfolio'];
+    const missingObject = requiredObjects.find((key) => !value[key] || typeof value[key] !== 'object' || Array.isArray(value[key]));
+    if (missingObject) {
+        throw new Error(`${missingObject} must be an object.`);
+    }
+    if (!value.identity.firstName || !value.identity.lastName) {
+        throw new Error('identity.firstName and identity.lastName are required.');
+    }
+
+    const requiredArrays = [
+        ['contacts'],
+        ['identity', 'intro'],
+        ['rail', 'bestFit'],
+        ['rail', 'strengths'],
+        ['rail', 'extraSections'],
+        ['education', 'items'],
+        ['profileStrip', 'languages'],
+        ['profileStrip', 'workingStyle'],
+        ['experience', 'items'],
+    ];
+    const invalidArray = requiredArrays.find((path) => !Array.isArray(path.reduce((current, key) => current?.[key], value)));
+    if (invalidArray) {
+        throw new Error(`${invalidArray.join('.')} must be an array.`);
+    }
+
+    const next = clone(value);
+    delete next.templateOverride;
+    return next;
+}
+
+function safeNormalizeCvData(value, fallback = publishedCv) {
+    try {
+        return normalizeCvData(value);
+    } catch {
+        return clone(fallback);
+    }
+}
+
+function serializeCvSource(value) {
+    return `${JSON.stringify(normalizeCvData(value), null, 2)}\n`;
 }
 
 function getAtPath(source, path) {
@@ -194,6 +243,9 @@ export default function CvStudio() {
     const [previewedFingerprint, setPreviewedFingerprint] = useState('');
     const [fitStatus, setFitStatus] = useState({ rail: true, main: true });
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState('');
+    const [sourceText, setSourceText] = useState(() => serializeCvSource(publishedCv));
+    const [sourceError, setSourceError] = useState('');
+    const [sourceDirty, setSourceDirty] = useState(false);
     const iframeRef = useRef(null);
 
     const fingerprint = useMemo(() => JSON.stringify(data), [data]);
@@ -201,10 +253,10 @@ export default function CvStudio() {
     const hasUnpublishedChanges = fingerprint !== publishedFingerprint;
     const isPreviewCurrent = previewedFingerprint === fingerprint;
     const absoluteAsset = (path) => new URL(path, window.location.origin).href;
-    const templateOverride = data.templateOverride || { enabled: false, html: '' };
+    const canonicalSource = useMemo(() => serializeCvSource(data), [data]);
     const generatedTemplateHtml = useMemo(() => buildDefaultCvHtml(data, {
-        portraitUrl: CV_TEMPLATE_TOKENS.portraitUrl,
-        qrUrl: CV_TEMPLATE_TOKENS.qrUrl,
+        portraitUrl: absoluteAsset(data.assets?.portraitUrl || '/assets/alberto.webp'),
+        qrUrl: absoluteAsset('/assets/cv/qr-portfolio.png'),
     }), [data]);
     const previewHtml = useMemo(() => buildCvHtml(data, {
         portraitUrl: absoluteAsset(data.assets?.portraitUrl || '/assets/alberto.webp'),
@@ -212,16 +264,19 @@ export default function CvStudio() {
     }), [data]);
 
     const applyAuthenticatedPayload = (payload) => {
-        const published = payload.data || clone(publishedCv);
+        const published = safeNormalizeCvData(payload.data || clone(publishedCv));
         let initial = published;
         try {
             const draft = JSON.parse(localStorage.getItem(DRAFT_KEY));
-            if (draft?.schemaVersion === 1) initial = draft;
+            if (draft?.schemaVersion === 1) initial = normalizeCvData(draft);
         } catch {
             localStorage.removeItem(DRAFT_KEY);
         }
         setPublishedBaseline(clone(published));
         setData(clone(initial));
+        setSourceText(serializeCvSource(initial));
+        setSourceError('');
+        setSourceDirty(false);
         setAuth({ checking: false, authenticated: true, csrf: payload.csrf });
         setStatus(initial === published ? 'Published version loaded.' : 'Local draft restored.');
     };
@@ -253,6 +308,13 @@ export default function CvStudio() {
         if (pdfPreviewUrl) URL.revokeObjectURL(pdfPreviewUrl);
     }, [pdfPreviewUrl]);
 
+    useEffect(() => {
+        if (!sourceDirty) {
+            setSourceText(canonicalSource);
+            setSourceError('');
+        }
+    }, [canonicalSource, sourceDirty]);
+
     const update = (path, value) => {
         setData(current => setAtPath(current, path, value));
         setPreviewedFingerprint('');
@@ -273,16 +335,37 @@ export default function CvStudio() {
 
     const removeObjectItem = (path, index) => update(path, getAtPath(data, path).filter((_, itemIndex) => itemIndex !== index));
     const addObjectItem = (path, value) => update(path, [...getAtPath(data, path), value]);
-    const updateTemplateOverride = (patch) => update(['templateOverride'], { ...templateOverride, ...patch });
 
-    const loadGeneratedTemplate = () => {
-        updateTemplateOverride({ enabled: true, html: generatedTemplateHtml });
-        setStatus('Generated PDF code loaded. Custom code mode is active.');
+    const updateSourceText = (value) => {
+        setSourceText(value);
+        setSourceDirty(true);
+
+        try {
+            const parsed = normalizeCvData(JSON.parse(value));
+            setSourceError('');
+            const nextFingerprint = JSON.stringify(parsed);
+            if (nextFingerprint !== fingerprint) {
+                setData(parsed);
+                setPreviewedFingerprint('');
+                setStatus('Source synced with the visual editor.');
+            }
+        } catch (error) {
+            setSourceError(error.message);
+        }
     };
 
-    const disableTemplateOverride = () => {
-        updateTemplateOverride({ enabled: false });
-        setStatus('Custom PDF code disabled. The structured CV fields are driving the layout again.');
+    const formatSourceText = () => {
+        setSourceText(canonicalSource);
+        setSourceError('');
+        setSourceDirty(false);
+        setStatus('Source formatted from the current visual editor data.');
+    };
+
+    const discardSourceText = () => {
+        setSourceText(canonicalSource);
+        setSourceError('');
+        setSourceDirty(false);
+        setStatus('Source editor reloaded from the current visual editor data.');
     };
 
     const checkFit = () => {
@@ -294,6 +377,10 @@ export default function CvStudio() {
     };
 
     const requestPdfPreview = async () => {
+        if (sourceError) {
+            setStatus('Fix the source editor error before generating a PDF preview.');
+            return;
+        }
         setBusy('preview');
         setStatus('Generating the authoritative PDF preview…');
         try {
@@ -319,6 +406,10 @@ export default function CvStudio() {
     };
 
     const publish = async () => {
+        if (sourceError) {
+            setStatus('Fix the source editor error before publishing.');
+            return;
+        }
         if (!isPreviewCurrent || !window.confirm('Publish this exact preview as the live CV?')) return;
         setBusy('publish');
         setStatus('Publishing the approved revision…');
@@ -374,30 +465,36 @@ export default function CvStudio() {
 
         if (activeSection === 'portfolio') return <Card title="Portfolio footer"><Field label="Kicker" value={data.portfolio.kicker} onChange={value => update(['portfolio', 'kicker'], value)} /><Field label="Main line" value={data.portfolio.main} onChange={value => update(['portfolio', 'main'], value)} hint="Use {{text}} for the green highlight." /><Field label="Supporting line" value={data.portfolio.sub} onChange={value => update(['portfolio', 'sub'], value)} /><div className="cv-grid two"><Field label="URL" value={data.portfolio.url} onChange={value => update(['portfolio', 'url'], value)} /><Field label="QR label" value={data.portfolio.label} onChange={value => update(['portfolio', 'label'], value)} /><Field label="Displayed URL" value={data.portfolio.displayUrl} onChange={value => update(['portfolio', 'displayUrl'], value)} /></div></Card>;
 
-        const codeEditorValue = templateOverride.html || generatedTemplateHtml;
-        return <Card title="Advanced PDF code">
-            <div className={`cv-code-status ${templateOverride.enabled ? 'active' : ''}`}>
+        return <Card title="CV source">
+            <div className={`cv-code-status ${sourceError ? 'error' : 'active'}`}>
                 <Code2 size={16} />
                 <div>
-                    <strong>{templateOverride.enabled ? 'Custom code is active' : 'Structured template is active'}</strong>
-                    <span>{templateOverride.enabled ? 'Preview and publish will use this HTML/CSS after replacing the asset tokens.' : 'You are viewing the generated HTML. Edit it or load it below to create a custom override.'}</span>
+                    <strong>{sourceError ? 'Source has a JSON error' : 'Visual editor and source are synced'}</strong>
+                    <span>{sourceError ? sourceError : 'Edit this JSON and the visual fields + live PDF preview update as soon as the source is valid.'}</span>
                 </div>
             </div>
             <div className="cv-code-actions">
-                <button type="button" onClick={loadGeneratedTemplate}><Code2 size={14} /> Load generated code as custom</button>
-                <button type="button" onClick={disableTemplateOverride} disabled={!templateOverride.enabled}>Use structured template</button>
-                <button type="button" className="danger" onClick={() => updateTemplateOverride({ enabled: false, html: '' })} disabled={!templateOverride.html}>Clear custom code</button>
+                <button type="button" onClick={formatSourceText} disabled={Boolean(sourceError)}><Code2 size={14} /> Format JSON</button>
+                <button type="button" onClick={discardSourceText} disabled={!sourceDirty && !sourceError}>Reload from visual editor</button>
             </div>
             <label className="cv-field cv-code-field">
-                <span>Full PDF HTML/CSS</span>
+                <span>Editable CV JSON</span>
                 <textarea
-                    value={codeEditorValue}
-                    onChange={(event) => updateTemplateOverride({ enabled: true, html: event.target.value })}
+                    value={sourceText}
+                    onChange={(event) => updateSourceText(event.target.value)}
+                    onBlur={() => {
+                        if (!sourceError) setSourceDirty(false);
+                    }}
                     spellCheck="false"
                     rows={28}
                 />
-                <small>Keep {CV_TEMPLATE_TOKENS.portraitUrl} and {CV_TEMPLATE_TOKENS.qrUrl} if you want the portrait and QR to work in both local preview and Vercel PDF generation.</small>
+                <small>This is the canonical CV source. Add contacts, metrics, education items, sidebar categories or portfolio lines here, and the visual editor will reflect them.</small>
             </label>
+            <details className="cv-generated-html">
+                <summary>View generated PDF HTML/CSS</summary>
+                <textarea value={generatedTemplateHtml} readOnly spellCheck="false" rows={16} />
+                <small>The HTML is generated from the JSON above. It is shown for inspection so the two editors keep one reliable source of truth.</small>
+            </details>
         </Card>;
     };
 
@@ -407,7 +504,7 @@ export default function CvStudio() {
                 <div><span className="cv-studio-kicker">PRIVATE TOOL</span><h1>CV Studio</h1><p>{status}</p></div>
                 <div className="cv-header-actions">
                     <button type="button" onClick={() => { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); setStatus('Draft saved locally.'); }}><Save size={16} /> Save draft</button>
-                    <button type="button" onClick={() => { setData(clone(publishedBaseline)); setPreviewedFingerprint(''); localStorage.removeItem(DRAFT_KEY); }}><RotateCcw size={16} /> Reset</button>
+                    <button type="button" onClick={() => { setData(clone(publishedBaseline)); setSourceText(serializeCvSource(publishedBaseline)); setSourceError(''); setSourceDirty(false); setPreviewedFingerprint(''); localStorage.removeItem(DRAFT_KEY); }}><RotateCcw size={16} /> Reset</button>
                     <button type="button" onClick={logout}><LogOut size={16} /> Lock</button>
                 </div>
             </header>
@@ -419,9 +516,9 @@ export default function CvStudio() {
                 <section className="cv-preview-pane">
                     <div className="cv-preview-toolbar">
                         <div className={`cv-fit ${fitStatus.rail && fitStatus.main ? 'ok' : 'warning'}`}>{fitStatus.rail && fitStatus.main ? 'A4 content fits' : 'Possible overflow - review PDF'}</div>
-                        {templateOverride.enabled ? <div className="cv-fit custom">Custom PDF code active</div> : null}
-                        <button type="button" onClick={requestPdfPreview} disabled={Boolean(busy)}><Eye size={16} /> {busy === 'preview' ? 'Generating…' : 'Generate PDF preview'}</button>
-                        <button type="button" className="publish" onClick={publish} disabled={!isPreviewCurrent || Boolean(busy)} title={!isPreviewCurrent ? 'Generate a fresh PDF preview first' : ''}><FileCheck2 size={16} /> {busy === 'publish' ? 'Publishing…' : 'Publish approved version'}</button>
+                        {sourceError ? <div className="cv-fit source-error">Source error</div> : null}
+                        <button type="button" onClick={requestPdfPreview} disabled={Boolean(busy) || Boolean(sourceError)}><Eye size={16} /> {busy === 'preview' ? 'Generating…' : 'Generate PDF preview'}</button>
+                        <button type="button" className="publish" onClick={publish} disabled={!isPreviewCurrent || Boolean(busy) || Boolean(sourceError)} title={sourceError ? 'Fix the source editor error first' : (!isPreviewCurrent ? 'Generate a fresh PDF preview first' : '')}><FileCheck2 size={16} /> {busy === 'publish' ? 'Publishing…' : 'Publish approved version'}</button>
                     </div>
                     <div className="cv-preview-stage"><iframe ref={iframeRef} title="Live CV preview" srcDoc={previewHtml} onLoad={checkFit} /></div>
                     <div className="cv-preview-note"><Download size={14} /> The live preview updates instantly. The PDF button renders with the same Chromium process used for publication.</div>

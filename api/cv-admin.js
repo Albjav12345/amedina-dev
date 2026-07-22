@@ -36,7 +36,27 @@ function validateCvData(candidate) {
     if (candidate.schemaVersion !== 1 || !candidate.identity?.firstName || !candidate.identity?.lastName) {
         throw new Error('CV_DATA_SCHEMA_INVALID');
     }
-    return structuredClone(candidate);
+    const requiredObjects = ['document', 'assets', 'identity', 'rail', 'education', 'profileStrip', 'experience', 'portfolio'];
+    if (requiredObjects.some((key) => !candidate[key] || typeof candidate[key] !== 'object' || Array.isArray(candidate[key]))) {
+        throw new Error('CV_DATA_SCHEMA_INVALID');
+    }
+    const requiredArrays = [
+        ['contacts'],
+        ['identity', 'intro'],
+        ['rail', 'bestFit'],
+        ['rail', 'strengths'],
+        ['rail', 'extraSections'],
+        ['education', 'items'],
+        ['profileStrip', 'languages'],
+        ['profileStrip', 'workingStyle'],
+        ['experience', 'items'],
+    ];
+    if (requiredArrays.some((keys) => !Array.isArray(keys.reduce((current, key) => current?.[key], candidate)))) {
+        throw new Error('CV_DATA_SCHEMA_INVALID');
+    }
+    const data = structuredClone(candidate);
+    delete data.templateOverride;
+    return data;
 }
 
 async function readPublishedData() {
