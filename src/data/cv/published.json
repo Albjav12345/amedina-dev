@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "document": {
     "versionLabel": "AM / CV 2026",
-    "title": "Alberto Medina - CV 2026 | v14",
+    "title": "Alberto Medina - CV 2026",
     "language": "en",
     "footerName": "Alberto Medina",
     "footerPage": "01 / 01"
@@ -10,12 +10,12 @@
   "identity": {
     "firstName": "Alberto",
     "lastName": "Medina",
-    "role": "Computer Engineering student · Client-ready problem solver",
-    "topline": "Client work · English · Technology",
-    "availability": "OPEN TO OPPORTUNITIES",
+    "role": "Incoming Computer Engineering student · Technology-minded problem solver",
+    "topline": "Technology · English · Client work",
+    "availability": "OPEN TO PART-TIME & PROJECT OPPORTUNITIES",
     "intro": [
-      "I am a technology-minded student about to begin a Computer Engineering degree, with practical experience delivering paid digital work to clients. I bring [[advanced working English, care with detail and a genuinely helpful attitude]] to every role.",
-      "I am looking for responsible part-time opportunities where I can contribute with organisation, client communication and reliable follow-through."
+      "I am a technology-minded student about to begin a Computer Engineering degree, with practical experience delivering paid digital work to international clients. I bring [[strong working English, attention to detail and a patient, genuinely helpful approach]] to every role.",
+      "I am looking for responsible opportunities where I can contribute through digital skills, organisation, clear explanations and reliable follow-through."
     ]
   },
   "assets": {
@@ -48,25 +48,26 @@
       "id": "linkedin",
       "icon": "linkedin",
       "label": "LinkedIn",
-      "value": "LinkedIn profile",
+      "value": "alberto-medina-dev",
       "href": "https://www.linkedin.com/in/alberto-medina-dev/"
     }
   ],
   "rail": {
     "howIWorkTitle": "How I work",
-    "howIWork": "Curious by default. I enjoy understanding how things work, improving the small details and turning ideas into useful, well-organised results.",
+    "howIWork": "Curious, patient and organised. I enjoy understanding how systems and ideas work, improving small details and explaining them clearly in a way that adapts to the needs and pace of others.",
     "bestFitTitle": "Best fit",
     "bestFit": [
-      "PART-TIME",
-      "FREELANCE",
-      "EVENTS / OPERATIONS",
-      "DIGITAL PROJECTS"
+      "DIGITAL PROJECTS",
+      "OPERATIONS & SUPPORT",
+      "ACADEMIC SUPPORT",
+      "PART-TIME ROLES"
     ],
     "strengthsTitle": "Core strengths",
     "strengths": [
       "Clear, thoughtful communication in Spanish and English.",
-      "Reliable with timing, procedures and client follow-up.",
-      "Calm, practical problem-solving and fast learning."
+      "Patient and calm when helping others understand new ideas.",
+      "Reliable with timing, procedures, deadlines and follow-up.",
+      "Confident with technology, new systems and practical troubleshooting."
     ],
     "extraSections": []
   },
@@ -77,20 +78,20 @@
       {
         "id": "degree",
         "year": "2026 - 2030",
-        "title": "Computer Engineering degree - starting in 2026",
-        "description": "University studies focused on software, computing systems and engineering foundations, while I continue developing a practical portfolio alongside my degree."
-      },
-      {
-        "id": "bachillerato",
-        "year": "2026",
-        "title": "Spanish Baccalaureate (Bachillerato) - completed",
-        "description": "Completed upper-secondary education and the university entrance process while pursuing independent creative and technical projects outside class."
+        "title": "Computer Engineering degree · UNIE Universidad — starting in 2026",
+        "description": "Upcoming university studies focused on software, computing systems and engineering foundations, while continuing to develop practical technical projects alongside my degree."
       },
       {
         "id": "cambridge",
         "year": "Jun 2026",
-        "title": "Cambridge English: C1 Advanced - examination completed",
-        "description": "Result pending. Confident in written and spoken English: formal writing, reports, instructions, proposals and real-time conversation."
+        "title": "Cambridge English: C1 Advanced",
+        "description": "Cambridge English Scale score: 179 · CEFR Level B2. Long-term experience with Cambridge English qualifications, from Pre A1 Starters and A1 Movers through to B1 Preliminary, B2 First and C1 Advanced."
+      },
+      {
+        "id": "bachillerato",
+        "year": "2024 - 2026",
+        "title": "Spanish Baccalaureate - Science and Technology",
+        "description": "Completed upper-secondary education and the university entrance process at Colegio Sagrada Familia (SAFA), combining academic study with independent creative and technical projects."
       }
     ]
   },
@@ -105,27 +106,27 @@
       {
         "id": "english",
         "name": "English",
-        "level": "B2+ / C1 working proficiency"
+        "level": "Certified B2 · Cambridge score 179"
       }
     ],
     "workingStyleTitle": "Working style",
     "workingStyle": [
-      "Professional, friendly communication.",
-      "Care with procedures and accuracy.",
-      "Quick learning with new systems and tools.",
-      "Visual, user-focused problem-solving."
+      "Professional and friendly communication.",
+      "Patient explanations adapted to different learning paces.",
+      "Care with procedures, accuracy and timing.",
+      "Quick learning with new systems and tools."
     ]
   },
   "experience": {
     "number": "02",
-    "title": "Practical experience",
+    "title": "Experience & training",
     "items": [
       {
         "id": "fiverr",
-        "kicker": "Fiverr freelance experience",
-        "title": "Freelance digital creator & client delivery",
+        "kicker": "INDEPENDENT FREELANCE EXPERIENCE · FIVERR",
+        "title": "Digital projects & client delivery",
         "date": "2024 - 2025",
-        "description": "Completed paid digital projects for international clients, independently managing **briefs, requirements, revisions, deadlines and final delivery**. My work combined creative and technology-focused tasks, SEO-ready media content and bilingual client communication.",
+        "description": "Completed paid digital projects for international clients, independently managing **briefs, requirements, revisions, deadlines and final delivery**. The work combined creative and technology-focused tasks, digital media, web-oriented content and clear bilingual client communication.",
         "metrics": [
           {
             "id": "projects",
@@ -143,19 +144,43 @@
             "label": "Bilingual client communication"
           }
         ]
+      },
+      {
+        "id": "mediation",
+        "kicker": "SELECTED SCHOOL MEDIATION TRAINING",
+        "title": "Peer mediation programme",
+        "date": "2020 - 2021",
+        "description": "Selected as one of 3 students from a group of 70+ for the school's mediation programme. Completed additional after-school training with an external specialist, focused on **active listening, communication, mediation and conflict resolution**.",
+        "metrics": [
+          {
+            "id": "selected",
+            "value": "3",
+            "label": "Students selected"
+          },
+          {
+            "id": "cohort",
+            "value": "70+",
+            "label": "Selection group"
+          },
+          {
+            "id": "training",
+            "value": "EXTERNAL",
+            "label": "Specialist-led training"
+          }
+        ]
       }
     ]
   },
   "portfolio": {
     "kicker": "Portfolio & project samples",
-    "main": "See selected work, background and the projects I am building at {{amedina.dev}}.",
-    "sub": "Scan the QR code or visit the website for my professional portfolio.",
+    "main": "See selected work, technical background and the projects I am building at {{amedina.dev}}.",
+    "sub": "Scan the QR code or visit the website to explore my digital work and professional background.",
     "url": "https://amedina.dev/",
     "label": "Portfolio",
     "displayUrl": "amedina.dev"
   },
   "publication": {
-    "updatedAt": "2026-06-26T23:13:25.103Z",
-    "revision": 17
+    "updatedAt": "2026-07-23T00:12:12.504Z",
+    "revision": 18
   }
 }
