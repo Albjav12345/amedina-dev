@@ -42,6 +42,38 @@ CV_GITHUB_BRANCH="main"
 4. Revisa el PDF exacto en el visor. Cualquier cambio posterior vuelve a bloquear la publicación.
 5. Pulsa **Publish approved version** y confirma.
 
+## Diseño y personalización
+
+La pestaña **Design** modifica el mismo documento estructurado que usa el resto del editor. El preset **Original** reproduce el CV publicado actual y sirve como punto de retorno seguro.
+
+- Las diez paletas cambian únicamente los colores. Las cinco composiciones cambian tipografía, proporciones y tratamiento de bloques. Se pueden combinar libremente y ninguna modifica el contenido.
+- Los controles avanzados permiten elegir fuentes distintas para cuerpo y titulares, ajustar escala, peso, interlineado, ancho de la barra lateral, ritmo vertical, márgenes, redondeado, acentos y encuadre de la fotografía.
+- Cada barra de contenido —información superior, idiomas, experiencia y portfolio— tiene anchura y altura independientes. También se puede alinear a izquierda, centro o derecha y ajustar la separación interna de sus columnas.
+- Cada deslizador muestra visualmente el progreso e incluye botones `−` y `+`, además de un campo numérico para valores exactos. El botón de reinicio recupera su valor original y un doble clic sobre el deslizador también lo restablece.
+- **Restore original design** recupera todos los valores visuales del CV actual sin tocar el contenido.
+- El indicador A4 comprueba tanto la barra lateral como el cuerpo principal. Si aparece una advertencia, reduce la escala tipográfica, el ritmo vertical o la altura de los bloques antes de generar el PDF.
+- Todos los valores de diseño también aparecen en **Source**, dentro de `design`, y se validan antes de incorporarlos al HTML.
+
+## Distribución del Studio
+
+Los dos separadores verticales del editor son ajustables:
+
+- Arrastra el primero para cambiar el ancho del menú de secciones.
+- Arrastra el segundo para repartir el espacio entre los formularios y la preview del PDF.
+- Un doble clic recupera el ancho inicial. Con el separador enfocado, las flechas izquierda y derecha hacen ajustes precisos; `Shift` acelera el cambio y `Inicio` restablece el valor.
+- La distribución queda guardada únicamente en el navegador y se recupera al volver a abrir el Studio. No forma parte del CV ni se publica.
+
+## Zoom y revisión
+
+La preview en vivo y el visor del PDF definitivo comparten los mismos controles:
+
+- `Ctrl + rueda` amplía o reduce alrededor de la posición del cursor.
+- Arrastra el documento para desplazarte cuando esté ampliado.
+- Los botones de lupa ajustan el zoom por pasos.
+- Pulsa el porcentaje para volver al 100 %.
+- El botón de encuadre ajusta la página completa al espacio disponible.
+- En el visor definitivo también funcionan `Ctrl + +`, `Ctrl + -` y `Ctrl + 0`.
+
 ## Source editor
 
 La pestaña **Source** es el código fuente real del CV. No es un HTML alternativo ni un modo separado: es el mismo objeto de datos que alimenta los campos visuales.
