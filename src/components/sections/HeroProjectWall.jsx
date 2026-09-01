@@ -69,7 +69,7 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
 const HeroProjectWall = ({ isFrozen = false }) => {
     const wallRef = useRef(null);
     const isFrozenRef = useRef(isFrozen);
-    const isMobileWall = useMediaQuery('(max-width: 900px)');
+    const isMobileWall = useMediaQuery('(max-width: 1023.98px)');
     const projects = portfolioData.projects;
     const wallCardCount = isMobileWall ? MOBILE_WALL_CARD_COUNT : DESKTOP_WALL_CARD_COUNT;
     const wallCopies = isMobileWall ? MOBILE_COPIES : DESKTOP_COPIES;

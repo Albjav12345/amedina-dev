@@ -420,7 +420,7 @@
     to { transform: translate3d(var(--hero-wall-loop-x), 0, 0); }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
     .hero-reel-section {
         overflow: visible;
     }
@@ -460,7 +460,7 @@
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023.98px) {
     .hero-reel-section {
         min-height: 100svh;
         align-items: flex-start;

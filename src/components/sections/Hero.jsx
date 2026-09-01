@@ -17,7 +17,7 @@ const reveal = {
 const Hero = ({ isUiFrozen = false }) => {
     const { hero } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
-    const isMobileLayout = useMediaQuery('(max-width: 900px)');
+    const isMobileLayout = useMediaQuery('(max-width: 1023.98px)');
     const isCvAvailable = Boolean(hero.buttons.cvHref);
     const getRevealProps = (transition) => (
         isMobileLayout ? { initial: false } : { ...reveal, transition }
