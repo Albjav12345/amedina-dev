@@ -36,7 +36,7 @@ const Hero = ({ isUiFrozen = false }) => {
             <div className="hero-reel-section__glow" aria-hidden="true" />
             <div className="hero-reel-section__noise" aria-hidden="true" />
 
-            <div className="hero-reel-container">
+            <div className="hero-reel-container container mx-auto px-6">
                 <div className="hero-reel-layout">
                     <div className="hero-copy-shell">
                         <motion.div

@@ -195,17 +195,13 @@
 .hero-reel-container {
     position: relative;
     z-index: 6;
-    width: 100%;
-    max-width: 80rem;
-    margin: 0 auto;
-    padding: 0 1.5rem;
 }
 
 .hero-reel-layout {
     display: grid;
-    grid-template-columns: minmax(0, 5.3fr) minmax(360px, 4.7fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: center;
-    gap: clamp(2rem, 4vw, 4.5rem);
+    gap: 4rem;
 }
 
 .hero-copy-shell {
@@ -406,7 +402,7 @@
 
 .hero-terminal-dock {
     position: relative;
-    width: min(100%, 38rem);
+    width: min(100%, 42rem);
     margin: 2.5rem 0 0 auto;
     filter: drop-shadow(0 26px 46px rgba(0, 0, 0, 0.48));
     transform-origin: right bottom;
@@ -434,6 +430,12 @@
     .hero-reel-section__noise,
     .hero-project-wall {
         position: fixed;
+    }
+}
+
+@media (min-width: 1280px) {
+    .hero-reel-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 42rem);
     }
 }
 
