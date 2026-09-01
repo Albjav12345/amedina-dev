@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 
 import portfolioData from '../../data/portfolio';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import { DEFAULT_SECTION_ID, getSectionIdFromPathname } from '../../utils/sectionRouting';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 
 const DESKTOP_WALL_CARD_COUNT = 36;
@@ -9,7 +10,22 @@ const MOBILE_WALL_CARD_COUNT = 36;
 const DESKTOP_COPIES = [0, 1, 2];
 const MOBILE_COPIES = [0, 1];
 const VIDEO_CARD_INDEXES = new Set([7, 22]);
+const ENTRY_TRANSITION_MS = 900;
+const MEDIA_READY_TIMEOUT_MS = 900;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const waitForImage = (image) => {
+    if (image.complete) {
+        return typeof image.decode === 'function'
+            ? image.decode().catch(() => undefined)
+            : Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', resolve, { once: true });
+    });
+};
 
 const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) => {
     const useVideo = allowVideo
@@ -52,6 +68,7 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
 
 const HeroProjectWall = ({ isFrozen = false }) => {
     const wallRef = useRef(null);
+    const isFrozenRef = useRef(isFrozen);
     const isMobileWall = useMediaQuery('(max-width: 900px)');
     const projects = portfolioData.projects;
     const wallCardCount = isMobileWall ? MOBILE_WALL_CARD_COUNT : DESKTOP_WALL_CARD_COUNT;
@@ -68,45 +85,120 @@ const HeroProjectWall = ({ isFrozen = false }) => {
         const wall = wallRef.current;
         if (!wall) return undefined;
         const section = wall.closest('.hero-reel-section');
-
         const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-        const updateWall = ({ scrollY, height }) => {
+        const previewImages = Array.from(wall.querySelectorAll('img')).slice(0, 12);
+        let latestSnapshot = null;
+        let mediaReady = false;
+        let entryEnabled = false;
+        let entryFrameId = null;
+        let entryTimerId = null;
+        let mediaTimerId = null;
+        let disposed = false;
+
+        const isHomeRoute = () => (
+            getSectionIdFromPathname(window.location.pathname) === DEFAULT_SECTION_ID
+        );
+
+        const setVisualOpacity = (visualOpacity) => {
+            const nextOpacity = entryEnabled ? visualOpacity : 0;
+
+            wall.style.opacity = String(nextOpacity);
+            section?.style.setProperty('--hero-backdrop-opacity', String(nextOpacity));
+            section?.style.setProperty('--hero-noise-opacity', String(nextOpacity * 0.18));
+        };
+
+        const enableEntryIfReady = () => {
+            if (disposed || entryEnabled || !mediaReady || !isHomeRoute()) return;
+
+            entryEnabled = true;
+            wall.style.visibility = 'visible';
+
+            if (reduceMotion) {
+                if (latestSnapshot) updateWall(latestSnapshot);
+                return;
+            }
+
+            wall.classList.add('hero-project-wall--visuals-entering');
+            section?.classList.add('hero-reel-section--visuals-entering');
+            entryFrameId = window.requestAnimationFrame(() => {
+                entryFrameId = null;
+                if (latestSnapshot) updateWall(latestSnapshot);
+            });
+            entryTimerId = window.setTimeout(() => {
+                entryTimerId = null;
+                wall.classList.remove('hero-project-wall--visuals-entering');
+                section?.classList.remove('hero-reel-section--visuals-entering');
+            }, ENTRY_TRANSITION_MS + 80);
+        };
+
+        function updateWall({ scrollY, height, ...runtimeSnapshot }) {
+            latestSnapshot = { scrollY, height, ...runtimeSnapshot };
+            enableEntryIfReady();
+
             const exitProgress = reduceMotion
                 ? (scrollY > height * 0.42 ? 1 : 0)
                 : clamp((scrollY - height * 0.08) / Math.max(height * 0.72, 1), 0, 1);
             const visualOpacity = 1 - exitProgress;
 
-            wall.style.opacity = String(visualOpacity);
+            setVisualOpacity(visualOpacity);
             wall.style.transform = reduceMotion
                 ? 'none'
                 : `translate3d(0, ${exitProgress * 8}vh, 0) scale(${1 - exitProgress * 0.025})`;
-            wall.style.visibility = exitProgress >= 1 ? 'hidden' : 'visible';
+            wall.style.visibility = entryEnabled && exitProgress < 1 ? 'visible' : 'hidden';
             wall.style.setProperty(
                 '--hero-wall-play-state',
-                isFrozen || reduceMotion || exitProgress >= 1 ? 'paused' : 'running',
+                isFrozenRef.current || reduceMotion || !entryEnabled || exitProgress >= 1 ? 'paused' : 'running',
             );
-            section?.style.setProperty(
-                '--hero-backdrop-opacity',
-                String(visualOpacity),
-            );
-            section?.style.setProperty(
-                '--hero-noise-opacity',
-                String(visualOpacity * 0.18),
-            );
-        };
+        }
 
-        wall.style.setProperty(
-            '--hero-wall-play-state',
-            isFrozen || reduceMotion ? 'paused' : 'running',
-        );
+        wall.style.opacity = '0';
+        wall.style.visibility = 'hidden';
+        wall.style.setProperty('--hero-wall-play-state', 'paused');
+        section?.style.setProperty('--hero-backdrop-opacity', '0');
+        section?.style.setProperty('--hero-noise-opacity', '0');
 
         const unsubscribe = subscribeScrollRuntime(updateWall);
+        const mediaReadyPromise = previewImages.length
+            ? Promise.allSettled(previewImages.map(waitForImage))
+            : Promise.resolve();
+        const mediaTimeoutPromise = new Promise((resolve) => {
+            mediaTimerId = window.setTimeout(resolve, MEDIA_READY_TIMEOUT_MS);
+        });
+
+        Promise.race([mediaReadyPromise, mediaTimeoutPromise]).then(() => {
+            if (disposed) return;
+            if (mediaTimerId !== null) {
+                window.clearTimeout(mediaTimerId);
+                mediaTimerId = null;
+            }
+            mediaReady = true;
+            enableEntryIfReady();
+        });
 
         return () => {
+            disposed = true;
+            if (entryFrameId !== null) window.cancelAnimationFrame(entryFrameId);
+            if (entryTimerId !== null) window.clearTimeout(entryTimerId);
+            if (mediaTimerId !== null) window.clearTimeout(mediaTimerId);
+            wall.classList.remove('hero-project-wall--visuals-entering');
+            section?.classList.remove('hero-reel-section--visuals-entering');
             section?.style.removeProperty('--hero-backdrop-opacity');
             section?.style.removeProperty('--hero-noise-opacity');
             unsubscribe();
         };
+    }, []);
+
+    useEffect(() => {
+        isFrozenRef.current = isFrozen;
+        const wall = wallRef.current;
+        if (!wall) return;
+
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+        const isHidden = wall.style.visibility === 'hidden';
+        wall.style.setProperty(
+            '--hero-wall-play-state',
+            isFrozen || reduceMotion || isHidden ? 'paused' : 'running',
+        );
     }, [isFrozen]);
 
     if (!projects.length) return null;

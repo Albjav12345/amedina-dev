@@ -330,7 +330,6 @@ const TerminalWindow = ({ title, onStateChange, isUiFrozen = false }) => {
             className={`w-full glass-card border-white/20 shadow-2xl relative flex flex-col overflow-hidden gpu-accelerated ${!isExpanded ? 'cursor-pointer hover:border-electric-green/30 transition-colors' : ''
                 }`}
             style={{
-                clipPath: 'inset(-50px -50px -50px -50px)',
                 width: '100%',
                 maxWidth: isDesktopLandscape ? '672px' : '1052px',
                 margin: '0 auto',
