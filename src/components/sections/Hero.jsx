@@ -1,15 +1,23 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Download, Cpu, MessageSquare, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowDownRight, ArrowRight, Cpu, Download, MessageSquare, Terminal } from 'lucide-react';
+
 import TerminalWindow from '../common/TerminalWindow';
-import { viewportConfig } from '../../utils/animations';
 import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 import portfolioData from '../../data/portfolio';
+import HeroProjectWall from './HeroProjectWall';
+import './Hero.css';
+
+const reveal = {
+    initial: { opacity: 0, y: 22 },
+    animate: { opacity: 1, y: 0 },
+};
 
 const Hero = ({ isUiFrozen = false }) => {
-    const { hero, sections } = portfolioData.ui;
+    const { hero } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
     const isCvAvailable = Boolean(hero.buttons.cvHref);
+
     const handleSectionLink = (event, sectionId) => {
         if (!isPlainLeftClick(event)) return;
         event.preventDefault();
@@ -17,144 +25,69 @@ const Hero = ({ isUiFrozen = false }) => {
     };
 
     return (
-        <section id="home" className="min-h-screen pt-32 pb-20 flex items-center relative overflow-hidden">
-            {/* Background Decor - GPU-Friendly Radial Gradient */}
-            <div
-                className="absolute top-[30%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] pointer-events-none opacity-45"
-                style={{ background: "radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)" }}
-            />
+        <section id="home" className="hero-reel-section">
+            <HeroProjectWall isFrozen={isUiFrozen || isTerminalExpanded} />
 
-            <div className="container mx-auto px-6 relative z-10">
-                <div className="grid lg:grid-cols-12 gap-16 items-center relative">
-                    {/* Hand-Drawn Arrow Pointer - ABSOLUTELY POSITIONED & INDEPENDENT */}
-                    <AnimatePresence>
-                        {!isTerminalExpanded && !isUiFrozen && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{
-                                    opacity: 1,
-                                    scale: 1,
-                                    y: [0, 10, 0],
-                                    x: [0, 5, 0]
-                                }}
-                                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.3 } }}
-                                transition={{
-                                    delay: 1.5,
-                                    duration: 0.8,
-                                    y: {
-                                        repeat: Infinity,
-                                        duration: 3,
-                                        ease: "easeInOut",
-                                    },
-                                    x: {
-                                        repeat: Infinity,
-                                        duration: 3,
-                                        ease: "easeInOut",
-                                    }
-                                }}
-                                className="hidden lg:flex absolute left-1/2 top-1/2 -ml-24 -mt-65 z-30 flex-col items-center pointer-events-none"
-                            >
-                                <span className="font-handwriting text-sm text-electric-green mb-1 -rotate-6 w-max drop-shadow-md">
-                                    CLICK_TO_INIT_SHELL
-                                </span>
-                                <svg
-                                    width="60"
-                                    height="60"
-                                    viewBox="0 0 100 100"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="text-electric-green translate-x-4"
-                                >
-                                    {/* Natural curve path without CSS rotation hacks */}
-                                    <path
-                                        d="M20 20 C 50 10, 80 40, 80 80"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        className="drop-shadow-[0_0_5px_rgba(0,255,153,0.5)]"
-                                    />
-                                    {/* Arrowhead */}
-                                    <path
-                                        d="M65 65 L 80 80 L 90 60"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="drop-shadow-[0_0_5px_rgba(0,255,153,0.5)]"
-                                    />
-                                </svg>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+            <div className="hero-reel-section__glow" aria-hidden="true" />
+            <div className="hero-reel-section__noise" aria-hidden="true" />
 
-                    {/* Text Content */}
-                    <div className="lg:col-span-6 space-y-8">
+            <div className="hero-reel-container">
+                <div className="hero-reel-layout">
+                    <div className="hero-copy-shell">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1, duration: 0.5 }}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[10px] font-mono uppercase tracking-[0.2em] gpu-accelerated"
+                            {...reveal}
+                            transition={{ delay: 0.08, duration: 0.5 }}
+                            className="hero-eyebrow"
                         >
-                            <Cpu className="w-3 h-3" />
+                            <Cpu className="h-3 w-3" />
                             <span>{hero.priorityLabel}</span>
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2, duration: 0.5 }}
-                            className="space-y-4 gpu-accelerated"
+                            {...reveal}
+                            transition={{ delay: 0.16, duration: 0.55 }}
+                            className="hero-title-block"
                         >
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none">
-                                    {hero.title.white} <br />
-                                    <span className="text-electric-green drop-shadow-[0_0_15px_rgba(0,255,153,0.3)]">
-                                        {hero.title.green}
-                                    </span>
-                                </h1>
+                            <h1 className="hero-title">
+                                {hero.title.white}
+                                <span>{hero.title.green}</span>
+                            </h1>
+                            <div className="hero-handle">
+                                <span>@</span>{hero.handle.replace('@', '')}
                             </div>
-                            <div className="flex items-center gap-2 font-mono text-xs text-white/50">
-                                <span className="opacity-50">@</span>
-                                <span className="text-electric-cyan">{hero.handle.replace('@', '')}</span>
-                            </div>
-                            <p className="text-gray-400 text-lg md:text-xl max-w-xl font-medium leading-relaxed">
-                                {hero.description}
-                            </p>
+                            <p className="hero-description">{hero.description}</p>
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.5 }}
-                            className="space-y-4 pt-3 gpu-accelerated"
+                            {...reveal}
+                            transition={{ delay: 0.25, duration: 0.55 }}
+                            className="hero-actions"
                         >
-                            <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="hero-actions__primary">
                                 <a
                                     href="/projects"
                                     onClick={(event) => handleSectionLink(event, 'projects')}
-                                    className="group relative min-h-14 px-7 py-4 bg-electric-green text-dark-void font-mono font-bold rounded-xl overflow-hidden transition-all hover:scale-[1.015] active:scale-[0.985] inline-flex items-center justify-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-dark-void"
+                                    className="hero-primary-button"
                                 >
-                                    <span className="relative z-10">VIEW_SELECTED_WORK</span>
-                                    <ArrowRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                    <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                                    <span>VIEW_SELECTED_WORK</span>
+                                    <ArrowRight className="h-4 w-4" />
                                 </a>
                                 <a
                                     href="/contact"
                                     onClick={(event) => handleSectionLink(event, 'contact')}
-                                    className="min-h-14 px-7 py-4 border border-white/15 hover:border-electric-cyan/45 hover:bg-electric-cyan/[0.07] text-white font-mono font-bold rounded-xl transition-all inline-flex items-center justify-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-dark-void"
+                                    className="hero-secondary-button"
                                 >
-                                    <MessageSquare className="w-4 h-4 text-electric-cyan" />
+                                    <MessageSquare className="h-4 w-4" />
                                     START_A_CONVERSATION
                                 </a>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-[11px] font-mono">
+                            <div className="hero-actions__utility">
                                 <button
                                     type="button"
                                     onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
-                                    className="inline-flex items-center gap-2 text-gray-300 transition-colors hover:text-electric-green cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green rounded-md px-1.5 py-1"
                                 >
-                                    <Terminal className="w-4 h-4" />
+                                    <Terminal className="h-4 w-4" />
                                     {hero.buttons.terminal}
                                 </button>
 
@@ -164,67 +97,56 @@ const Hero = ({ isUiFrozen = false }) => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         title="CV for recruitment and administrative review"
-                                        className="inline-flex items-center gap-2 text-gray-300 transition-colors hover:text-electric-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan rounded-md px-1.5 py-1"
                                     >
-                                        <Download className="w-4 h-4" />
+                                        <Download className="h-4 w-4" />
                                         {hero.buttons.cv}
-                                        <span className="hidden md:inline text-[9px] uppercase tracking-[0.16em] text-gray-500">Recruitment document</span>
+                                        <span>Recruitment document</span>
                                     </a>
                                 ) : (
-                                    <span className="inline-flex items-center gap-2 text-gray-500 px-1.5 py-1">
-                                        <Download className="w-4 h-4" />
+                                    <span className="hero-cv-pending">
+                                        <Download className="h-4 w-4" />
                                         {hero.buttons.cvPending}
                                     </span>
                                 )}
                             </div>
                         </motion.div>
 
-                        {/* Quick Metadata */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.5 }}
-                            className="pt-10 flex gap-8 border-t border-white/5 gpu-accelerated"
+                            {...reveal}
+                            transition={{ delay: 0.34, duration: 0.55 }}
+                            className="hero-metadata"
                         >
-                            {hero.metadata.map((item, i) => (
-                                <div key={i} className="flex flex-col gap-1">
-                                    <span className="text-[10px] text-gray-500 font-mono uppercase tracking-[0.08em]">{item.label}</span>
-                                    <span className="text-xs font-mono text-gray-300">{item.value}</span>
+                            {hero.metadata.map((item) => (
+                                <div key={item.label}>
+                                    <span>{item.label}</span>
+                                    <strong>{item.value}</strong>
                                 </div>
                             ))}
                         </motion.div>
                     </div>
 
-                    {/* Terminal Visual */}
-                    {/* Terminal Visual */}
-                    <div className="lg:col-span-6 flex flex-col mt-12 lg:mt-0 w-full relative">
-                        {/* Hand-Drawn Arrow Pointer - Independent Layout Layer */}
-
-                        {/* Mobile Section Title */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={viewportConfig}
-                            className="w-full mb-16 block lg:hidden text-left"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{sections.console.id}</span>
-                                <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
-                            </div>
-                            <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                                {sections.console.line1} <br />
-                                <span className="text-electric-green">{sections.console.line2}</span>
-                            </h2>
-                        </motion.div>
-
-                        <div className="w-full flex justify-center relative">
-                            <TerminalWindow onStateChange={setIsTerminalExpanded} isUiFrozen={isUiFrozen} />
-                        </div>
-                    </div>
-
+                    <motion.aside
+                        initial={{ opacity: 0, x: 34 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.42, duration: 0.65 }}
+                        className={`hero-terminal-dock ${isTerminalExpanded ? 'hero-terminal-dock--expanded' : ''}`}
+                        aria-label="Interactive portfolio console"
+                    >
+                        <TerminalWindow onStateChange={setIsTerminalExpanded} isUiFrozen={isUiFrozen} />
+                    </motion.aside>
                 </div>
             </div>
-        </section >
+
+            <a
+                href="/about"
+                onClick={(event) => handleSectionLink(event, 'about')}
+                className="hero-scroll-cue"
+                aria-label="Continue to the about section"
+            >
+                <span>SCROLL_TO_DISCOVER</span>
+                <ArrowDownRight className="h-4 w-4" />
+            </a>
+        </section>
     );
 };
 
