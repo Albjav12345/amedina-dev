@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDownRight, ArrowRight, Cpu, Download, MessageSquare, Terminal } from 'lucide-react';
+import { ArrowRight, Cpu, Download, MessageSquare, Terminal } from 'lucide-react';
 
 import TerminalWindow from '../common/TerminalWindow';
+import useMediaQuery from '../../hooks/useMediaQuery';
 import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 import portfolioData from '../../data/portfolio';
 import HeroProjectWall from './HeroProjectWall';
@@ -16,7 +17,11 @@ const reveal = {
 const Hero = ({ isUiFrozen = false }) => {
     const { hero } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
+    const isMobileLayout = useMediaQuery('(max-width: 900px)');
     const isCvAvailable = Boolean(hero.buttons.cvHref);
+    const getRevealProps = (transition) => (
+        isMobileLayout ? { initial: false } : { ...reveal, transition }
+    );
 
     const handleSectionLink = (event, sectionId) => {
         if (!isPlainLeftClick(event)) return;
@@ -35,8 +40,7 @@ const Hero = ({ isUiFrozen = false }) => {
                 <div className="hero-reel-layout">
                     <div className="hero-copy-shell">
                         <motion.div
-                            {...reveal}
-                            transition={{ delay: 0.08, duration: 0.5 }}
+                            {...getRevealProps({ delay: 0.08, duration: 0.5 })}
                             className="hero-eyebrow"
                         >
                             <Cpu className="h-3 w-3" />
@@ -44,8 +48,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         </motion.div>
 
                         <motion.div
-                            {...reveal}
-                            transition={{ delay: 0.16, duration: 0.55 }}
+                            {...getRevealProps({ delay: 0.16, duration: 0.55 })}
                             className="hero-title-block"
                         >
                             <h1 className="hero-title">
@@ -59,8 +62,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         </motion.div>
 
                         <motion.div
-                            {...reveal}
-                            transition={{ delay: 0.25, duration: 0.55 }}
+                            {...getRevealProps({ delay: 0.25, duration: 0.55 })}
                             className="hero-actions"
                         >
                             <div className="hero-actions__primary">
@@ -112,8 +114,7 @@ const Hero = ({ isUiFrozen = false }) => {
                         </motion.div>
 
                         <motion.div
-                            {...reveal}
-                            transition={{ delay: 0.34, duration: 0.55 }}
+                            {...getRevealProps({ delay: 0.34, duration: 0.55 })}
                             className="hero-metadata"
                         >
                             {hero.metadata.map((item) => (
@@ -126,9 +127,9 @@ const Hero = ({ isUiFrozen = false }) => {
                     </div>
 
                     <motion.aside
-                        initial={{ opacity: 0, x: 34 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.42, duration: 0.65 }}
+                        initial={isMobileLayout ? false : { opacity: 0, x: 34 }}
+                        animate={isMobileLayout ? undefined : { opacity: 1, x: 0 }}
+                        transition={isMobileLayout ? undefined : { delay: 0.42, duration: 0.65 }}
                         className={`hero-terminal-dock ${isTerminalExpanded ? 'hero-terminal-dock--expanded' : ''}`}
                         aria-label="Interactive portfolio console"
                     >
@@ -137,15 +138,6 @@ const Hero = ({ isUiFrozen = false }) => {
                 </div>
             </div>
 
-            <a
-                href="/about"
-                onClick={(event) => handleSectionLink(event, 'about')}
-                className="hero-scroll-cue"
-                aria-label="Continue to the about section"
-            >
-                <span>SCROLL_TO_DISCOVER</span>
-                <ArrowDownRight className="h-4 w-4" />
-            </a>
         </section>
     );
 };
