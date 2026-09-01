@@ -57,17 +57,27 @@ const HeroProjectWall = ({ isFrozen = false }) => {
     useEffect(() => {
         const wall = wallRef.current;
         if (!wall) return undefined;
+        const section = wall.closest('.hero-reel-section');
 
         const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-        const updateWall = ({ scrollY, height }) => {
+        const updateWall = ({ scrollY, height, width }) => {
             const exitProgress = reduceMotion
                 ? (scrollY > height * 0.42 ? 1 : 0)
                 : clamp((scrollY - height * 0.08) / Math.max(height * 0.72, 1), 0, 1);
+            const visualOpacity = 1 - exitProgress;
 
-            wall.style.opacity = String(1 - exitProgress);
+            wall.style.opacity = String(visualOpacity);
             wall.style.transform = reduceMotion
                 ? 'none'
                 : `translate3d(0, ${exitProgress * 8}vh, 0) scale(${1 - exitProgress * 0.025})`;
+            section?.style.setProperty(
+                '--hero-backdrop-opacity',
+                String(width > 900 ? visualOpacity : 1),
+            );
+            section?.style.setProperty(
+                '--hero-noise-opacity',
+                String(width > 900 ? visualOpacity * 0.18 : 0.18),
+            );
         };
 
         wall.style.setProperty(
@@ -75,7 +85,13 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             isFrozen || reduceMotion ? 'paused' : 'running',
         );
 
-        return subscribeScrollRuntime(updateWall);
+        const unsubscribe = subscribeScrollRuntime(updateWall);
+
+        return () => {
+            section?.style.removeProperty('--hero-backdrop-opacity');
+            section?.style.removeProperty('--hero-noise-opacity');
+            unsubscribe();
+        };
     }, [isFrozen]);
 
     if (!projects.length) return null;
