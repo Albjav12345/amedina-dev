@@ -19,11 +19,25 @@ import {
     recordServiceProbe,
 } from './lib/control-plane.js';
 
-// Configuration: Model Rotation Fallback List (Latest Verified Groq Production Models)
+// Configuration: current Groq production models, ordered by response quality.
 const MODELS = [
-    'llama-3.3-70b-versatile', // Tier 1: Best Quality (300K TPM)
-    'llama-3.1-8b-instant'     // Tier 2: High Reliability (250K TPM)
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
 ];
+
+const isRecoverableProviderError = (error) => {
+    const status = Number(error?.status);
+    const code = String(error?.error?.code || error?.code || '').toLowerCase();
+    const message = String(error?.message || error || '').toLowerCase();
+
+    return [404, 408, 409, 429, 500, 502, 503, 504].includes(status)
+        || ['eai_again', 'econnreset', 'etimedout', 'err_stream_premature_close'].includes(code)
+        || code === 'model_not_found'
+        || message.includes('model_not_found')
+        || message.includes('rate_limit')
+        || message.includes('premature close')
+        || message.includes('fetch failed');
+};
 
 const isArchitectSectionEnabled = portfolioData.ui?.navigation?.links
     ?.some(link => link.id === 'architect');
@@ -70,7 +84,12 @@ export default async function handler(req, res) {
         });
     }
 
-    const groq = new Groq({ apiKey });
+    const groq = new Groq({
+        apiKey,
+        // node-fetch 2 can occasionally fail while inflating Groq responses on Node 24.
+        // Requesting the identity representation keeps the serverless and local paths stable.
+        defaultHeaders: { 'Accept-Encoding': 'identity' },
+    });
     const allowedExternalUrls = getAllowedExternalUrls(portfolioData);
 
     try {
@@ -242,10 +261,10 @@ Return one strictly valid JSON object and nothing else:
                 break;
             } catch (error) {
                 lastError = error;
-                const isRateLimit = error.status === 429 || String(error).includes('429') || String(error).includes('rate_limit');
+                const canRotate = isRecoverableProviderError(error) && i < MODELS.length - 1;
 
-                if (isRateLimit && i < MODELS.length - 1) {
-                    console.warn(`[SYS] Rate limit hit for ${modelId}. Rotating...`);
+                if (canRotate) {
+                    console.warn(`[SYS] Provider rejected ${modelId}. Rotating...`);
                     await sleep(200);
                     continue;
                 }

@@ -18,9 +18,23 @@ import {
 } from './lib/control-plane.js';
 
 const MODELS = [
-    'llama-3.3-70b-versatile',
-    'llama-3.1-8b-instant'
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
 ];
+
+const isRecoverableProviderError = (error) => {
+    const status = Number(error?.status);
+    const code = String(error?.error?.code || error?.code || '').toLowerCase();
+    const message = String(error?.message || error || '').toLowerCase();
+
+    return [404, 408, 409, 429, 500, 502, 503, 504].includes(status)
+        || ['eai_again', 'econnreset', 'etimedout', 'err_stream_premature_close'].includes(code)
+        || code === 'model_not_found'
+        || message.includes('model_not_found')
+        || message.includes('rate_limit')
+        || message.includes('premature close')
+        || message.includes('fetch failed');
+};
 
 const CUSTOM_OPTION = '__custom__';
 const PROJECT_TYPES = ['web-platform', 'ai-agent', 'automation-system', 'internal-tool', 'creative-interface'];
@@ -269,7 +283,12 @@ export default async function handler(req, res) {
     completeStep(runId, 'validation', 'Brief body and selector values were normalized safely.');
     completeStep(runId, 'context', 'Project shape, audience, timeline, and delivery depth were resolved for the model.');
 
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = new Groq({
+        apiKey: process.env.GROQ_API_KEY,
+        // node-fetch 2 can occasionally fail while inflating Groq responses on Node 24.
+        // Requesting the identity representation keeps the serverless and local paths stable.
+        defaultHeaders: { 'Accept-Encoding': 'identity' },
+    });
 
     const userPrompt = `
 Project shape:
@@ -366,8 +385,7 @@ Output expectations:
                 break;
             } catch (error) {
                 lastError = error;
-                const isRateLimit = error?.status === 429 || String(error).includes('429') || String(error).includes('rate_limit');
-                if (isRateLimit && i < MODELS.length - 1) {
+                if (isRecoverableProviderError(error) && i < MODELS.length - 1) {
                     await sleep(200);
                     continue;
                 }
