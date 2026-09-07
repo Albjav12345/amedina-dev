@@ -7,6 +7,7 @@ import useMediaQuery from '../../hooks/useMediaQuery';
 import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 import portfolioData from '../../data/portfolio';
 import HeroProjectWall from './HeroProjectWall';
+import { isAppleTouchDevice } from '../../utils/appleTouchDevice';
 import './Hero.css';
 
 const reveal = {
@@ -17,6 +18,7 @@ const reveal = {
 const Hero = ({ isUiFrozen = false }) => {
     const { hero } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
+    const [isAppleTouch] = React.useState(isAppleTouchDevice);
     const isMobileLayout = useMediaQuery('(max-width: 1023.98px)');
     const isCvAvailable = Boolean(hero.buttons.cvHref);
     const getRevealProps = (transition) => (
@@ -30,9 +32,10 @@ const Hero = ({ isUiFrozen = false }) => {
     };
 
     return (
-        <section id="home" className="hero-reel-section">
-            <HeroProjectWall isFrozen={isUiFrozen || isTerminalExpanded} />
+        <section id="home" className={`hero-reel-section${isAppleTouch ? ' hero-reel-section--apple-touch' : ''}`}>
+            <HeroProjectWall isFrozen={isUiFrozen || isTerminalExpanded} isAppleTouch={isAppleTouch} />
 
+            {isAppleTouch && <div className="hero-reel-section__backdrop" aria-hidden="true" />}
             <div className="hero-reel-section__glow" aria-hidden="true" />
             <div className="hero-reel-section__noise" aria-hidden="true" />
 

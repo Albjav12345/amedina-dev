@@ -10,7 +10,8 @@
     padding: 8.5rem 0 7.25rem;
 }
 
-.hero-reel-section::before {
+.hero-reel-section::before,
+.hero-reel-section__backdrop {
     position: absolute;
     z-index: 2;
     inset: 0;
@@ -65,6 +66,7 @@
 }
 
 .hero-reel-section--visuals-entering::before,
+.hero-reel-section--visuals-entering .hero-reel-section__backdrop,
 .hero-reel-section--visuals-entering .hero-reel-section__glow,
 .hero-reel-section--visuals-entering .hero-reel-section__noise,
 .hero-project-wall--visuals-entering {
@@ -426,6 +428,7 @@
     }
 
     .hero-reel-section::before,
+    .hero-reel-section__backdrop,
     .hero-reel-section__glow,
     .hero-reel-section__noise,
     .hero-project-wall {
@@ -468,7 +471,8 @@
         padding-top: 7.5rem;
     }
 
-    .hero-reel-section::before {
+    .hero-reel-section::before,
+    .hero-reel-section__backdrop {
         position: fixed;
         inset: 0;
         background:
@@ -617,6 +621,60 @@
         margin-top: 3rem;
     }
 
+}
+
+/* iOS/iPadOS only: preserve the images, filters, geometry and six rows, but
+   avoid a separate forced backing layer for every decorative card. */
+.hero-reel-section--apple-touch::before {
+    content: none;
+}
+
+.hero-reel-section--apple-touch .hero-project-card {
+    transform: none;
+}
+
+/* Older Safari: update only these four layers, with a short interpolation for
+   coalesced native scroll events. No full-tree custom property writes. */
+.hero-reel-section--scroll-fallback .hero-project-wall,
+.hero-reel-section--scroll-fallback .hero-reel-section__backdrop,
+.hero-reel-section--scroll-fallback .hero-reel-section__glow,
+.hero-reel-section--scroll-fallback .hero-reel-section__noise {
+    transition: opacity 100ms linear, transform 100ms linear;
+}
+
+@keyframes hero-apple-scroll-wall {
+    from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    to { opacity: 0; transform: translate3d(0, var(--hero-scroll-offset), 0) scale(0.975); }
+}
+
+@keyframes hero-apple-scroll-overlay {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes hero-apple-scroll-noise {
+    from { opacity: 0.18; }
+    to { opacity: 0; }
+}
+
+@supports (animation-timeline: scroll(root block)) and (animation-range: 0px 100px) {
+    .hero-reel-section--native-scroll .hero-project-wall,
+    .hero-reel-section--native-scroll .hero-reel-section__backdrop,
+    .hero-reel-section--native-scroll .hero-reel-section__glow,
+    .hero-reel-section--native-scroll .hero-reel-section__noise {
+        animation: hero-apple-scroll-overlay linear both;
+        animation-timeline: scroll(root block);
+        animation-range: var(--hero-scroll-start) var(--hero-scroll-end);
+        transition: none;
+    }
+
+    .hero-reel-section--native-scroll .hero-project-wall {
+        animation-name: hero-apple-scroll-wall;
+    }
+
+    .hero-reel-section--native-scroll .hero-reel-section__noise {
+        animation-name: hero-apple-scroll-noise;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

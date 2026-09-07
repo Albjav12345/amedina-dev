@@ -4,6 +4,7 @@ import portfolioData from '../../data/portfolio';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { DEFAULT_SECTION_ID, getSectionIdFromPathname } from '../../utils/sectionRouting';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
+import { createAppleHeroMotion } from '../../utils/appleHeroMotion';
 
 const DESKTOP_WALL_CARD_COUNT = 36;
 const MOBILE_WALL_CARD_COUNT = 36;
@@ -69,10 +70,12 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
     );
 };
 
-const HeroProjectWall = ({ isFrozen = false }) => {
+const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
     const wallRef = useRef(null);
     const isFrozenRef = useRef(isFrozen);
     const syncVideoPlaybackRef = useRef(null);
+    const appleMotionRef = useRef(null);
+    const isAppleWallActiveRef = useRef(false);
     const isMobileWall = useMediaQuery('(max-width: 1023.98px)');
     const projects = portfolioData.projects;
     const wallCardCount = isMobileWall ? MOBILE_WALL_CARD_COUNT : DESKTOP_WALL_CARD_COUNT;
@@ -89,6 +92,22 @@ const HeroProjectWall = ({ isFrozen = false }) => {
         const wall = wallRef.current;
         if (!wall) return undefined;
         const section = wall.closest('.hero-reel-section');
+        if (isAppleTouch) {
+            const motion = createAppleHeroMotion({
+                wall,
+                section,
+                isFrozen: () => isFrozenRef.current,
+                onActivityChange: (active) => {
+                    isAppleWallActiveRef.current = active;
+                    syncVideoPlaybackRef.current?.();
+                },
+            });
+            appleMotionRef.current = motion;
+            return () => {
+                motion.destroy();
+                appleMotionRef.current = null;
+            };
+        }
         const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
         const previewImages = Array.from(wall.querySelectorAll('img')).slice(0, 12);
         let latestSnapshot = null;
@@ -201,7 +220,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             section?.style.removeProperty('--hero-noise-opacity');
             unsubscribe();
         };
-    }, []);
+    }, [isAppleTouch]);
 
     useEffect(() => {
         const wall = wallRef.current;
@@ -213,6 +232,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
         const syncPlayback = () => {
             const shouldPlay = !document.hidden
                 && !isFrozenRef.current
+                && (!isAppleTouch || isAppleWallActiveRef.current)
                 && wall.style.visibility !== 'hidden';
             if (wasPlaying === shouldPlay) return;
             wasPlaying = shouldPlay;
@@ -235,12 +255,16 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             syncVideoPlaybackRef.current = null;
             videos.forEach((video) => video.pause());
         };
-    }, [isMobileWall]);
+    }, [isMobileWall, isAppleTouch]);
 
     useEffect(() => {
         isFrozenRef.current = isFrozen;
         const wall = wallRef.current;
         if (!wall) return;
+        if (isAppleTouch) {
+            appleMotionRef.current?.refresh();
+            return;
+        }
 
         const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
         const isHidden = wall.style.visibility === 'hidden';
@@ -249,7 +273,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             isFrozen || reduceMotion || isHidden ? 'paused' : 'running',
         );
         syncVideoPlaybackRef.current?.();
-    }, [isFrozen]);
+    }, [isFrozen, isAppleTouch]);
 
     if (!projects.length) return null;
 
@@ -273,7 +297,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
                                     project={project}
                                     slotIndex={slotIndex}
                                     allowVideo={!isMobileWall}
-                                    eager={copyIndex === 0 && slotIndex < 12}
+                                    eager={isAppleTouch || (copyIndex === 0 && slotIndex < 12)}
                                     priority={false}
                                 />
                             ))}
