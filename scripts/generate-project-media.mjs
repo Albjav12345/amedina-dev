@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import ffmpegPath from 'ffmpeg-static';
+import sharp from 'sharp';
 
 import { projectSources } from '../src/data/projectSources.js';
 
@@ -16,6 +17,12 @@ const manifestPath = path.join(rootDir, 'src', 'data', 'generated', 'projectMedi
 const cachePath = path.join(rootDir, 'node_modules', '.cache', 'amedina-project-media.json');
 
 const PIPELINE_VERSION = 1;
+
+const wallPosterConfig = {
+  version: 1,
+  widths: [320, 640, 960],
+  quality: 88,
+};
 
 const previewConfig = {
   suffix: 'preview',
@@ -173,6 +180,65 @@ async function generatePoster(sourcePath, outputPath, project) {
   await runFfmpeg(args, `${project.title} poster`);
 }
 
+async function generateWallPosters(project, posterPublicPath, cachedWallPosters) {
+  // Keep the original poster for full project views. The decorative wall only
+  // needs enough image pixels for its cards, including high-density displays.
+  if (!posterPublicPath || !/^\/(?!\/)/.test(posterPublicPath)) {
+    return { media: { wallPoster: posterPublicPath, wallPosterSrcSet: null }, cache: null };
+  }
+
+  const posterPath = resolvePublicAsset(posterPublicPath);
+  const posterStats = await fs.stat(posterPath);
+  const signature = [
+    wallPosterConfig.version,
+    posterPublicPath,
+    posterStats.size,
+    Math.round(posterStats.mtimeMs),
+    wallPosterConfig.widths.join(','),
+    wallPosterConfig.quality,
+  ].join(':');
+  let variants = cachedWallPosters?.signature === signature
+    ? cachedWallPosters.variants
+    : null;
+
+  if (variants?.length && !(await Promise.all(variants.map((variant) => fileExists(variant.path)))).every(Boolean)) {
+    variants = null;
+  }
+
+  if (!variants?.length) {
+    const metadata = await sharp(posterPath).metadata();
+    const sourceWidth = metadata.orientation >= 5 && metadata.orientation <= 8
+      ? metadata.height
+      : metadata.width;
+    const widths = [...new Set(wallPosterConfig.widths.map((width) => Math.min(width, sourceWidth)))];
+    const posterStem = slugify(`${project.id}-${path.basename(posterPath, path.extname(posterPath))}`);
+
+    variants = await Promise.all(widths.map(async (width) => {
+      const outputPath = path.join(outputDir, `${posterStem}.wall-${width}.webp`);
+      const output = await sharp(posterPath)
+        .rotate()
+        .resize({ width, withoutEnlargement: true })
+        .webp({ quality: wallPosterConfig.quality, effort: 5 })
+        .toFile(outputPath);
+
+      return {
+        width: output.width,
+        path: outputPath,
+        publicPath: `/${toPosixPath(path.relative(publicDir, outputPath))}`,
+      };
+    }));
+  }
+
+  const fallback = variants.find((variant) => variant.width >= 640) || variants.at(-1);
+  return {
+    media: {
+      wallPoster: fallback.publicPath,
+      wallPosterSrcSet: variants.map((variant) => `${variant.publicPath} ${variant.width}w`).join(', '),
+    },
+    cache: { signature, variants },
+  };
+}
+
 function getDerivationSignature(project, sourceStats) {
   return [
     PIPELINE_VERSION,
@@ -214,12 +280,18 @@ export async function generateProjectMedia() {
   const activeOutputs = new Set();
 
   for (const project of projectSources) {
+    const cacheEntry = cache[String(project.id)];
+
     if (!project.videoSource) {
+      const wallPosters = await generateWallPosters(project, project.thumbnail || null, cacheEntry?.wallPosters);
       manifest[String(project.id)] = {
         poster: project.thumbnail || null,
+        ...wallPosters.media,
         cardPreview: null,
         modalVideo: null,
       };
+      wallPosters.cache?.variants.forEach((variant) => activeOutputs.add(variant.path));
+      nextCache[String(project.id)] = { wallPosters: wallPosters.cache };
       continue;
     }
 
@@ -233,7 +305,6 @@ export async function generateProjectMedia() {
     let posterPath = posterPublicPath ? resolvePublicAsset(posterPublicPath) : path.join(outputDir, `${sourceStem}.poster.jpg`);
 
     const signature = getDerivationSignature(project, sourceStats);
-    const cacheEntry = cache[String(project.id)];
     const outputsAreReady = cacheEntry?.signature === signature && await outputsExist(cacheEntry);
 
     if (!outputsAreReady) {
@@ -252,15 +323,18 @@ export async function generateProjectMedia() {
 
     const previewPublicPath = `/${toPosixPath(path.relative(publicDir, previewPath))}`;
     const modalPublicPath = `/${toPosixPath(path.relative(publicDir, modalPath))}`;
+    const wallPosters = await generateWallPosters(project, posterPublicPath, cacheEntry?.wallPosters);
 
     manifest[String(project.id)] = {
       poster: posterPublicPath,
+      ...wallPosters.media,
       cardPreview: previewPublicPath,
       modalVideo: modalPublicPath,
     };
 
     activeOutputs.add(previewPath);
     activeOutputs.add(modalPath);
+    wallPosters.cache?.variants.forEach((variant) => activeOutputs.add(variant.path));
     if (posterPublicPath && posterPath.startsWith(outputDir)) {
       activeOutputs.add(posterPath);
     }
@@ -271,6 +345,7 @@ export async function generateProjectMedia() {
       modalPath,
       posterPath,
       posterPublicPath,
+      wallPosters: wallPosters.cache,
     };
   }
 

@@ -15,6 +15,8 @@ function getRuntimeMedia(project) {
 
     return {
         poster: derived.poster || fallbackPoster,
+        wallPoster: derived.wallPoster || derived.poster || fallbackPoster,
+        wallPosterSrcSet: derived.wallPosterSrcSet || undefined,
         cardPreview: derived.cardPreview || fallbackVideo,
         modalVideo: derived.modalVideo || fallbackVideo,
         masterVideo: fallbackVideo,

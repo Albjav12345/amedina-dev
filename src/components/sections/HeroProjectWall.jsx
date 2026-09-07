@@ -12,6 +12,7 @@ const MOBILE_COPIES = [0, 1];
 const VIDEO_CARD_INDEXES = new Set([7, 22]);
 const ENTRY_TRANSITION_MS = 900;
 const MEDIA_READY_TIMEOUT_MS = 900;
+const WALL_IMAGE_SIZES = '(max-width: 640px) 190px, (max-width: 1023.98px) 225px, (min-width: 2375px) 380px, (min-width: 1469px) 16vw, 235px';
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 const waitForImage = (image) => {
@@ -38,7 +39,7 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
                 <video
                     className="hero-project-card__media"
                     src={project.media.cardPreview}
-                    poster={project.media.poster || project.thumbnail}
+                    poster={project.media.wallPoster || project.media.poster || project.thumbnail}
                     autoPlay
                     muted
                     loop
@@ -49,7 +50,9 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
             ) : (
                 <img
                     className="hero-project-card__media"
-                    src={project.media?.poster || project.thumbnail}
+                    src={project.media?.wallPoster || project.media?.poster || project.thumbnail}
+                    srcSet={project.media?.wallPosterSrcSet}
+                    sizes={WALL_IMAGE_SIZES}
                     alt=""
                     loading={eager ? 'eager' : 'lazy'}
                     decoding="async"
@@ -69,6 +72,7 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
 const HeroProjectWall = ({ isFrozen = false }) => {
     const wallRef = useRef(null);
     const isFrozenRef = useRef(isFrozen);
+    const syncVideoPlaybackRef = useRef(null);
     const isMobileWall = useMediaQuery('(max-width: 1023.98px)');
     const projects = portfolioData.projects;
     const wallCardCount = isMobileWall ? MOBILE_WALL_CARD_COUNT : DESKTOP_WALL_CARD_COUNT;
@@ -94,6 +98,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
         let entryTimerId = null;
         let mediaTimerId = null;
         let disposed = false;
+        let lastVisualState = null;
 
         const isHomeRoute = () => (
             getSectionIdFromPathname(window.location.pathname) === DEFAULT_SECTION_ID
@@ -138,6 +143,15 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             const exitProgress = reduceMotion
                 ? (scrollY > height * 0.42 ? 1 : 0)
                 : clamp((scrollY - height * 0.08) / Math.max(height * 0.72, 1), 0, 1);
+            const frozen = isFrozenRef.current;
+
+            // Once the wall has exited, unrelated scrolling should not keep
+            // invalidating the styles inherited by every decorative card.
+            if (lastVisualState?.exitProgress === exitProgress
+                && lastVisualState.entryEnabled === entryEnabled
+                && lastVisualState.frozen === frozen) return;
+
+            lastVisualState = { exitProgress, entryEnabled, frozen };
             const visualOpacity = 1 - exitProgress;
 
             setVisualOpacity(visualOpacity);
@@ -147,8 +161,9 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             wall.style.visibility = entryEnabled && exitProgress < 1 ? 'visible' : 'hidden';
             wall.style.setProperty(
                 '--hero-wall-play-state',
-                isFrozenRef.current || reduceMotion || !entryEnabled || exitProgress >= 1 ? 'paused' : 'running',
+                frozen || reduceMotion || !entryEnabled || exitProgress >= 1 ? 'paused' : 'running',
             );
+            syncVideoPlaybackRef.current?.();
         }
 
         wall.style.opacity = '0';
@@ -189,6 +204,40 @@ const HeroProjectWall = ({ isFrozen = false }) => {
     }, []);
 
     useEffect(() => {
+        const wall = wallRef.current;
+        if (!wall) return undefined;
+
+        const videos = Array.from(wall.querySelectorAll('video'));
+        let wasPlaying = null;
+
+        const syncPlayback = () => {
+            const shouldPlay = !document.hidden
+                && !isFrozenRef.current
+                && wall.style.visibility !== 'hidden';
+            if (wasPlaying === shouldPlay) return;
+            wasPlaying = shouldPlay;
+
+            videos.forEach((video) => {
+                if (shouldPlay) {
+                    video.play()?.catch(() => undefined);
+                } else {
+                    video.pause();
+                }
+            });
+        };
+
+        syncVideoPlaybackRef.current = syncPlayback;
+        document.addEventListener('visibilitychange', syncPlayback);
+        syncPlayback();
+
+        return () => {
+            document.removeEventListener('visibilitychange', syncPlayback);
+            syncVideoPlaybackRef.current = null;
+            videos.forEach((video) => video.pause());
+        };
+    }, [isMobileWall]);
+
+    useEffect(() => {
         isFrozenRef.current = isFrozen;
         const wall = wallRef.current;
         if (!wall) return;
@@ -199,6 +248,7 @@ const HeroProjectWall = ({ isFrozen = false }) => {
             '--hero-wall-play-state',
             isFrozen || reduceMotion || isHidden ? 'paused' : 'running',
         );
+        syncVideoPlaybackRef.current?.();
     }, [isFrozen]);
 
     if (!projects.length) return null;
@@ -223,8 +273,8 @@ const HeroProjectWall = ({ isFrozen = false }) => {
                                     project={project}
                                     slotIndex={slotIndex}
                                     allowVideo={!isMobileWall}
-                                    eager={isMobileWall || (copyIndex === 0 && slotIndex < 12)}
-                                    priority={copyIndex === 0 && slotIndex < 12}
+                                    eager={copyIndex === 0 && slotIndex < 12}
+                                    priority={false}
                                 />
                             ))}
                         </div>
