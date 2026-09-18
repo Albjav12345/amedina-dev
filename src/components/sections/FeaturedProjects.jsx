@@ -5,6 +5,7 @@ import { Code2, ArrowUpRight, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, 
 import WorkflowDiagram from '../common/WorkflowDiagram';
 import { viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
+import useMediaQuery from '../../hooks/useMediaQuery';
 import SmartThumbnail from './SmartThumbnail';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
@@ -62,9 +63,14 @@ const FeaturedProjects = () => {
     const [cardStatus, setCardStatus] = useState({});
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
-    const useCompactProjectModal = quality.useCompactProjectModal || quality.useVerticalSheetLayout;
-    const useMobileProjectSheet = quality.useVerticalSheetLayout;
-    const useWideProjectLayout = quality.useWideProjectModalLayout;
+    const hasTabletModalSpace = useMediaQuery('(min-width: 768px)');
+    const hasTwoColumnModalSpace = useMediaQuery('(min-width: 1024px)');
+    const useCompactProjectModal = !hasTabletModalSpace
+        && (quality.useCompactProjectModal || quality.useVerticalSheetLayout);
+    const useMobileProjectSheet = !hasTabletModalSpace && quality.useVerticalSheetLayout;
+    const useWideProjectLayout = hasTwoColumnModalSpace;
+    const useConstrainedWideProjectLayout = useWideProjectLayout && !quality.useWideProjectModalLayout;
+    const widePanelPadding = useConstrainedWideProjectLayout ? 'md:p-8 xl:p-12' : 'md:p-12';
     const shouldUseDesktopProjectTransition = !useMobileProjectSheet && !useCompactProjectModal;
 
     const cardRefs = useRef({});
@@ -301,25 +307,25 @@ const FeaturedProjects = () => {
 
     const modalViewportClass = useCompactProjectModal
         ? 'fixed inset-0 z-[70] flex items-start justify-center p-4 pt-4 overflow-y-auto custom-scrollbar line-clamp-none'
-        : 'fixed inset-0 z-[70] flex items-start md:items-center justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none';
+        : `fixed inset-0 z-[70] flex items-start ${useWideProjectLayout ? 'md:items-center' : ''} justify-center p-4 md:p-8 overflow-y-auto custom-scrollbar pt-10 md:pt-8 line-clamp-none`;
     const modalCloseClass = useCompactProjectModal
         ? 'fixed top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer'
         : 'fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer';
     const modalShellClass = useCompactProjectModal
         ? `relative w-full max-w-[860px] mx-auto border border-white/10 rounded-2xl overflow-hidden flex flex-col h-auto min-h-[50vh] gpu-accelerated ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`
-        : `relative w-full ${useWideProjectLayout ? 'max-w-6xl' : 'max-w-[860px]'} mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col ${useWideProjectLayout ? 'lg:grid lg:grid-cols-2' : ''} h-auto min-h-[50vh] gpu-accelerated ${useCompactProjectModal ? '' : 'layout-projection-surface'} my-8 md:my-0 ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`;
+        : `relative w-full ${useWideProjectLayout ? 'max-w-6xl' : 'max-w-[860px]'} mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col ${useWideProjectLayout ? 'lg:grid lg:grid-cols-2' : ''} ${useConstrainedWideProjectLayout ? 'max-h-[calc(100dvh-4rem)] lg:grid-rows-[auto_minmax(0,1fr)]' : ''} h-auto min-h-[50vh] gpu-accelerated layout-projection-surface my-8 ${useWideProjectLayout ? 'md:my-0' : 'md:my-auto'} ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`;
     const projectInfoPanelClass = useCompactProjectModal
         ? 'w-full p-6 flex flex-col order-2 border-b border-white/5'
-        : `${useWideProjectLayout ? 'w-full lg:col-start-1 lg:row-start-1 lg:row-span-2' : 'w-full'} p-6 md:p-12 ${useWideProjectLayout ? 'md:overflow-y-auto custom-scrollbar' : ''} flex flex-col ${useWideProjectLayout ? 'order-2 lg:order-none border-b lg:border-b-0' : 'order-2 border-b'} border-white/5`;
+        : `${useWideProjectLayout ? 'w-full lg:col-start-1 lg:row-start-1 lg:row-span-2' : 'w-full'} p-6 ${widePanelPadding} ${useWideProjectLayout ? 'md:overflow-y-auto custom-scrollbar' : ''} ${useConstrainedWideProjectLayout ? 'min-h-0' : ''} flex flex-col ${useWideProjectLayout ? 'order-2 lg:order-none border-b lg:border-b-0' : 'order-2 border-b'} border-white/5`;
     const projectMediaPanelClass = useCompactProjectModal
         ? 'w-full bg-black/40 border-b border-white/5 flex flex-col p-6 gap-6 order-1'
-        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-1' : 'w-full'} bg-black/40 ${useWideProjectLayout ? 'border-b lg:border-l' : 'border-b'} border-white/5 flex flex-col p-6 md:p-12 gap-6 ${useWideProjectLayout ? 'order-1 lg:order-none' : 'order-1'}`;
+        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-1' : 'w-full'} bg-black/40 ${useWideProjectLayout ? 'border-b lg:border-l' : 'border-b'} border-white/5 flex flex-col p-6 ${widePanelPadding} gap-6 ${useWideProjectLayout ? 'order-1 lg:order-none' : 'order-1'}`;
     const projectFlowPanelClass = useCompactProjectModal
         ? 'w-full bg-black/60 border-t border-white/5 flex flex-col p-6 gap-6 order-3'
-        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-2' : 'w-full'} bg-black/60 ${useWideProjectLayout ? 'lg:bg-black/40 border-t lg:border-t-0 lg:border-l' : 'border-t'} border-white/5 flex flex-col p-6 md:p-12 gap-6 ${useWideProjectLayout ? 'order-3 lg:order-none' : 'order-3'}`;
+        : `${useWideProjectLayout ? 'w-full lg:col-start-2 lg:row-start-2' : 'w-full'} bg-black/60 ${useWideProjectLayout ? 'lg:bg-black/40 border-t lg:border-t-0 lg:border-l' : 'border-t'} border-white/5 flex flex-col p-6 ${widePanelPadding} gap-6 ${useConstrainedWideProjectLayout ? 'min-h-0 overflow-y-auto custom-scrollbar' : ''} ${useWideProjectLayout ? 'order-3 lg:order-none' : 'order-3'}`;
     const projectTitleClass = useCompactProjectModal
         ? 'text-3xl font-bold text-white tracking-tighter leading-tight'
-        : 'text-3xl md:text-5xl font-bold text-white tracking-tighter leading-tight';
+        : `text-3xl ${useConstrainedWideProjectLayout ? 'md:text-4xl xl:text-5xl' : 'md:text-5xl'} font-bold text-white tracking-tighter leading-tight`;
     const projectProblemGridClass = useCompactProjectModal
         ? 'grid grid-cols-1 gap-6 py-2'
         : 'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-2';
@@ -348,7 +354,7 @@ const FeaturedProjects = () => {
         : undefined;
     const desktopShellTransition = shouldUseDesktopProjectTransition
         ? {
-            layout: quality.modalTransition,
+            layout: quality.spring,
             opacity: isContentClosing
                 ? {
                     duration: 0.26,
@@ -1022,7 +1028,7 @@ const FeaturedProjects = () => {
                                     onClick={() => { void handleProjectClose(); }}
                                     transition={useCompactProjectModal
                                         ? { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
-                                        : quality.modalTransition}
+                                        : quality.spring}
                                     className={`fixed inset-0 bg-dark-void/90 cursor-pointer ${quality.allowBlur ? 'backdrop-blur-xl' : ''}`}
                                 />
 
