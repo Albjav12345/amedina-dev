@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import ffmpegPath from 'ffmpeg-static';
@@ -69,6 +71,12 @@ async function fileExists(targetPath) {
   }
 }
 
+async function fileHash(targetPath) {
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(targetPath)) hash.update(chunk);
+  return hash.digest('hex');
+}
+
 async function ensureDir(targetDir) {
   await fs.mkdir(targetDir, { recursive: true });
 }
@@ -114,6 +122,18 @@ function runFfmpeg(args, sourceLabel) {
   });
 }
 
+async function generateVideo(args, outputPath, sourceLabel) {
+  const temporaryPath = outputPath.replace(/\.mp4$/, `.tmp-${process.pid}-${Date.now()}.mp4`);
+  try {
+    await runFfmpeg([...args.slice(0, -1), temporaryPath], sourceLabel);
+    await runFfmpeg(['-v', 'error', '-xerror', '-i', temporaryPath, '-map', '0:v:0', '-f', 'null', '-'], `${sourceLabel} validation`);
+    await fs.rm(outputPath, { force: true });
+    await fs.rename(temporaryPath, outputPath);
+  } finally {
+    await fs.rm(temporaryPath, { force: true });
+  }
+}
+
 async function generatePreview(sourcePath, outputPath, project) {
   const previewFilter = [
     `fps=${previewConfig.fps}`,
@@ -139,7 +159,7 @@ async function generatePreview(sourcePath, outputPath, project) {
     outputPath,
   ];
 
-  await runFfmpeg(args, `${project.title} preview`);
+  await generateVideo(args, outputPath, `${project.title} preview`);
 }
 
 async function generateModalVideo(sourcePath, outputPath, project) {
@@ -164,7 +184,7 @@ async function generateModalVideo(sourcePath, outputPath, project) {
     outputPath,
   ];
 
-  await runFfmpeg(args, `${project.title} modal`);
+  await generateVideo(args, outputPath, `${project.title} modal`);
 }
 
 async function generatePoster(sourcePath, outputPath, project) {
@@ -264,7 +284,13 @@ async function outputsExist(cacheEntry) {
   const targets = [cacheEntry.previewPath, cacheEntry.modalPath, cacheEntry.posterPath].filter(Boolean);
   const checks = await Promise.all(targets.map((targetPath) => fileExists(targetPath)));
 
-  return checks.every(Boolean);
+  if (!checks.every(Boolean) || !cacheEntry.previewHash || !cacheEntry.modalHash) return false;
+
+  const [previewHash, modalHash] = await Promise.all([
+    fileHash(cacheEntry.previewPath),
+    fileHash(cacheEntry.modalPath),
+  ]);
+  return previewHash === cacheEntry.previewHash && modalHash === cacheEntry.modalHash;
 }
 
 export async function generateProjectMedia() {
@@ -343,6 +369,8 @@ export async function generateProjectMedia() {
       signature,
       previewPath,
       modalPath,
+      previewHash: await fileHash(previewPath),
+      modalHash: await fileHash(modalPath),
       posterPath,
       posterPublicPath,
       wallPosters: wallPosters.cache,

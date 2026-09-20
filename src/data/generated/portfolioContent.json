@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-20T13:03:32.975Z",
+  "generatedAt": "2026-09-20T20:32:55.177Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -445,6 +445,22 @@
       "iconScale": "",
       "order": 5,
       "enabled": "TRUE"
+    },
+    {
+      "id": 6,
+      "title": "Remote PC Bridge",
+      "subtitle": "ESP32 Wake-on-LAN & Remote Streaming Diagnostics",
+      "problem": "A home PC that is powered off cannot be reached through remote streaming, and failures across the wake and connection path are hard to pinpoint.",
+      "solution": "I built a Windows controller and ESP32 firmware that wake the PC over the home network, check each connection stage, and launch Moonlight when the desktop is ready.",
+      "githubLink": "https://github.com/Albjav12345/remote-pc-bridge",
+      "demoType": "video",
+      "videoAssetId": "project-6-video",
+      "thumbnailAssetId": "project-6-thumbnail",
+      "iconAssetId": "project-6-icon",
+      "iconFit": "auto",
+      "iconScale": 1,
+      "order": 6,
+      "enabled": "TRUE"
     }
   ],
   "projectStackEntries": [
@@ -547,6 +563,26 @@
       "project_id": "5",
       "label": "OPSEC",
       "order": 4
+    },
+    {
+      "project_id": "6",
+      "label": "C# / .NET 8",
+      "order": 1
+    },
+    {
+      "project_id": "6",
+      "label": "ESP32 / Arduino",
+      "order": 2
+    },
+    {
+      "project_id": "6",
+      "label": "Firebase Realtime Database",
+      "order": 3
+    },
+    {
+      "project_id": "6",
+      "label": "Tailscale + Moonlight",
+      "order": 4
     }
   ],
   "projectArchEntries": [
@@ -648,6 +684,26 @@
     {
       "project_id": "5",
       "label": "Encrypted Exfiltration",
+      "order": 4
+    },
+    {
+      "project_id": "6",
+      "label": "Windows Controller",
+      "order": 1
+    },
+    {
+      "project_id": "6",
+      "label": "Firebase Command Bus",
+      "order": 2
+    },
+    {
+      "project_id": "6",
+      "label": "ESP32 Wake-on-LAN",
+      "order": 3
+    },
+    {
+      "project_id": "6",
+      "label": "Sunshine + Moonlight",
       "order": 4
     }
   ],
@@ -1434,6 +1490,39 @@
       "notes": "Provided icon avatar available for anonymized Fiverr testimonials",
       "enabled": true,
       "status": "READY -> /assets/testimonials/pack-mountain.svg"
+    },
+    {
+      "assetId": "project-6-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/remote-pc-bridge.mp4",
+      "targetPublicPath": "/assets/projects/remote-pc-bridge.mp4",
+      "alt": "Remote PC Bridge interface and PC demo",
+      "notes": "Master video from supplied project footage",
+      "enabled": true,
+      "status": "READY -> /assets/projects/remote-pc-bridge.mp4"
+    },
+    {
+      "assetId": "project-6-thumbnail",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/remote-pc-bridge.jpg",
+      "targetPublicPath": "/assets/projects/remote-pc-bridge.jpg",
+      "alt": "Remote PC Bridge dashboard in dark and light themes",
+      "notes": "Poster frame from supplied project footage",
+      "enabled": true,
+      "status": "READY -> /assets/projects/remote-pc-bridge.jpg"
+    },
+    {
+      "assetId": "project-6-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/remote-pc-bridge-icon.png",
+      "targetPublicPath": "/assets/projects/remote-pc-bridge-icon.png",
+      "alt": "Remote PC Bridge icon",
+      "notes": "Project icon",
+      "enabled": true,
+      "status": "READY -> /assets/projects/remote-pc-bridge-icon.png"
     }
   ],
   "runtime": {
@@ -2030,6 +2119,32 @@
         "icon": "/assets/projects/terminal.ico",
         "iconFit": "auto",
         "iconScale": null
+      },
+      {
+        "id": 6,
+        "title": "Remote PC Bridge",
+        "subtitle": "ESP32 Wake-on-LAN & Remote Streaming Diagnostics",
+        "problem": "A home PC that is powered off cannot be reached through remote streaming, and failures across the wake and connection path are hard to pinpoint.",
+        "solution": "I built a Windows controller and ESP32 firmware that wake the PC over the home network, check each connection stage, and launch Moonlight when the desktop is ready.",
+        "stack": [
+          "C# / .NET 8",
+          "ESP32 / Arduino",
+          "Firebase Realtime Database",
+          "Tailscale + Moonlight"
+        ],
+        "arch": [
+          "Windows Controller",
+          "Firebase Command Bus",
+          "ESP32 Wake-on-LAN",
+          "Sunshine + Moonlight"
+        ],
+        "githubLink": "https://github.com/Albjav12345/remote-pc-bridge",
+        "demoType": "video",
+        "videoSource": "/assets/projects/remote-pc-bridge.mp4",
+        "thumbnail": "/assets/projects/remote-pc-bridge.jpg",
+        "icon": "/assets/projects/remote-pc-bridge-icon.png",
+        "iconFit": "auto",
+        "iconScale": 1
       }
     ],
     "testimonialsSection": {
@@ -3307,6 +3422,42 @@
         "enabled": true,
         "resolvedUrl": "/assets/testimonials/pack-mountain.svg",
         "status": "READY -> /assets/testimonials/pack-mountain.svg"
+      },
+      {
+        "assetId": "project-6-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/remote-pc-bridge.mp4",
+        "targetPublicPath": "/assets/projects/remote-pc-bridge.mp4",
+        "alt": "Remote PC Bridge interface and PC demo",
+        "notes": "Master video from supplied project footage",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/remote-pc-bridge.mp4",
+        "status": "READY -> /assets/projects/remote-pc-bridge.mp4"
+      },
+      {
+        "assetId": "project-6-thumbnail",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/remote-pc-bridge.jpg",
+        "targetPublicPath": "/assets/projects/remote-pc-bridge.jpg",
+        "alt": "Remote PC Bridge dashboard in dark and light themes",
+        "notes": "Poster frame from supplied project footage",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/remote-pc-bridge.jpg",
+        "status": "READY -> /assets/projects/remote-pc-bridge.jpg"
+      },
+      {
+        "assetId": "project-6-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/remote-pc-bridge-icon.png",
+        "targetPublicPath": "/assets/projects/remote-pc-bridge-icon.png",
+        "alt": "Remote PC Bridge icon",
+        "notes": "Project icon",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/remote-pc-bridge-icon.png",
+        "status": "READY -> /assets/projects/remote-pc-bridge-icon.png"
       }
     ]
   }
