@@ -430,16 +430,18 @@ function renderTokenIcon(token, size = 'item') {
     }
 }
 
-function SlidingIconSequence({ tokens, size = 'item', quality, label }) {
-    const shouldAnimate = tokens.length > 1 && quality?.tier !== 'low';
+function SlidingIconSequence({ tokens, size = 'item', quality, label, active }) {
+    const shouldAnimate = tokens.length > 1 && quality?.tier !== 'low' && quality?.allowAmbientMotion;
     const [activeIndex, setActiveIndex] = useState(0);
     const slideOffset = ICON_SLIDE_OFFSETS[size] || ICON_SLIDE_OFFSETS.item;
 
     useEffect(() => {
         if (!shouldAnimate) {
-            setActiveIndex(0);
             return undefined;
         }
+
+        // Keep the current icon when paused, and release timers outside the viewport or in a hidden tab.
+        if (!active) return undefined;
 
         let intervalId;
         const initialDelay = 950 + getRotationOffset(label);
@@ -455,7 +457,7 @@ function SlidingIconSequence({ tokens, size = 'item', quality, label }) {
             clearTimeout(timeoutId);
             clearInterval(intervalId);
         };
-    }, [label, shouldAnimate, tokens.length]);
+    }, [active, label, shouldAnimate, tokens.length]);
 
     if (!tokens.length) {
         return <DefaultTechIcon size={size} />;
@@ -475,12 +477,11 @@ function SlidingIconSequence({ tokens, size = 'item', quality, label }) {
                 <motion.span
                     key={`${label}-${activeToken}-${activeIndex}`}
                     className="absolute inset-0 flex items-center justify-center"
-                    initial={{ x: -slideOffset, opacity: 0, scale: 0.92, filter: 'blur(4px)' }}
+                    initial={{ x: -slideOffset, opacity: 0, scale: 0.92 }}
                     animate={{
                         x: 0,
                         opacity: 1,
                         scale: 1,
-                        filter: 'blur(0px)',
                         transition: {
                             duration: 0.28,
                             ease: QUICK_EASE_OUT,
@@ -490,7 +491,6 @@ function SlidingIconSequence({ tokens, size = 'item', quality, label }) {
                         x: slideOffset,
                         opacity: 0,
                         scale: 0.96,
-                        filter: 'blur(4px)',
                         transition: {
                             duration: 0.16,
                             ease: QUICK_EASE_IN,
@@ -504,23 +504,25 @@ function SlidingIconSequence({ tokens, size = 'item', quality, label }) {
     );
 }
 
-export function renderTechItemIcon(name, quality) {
+export function renderTechItemIcon(name, quality, active = true) {
     return (
         <SlidingIconSequence
             tokens={TECH_ITEM_ICON_TOKENS[name] || ['default']}
             size="item"
             quality={quality}
+            active={active}
             label={`item-${name}`}
         />
     );
 }
 
-export function renderTechCategoryIcon(title, quality) {
+export function renderTechCategoryIcon(title, quality, active = true) {
     return (
         <SlidingIconSequence
             tokens={TECH_CATEGORY_ICON_TOKENS[title] || ['default']}
             size="category"
             quality={quality}
+            active={active}
             label={`category-${title}`}
         />
     );

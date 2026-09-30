@@ -1,5 +1,5 @@
 const SITE_ORIGIN = 'https://amedina.dev';
-const DEFAULT_IMAGE = `${SITE_ORIGIN}/assets/og-amedina.png`;
+const DEFAULT_IMAGE = `${SITE_ORIGIN}/assets/og-amedina.png?v=projects-1`;
 
 const SECTION_METADATA = {
     home: {
