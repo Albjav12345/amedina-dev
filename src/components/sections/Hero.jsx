@@ -35,7 +35,7 @@ const Hero = ({ isUiFrozen = false }) => {
         <section id="home" className={`hero-reel-section${isAppleTouch ? ' hero-reel-section--apple-touch' : ''}`}>
             <HeroProjectWall isFrozen={isUiFrozen || isTerminalExpanded} isAppleTouch={isAppleTouch} />
 
-            {isAppleTouch && <div className="hero-reel-section__backdrop" aria-hidden="true" />}
+            <div className="hero-reel-section__backdrop" aria-hidden="true" />
             <div className="hero-reel-section__glow" aria-hidden="true" />
             <div className="hero-reel-section__noise" aria-hidden="true" />
 

@@ -2,32 +2,14 @@ import React, { useEffect, useMemo, useRef } from 'react';
 
 import portfolioData from '../../data/portfolio';
 import useMediaQuery from '../../hooks/useMediaQuery';
-import { DEFAULT_SECTION_ID, getSectionIdFromPathname } from '../../utils/sectionRouting';
-import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
-import { createAppleHeroMotion } from '../../utils/appleHeroMotion';
+import { createHeroMotion } from '../../utils/heroMotion';
 
 const DESKTOP_WALL_CARD_COUNT = 36;
 const MOBILE_WALL_CARD_COUNT = 36;
 const DESKTOP_COPIES = [0, 1, 2];
 const MOBILE_COPIES = [0, 1];
 const VIDEO_CARD_INDEXES = new Set([7, 22]);
-const ENTRY_TRANSITION_MS = 900;
-const MEDIA_READY_TIMEOUT_MS = 900;
 const WALL_IMAGE_SIZES = '(max-width: 640px) 190px, (max-width: 1023.98px) 225px, (min-width: 2375px) 380px, (min-width: 1469px) 16vw, 235px';
-const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
-const waitForImage = (image) => {
-    if (image.complete) {
-        return typeof image.decode === 'function'
-            ? image.decode().catch(() => undefined)
-            : Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-        image.addEventListener('load', resolve, { once: true });
-        image.addEventListener('error', resolve, { once: true });
-    });
-};
 
 const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) => {
     const useVideo = allowVideo
@@ -41,7 +23,6 @@ const HeroProjectCard = ({ project, slotIndex, allowVideo, eager, priority }) =>
                     className="hero-project-card__media"
                     src={project.media.cardPreview}
                     poster={project.media.wallPoster || project.media.poster || project.thumbnail}
-                    autoPlay
                     muted
                     loop
                     playsInline
@@ -74,8 +55,8 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
     const wallRef = useRef(null);
     const isFrozenRef = useRef(isFrozen);
     const syncVideoPlaybackRef = useRef(null);
-    const appleMotionRef = useRef(null);
-    const isAppleWallActiveRef = useRef(false);
+    const motionRef = useRef(null);
+    const isWallActiveRef = useRef(false);
     const isMobileWall = useMediaQuery('(max-width: 1023.98px)');
     const projects = portfolioData.projects;
     const wallCardCount = isMobileWall ? MOBILE_WALL_CARD_COUNT : DESKTOP_WALL_CARD_COUNT;
@@ -91,134 +72,20 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
     useEffect(() => {
         const wall = wallRef.current;
         if (!wall) return undefined;
-        const section = wall.closest('.hero-reel-section');
-        if (isAppleTouch) {
-            const motion = createAppleHeroMotion({
-                wall,
-                section,
-                isFrozen: () => isFrozenRef.current,
-                onActivityChange: (active) => {
-                    isAppleWallActiveRef.current = active;
-                    syncVideoPlaybackRef.current?.();
-                },
-            });
-            appleMotionRef.current = motion;
-            return () => {
-                motion.destroy();
-                appleMotionRef.current = null;
-            };
-        }
-        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-        const previewImages = Array.from(wall.querySelectorAll('img')).slice(0, 12);
-        let latestSnapshot = null;
-        let mediaReady = false;
-        let entryEnabled = false;
-        let entryFrameId = null;
-        let entryTimerId = null;
-        let mediaTimerId = null;
-        let disposed = false;
-        let lastVisualState = null;
-
-        const isHomeRoute = () => (
-            getSectionIdFromPathname(window.location.pathname) === DEFAULT_SECTION_ID
-        );
-
-        const setVisualOpacity = (visualOpacity) => {
-            const nextOpacity = entryEnabled ? visualOpacity : 0;
-
-            wall.style.opacity = String(nextOpacity);
-            section?.style.setProperty('--hero-backdrop-opacity', String(nextOpacity));
-            section?.style.setProperty('--hero-noise-opacity', String(nextOpacity * 0.18));
-        };
-
-        const enableEntryIfReady = () => {
-            if (disposed || entryEnabled || !mediaReady || !isHomeRoute()) return;
-
-            entryEnabled = true;
-            wall.style.visibility = 'visible';
-
-            if (reduceMotion) {
-                if (latestSnapshot) updateWall(latestSnapshot);
-                return;
-            }
-
-            wall.classList.add('hero-project-wall--visuals-entering');
-            section?.classList.add('hero-reel-section--visuals-entering');
-            entryFrameId = window.requestAnimationFrame(() => {
-                entryFrameId = null;
-                if (latestSnapshot) updateWall(latestSnapshot);
-            });
-            entryTimerId = window.setTimeout(() => {
-                entryTimerId = null;
-                wall.classList.remove('hero-project-wall--visuals-entering');
-                section?.classList.remove('hero-reel-section--visuals-entering');
-            }, ENTRY_TRANSITION_MS + 80);
-        };
-
-        function updateWall({ scrollY, height, ...runtimeSnapshot }) {
-            latestSnapshot = { scrollY, height, ...runtimeSnapshot };
-            enableEntryIfReady();
-
-            const exitProgress = reduceMotion
-                ? (scrollY > height * 0.42 ? 1 : 0)
-                : clamp((scrollY - height * 0.08) / Math.max(height * 0.72, 1), 0, 1);
-            const frozen = isFrozenRef.current;
-
-            // Once the wall has exited, unrelated scrolling should not keep
-            // invalidating the styles inherited by every decorative card.
-            if (lastVisualState?.exitProgress === exitProgress
-                && lastVisualState.entryEnabled === entryEnabled
-                && lastVisualState.frozen === frozen) return;
-
-            lastVisualState = { exitProgress, entryEnabled, frozen };
-            const visualOpacity = 1 - exitProgress;
-
-            setVisualOpacity(visualOpacity);
-            wall.style.transform = reduceMotion
-                ? 'none'
-                : `translate3d(0, ${exitProgress * 8}vh, 0) scale(${1 - exitProgress * 0.025})`;
-            wall.style.visibility = entryEnabled && exitProgress < 1 ? 'visible' : 'hidden';
-            wall.style.setProperty(
-                '--hero-wall-play-state',
-                frozen || reduceMotion || !entryEnabled || exitProgress >= 1 ? 'paused' : 'running',
-            );
-            syncVideoPlaybackRef.current?.();
-        }
-
-        wall.style.opacity = '0';
-        wall.style.visibility = 'hidden';
-        wall.style.setProperty('--hero-wall-play-state', 'paused');
-        section?.style.setProperty('--hero-backdrop-opacity', '0');
-        section?.style.setProperty('--hero-noise-opacity', '0');
-
-        const unsubscribe = subscribeScrollRuntime(updateWall);
-        const mediaReadyPromise = previewImages.length
-            ? Promise.allSettled(previewImages.map(waitForImage))
-            : Promise.resolve();
-        const mediaTimeoutPromise = new Promise((resolve) => {
-            mediaTimerId = window.setTimeout(resolve, MEDIA_READY_TIMEOUT_MS);
+        const motion = createHeroMotion({
+            wall,
+            section: wall.closest('.hero-reel-section'),
+            isFrozen: () => isFrozenRef.current,
+            isAppleTouch,
+            onActivityChange: (active) => {
+                isWallActiveRef.current = active;
+                syncVideoPlaybackRef.current?.();
+            },
         });
-
-        Promise.race([mediaReadyPromise, mediaTimeoutPromise]).then(() => {
-            if (disposed) return;
-            if (mediaTimerId !== null) {
-                window.clearTimeout(mediaTimerId);
-                mediaTimerId = null;
-            }
-            mediaReady = true;
-            enableEntryIfReady();
-        });
-
+        motionRef.current = motion;
         return () => {
-            disposed = true;
-            if (entryFrameId !== null) window.cancelAnimationFrame(entryFrameId);
-            if (entryTimerId !== null) window.clearTimeout(entryTimerId);
-            if (mediaTimerId !== null) window.clearTimeout(mediaTimerId);
-            wall.classList.remove('hero-project-wall--visuals-entering');
-            section?.classList.remove('hero-reel-section--visuals-entering');
-            section?.style.removeProperty('--hero-backdrop-opacity');
-            section?.style.removeProperty('--hero-noise-opacity');
-            unsubscribe();
+            motion.destroy();
+            motionRef.current = null;
         };
     }, [isAppleTouch]);
 
@@ -227,18 +94,23 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
         if (!wall) return undefined;
 
         const videos = Array.from(wall.querySelectorAll('video'));
-        let wasPlaying = null;
+        const visibleVideos = new Set();
+        const playback = new Map();
 
         const syncPlayback = () => {
             const shouldPlay = !document.hidden
                 && !isFrozenRef.current
-                && (!isAppleTouch || isAppleWallActiveRef.current)
-                && wall.style.visibility !== 'hidden';
-            if (wasPlaying === shouldPlay) return;
-            wasPlaying = shouldPlay;
+                && isWallActiveRef.current;
 
             videos.forEach((video) => {
-                if (shouldPlay) {
+                const playing = shouldPlay && visibleVideos.has(video);
+                if (playback.get(video) === playing) return;
+                playback.set(video, playing);
+                if (playing) {
+                    // Repeated copies share the visible preview's playback position.
+                    const peer = videos.find(candidate => candidate !== video
+                        && candidate.currentSrc === video.currentSrc && !candidate.paused);
+                    if (peer && Number.isFinite(video.duration)) video.currentTime = peer.currentTime;
                     video.play()?.catch(() => undefined);
                 } else {
                     video.pause();
@@ -246,11 +118,23 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
             });
         };
 
+        // Warm the next preview before it enters the screen. Offscreen repeats
+        // should not continuously decode frames and dirty filtered surfaces.
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(({ target, isIntersecting }) => {
+                if (isIntersecting) visibleVideos.add(target);
+                else visibleVideos.delete(target);
+            });
+            syncPlayback();
+        }, { rootMargin: '180px' });
+        videos.forEach(video => observer.observe(video));
+
         syncVideoPlaybackRef.current = syncPlayback;
         document.addEventListener('visibilitychange', syncPlayback);
         syncPlayback();
 
         return () => {
+            observer.disconnect();
             document.removeEventListener('visibilitychange', syncPlayback);
             syncVideoPlaybackRef.current = null;
             videos.forEach((video) => video.pause());
@@ -261,18 +145,7 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
         isFrozenRef.current = isFrozen;
         const wall = wallRef.current;
         if (!wall) return;
-        if (isAppleTouch) {
-            appleMotionRef.current?.refresh();
-            return;
-        }
-
-        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-        const isHidden = wall.style.visibility === 'hidden';
-        wall.style.setProperty(
-            '--hero-wall-play-state',
-            isFrozen || reduceMotion || isHidden ? 'paused' : 'running',
-        );
-        syncVideoPlaybackRef.current?.();
+        motionRef.current?.refresh();
     }, [isFrozen, isAppleTouch]);
 
     if (!projects.length) return null;
@@ -297,7 +170,7 @@ const HeroProjectWall = ({ isFrozen = false, isAppleTouch = false }) => {
                                     project={project}
                                     slotIndex={slotIndex}
                                     allowVideo={!isMobileWall}
-                                    eager={isAppleTouch || (copyIndex === 0 && slotIndex < 12)}
+                                    eager={true}
                                     priority={false}
                                 />
                             ))}

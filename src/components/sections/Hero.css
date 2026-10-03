@@ -10,7 +10,6 @@
     padding: 8.5rem 0 7.25rem;
 }
 
-.hero-reel-section::before,
 .hero-reel-section__backdrop {
     position: absolute;
     z-index: 2;
@@ -18,7 +17,6 @@
     background:
         linear-gradient(90deg, rgba(5, 10, 10, 0.78) 0%, rgba(5, 10, 10, 0.64) 28%, rgba(5, 10, 10, 0.27) 62%, rgba(5, 10, 10, 0.38) 100%),
         linear-gradient(180deg, rgba(7, 10, 12, 0.38) 0%, transparent 42%, rgba(7, 10, 12, 0.86) 100%);
-    content: '';
     opacity: var(--hero-backdrop-opacity);
     pointer-events: none;
     will-change: opacity;
@@ -80,7 +78,6 @@
     width: 100%;
     transform: translate3d(-50%, -50%, 0) perspective(1800px) rotateX(4deg) rotateY(-9deg) rotateZ(-2.2deg) scale(1.12);
     transform-origin: center;
-    filter: saturate(0.88) contrast(1.02);
 }
 
 .hero-project-wall__track {
@@ -99,6 +96,11 @@
     grid-template-rows: repeat(var(--hero-wall-row-count), clamp(145px, 10.4vw, 225px));
     gap: var(--hero-wall-gap);
     padding-right: var(--hero-wall-gap);
+    /* Cache each repeat independently instead of filtering the entire moving
+       three-screen mural whenever a preview produces a video frame. */
+    filter: saturate(0.88) contrast(1.02);
+    contain: layout style;
+    will-change: transform;
 }
 
 .hero-project-card {
@@ -111,7 +113,6 @@
         0 18px 38px rgba(0, 0, 0, 0.38),
         0 0 22px rgba(0, 255, 153, 0.07),
         inset 0 0 0 1px rgba(214, 255, 236, 0.07);
-    transform: translateZ(0);
 }
 
 .hero-project-card__media {
@@ -495,6 +496,7 @@
     .hero-project-wall__grid {
         grid-template-columns: repeat(6, 225px);
         grid-template-rows: repeat(var(--hero-wall-row-count), 140px);
+        filter: none;
     }
 
     .hero-project-wall__track {

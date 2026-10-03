@@ -20,9 +20,9 @@ async function decodePreview(image) {
     await image.decode?.().catch(() => undefined);
 }
 
-// Keep Safari's native scrolling independent of React and of inherited custom
-// property updates across the whole card tree. Other platforms keep their path.
-export function createAppleHeroMotion({ wall, section, isFrozen, onActivityChange }) {
+// Animate only the four scene layers. Never invalidate the repeated card tree
+// through inherited custom properties while scrolling.
+export function createHeroMotion({ wall, section, isFrozen, isAppleTouch, onActivityChange }) {
     const track = wall.querySelector('.hero-project-wall__track');
     const backdrop = section.querySelector('.hero-reel-section__backdrop');
     const glow = section.querySelector('.hero-reel-section__glow');
@@ -58,7 +58,7 @@ export function createAppleHeroMotion({ wall, section, isFrozen, onActivityChang
     function syncScrollMode() {
         const animate = entryComplete && !motionQuery.matches;
         section.classList.toggle('hero-reel-section--native-scroll', animate && supportsNativeScroll);
-        section.classList.toggle('hero-reel-section--scroll-fallback', animate && !supportsNativeScroll);
+        section.classList.toggle('hero-reel-section--scroll-fallback', animate && !supportsNativeScroll && isAppleTouch);
     }
 
     function finishEntry() {
@@ -96,9 +96,9 @@ export function createAppleHeroMotion({ wall, section, isFrozen, onActivityChang
         snapshot = nextSnapshot;
         const { scrollY, width, height } = snapshot;
 
-        // Safari's expanding/collapsing toolbar changes innerHeight mid-swipe.
-        // Keep one scroll range until an actual width/orientation change.
-        if (viewportWidth !== width) {
+        // Safari's toolbar resizes mid-swipe; desktop window resizing should
+        // still update the range, just as it did before.
+        if (viewportWidth !== width || (!isAppleTouch && viewportHeight !== height)) {
             viewportWidth = width;
             viewportHeight = Math.max(height, 1);
             section.style.setProperty('--hero-scroll-start', `${viewportHeight * 0.08}px`);
