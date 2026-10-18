@@ -109,7 +109,7 @@ export async function generateSiteMedia() {
 
   await sharp(sourcePortrait)
     .rotate()
-    .resize({ width: 720, height: 720, fit: 'cover', position: 'centre', withoutEnlargement: true })
+    .resize({ width: 720, height: 720, fit: 'cover', position: 'north', withoutEnlargement: true })
     .webp({ quality: 82, effort: 5 })
     .toFile(portraitOutput);
 

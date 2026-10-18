@@ -284,7 +284,7 @@ const About = ({ isUiFrozen = false }) => {
                                     <img
                                         src={profileAbout.avatarUrl}
                                         alt="Alberto Medina"
-                                        className="w-full h-full object-cover object-center scale-110 transform"
+                                        className="w-full h-full object-cover object-center"
                                         width="160"
                                         height="160"
                                         loading="lazy"
