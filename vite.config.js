@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { createHash } from 'node:crypto'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -394,6 +395,11 @@ export default defineConfig(({ mode }) => {
   const apiProxyTarget = env.VITE_API_PROXY_TARGET
 
   return {
+    define: {
+      __CV_PDF_VERSION__: JSON.stringify(createHash('sha256')
+        .update(fs.readFileSync(path.join(PORTFOLIO_ROOT_DIR, 'public', 'Alberto_Medina_CV_2026.pdf')))
+        .digest('hex').slice(0, 12)),
+    },
     plugins: [
       portfolioWorkbookDevPlugin(),
       react(),

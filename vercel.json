@@ -7,6 +7,14 @@
             "includeFiles": "{src/data/cv/published.json,public/assets/alberto.webp}"
         }
     },
+    "headers": [
+        {
+            "source": "/Alberto_Medina_CV_2026.pdf",
+            "headers": [
+                { "key": "Cache-Control", "value": "no-store, max-age=0" }
+            ]
+        }
+    ],
     "rewrites": [
         { "source": "/about", "destination": "/" },
         { "source": "/projects", "destination": "/" },
