@@ -5,6 +5,7 @@ import { fadeInUp, viewportConfig, scaleIn } from '../../utils/animations';
 import portfolioData from '../../data/portfolio';
 import { containWheelOnOverflow } from '../../utils/scrolling';
 import { recordOpsRun } from '../../utils/opsTelemetry';
+import SectionHeading from '../common/SectionHeading';
 
 const initialFormState = {
     name: '',
@@ -146,19 +147,12 @@ const Contact = () => {
 
             <div className="container mx-auto px-6 relative z-10">
                 <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeInUp} className="space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-                        <div className="inline-block px-3 py-1 rounded-full bg-electric-green/10 border border-electric-green/20 text-electric-green text-[9px] md:text-[10px] font-mono uppercase tracking-[0.2em]">
-                            {contact.label}
-                        </div>
-
-                        <h2 className="text-4xl md:text-6xl font-bold font-mono tracking-tighter uppercase leading-tight text-white">
-                            {contact.titleLine1} <br />
-                            <span className="text-electric-green">{contact.titleLine2}</span>
-                        </h2>
-
-                        <p className="text-gray-400 font-medium max-w-md leading-relaxed">
-                            {contact.description}
-                        </p>
+                    <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeInUp} className="space-y-8 flex w-full flex-col items-center lg:items-start text-center lg:text-left lg:max-w-xl">
+                        <SectionHeading
+                            header={{ id: contact.label, line1: contact.titleLine1, line2: contact.titleLine2 }}
+                            description={contact.description}
+                            className="mb-0"
+                        />
 
                         <div className="w-full space-y-6 pt-4 flex flex-col items-center lg:items-start">
                             <div className="flex flex-col items-center lg:items-start gap-2">

@@ -2,11 +2,11 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { viewportConfig } from '../../utils/animations';
 
-export default function SectionHeading({ header, description }) {
+export default function SectionHeading({ header, description, className = 'mb-16' }) {
     const reducedMotion = useReducedMotion();
     return (
         <motion.header
-            className="section-heading flex flex-col mb-16"
+            className={`section-heading flex w-full flex-col text-left ${className}`}
             initial={reducedMotion ? false : { opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={viewportConfig}

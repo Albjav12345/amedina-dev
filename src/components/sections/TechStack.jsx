@@ -4,6 +4,7 @@ import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import { renderTechCategoryIcon, renderTechItemIcon } from './techStackIcons';
+import SectionHeading from '../common/SectionHeading';
 
 const COLOR_STYLES = {
     'electric-green': {
@@ -206,21 +207,7 @@ const TechStack = () => {
             />
 
             <div className="container mx-auto px-6 relative z-10">
-                <motion.div
-                    initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={viewportConfig}
-                    className="mb-16"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/5 border border-electric-green/20 px-3 py-1 rounded">{tech.id}</span>
-                        <div className="h-[1px] flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
-                    </div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                        {tech.line1} <br />
-                        <span className="text-electric-green">{tech.line2}</span>
-                    </h2>
-                </motion.div>
+                <SectionHeading header={tech} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {categories.map((cat, i) => (

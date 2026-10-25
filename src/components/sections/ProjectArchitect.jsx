@@ -7,6 +7,7 @@ import portfolioData from '../../data/portfolio';
 import { containWheelOnOverflow } from '../../utils/scrolling';
 import { recordOpsRun } from '../../utils/opsTelemetry';
 import { dispatchSectionNavigation } from '../../utils/sectionRouting';
+import SectionHeading from '../common/SectionHeading';
 
 const CUSTOM_OPTION = '__custom__';
 
@@ -301,10 +302,7 @@ const ProjectArchitect = () => {
         <section id="architect" className="py-20 md:py-32 lg:pb-40 relative overflow-visible render-optimize">
             {!quality.simplePhysics && <div className="absolute top-[20%] right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2" style={{ background: 'radial-gradient(circle, rgba(0, 255, 153, 0.13) 0%, transparent 70%)' }} />}
             <div className="container mx-auto px-6 relative z-10">
-                <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={viewportConfig} className="mb-16">
-                    <div className="flex items-center gap-4 mb-4"><span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{architect.id}</span><div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent" /></div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">{architect.line1}<br /><span className="text-electric-green">{architect.line2}</span></h2>
-                </motion.div>
+                <SectionHeading header={architect} />
 
                 <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-8 items-stretch">
                     <motion.div initial="hidden" whileInView="visible" viewport={viewportConfig} variants={fadeInUp} className={`rounded-2xl border border-white/10 p-8 md:p-10 h-full ${quality.glassClass}`}>
