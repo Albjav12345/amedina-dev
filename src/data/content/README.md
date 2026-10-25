@@ -25,6 +25,8 @@ Important:
 
 Project presentation:
 
+- About copy stays in `PROFILE` and `ABOUT_BIO`. `PROFILE.featuredProjectId` selects the project shown under the bio, and `featuredProjectLabel` supplies its caption.
+
 - `PROJECTS.gallerySize`: blank for a standard tile, `feature` for a large tile, `wide` for a landscape tile, or `half` for half a desktop row.
 - `PROJECTS.cardLabel`: optional badge text on the gallery tile.
 - `githubLink`, `itchLink`, and `assetStoreLink` are optional. Set `assetStoreComingSoon` to TRUE while a Unity listing is pending, then add its public URL when available.

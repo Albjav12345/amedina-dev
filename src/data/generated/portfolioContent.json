@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T14:55:16.057Z",
+  "generatedAt": "2026-10-25T21:05:36.684Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -53,25 +53,32 @@
   ],
   "profileEntry": {
     "name": "Alberto Medina Garcia",
-    "role": "Full-Stack Systems & Automation Engineer",
+    "role": "Computer Engineering student & software developer",
     "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
     "avatarAssetId": "profile-avatar",
-    "aboutTitle": "Logic first. Built to be used.",
-    "philosophyLabel": "AI Philosophy",
-    "philosophyQuote": "AI amplifies engineering judgment. The real value comes from framing the problem well, controlling the system, and making the result reliable in production.",
+    "aboutTitle": "From game development to everyday tools.",
+    "featuredProjectId": "7",
+    "featuredProjectLabel": "An independent product",
+    "philosophyLabel": "Working with AI",
+    "philosophyQuote": "AI helps me move faster. I review the code, test the result and take responsibility for what ships.",
     "github": "https://github.com/Albjav12345",
     "linkedin": "https://www.linkedin.com/in/alberto-medina-dev/"
   },
   "aboutBioEntries": [
     {
       "paragraph_id": "bio-1",
-      "text": "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
+      "text": "I'm Alberto, a Computer Engineering student. Alongside my degree, I build my own projects and work with clients, putting what I learn into practice.",
       "order": 1
     },
     {
       "paragraph_id": "bio-2",
-      "text": "That same mindset now drives my work in full-stack development, automation, and AI tooling. I like building systems that solve real operational problems, feel polished to use, and stay understandable as they grow.",
+      "text": "My first projects were in game development with Unity and C#, from game interfaces to editor tools. That is where I started paying attention to both the code and the experience of using it.",
       "order": 2
+    },
+    {
+      "paragraph_id": "bio-3",
+      "text": "Since then, I've also worked on web applications and automation. I created DataCraft, my Unity asset for game data, JSON APIs and local saves, and I continue developing personal projects while studying.",
+      "order": 3
     }
   ],
   "aboutStatsEntries": [
@@ -190,8 +197,8 @@
     {
       "section_id": "about",
       "id": "SYS_01",
-      "line1": "Identity",
-      "line2": "Background.",
+      "line1": "A little",
+      "line2": "background.",
       "order": 1
     },
     {
@@ -227,6 +234,8 @@
     {
       "category_id": "core-development",
       "title": "Core Development",
+      "description": "",
+      "projectIds": "",
       "icon": "Cpu",
       "color": "electric-green",
       "order": 1
@@ -234,6 +243,8 @@
     {
       "category_id": "ai-vision-workflows",
       "title": "AI & Vision Workflows",
+      "description": "",
+      "projectIds": "",
       "icon": "Brain",
       "color": "electric-cyan",
       "order": 2
@@ -241,6 +252,8 @@
     {
       "category_id": "frontend-interactive-systems",
       "title": "Frontend & Interactive Systems",
+      "description": "",
+      "projectIds": "",
       "icon": "Layers",
       "color": "electric-green",
       "order": 3
@@ -248,6 +261,8 @@
     {
       "category_id": "infra-delivery",
       "title": "Infra & Delivery",
+      "description": "",
+      "projectIds": "",
       "icon": "Globe",
       "color": "electric-cyan",
       "order": 4
@@ -375,7 +390,7 @@
       "githubLink": "https://github.com/Albjav12345/unity-interfaces",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -407,7 +422,7 @@
       "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "wide",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -439,7 +454,7 @@
       "githubLink": "https://github.com/Albjav12345/padel-sync",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -471,7 +486,7 @@
       "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -503,7 +518,7 @@
       "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "half",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -535,7 +550,7 @@
       "githubLink": "https://github.com/Albjav12345/remote-pc-bridge",
       "itchLink": "",
       "assetStoreLink": "",
-      "assetStoreComingSoon": "",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "half",
       "cardLabel": "",
       "galleryAssetIds": "",
@@ -2215,18 +2230,21 @@
     },
     "profile": {
       "name": "Alberto Medina Garcia",
-      "role": "Full-Stack Systems & Automation Engineer",
+      "role": "Computer Engineering student & software developer",
       "tagline": "I build reliable products, automation workflows, and AI systems with clear product thinking.",
       "about": {
         "avatarUrl": "/assets/alberto.webp",
-        "title": "Logic first. Built to be used.",
+        "title": "From game development to everyday tools.",
+        "featuredProjectId": 7,
+        "featuredProjectLabel": "An independent product",
         "bio": [
-          "I started in game development with Unity and C#, where I learned to care about how systems feel in the hands of the user, not just how they work under the hood.",
-          "That same mindset now drives my work in full-stack development, automation, and AI tooling. I like building systems that solve real operational problems, feel polished to use, and stay understandable as they grow."
+          "I'm Alberto, a Computer Engineering student. Alongside my degree, I build my own projects and work with clients, putting what I learn into practice.",
+          "My first projects were in game development with Unity and C#, from game interfaces to editor tools. That is where I started paying attention to both the code and the experience of using it.",
+          "Since then, I've also worked on web applications and automation. I created DataCraft, my Unity asset for game data, JSON APIs and local saves, and I continue developing personal projects while studying."
         ],
         "philosophy": {
-          "label": "AI Philosophy",
-          "quote": "AI amplifies engineering judgment. The real value comes from framing the problem well, controlling the system, and making the result reliable in production."
+          "label": "Working with AI",
+          "quote": "AI helps me move faster. I review the code, test the result and take responsibility for what ships."
         },
         "stats": [
           {
@@ -2412,7 +2430,10 @@
     "skills": {
       "categories": [
         {
+          "id": "core-development",
           "title": "Core Development",
+          "description": "",
+          "projectIds": [],
           "icon": "Cpu",
           "color": "electric-green",
           "items": [
@@ -2425,7 +2446,10 @@
           ]
         },
         {
+          "id": "ai-vision-workflows",
           "title": "AI & Vision Workflows",
+          "description": "",
+          "projectIds": [],
           "icon": "Brain",
           "color": "electric-cyan",
           "items": [
@@ -2437,7 +2461,10 @@
           ]
         },
         {
+          "id": "frontend-interactive-systems",
           "title": "Frontend & Interactive Systems",
+          "description": "",
+          "projectIds": [],
           "icon": "Layers",
           "color": "electric-green",
           "items": [
@@ -2449,7 +2476,10 @@
           ]
         },
         {
+          "id": "infra-delivery",
           "title": "Infra & Delivery",
+          "description": "",
+          "projectIds": [],
           "icon": "Globe",
           "color": "electric-cyan",
           "items": [
@@ -2575,8 +2605,8 @@
       "sections": {
         "about": {
           "id": "SYS_01",
-          "line1": "Identity",
-          "line2": "Background."
+          "line1": "A little",
+          "line2": "background."
         },
         "projects": {
           "id": "SYS_02",

@@ -109,8 +109,8 @@ export async function generateSiteMedia() {
 
   await sharp(sourcePortrait)
     .rotate()
-    .resize({ width: 720, height: 720, fit: 'cover', position: 'north', withoutEnlargement: true })
-    .webp({ quality: 82, effort: 5 })
+    .resize({ width: 960, withoutEnlargement: true })
+    .webp({ quality: 90, effort: 5 })
     .toFile(portraitOutput);
 
   const socialCard = createSocialCard(await createProjectWall());

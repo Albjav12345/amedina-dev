@@ -516,6 +516,8 @@ Important:
 
 Project presentation:
 
+- About copy stays in \`PROFILE\` and \`ABOUT_BIO\`. \`PROFILE.featuredProjectId\` selects the project shown under the bio, and \`featuredProjectLabel\` supplies its caption.
+
 - \`PROJECTS.gallerySize\`: blank for a standard tile, \`feature\` for a large tile, \`wide\` for a landscape tile, or \`half\` for half a desktop row.
 - \`PROJECTS.cardLabel\`: optional badge text on the gallery tile.
 - \`githubLink\`, \`itchLink\`, and \`assetStoreLink\` are optional. Set \`assetStoreComingSoon\` to TRUE while a Unity listing is pending, then add its public URL when available.
@@ -2304,6 +2306,8 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             { key: 'tagline', header: 'tagline', width: 56, required: true, wrap: true },
             { key: 'avatarAssetId', header: 'avatarAssetId', width: 24, required: true, validation: { lookup: 'assetIds' } },
             { key: 'aboutTitle', header: 'aboutTitle', width: 30, required: true, wrap: true },
+            { key: 'featuredProjectId', header: 'featuredProjectId', width: 20, validation: { lookup: 'projectIds' } },
+            { key: 'featuredProjectLabel', header: 'featuredProjectLabel', width: 32 },
             { key: 'philosophyLabel', header: 'philosophyLabel', width: 24, required: true },
             { key: 'philosophyQuote', header: 'philosophyQuote', width: 74, required: true, wrap: true },
             { key: 'github', header: 'github', width: 42, required: true },
@@ -2430,6 +2434,8 @@ function getSheetDefinitions(masterData, resolvedAssets) {
         columns: [
             { key: 'category_id', header: 'category_id', width: 24, required: true },
             { key: 'title', header: 'title', width: 34, required: true },
+            { key: 'description', header: 'description', width: 60, wrap: true },
+            { key: 'projectIds', header: 'projectIds', width: 24 },
             { key: 'icon', header: 'icon', width: 18, required: true, validation: { lookup: 'skillIcons' } },
             { key: 'color', header: 'color', width: 20, required: true, validation: { lookup: 'skillColors' } },
             { key: 'order', header: 'order', width: 10, required: true, validation: { type: 'whole', operator: 'greaterThan', formulae: [0] } },
@@ -2776,6 +2782,8 @@ async function readWorkbookToMasterData(workbookPath = WORKBOOK_PATH) {
             tagline: asString(profileRow.tagline),
             avatarAssetId: asString(profileRow.avatarAssetId),
             aboutTitle: asString(profileRow.aboutTitle),
+            featuredProjectId: asString(profileRow.featuredProjectId),
+            featuredProjectLabel: asString(profileRow.featuredProjectLabel),
             philosophyLabel: asString(profileRow.philosophyLabel),
             philosophyQuote: asString(profileRow.philosophyQuote),
             github: asString(profileRow.github),
@@ -3218,6 +3226,8 @@ export async function loadCurrentSourceContent() {
         return {
             category_id: categoryId,
             title: category.title,
+            description: category.description ?? '',
+            projectIds: (category.projectIds || []).join('|'),
             icon: category.icon,
             color: category.color,
             order: index + 1,
@@ -3296,6 +3306,8 @@ export async function loadCurrentSourceContent() {
             tagline: profile.tagline,
             avatarAssetId: profileAvatarAssetId,
             aboutTitle: profile.about?.title ?? '',
+            featuredProjectId: profile.about?.featuredProjectId ?? '',
+            featuredProjectLabel: profile.about?.featuredProjectLabel ?? '',
             philosophyLabel: profile.about?.philosophy?.label ?? '',
             philosophyQuote: profile.about?.philosophy?.quote ?? '',
             github: profile.social?.github ?? '',
@@ -3703,7 +3715,14 @@ function buildRuntimeContent(masterData, resolvedAssets) {
     }, {});
 
     const skillCategories = sortByOrder(masterData.skillCategoryEntries).map((category) => ({
+        id: asString(category.category_id),
         title: asString(category.title),
+        description: asString(category.description),
+        projectIds: asString(category.projectIds).split('|').filter(Boolean).map(id => {
+            const projectId = id.trim();
+            if (!projectIdSet.has(projectId)) throw new Error(`SKILL_CATEGORIES.projectIds references unknown project "${projectId}".`);
+            return Number(projectId);
+        }),
         icon: asString(category.icon),
         color: asString(category.color),
         items: sortByOrder(
@@ -3858,6 +3877,8 @@ function buildRuntimeContent(masterData, resolvedAssets) {
         about: {
             avatarUrl: resolveAssetUrl(masterData.profileEntry.avatarAssetId, 'PROFILE.avatarAssetId'),
             title: asString(masterData.profileEntry.aboutTitle),
+            featuredProjectId: parseOptionalNumber(masterData.profileEntry.featuredProjectId),
+            featuredProjectLabel: asString(masterData.profileEntry.featuredProjectLabel),
             bio: sortByOrder(masterData.aboutBioEntries).map((entry) => asString(entry.text)),
             philosophy: {
                 label: asString(masterData.profileEntry.philosophyLabel),

@@ -6,6 +6,24 @@ export const SECTION_NAVIGATION_EVENT = 'section:navigate';
 export const SECTION_ACTIVE_LOCK_EVENT = 'section:active-lock';
 export const SECTION_VISIBLE_EVENT = 'section:visible';
 
+// Capture deep links before startup scroll restoration normalizes the URL.
+const initialProjectParams = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search);
+let requestedProjectId = Number(initialProjectParams?.get('project') || initialProjectParams?.get('focus')) || null;
+let requestedProjectMode = initialProjectParams?.has('focus') && !initialProjectParams.has('project') ? 'focus' : 'open';
+
+export function setRequestedProjectId(projectId, mode = 'open') {
+    requestedProjectId = projectId == null ? null : Number(projectId) || null;
+    requestedProjectMode = mode === 'focus' ? 'focus' : 'open';
+}
+
+export function getRequestedProjectId() {
+    return requestedProjectId;
+}
+
+export function getRequestedProjectMode() {
+    return requestedProjectMode;
+}
+
 const BASE_SECTION_IDS = [
     'home',
     'about',

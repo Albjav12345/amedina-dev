@@ -3,15 +3,15 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
 import { Code2, ArrowUpRight, Terminal, X, Cpu, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import ProjectWorkflows from './ProjectWorkflows';
-import { viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import SmartThumbnail from './SmartThumbnail';
 import ProjectLinks from './ProjectLinks';
 import ProjectMediaGallery from './ProjectMediaGallery';
+import SectionHeading from '../common/SectionHeading';
 import './ProjectGallery.css';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
-import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
+import { dispatchSectionNavigation, isPlainLeftClick, getRequestedProjectId, getRequestedProjectMode, setRequestedProjectId, NAV_HEIGHT } from '../../utils/sectionRouting';
 
 import portfolioData from '../../data/portfolio';
 
@@ -500,6 +500,91 @@ const FeaturedProjects = () => {
     };
 
     useEffect(() => {
+        let frame = 0;
+        const cancel = () => { if (frame) window.cancelAnimationFrame(frame); frame = 0; };
+        const openReference = (projectId, mode = 'open') => {
+            cancel();
+            const project = projects.find(item => item.id === Number(projectId));
+            if (!project) return;
+            const deadline = performance.now() + 8000;
+            let phase = mode === 'focus' ? 'layout' : 'section';
+            let stableFrames = 0;
+            let lastTop = null;
+            let targetY = null;
+            const getCardTarget = card => {
+                // Layout offsets exclude the card's entrance transform.
+                let top = 0;
+                for (let node = card; node; node = node.offsetParent) top += node.offsetTop;
+                return Math.max(0, top - Math.max(100, (innerHeight - card.offsetHeight) / 2));
+            };
+            const tick = () => {
+                if (performance.now() > deadline) return;
+                if (mode === 'open' && window.location.pathname !== '/projects') { frame = requestAnimationFrame(tick); return; }
+                const card = cardRefs.current[project.id];
+                const wrapper = document.getElementById('projects-wrapper');
+                if (!card || !wrapper) { frame = requestAnimationFrame(tick); return; }
+                if (phase === 'layout') {
+                    const target = getCardTarget(card);
+                    stableFrames = lastTop !== null && Math.abs(target - lastTop) < 1 ? stableFrames + 1 : 0;
+                    lastTop = target;
+                    if (stableFrames >= 6) {
+                        targetY = target;
+                        phase = 'card';
+                        stableFrames = 0;
+                        lastTop = null;
+                        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        if (window.lenis) window.lenis.scrollTo(targetY, { immediate: reducedMotion, duration: 1.35, force: true });
+                        else window.scrollTo({ top: targetY, behavior: reducedMotion ? 'instant' : 'smooth' });
+                    }
+                } else if (phase === 'section') {
+                    const sectionRect = wrapper.getBoundingClientRect();
+                    const top = sectionRect.top;
+                    const sectionVisible = top < innerHeight - 100 && sectionRect.bottom > NAV_HEIGHT + 100;
+                    stableFrames = sectionVisible && (lastTop === null || Math.abs(top - lastTop) < 1) ? stableFrames + 1 : 0;
+                    lastTop = top;
+                    if (stableFrames >= 12) {
+                        phase = 'card';
+                        stableFrames = 0;
+                        lastTop = null;
+                        const rect = card.getBoundingClientRect();
+                        const target = Math.max(0, scrollY + rect.top - Math.max(100, (innerHeight - rect.height) / 2));
+                        if (window.lenis) window.lenis.scrollTo(target, { immediate: true });
+                        else window.scrollTo({ top: target, behavior: 'instant' });
+                    }
+                } else {
+                    const rect = card.getBoundingClientRect();
+                    const arrived = mode !== 'focus' || Math.abs(scrollY - targetY) < 2;
+                    stableFrames = arrived && rect.top < innerHeight && rect.bottom > 100 && (lastTop === null || Math.abs(rect.top - lastTop) < 1) ? stableFrames + 1 : 0;
+                    lastTop = rect.top;
+                    if (stableFrames >= 5) {
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('project');
+                        url.searchParams.delete('focus');
+                        window.history.replaceState(window.history.state, '', url);
+                        setRequestedProjectId(null);
+                        if (mode === 'focus') card.focus({ preventScroll: true });
+                        else handleProjectOpen(project.id, card);
+                        return;
+                    }
+                }
+                frame = requestAnimationFrame(tick);
+            };
+            frame = requestAnimationFrame(tick);
+        };
+        const onRequest = event => openReference(event.detail?.projectId);
+        const onFocusRequest = event => openReference(event.detail?.projectId, 'focus');
+        window.addEventListener('project:open-request', onRequest);
+        window.addEventListener('project:focus-request', onFocusRequest);
+        const requestedId = getRequestedProjectId();
+        if (requestedId) openReference(requestedId, getRequestedProjectMode());
+        return () => {
+            cancel();
+            window.removeEventListener('project:open-request', onRequest);
+            window.removeEventListener('project:focus-request', onFocusRequest);
+        };
+    }, [useCompactProjectModal]);
+
+    useEffect(() => {
         if (!selectedId) {
             previousFocusRef.current?.focus?.();
             previousFocusRef.current = null;
@@ -861,24 +946,10 @@ const FeaturedProjects = () => {
             />
 
             <div className="container mx-auto px-6">
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={viewportConfig}
-                    className="flex flex-col mb-16"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{projectsHeader.id}</span>
-                        <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
-                    </div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                        {projectsHeader.line1} <br />
-                        <span className="text-electric-green">{projectsHeader.line2}</span>
-                    </h2>
-                    <p className="mt-5 max-w-2xl text-base md:text-lg leading-relaxed text-gray-400">
-                        A focused selection of interface, automation, AI, and real-time systems—each framed around the problem, the engineering decisions, and the delivered workflow.
-                    </p>
-                </motion.div>
+                <SectionHeading
+                    header={projectsHeader}
+                    description="A focused selection of interface, automation, AI, and real-time systems—each framed around the problem, the engineering decisions, and the delivered workflow."
+                />
 
                 <div className="projects-gallery">
                     {projects.map((project) => {

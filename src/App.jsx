@@ -1091,6 +1091,7 @@ function App() {
 
             if (skipScroll) {
                 stopRouteRestore();
+                navigationLockRef.current = createInactiveNavigationLock();
                 commitActiveSection(sectionId, historyMode);
                 return;
             }

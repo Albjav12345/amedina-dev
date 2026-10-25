@@ -1,7 +1,8 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
-import { motion, useInView, useSpring, useTransform } from 'framer-motion';
-import { Shield, Zap, Target, Star, Quote, Globe } from 'lucide-react';
-import { fadeInUp, viewportConfig } from '../../utils/animations';
+import { motion, useInView } from 'framer-motion';
+import { Star } from 'lucide-react';
+import AboutProfile from './AboutProfile';
+import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 
@@ -16,21 +17,9 @@ const desktopMarqueeViewportMargin = '360px 0px';
 const desktopMarqueeMaskImage = 'linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)';
 const highlightedEyebrowClassName = 'inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.24em] text-electric-cyan/80';
 
-const getTestimonialCardSurface = (highlighted, isLow) => {
-    if (highlighted) {
-        return isLow
-            ? 'border-electric-cyan/20 bg-dark-slate shadow-[0_18px_42px_rgba(0,0,0,0.24)]'
-            : 'border-electric-cyan/16 bg-white/[0.065] shadow-[0_18px_42px_rgba(0,0,0,0.24)] hover:bg-white/[0.085]';
-    }
-
-    return isLow ? 'border-white/10 bg-dark-slate' : 'border-white/5 bg-white/5 hover:bg-white/10';
+const getTestimonialCardSurface = (highlighted) => {
+    return `testimonial-surface${highlighted ? ' testimonial-surface--featured' : ''}`;
 };
-
-const getServiceChipClassName = (highlighted) => (
-    highlighted
-        ? 'border-electric-green/24 bg-electric-green/12 text-electric-green'
-        : 'border-electric-green/20 bg-electric-green/10 text-electric-green'
-);
 
 const renderStars = (rating = 5, sizeClassName = 'w-3 h-3') => {
     const normalizedRating = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
@@ -150,39 +139,45 @@ const GeneratedClientAvatar = ({ testimonial, sizeClassName, textClassName }) =>
     );
 };
 
-const Counter = ({ value }) => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+const MobileTestimonial = ({ testimonial, index, isActive }) => {
+    const [expanded, setExpanded] = useState(false);
+    const [canExpand, setCanExpand] = useState(false);
+    const reviewRef = useRef(null);
+    const reviewId = useId();
 
-    const strValue = String(value || "0");
-    const numericValue = parseInt(strValue) || 0;
-    const suffix = strValue.replace(numericValue.toString(), '');
-
-    const springValue = useSpring(0, {
-        stiffness: 30,
-        damping: 15,
-    });
-
-    const displayValue = useTransform(springValue, (latest) =>
-        Math.floor(latest) + suffix
-    );
-
+    useEffect(() => { if (!isActive) setExpanded(false); }, [isActive]);
     useEffect(() => {
-        if (isInView) {
-            springValue.set(numericValue);
-        }
-    }, [isInView, numericValue, springValue]);
+        if (expanded) return undefined;
+        const paragraph = reviewRef.current;
+        const measure = () => setCanExpand(paragraph.scrollHeight > paragraph.clientHeight + 1);
+        const observer = new ResizeObserver(measure);
+        observer.observe(paragraph);
+        measure();
+        return () => observer.disconnect();
+    }, [expanded, testimonial.review]);
 
     return (
-        <motion.span
-            ref={ref}
-            initial={{ opacity: 0, y: 10 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="tabular-nums block"
-        >
-            {displayValue}
-        </motion.span>
+        <div data-testimonial-card className="mobile-testimonial testimonial-surface">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex gap-0.5 opacity-75">{renderStars(testimonial.rating, 'w-2.5 h-2.5')}</div>
+                <span className="text-[8px] font-mono uppercase tracking-wider text-gray-500">{testimonial.label}</span>
+            </div>
+            <p ref={reviewRef} id={reviewId} className={`mobile-testimonial__review${expanded ? ' mobile-testimonial__review--expanded' : ''}`}>
+                "{testimonial.review}"
+            </p>
+            {canExpand && (
+                <button type="button" className="mobile-testimonial__expand" aria-expanded={expanded} aria-controls={reviewId} aria-label={`${expanded ? 'Collapse' : 'Read full'} review ${index + 1}`} onClick={() => setExpanded(value => !value)}>
+                    {expanded ? 'Show less' : 'Read more'}
+                </button>
+            )}
+            <div className="mobile-testimonial__client">
+                <GeneratedClientAvatar testimonial={testimonial} sizeClassName="w-7 h-7" textClassName="text-[7px]" />
+                <div className="min-w-0">
+                    <div className="text-xs font-medium text-gray-300 truncate">{testimonial.clientName}</div>
+                    <div className="mt-1 text-[9px] text-gray-500 truncate">{testimonial.service}</div>
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -201,17 +196,6 @@ const About = ({ isUiFrozen = false }) => {
     const shouldAnimateDesktopMarquee = !isUiFrozen && (hasDesktopMarqueePrimed || isDesktopMarqueeInView);
     const desktopMarqueeDuration = isLow ? 110 : 140;
 
-    const stats = profileAbout.stats.map(s => {
-        let icon;
-        if (s.id === 'years') icon = <Zap className="w-5 h-5" />;
-        if (s.id === 'delivery') icon = <Shield className="w-5 h-5" />;
-        if (s.id === 'rating') icon = <Star className="w-5 h-5" />;
-        if (s.id === 'projects') icon = <Target className="w-5 h-5" />;
-        if (s.id === 'global') icon = <Globe className="w-5 h-5" />;
-
-        return { ...s, icon, color: s.id === 'rating' ? 'text-electric-cyan' : 'text-electric-green' };
-    });
-
     useEffect(() => {
         const container = mobileTestimonialsRef.current;
         if (!container) return undefined;
@@ -220,7 +204,7 @@ const About = ({ isUiFrozen = false }) => {
             const card = container.querySelector('[data-testimonial-card]');
             if (!card) return;
 
-            const cardWidth = card.getBoundingClientRect().width + 16;
+            const cardWidth = card.getBoundingClientRect().width + 12;
             if (!cardWidth) return;
 
             const nextIndex = Math.round(container.scrollLeft / cardWidth);
@@ -238,152 +222,9 @@ const About = ({ isUiFrozen = false }) => {
     }, [isDesktopMarqueeInView]);
 
     return (
-        <section id="about" className="py-20 md:py-32 relative overflow-hidden px-0">
-            {/* Background Decor - GPU-Friendly Radial Gradient */}
-            {!isLow && (
-                <div
-                    className="absolute top-1/4 right-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-40 translate-x-1/2"
-                    style={{ background: "radial-gradient(circle, rgba(102, 252, 241, 0.13) 0%, transparent 70%)" }}
-                />
-            )}
-
+        <section id="about" className="editorial-section about-editorial-section">
             <div className="container mx-auto px-6">
-
-                {/* Section Header */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={viewportConfig}
-                    className="mb-16"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <span className="font-mono text-xs text-electric-green bg-electric-green/10 border border-electric-green/20 px-2 py-1 rounded">{about.id}</span>
-                        <div className="h-px flex-grow bg-gradient-to-r from-electric-green/30 to-transparent"></div>
-                    </div>
-                    <h2 className="text-5xl font-bold font-mono tracking-tighter uppercase text-white">
-                        {about.line1} <br />
-                        <span className="text-electric-green">{about.line2}</span>
-                    </h2>
-                </motion.div>
-
-                {/* Split Layout: Identity (Left) & Narrative (Right) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-
-                    {/* Left Column: Identity Card */}
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewportConfig}
-                        variants={fadeInUp}
-                        className="lg:col-span-4 h-full"
-                    >
-                        <div className={`p-8 h-full relative group gpu-accelerated flex flex-col items-center text-center rounded-xl border border-white/10 transition-colors duration-300 overflow-hidden bg-dark-high/90`}>
-                            {/* Avatar */}
-                            <div className="relative mb-6">
-                                <div className="w-40 h-40 rounded-full border-2 border-electric-green relative z-10 shadow-lg shadow-electric-green/20 ring-2 ring-electric-green/20 flex items-center justify-center bg-black overflow-hidden">
-                                    <img
-                                        src={profileAbout.avatarUrl}
-                                        alt="Alberto Medina"
-                                        className="w-full h-full object-cover object-center"
-                                        width="160"
-                                        height="160"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                </div>
-                                {/* Avatar Glow - Hide on Low Tier */}
-                                {!isLow && <div className="absolute inset-0 bg-electric-green/40 blur-3xl rounded-full"></div>}
-                            </div>
-
-                            {/* Identity Info */}
-                            <h3 className="text-2xl font-bold text-white tracking-tight mb-2">{portfolioData.profile.name}</h3>
-                            <p className="text-sm text-electric-green font-mono mb-6">{portfolioData.profile.role}</p>
-
-                            {/* Verified Badge */}
-                            <div className="bg-white/5 border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 mb-8" title="Real client feedback sourced from completed freelance work">
-                                <Shield className="w-3 h-3 text-electric-green" />
-                                <span className="text-[10px] uppercase tracking-wider text-gray-300">Client-Backed</span>
-                                <div className="h-3 w-px bg-white/10 mx-1"></div>
-                                <div className="flex gap-0.5">{renderStars(5, 'w-3 h-3')}</div>
-                                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 ml-1">Real Reviews</span>
-                            </div>
-
-                            {/* Quick Stats Divider */}
-                            <div className="w-full h-px bg-white/5 mb-8"></div>
-
-                            {/* Vertical Stats */}
-                            <div className="w-full grid grid-cols-2 gap-y-6 gap-x-4">
-                                {stats.filter(s => s.id !== 'rating').map((stat) => (
-                                    <div key={stat.id} className="flex flex-col items-center group/stat">
-                                        <span className="text-2xl font-bold text-white font-mono group-hover/stat:text-electric-green transition-colors">
-                                            <Counter value={stat.value} />
-                                        </span>
-                                        <span className="text-[9px] text-gray-500 uppercase tracking-widest">{stat.label.replace(' ', '_')}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Right Column: Bio / Narrative */}
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewportConfig}
-                        variants={fadeInUp}
-                        transition={{ delay: 0.1 }}
-                        className="lg:col-span-8 h-full"
-                    >
-                        <div className={`p-8 md:p-12 h-full relative gpu-accelerated flex flex-col justify-center rounded-xl border border-white/10 bg-dark-high/90`}>
-
-
-                            <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-8 text-glow-green relative z-10 leading-tight">
-                                {profileAbout.title}
-                            </h3>
-
-                            <div className="space-y-6 text-gray-400 leading-relaxed font-medium text-lg relative z-10">
-                                {profileAbout.bio.map((paragraph, i) => (
-                                    <p key={i} className="text-justify">
-                                        {paragraph.split(' ').map((word, j) => {
-                                            const cleanWord = word.replace(/[.,]/g, '');
-                                            if (['Unity', 'C#', 'full-stack', 'automation', 'AI', 'systems', 'backend'].includes(cleanWord)) {
-                                                return <React.Fragment key={j}><span className="text-electric-cyan font-semibold">{word}</span> </React.Fragment>;
-                                            }
-                                            return word + ' ';
-                                        })}
-                                    </p>
-                                ))}
-                            </div>
-
-                            {profileAbout.philosophy?.quote && (
-                                <div className="mt-8 rounded-2xl border border-electric-cyan/20 bg-electric-cyan/10 p-5 relative z-10">
-                                    <div className="flex items-center gap-2 text-electric-cyan">
-                                        <Quote className="w-4 h-4" />
-                                        <span className="font-mono text-[10px] uppercase tracking-[0.2em]">
-                                            {profileAbout.philosophy.label || 'Perspective'}
-                                        </span>
-                                    </div>
-                                    <p className="mt-4 text-base md:text-lg leading-relaxed text-white">
-                                        {profileAbout.philosophy.quote}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="flex flex-wrap gap-3 mt-10 relative z-10">
-                                <span className="px-3 py-1.5 bg-electric-green/10 border border-electric-green/20 rounded text-[10px] font-mono text-electric-green uppercase tracking-wider">
-                                    Unity_Engine
-                                </span>
-                                <span className="px-3 py-1.5 bg-electric-cyan/10 border border-electric-cyan/20 rounded text-[10px] font-mono text-electric-cyan uppercase tracking-wider">
-                                    Python_Automation
-                                </span>
-                                <span className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] font-mono text-purple-400 uppercase tracking-wider">
-                                    React_Systems
-                                </span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                </div>
+                <AboutProfile header={about} profile={portfolioData.profile} projects={portfolioData.projects} />
 
                 {/* Infinite Testimonials Marquee */}
                 <motion.div
@@ -392,11 +233,11 @@ const About = ({ isUiFrozen = false }) => {
                     viewport={viewportConfig}
                     className="w-full relative"
                 >
-                    <div className="mb-8 flex flex-wrap items-start gap-4 md:items-center">
-                        <div className="mt-3 h-px w-12 flex-shrink-0 bg-white/10 md:mt-0"></div>
-                        <div className="min-w-[16rem] flex-1">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">{testimonialSection.title}</h4>
-                            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500">{testimonialSection.subtitle}</p>
+                    <div className="mb-4 flex items-center gap-3 md:mb-8 md:flex-wrap md:gap-4">
+                        <div className="hidden h-px w-12 flex-shrink-0 bg-white/10 md:block"></div>
+                        <div className="min-w-0 flex-1 md:min-w-[16rem]">
+                            <h4 className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-[0.16em] md:tracking-[0.2em]">{testimonialSection.title}</h4>
+                            <p className="hidden md:block mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">{testimonialSection.subtitle}</p>
                         </div>
                         <div className="ml-auto inline-flex md:hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">
                             <span>{mobileTestimonialIndex + 1}</span>
@@ -416,46 +257,7 @@ const About = ({ isUiFrozen = false }) => {
                             ref={mobileTestimonialsRef}
                             className="flex gap-3 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                         >
-                            {profileAbout.testimonials.map((t, i) => (
-                                <div
-                                    key={`mobile-${i}`}
-                                    data-testimonial-card
-                                    className={`relative w-[calc(100vw-4.25rem)] max-w-none min-h-[22rem] shrink-0 snap-center overflow-hidden rounded-2xl px-5 py-5 flex flex-col justify-between ${getTestimonialCardSurface(t.highlighted, isLow)}`}
-                                >
-                                    {t.highlighted && (
-                                        <>
-                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(102,252,241,0.08),transparent_30%),linear-gradient(180deg,rgba(102,252,241,0.04),transparent_24%)]" />
-                                            <div className="pointer-events-none absolute left-5 top-0 h-px w-24 bg-gradient-to-r from-electric-cyan/85 to-transparent" />
-                                            <div className="pointer-events-none absolute left-0 top-7 h-14 w-px bg-gradient-to-b from-electric-cyan/70 via-electric-green/45 to-transparent" />
-                                        </>
-                                    )}
-                                    {t.highlighted && (
-                                        <div className={`relative z-10 mb-3 ${highlightedEyebrowClassName}`}>
-                                            <span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />
-                                            <span>Featured Review</span>
-                                        </div>
-                                    )}
-                                    <div className="relative z-10 mb-4 flex items-center justify-between gap-3">
-                                        <div className="flex gap-1">{renderStars(t.rating, 'w-3.5 h-3.5')}</div>
-                                        <span className="rounded-full border border-electric-green/20 bg-electric-green/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] text-electric-green">
-                                            {t.label}
-                                        </span>
-                                    </div>
-                                    <p className={`relative z-10 text-[1rem] leading-[1.65] italic mb-5 ${t.highlighted ? 'text-white font-medium' : 'text-gray-100'}`}>
-                                        "{t.review}"
-                                    </p>
-                                    <div className="relative z-10 mt-auto flex items-start gap-3 pt-4 border-t border-white/5">
-                                        <GeneratedClientAvatar testimonial={t} sizeClassName="w-12 h-12" textClassName="text-[10px]" />
-                                        <div className="min-w-0">
-                                            <div className="text-[1.05rem] font-bold text-white leading-tight truncate">{t.clientName}</div>
-                                            <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">{t.clientType}</div>
-                                            <div className={`mt-3 inline-flex max-w-full rounded-full px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.16em] ${getServiceChipClassName(t.highlighted)}`}>
-                                                {t.service}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                            {profileAbout.testimonials.map((t, i) => <MobileTestimonial key={t.id} testimonial={t} index={i} isActive={mobileTestimonialIndex === i} />)}
                         </div>
 
                         <div className="mt-3 flex items-center justify-center gap-2">
@@ -467,7 +269,7 @@ const About = ({ isUiFrozen = false }) => {
                                         const container = mobileTestimonialsRef.current;
                                         const card = container?.querySelector('[data-testimonial-card]');
                                         if (!container || !card) return;
-                                        const cardWidth = card.getBoundingClientRect().width + 16;
+                                        const cardWidth = card.getBoundingClientRect().width + 12;
                                         container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
                                     }}
                                     aria-label={`Show testimonial ${index + 1}`}
@@ -505,15 +307,8 @@ const About = ({ isUiFrozen = false }) => {
                                     {profileAbout.testimonials.map((t) => (
                                         <div
                                             key={`${t.id}-${cloneIndex}`}
-                                            className={`testimonial-card relative w-[350px] md:w-[400px] min-h-[16.25rem] overflow-hidden rounded-xl p-5 flex flex-col justify-between transition-colors cursor-default group shrink-0 ${getTestimonialCardSurface(t.highlighted, isLow)}`}
+                                            className={`testimonial-card relative w-[350px] md:w-[400px] min-h-[16.25rem] overflow-hidden rounded-xl p-5 flex flex-col justify-between transition-colors cursor-default group shrink-0 ${getTestimonialCardSurface(t.highlighted)}`}
                                         >
-                                            {t.highlighted && (
-                                                <>
-                                                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(102,252,241,0.08),transparent_30%),linear-gradient(180deg,rgba(102,252,241,0.04),transparent_24%)]" />
-                                                    <div className="pointer-events-none absolute left-5 top-0 h-px w-24 bg-gradient-to-r from-electric-cyan/85 to-transparent" />
-                                                    <div className="pointer-events-none absolute left-0 top-7 h-14 w-px bg-gradient-to-b from-electric-cyan/70 via-electric-green/45 to-transparent" />
-                                                </>
-                                            )}
                                             {t.highlighted && (
                                                 <div className={`relative z-10 mb-3 ${highlightedEyebrowClassName}`}>
                                                     <span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />
@@ -534,7 +329,7 @@ const About = ({ isUiFrozen = false }) => {
                                             <div className="relative z-10 flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
                                                 <GeneratedClientAvatar testimonial={t} sizeClassName="w-10 h-10" textClassName="text-[9px]" />
                                                 <div className="flex min-w-0 flex-col">
-                                                    <span className="text-xs font-bold text-white">{t.clientName}</span>
+                                                    <span className="testimonial-card__client-name text-xs font-bold text-white">{t.clientName}</span>
                                                     <span className="text-[9px] text-gray-500 font-mono uppercase">{t.clientType}</span>
                                                     <span className={`mt-2 text-[9px] font-mono uppercase tracking-[0.18em] ${t.highlighted ? 'text-electric-cyan' : 'text-electric-green'}`}>{t.service}</span>
                                                 </div>

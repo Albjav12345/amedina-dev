@@ -30,10 +30,10 @@ export default function ProjectMediaGallery({ project }) {
                         allowFullScreen
                     />
                 ) : isDemo ? (
-                    <video src={project.media.modalVideo} poster={project.media.poster} controls preload="metadata" playsInline className="h-full w-full object-contain" />
+                    <video src={project.media.modalVideo} poster={project.media.poster} controls preload="metadata" playsInline className="h-full w-full object-cover object-top" />
                 ) : (
                     <a href={image.src} target="_blank" rel="noopener noreferrer" className="group/media block h-full w-full" aria-label={`Open full-size image: ${image.alt}`}>
-                        <img src={image.src} alt={image.alt} className="h-full w-full object-contain" />
+                        <img src={image.src} alt={image.alt} className="block h-full w-full object-cover object-top" />
                         <span className="absolute right-3 top-3 flex items-center gap-2 rounded-md border border-white/15 bg-black/75 px-2 py-1.5 text-[10px] text-white opacity-80 transition-opacity group-hover/media:opacity-100">Full size <ArrowUpRight className="h-3 w-3" /></span>
                     </a>
                 )}
@@ -50,7 +50,7 @@ export default function ProjectMediaGallery({ project }) {
                                 aria-pressed={selected === index}
                                 className={`relative h-12 w-[72px] shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan ${selected === index ? 'border-electric-cyan' : 'border-transparent hover:border-white/40'}`}
                             >
-                                <img src={item.src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                                <img src={item.src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover object-top" />
                                 {item.type === 'demo' && <span className="absolute inset-0 flex items-center justify-center bg-black/45"><Play className="h-4 w-4 fill-white text-white" aria-hidden="true" /></span>}
                             </button>
                         ))}

@@ -79,7 +79,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                 alt={project.title}
                 loading="lazy"
                 decoding="async"
-                className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+                className={`w-full h-full object-cover object-top origin-top transition-all duration-700 ease-out ${
                     isLoaded && isVideoVisible
                         ? 'opacity-0 scale-110'
                         : 'opacity-80 scale-100 group-hover:opacity-100 group-hover:scale-105'
@@ -98,7 +98,7 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
                     onLoadedData={() => {
                         setIsLoaded(true);
                     }}
-                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${
+                    className={`absolute inset-0 w-full h-full object-cover object-top origin-top transition-all duration-700 ease-out ${
                         isLoaded && isVideoVisible
                             ? 'opacity-70 group-hover:opacity-100 group-hover:scale-105'
                             : 'opacity-0 scale-100'
