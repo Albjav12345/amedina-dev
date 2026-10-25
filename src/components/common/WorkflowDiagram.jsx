@@ -77,6 +77,7 @@ const WorkflowDiagram = ({ steps = [], className = "" }) => {
             {/* Integrated, subtle fade paddles using pure CSS hover states for zero-react-render performance */}
             <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#17181c]/90 via-[#17181c]/50 to-transparent z-20 pointer-events-none flex items-center justify-start opacity-0 group-hover/diagram:opacity-100 transition-opacity duration-300">
                 <button
+                    aria-label="Previous workflow steps"
                     onClick={() => scrollBy(-200)}
                     className="pointer-events-auto ml-1 p-1.5 rounded-full text-white/50 hover:text-electric-green hover:bg-white/5 transition-colors cursor-pointer"
                 >
@@ -86,6 +87,7 @@ const WorkflowDiagram = ({ steps = [], className = "" }) => {
 
             <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#17181c]/90 via-[#17181c]/50 to-transparent z-20 pointer-events-none flex items-center justify-end opacity-0 group-hover/diagram:opacity-100 transition-opacity duration-300">
                 <button
+                    aria-label="Next workflow steps"
                     onClick={() => scrollBy(200)}
                     className="pointer-events-auto mr-1 p-1.5 rounded-full text-white/50 hover:text-electric-green hover:bg-white/5 transition-colors cursor-pointer"
                 >

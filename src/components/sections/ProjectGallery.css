@@ -1,0 +1,61 @@
+.projects-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 220px;
+    gap: 14px;
+}
+
+.project-tile { min-width: 0; transition: border-color 250ms ease, box-shadow 250ms ease; }
+.project-tile:hover { border-color: rgb(0 255 153 / 32%); box-shadow: 0 8px 40px rgb(0 255 153 / 5%); }
+.project-tile[data-gallery-hidden="true"] { pointer-events: none !important; border-color: transparent !important; box-shadow: none !important; }
+.project-tile > div { min-height: 0; }
+.project-tile__media { height: 57%; flex-shrink: 0; }
+.project-tile__content { padding: 14px; min-height: 0; }
+.project-tile__title { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.project-tile__subtitle { font-size: 8px; line-height: 1.6; margin-top: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.project-tile__arrow { width: 15px; height: 15px; }
+.project-tile__stack { display: none; }
+.project-tile--feature { grid-column: span 2; grid-row: span 2; }
+.project-tile--feature .project-tile__media { height: 72%; }
+.project-tile--feature .project-tile__media img { object-position: left top; }
+.project-tile--feature .project-tile__content { padding: 20px; }
+.project-tile--feature .project-tile__title { font-size: 30px; }
+.project-tile--feature .project-tile__subtitle { font-size: 10px; }
+.project-tile--feature .project-tile__stack { display: flex; margin-top: 12px; }
+.project-tile__badge { position: absolute; top: 18px; right: 18px; display: flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgb(102 252 241 / 25%); border-radius: 999px; background: rgb(11 12 16 / 85%); color: #b9e9e8; font: 8px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+.project-tile--wide { grid-column: span 2; }
+
+.project-store-link { display: inline-flex; align-items: center; justify-content: center; gap: 12px; flex: 1 1 190px; min-height: 54px; padding: 12px 16px; border: 1px solid rgb(255 255 255 / 15%); border-radius: 8px; color: #d1d5db; font: 11px var(--font-mono); transition: background 180ms, border-color 180ms; }
+a.project-store-link:hover { background: rgb(255 255 255 / 6%); border-color: rgb(255 255 255 / 35%); }
+.project-store-link--active { color: #66fcf1; border-color: rgb(102 252 241 / 35%); background: rgb(102 252 241 / 6%); }
+.project-store-link--soon { color: #9ca3af; cursor: default; }
+
+@media (min-width: 768px) {
+    .projects-gallery { grid-auto-rows: 320px; gap: 20px; }
+    .project-tile__content { padding: 22px; }
+    .project-tile__title { font-size: 20px; }
+    .project-tile__subtitle { font-size: 9px; }
+    .project-tile__arrow { width: 20px; height: 20px; }
+    .project-tile__stack { display: flex; margin-top: 16px; }
+    .project-tile--feature .project-tile__title { font-size: 40px; }
+    .project-tile--feature .project-tile__content { padding: 28px; }
+    .project-tile--feature .project-tile__subtitle { font-size: 11px; }
+    .project-tile__badge { top: 22px; right: 22px; font-size: 9px; }
+}
+
+@media (min-width: 1024px) {
+    .projects-gallery { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: clamp(280px, 23vw, 340px); gap: 24px; }
+    .project-tile { grid-column: span 4; }
+    .project-tile--feature { grid-column: span 8; grid-row: span 2; }
+    .project-tile--feature .project-tile__media { height: 74%; }
+    .project-tile--wide { grid-column: span 8; }
+    .project-tile--half { grid-column: span 6; }
+    .project-tile--wide .project-tile__media { position: absolute; inset: 0 0 0 38%; width: 62%; height: 100%; border: 0; }
+    .project-tile--wide .project-tile__media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #0d0e12, transparent 55%); pointer-events: none; }
+    .project-tile--wide .project-tile__content { width: 56%; justify-content: center; gap: 18px; padding: 28px; }
+    .project-tile--wide .project-tile__title { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-tile, .project-store-link { transition: none; }
+}

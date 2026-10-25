@@ -21,7 +21,7 @@ const cachePath = path.join(rootDir, 'node_modules', '.cache', 'amedina-project-
 const PIPELINE_VERSION = 1;
 
 const wallPosterConfig = {
-  version: 1,
+  version: 2,
   widths: [320, 640, 960],
   quality: 88,
 };
@@ -208,12 +208,11 @@ async function generateWallPosters(project, posterPublicPath, cachedWallPosters)
   }
 
   const posterPath = resolvePublicAsset(posterPublicPath);
-  const posterStats = await fs.stat(posterPath);
+  const posterHash = await fileHash(posterPath);
   const signature = [
     wallPosterConfig.version,
     posterPublicPath,
-    posterStats.size,
-    Math.round(posterStats.mtimeMs),
+    posterHash,
     wallPosterConfig.widths.join(','),
     wallPosterConfig.quality,
   ].join(':');
@@ -234,7 +233,8 @@ async function generateWallPosters(project, posterPublicPath, cachedWallPosters)
     const posterStem = slugify(`${project.id}-${path.basename(posterPath, path.extname(posterPath))}`);
 
     variants = await Promise.all(widths.map(async (width) => {
-      const outputPath = path.join(outputDir, `${posterStem}.wall-${width}.webp`);
+      // A changed cover must have a new URL, including every srcset variant.
+      const outputPath = path.join(outputDir, `${posterStem}.${posterHash.slice(0, 12)}.wall-${width}.webp`);
       const output = await sharp(posterPath)
         .rotate()
         .resize({ width, withoutEnlargement: true })

@@ -378,7 +378,7 @@ const KNOWN_BOOLEAN_VALUES = ['TRUE', 'FALSE'];
 const STAR_VALUES = ['1', '2', '3', '4', '5'];
 const ASSET_KINDS = ['image', 'video', 'icon', 'other'];
 const ASSET_MODES = ['existing_public', 'import_local', 'external_url'];
-const DEMO_TYPES = ['video', 'image'];
+const DEMO_TYPES = ['video', 'image', 'youtube'];
 const ICON_FITS = ['auto', 'cover', ''];
 const TERMINAL_COLORS = ['electric-green', 'electric-cyan', 'white', 'gray'];
 const SKILL_COLORS = ['electric-green', 'electric-cyan'];
@@ -513,6 +513,16 @@ Quick workflow:
 Important:
 
 - \`content:init\` is only for the first bootstrap. Once the workbook exists, keep editing the Excel file and use \`content:sync\`.
+
+Project presentation:
+
+- \`PROJECTS.gallerySize\`: blank for a standard tile, \`feature\` for a large tile, \`wide\` for a landscape tile, or \`half\` for half a desktop row.
+- \`PROJECTS.cardLabel\`: optional badge text on the gallery tile.
+- \`githubLink\`, \`itchLink\`, and \`assetStoreLink\` are optional. Set \`assetStoreComingSoon\` to TRUE while a Unity listing is pending, then add its public URL when available.
+- \`galleryAssetIds\` lists ASSETS ids in display order, separated by \`|\`. ASSETS.alt supplies the image descriptions and captions.
+- For YouTube demos, choose \`demoType=youtube\` and put the privacy-enhanced embed URL in \`demoEmbedUrl\`. Local videos still use \`videoAssetId\`.
+- \`videoAssetId\` points to the source video in ASSETS. The media pipeline derives a silent 640px gallery preview and a separate 1280px detail video; these generated files should not be edited by hand. Choose \`demoType=video\` to use the native detail player. A YouTube embed can also retain a local video asset for the idle preview.
+- \`PROJECT_ARCH.workflow\` optionally groups steps into separate workflows. Keep the same group name on each related step; order controls their sequence.
 
 Asset modes:
 
@@ -820,6 +830,11 @@ function buildAssetUsageIndex(masterData) {
             sheetName: SHEET_NAMES.projects,
             rowKey: asString(project.id),
         });
+        asString(project.galleryAssetIds).split('|').map((id) => id.trim()).filter(Boolean).forEach((assetId) => registerUsage(assetId, {
+            label: `${project.title} gallery`,
+            sheetName: SHEET_NAMES.projects,
+            rowKey: asString(project.id),
+        }));
     }
 
     for (const testimonial of masterData.testimonialEntries || []) {
@@ -2444,7 +2459,14 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             { key: 'subtitle', header: 'subtitle', width: 34, required: true },
             { key: 'problem', header: 'problem', width: 72, required: true, wrap: true },
             { key: 'solution', header: 'solution', width: 72, required: true, wrap: true },
-            { key: 'githubLink', header: 'githubLink', width: 44, required: true },
+            { key: 'githubLink', header: 'githubLink', width: 44 },
+            { key: 'itchLink', header: 'itchLink', width: 44 },
+            { key: 'assetStoreLink', header: 'assetStoreLink', width: 44 },
+            { key: 'assetStoreComingSoon', header: 'assetStoreComingSoon', width: 22, validation: { lookup: 'booleanValues' } },
+            { key: 'gallerySize', header: 'gallerySize', width: 18 },
+            { key: 'cardLabel', header: 'cardLabel', width: 28 },
+            { key: 'galleryAssetIds', header: 'galleryAssetIds', width: 60, wrap: true },
+            { key: 'demoEmbedUrl', header: 'demoEmbedUrl', width: 52 },
             { key: 'demoType', header: 'demoType', width: 16, required: true, validation: { lookup: 'demoTypes' } },
             { key: 'videoAssetId', header: 'videoAssetId', width: 24, validation: { lookup: 'assetIds' } },
             { key: 'thumbnailAssetId', header: 'thumbnailAssetId', width: 24, validation: { lookup: 'assetIds' } },
@@ -2476,6 +2498,7 @@ function getSheetDefinitions(masterData, resolvedAssets) {
         columns: [
             { key: 'project_id', header: 'project_id', width: 14, required: true, validation: { lookup: 'projectIds' } },
             { key: 'label', header: 'label', width: 28, required: true },
+            { key: 'workflow', header: 'workflow', width: 28 },
             { key: 'order', header: 'order', width: 10, required: true, validation: { type: 'whole', operator: 'greaterThan', formulae: [0] } },
             { key: 'rowStatus', header: 'rowStatus', width: 20, generated: true },
         ],
@@ -3144,6 +3167,21 @@ export async function loadCurrentSourceContent() {
             problem: project.problem,
             solution: project.solution,
             githubLink: project.githubLink,
+            itchLink: project.itchLink ?? '',
+            assetStoreLink: project.assetStoreLink ?? '',
+            assetStoreComingSoon: project.assetStoreComingSoon ?? false,
+            gallerySize: project.gallerySize ?? '',
+            cardLabel: project.cardLabel ?? '',
+            demoEmbedUrl: project.demoEmbedUrl ?? '',
+            galleryAssetIds: toArray(project.gallery).map((image, imageIndex) => assetRegistrar.register({
+                assetId: `project-${project.id}-gallery-${imageIndex + 1}`,
+                kind: 'image',
+                mode: isExternalUrl(image.src) ? 'external_url' : 'existing_public',
+                sourceValue: image.src,
+                targetPublicPath: isExternalUrl(image.src) ? '' : image.src,
+                alt: image.alt,
+                enabled: true,
+            })).join('|'),
             demoType: project.demoType,
             videoAssetId,
             thumbnailAssetId,
@@ -3163,13 +3201,15 @@ export async function loadCurrentSourceContent() {
         })),
     );
 
-    const projectArchEntries = projectSources.flatMap((project) =>
-        toArray(project.arch).map((label, index) => ({
+    const projectArchEntries = projectSources.flatMap((project) => {
+        const workflows = project.workflows?.length ? project.workflows : [{ title: '', steps: toArray(project.arch) }];
+        return workflows.flatMap((workflow, groupIndex) => workflow.steps.map((label, index) => ({
             project_id: project.id,
             label,
-            order: index + 1,
-        })),
-    );
+            workflow: workflow.title,
+            order: groupIndex * 100 + index + 1,
+        })));
+    });
 
     const skillCategoryEntries = toArray(skills.categories).map((category, index) => {
         const categoryId = slugify(category.title) || `skill-category-${index + 1}`;
@@ -3685,6 +3725,25 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 throw new Error(`PROJECTS.iconFit for "${entry.id}" must be one of: ${ICON_FITS.filter(Boolean).join(', ')}.`);
             }
 
+            const gallerySize = asString(entry.gallerySize);
+            if (!['', 'feature', 'wide', 'half'].includes(gallerySize)) {
+                throw new Error(`PROJECTS.gallerySize for "${entry.id}" must be feature, wide, half, or blank.`);
+            }
+            const demoEmbedUrl = asString(entry.demoEmbedUrl);
+            if (demoType === 'youtube' && !/^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{11}$/.test(demoEmbedUrl)) {
+                throw new Error(`PROJECTS.demoEmbedUrl for "${entry.id}" must be a YouTube privacy-enhanced embed URL.`);
+            }
+            const workflows = [];
+            for (const step of sortByOrder(masterData.projectArchEntries.filter((row) => asString(row.project_id) === asString(entry.id)))) {
+                const title = asString(step.workflow);
+                let workflow = workflows.find((group) => group.title === title);
+                if (!workflow) {
+                    workflow = { title, steps: [] };
+                    workflows.push(workflow);
+                }
+                workflow.steps.push(asString(step.label));
+            }
+
             return {
                 id: parseRequiredNumber(entry.id, `PROJECTS.id for ${entry.title}`),
                 title: asString(entry.title),
@@ -3694,10 +3753,19 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 stack: sortByOrder(
                     masterData.projectStackEntries.filter((stackEntry) => asString(stackEntry.project_id) === asString(entry.id)),
                 ).map((stackEntry) => asString(stackEntry.label)),
-                arch: sortByOrder(
-                    masterData.projectArchEntries.filter((archEntry) => asString(archEntry.project_id) === asString(entry.id)),
-                ).map((archEntry) => asString(archEntry.label)),
+                arch: workflows[0]?.steps || [],
+                workflows: workflows.length > 1 ? workflows : [],
                 githubLink: asString(entry.githubLink),
+                itchLink: asString(entry.itchLink),
+                assetStoreLink: asString(entry.assetStoreLink),
+                assetStoreComingSoon: parseBoolean(entry.assetStoreComingSoon, false),
+                gallerySize,
+                cardLabel: asString(entry.cardLabel),
+                gallery: asString(entry.galleryAssetIds).split('|').map((id) => id.trim()).filter(Boolean).map((id) => ({
+                    src: resolveAssetUrl(id, `PROJECTS.galleryAssetIds for ${entry.id}`),
+                    alt: asString(assetsById.get(id)?.alt),
+                })),
+                demoEmbedUrl,
                 demoType,
                 videoSource: resolveAssetUrl(entry.videoAssetId, `PROJECTS.videoAssetId for ${entry.id}`, { optional: true }) || null,
                 thumbnail: resolveAssetUrl(entry.thumbnailAssetId, `PROJECTS.thumbnailAssetId for ${entry.id}`, { optional: true }) || null,

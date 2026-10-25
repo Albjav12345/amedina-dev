@@ -1,12 +1,15 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
-import { Code2, ArrowUpRight, Terminal, X, Github, Cpu, ExternalLink, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
-import WorkflowDiagram from '../common/WorkflowDiagram';
+import { Code2, ArrowUpRight, Terminal, X, Cpu, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
+import ProjectWorkflows from './ProjectWorkflows';
 import { viewportConfig } from '../../utils/animations';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import SmartThumbnail from './SmartThumbnail';
+import ProjectLinks from './ProjectLinks';
+import ProjectMediaGallery from './ProjectMediaGallery';
+import './ProjectGallery.css';
 import { subscribeScrollRuntime } from '../../utils/scrollRuntime';
 import { dispatchSectionNavigation, isPlainLeftClick } from '../../utils/sectionRouting';
 
@@ -63,6 +66,7 @@ const FeaturedProjects = () => {
     const [cardStatus, setCardStatus] = useState({});
     const [allowedVideoIds, setAllowedVideoIds] = useState([]);
     const quality = useHardwareQuality();
+    const activeProject = projects.find((project) => project.id === selectedId);
     const hasTabletModalSpace = useMediaQuery('(min-width: 768px)');
     const hasTwoColumnModalSpace = useMediaQuery('(min-width: 1024px)');
     const useCompactProjectModal = !hasTabletModalSpace
@@ -424,7 +428,6 @@ const FeaturedProjects = () => {
         }
     }, [elevatedCardId, useCompactProjectModal]);
 
-    const activeProject = projects.find((project) => project.id === selectedId);
 
     const handleProjectOpen = (projectId, triggerElement) => {
         if (closeFrameRef.current !== null) {
@@ -717,53 +720,11 @@ const FeaturedProjects = () => {
                     </div>
                 </div>
 
-                <div className="pt-10 mt-auto flex flex-col sm:flex-row gap-4">
-                    <a
-                        href={activeProject.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-grow btn-system inline-flex items-center justify-center gap-3 px-8 py-4 group"
-                    >
-                        <span className="font-mono text-sm tracking-widest uppercase">Access_Repo</span>
-                        <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </a>
-                </div>
+                <ProjectLinks project={activeProject} />
             </div>
 
             <div className={projectMediaPanelClass}>
-                <div className="space-y-4 flex-grow">
-                    <span className="text-gray-500 font-mono text-[10px] uppercase tracking-widest inline-flex items-center gap-2">
-                        Live_Stream_Demo
-                        <ExternalLink className="w-3 h-3 opacity-50" />
-                    </span>
-                    <div className={`relative aspect-video rounded-xl overflow-hidden glass-card border-white/10 group/media bg-black shadow-2xl ${useWideProjectLayout ? '' : 'max-h-[min(46vh,28rem)]'}`}>
-                        {activeProject.demoType === 'video' ? (
-                            <video
-                                src={activeProject.media.modalVideo}
-                                poster={activeProject.media.poster}
-                                controls
-                                preload="metadata"
-                                playsInline
-                                className="w-full h-full object-contain"
-                            />
-                        ) : (
-                            <img
-                                src={activeProject.media.poster || activeProject.thumbnail}
-                                alt="Demo Preview"
-                                className="w-full h-full object-cover"
-                            />
-                        )}
-
-                        <div className="absolute top-0 left-0 w-full h-[2px] bg-electric-green/20 shadow-[0_0_15px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-10"></div>
-
-                        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none opacity-0 group-hover/media:opacity-100 transition-opacity">
-                            <div className="w-2 h-2 rounded-full bg-electric-green animate-pulse"></div>
-                            <span className="font-mono text-[8px] text-electric-green uppercase tracking-[0.2em] bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
-                                HD_SOURCE_ACTIVE
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <ProjectMediaGallery key={activeProject.id} project={activeProject} />
             </div>
 
             <div className={projectFlowPanelClass}>
@@ -776,9 +737,7 @@ const FeaturedProjects = () => {
                             <div className="w-1 h-1 rounded-full bg-electric-green delay-200 animate-pulse"></div>
                         </div>
                     </div>
-                    <div className="p-4 md:p-6 rounded-xl bg-white/5 border border-white/10">
-                        <WorkflowDiagram steps={activeProject.arch} />
-                    </div>
+                    <ProjectWorkflows key={activeProject.id} project={activeProject} />
                 </div>
             </div>
         </>
@@ -921,7 +880,7 @@ const FeaturedProjects = () => {
                     </p>
                 </motion.div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
+                <div className="projects-gallery">
                     {projects.map((project) => {
                         const isSelected = selectedId === project.id;
                         const isAllowedToPlay = allowedVideoIds.includes(project.id);
@@ -943,11 +902,13 @@ const FeaturedProjects = () => {
                                 onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
                                 variants={cardVariants}
                                 onClick={(event) => handleProjectOpen(project.id, event.currentTarget)}
-                                className={`gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col h-[220px] md:h-[450px] overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/5 bg-dark-high/90'}`}
+                                data-gallery-size={project.gallerySize || 'standard'}
+                                data-gallery-hidden={shouldHideGalleryCard}
+                                className={`project-tile project-tile--${project.gallerySize || 'standard'} gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/10 bg-dark-high/90'}`}
                                 style={isElevatedCard ? { zIndex: 80 } : undefined}
                             >
                                 <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                                    <div className="relative w-full h-[60%] md:h-[60%] overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                                    <div className="project-tile__media relative w-full overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
                                         <SmartThumbnail
                                             project={project}
                                             isAllowedToPlay={isSectionNearViewport && isScrollIdle && !selectedId && isAllowedToPlay}
@@ -966,22 +927,17 @@ const FeaturedProjects = () => {
                                         </div>
                                     </div>
 
-                                    <div className="p-3 md:p-8 flex flex-col justify-between flex-grow relative z-10">
+                                    {project.cardLabel && <span className="project-tile__badge"><span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />{project.cardLabel}</span>}
+                                    <div className="project-tile__content flex flex-col justify-between flex-grow relative z-10">
                                         <div className="relative">
-                                            <div className="flex justify-between items-start mb-1 md:mb-4">
-                                                <div className="w-6 h-6 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-electric-green/50 transition-colors">
-                                                    <Code2 className="w-3 h-3 md:w-5 md:h-5 text-gray-400 group-hover:text-electric-green transition-colors" />
-                                                </div>
-                                                <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.14em] text-gray-500 group-hover:text-electric-green transition-colors">
-                                                    <span className="hidden md:inline">View system</span>
-                                                    <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4" />
-                                                </span>
+                                            <div className="flex items-start justify-between gap-3">
+                                                <h3 className="project-tile__title font-bold text-white leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
+                                                <ArrowUpRight className="project-tile__arrow shrink-0 text-gray-500 group-hover:text-electric-green transition-colors" aria-hidden="true" />
                                             </div>
-                                            <h3 className="text-sm md:text-xl font-bold text-white mb-0.5 md:mb-2 leading-tight group-hover:text-electric-green transition-colors line-clamp-1">{project.title}</h3>
-                                            <p className="text-gray-500 font-mono text-[7px] md:text-[9px] uppercase tracking-widest line-clamp-1">{project.subtitle}</p>
+                                            <p className="project-tile__subtitle text-gray-400 font-mono uppercase tracking-widest">{project.subtitle}</p>
                                         </div>
 
-                                        <div className="hidden md:flex mt-6 flex-wrap gap-2">
+                                        <div className="project-tile__stack flex-wrap gap-2">
                                             {project.stack.slice(0, 3).map((tech) => (
                                                 <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
                                                     {tech}

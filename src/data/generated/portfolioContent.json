@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-29T20:42:49.176Z",
+  "generatedAt": "2026-10-25T14:55:16.057Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -373,13 +373,29 @@
       "problem": "A lot of developers can build tools. Far fewer can build custom interfaces that feel intentional inside a real-time engine.",
       "solution": "I built polished Unity interfaces and supporting shader work to show that I can design and implement unusual UI systems, not just standard app screens.",
       "githubLink": "https://github.com/Albjav12345/unity-interfaces",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-1-video",
-      "thumbnailAssetId": "project-1-thumbnail",
-      "iconAssetId": "project-1-icon",
+      "videoAssetId": {
+        "text": "project-1-video",
+        "hyperlink": "#'ASSETS'!A10"
+      },
+      "thumbnailAssetId": {
+        "text": "project-1-thumbnail",
+        "hyperlink": "#'ASSETS'!A11"
+      },
+      "iconAssetId": {
+        "text": "project-1-icon",
+        "hyperlink": "#'ASSETS'!A12"
+      },
       "iconFit": "",
       "iconScale": 1.3,
-      "order": 1,
+      "order": 2,
       "enabled": "TRUE"
     },
     {
@@ -389,13 +405,29 @@
       "problem": "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
       "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
       "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "wide",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-2-video",
-      "thumbnailAssetId": "project-2-thumbnail",
-      "iconAssetId": "project-2-icon",
+      "videoAssetId": {
+        "text": "project-2-video",
+        "hyperlink": "#'ASSETS'!A13"
+      },
+      "thumbnailAssetId": {
+        "text": "project-2-thumbnail",
+        "hyperlink": "#'ASSETS'!A14"
+      },
+      "iconAssetId": {
+        "text": "project-2-icon",
+        "hyperlink": "#'ASSETS'!A15"
+      },
       "iconFit": "auto",
       "iconScale": 1.25,
-      "order": 2,
+      "order": 4,
       "enabled": "TRUE"
     },
     {
@@ -405,10 +437,26 @@
       "problem": "Manual booking created conflicts, stale availability, and too much back-and-forth for users.",
       "solution": "I shipped a serverless PWA with real-time sync and validation so availability updates instantly and booking conflicts are resolved at the system level.",
       "githubLink": "https://github.com/Albjav12345/padel-sync",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-3-video",
-      "thumbnailAssetId": "project-3-thumbnail",
-      "iconAssetId": "project-3-icon",
+      "videoAssetId": {
+        "text": "project-3-video",
+        "hyperlink": "#'ASSETS'!A16"
+      },
+      "thumbnailAssetId": {
+        "text": "project-3-thumbnail",
+        "hyperlink": "#'ASSETS'!A17"
+      },
+      "iconAssetId": {
+        "text": "project-3-icon",
+        "hyperlink": "#'ASSETS'!A18"
+      },
       "iconFit": "",
       "iconScale": "",
       "order": 3,
@@ -421,13 +469,29 @@
       "problem": "Finding live streamers in Fortnite lobbies manually was slow, repetitive, and easy to get wrong.",
       "solution": "I automated the workflow with screen capture, OCR, and Twitch API checks so detection became fast, repeatable, and much easier to monitor.",
       "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-4-video",
-      "thumbnailAssetId": "project-4-thumbnail",
-      "iconAssetId": "project-4-icon",
+      "videoAssetId": {
+        "text": "project-4-video",
+        "hyperlink": "#'ASSETS'!A19"
+      },
+      "thumbnailAssetId": {
+        "text": "project-4-thumbnail",
+        "hyperlink": "#'ASSETS'!A20"
+      },
+      "iconAssetId": {
+        "text": "project-4-icon",
+        "hyperlink": "#'ASSETS'!A21"
+      },
       "iconFit": "",
       "iconScale": 1.3,
-      "order": 4,
+      "order": 5,
       "enabled": "TRUE"
     },
     {
@@ -437,13 +501,29 @@
       "problem": "Authorized endpoint collection can fail because of file locks, manual steps, and inconsistent evidence handling during controlled security exercises.",
       "solution": "I built a Windows-based acquisition workflow for authorized lab and red-team scenarios, combining native system polling, explicit operator controls, and low-friction evidence collection.",
       "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "half",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-5-video",
-      "thumbnailAssetId": "project-5-thumbnail",
-      "iconAssetId": "project-5-icon",
+      "videoAssetId": {
+        "text": "project-5-video",
+        "hyperlink": "#'ASSETS'!A22"
+      },
+      "thumbnailAssetId": {
+        "text": "project-5-thumbnail",
+        "hyperlink": "#'ASSETS'!A23"
+      },
+      "iconAssetId": {
+        "text": "project-5-icon",
+        "hyperlink": "#'ASSETS'!A24"
+      },
       "iconFit": "auto",
       "iconScale": "",
-      "order": 5,
+      "order": 6,
       "enabled": "TRUE"
     },
     {
@@ -453,258 +533,639 @@
       "problem": "A home PC that is powered off cannot be reached through remote streaming, and failures across the wake and connection path are hard to pinpoint.",
       "solution": "I built a Windows controller and ESP32 firmware that wake the PC over the home network, check each connection stage, and launch Moonlight when the desktop is ready.",
       "githubLink": "https://github.com/Albjav12345/remote-pc-bridge",
+      "itchLink": "",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "",
+      "gallerySize": "half",
+      "cardLabel": "",
+      "galleryAssetIds": "",
+      "demoEmbedUrl": "",
       "demoType": "video",
-      "videoAssetId": "project-6-video",
-      "thumbnailAssetId": "project-6-thumbnail",
-      "iconAssetId": "project-6-icon",
+      "videoAssetId": {
+        "text": "project-6-video",
+        "hyperlink": "#'ASSETS'!A45"
+      },
+      "thumbnailAssetId": {
+        "text": "project-6-thumbnail",
+        "hyperlink": "#'ASSETS'!A46"
+      },
+      "iconAssetId": {
+        "text": "project-6-icon",
+        "hyperlink": "#'ASSETS'!A47"
+      },
       "iconFit": "auto",
       "iconScale": 1,
-      "order": 6,
+      "order": 7,
+      "enabled": "TRUE"
+    },
+    {
+      "id": 7,
+      "title": "DataCraft",
+      "subtitle": "Visual JSON tools for Unity",
+      "problem": "Game data, API responses and player saves often live in scattered files and custom scripts. Unity teams need a visual workflow with a reliable path to gameplay.",
+      "solution": "I built a commercial Unity asset for typed templates, linked instances, JSON/CSV transfer, API-to-C# generation and local saves. Validation and explicit catalog publishing keep editable drafts, gameplay data and player progress separate.",
+      "githubLink": "",
+      "itchLink": "https://albjav12345.itch.io/datacraft",
+      "assetStoreLink": "",
+      "assetStoreComingSoon": "TRUE",
+      "gallerySize": "feature",
+      "cardLabel": "Independent Unity asset",
+      "galleryAssetIds": "datacraft-gallery-1|datacraft-gallery-2|datacraft-gallery-3|datacraft-gallery-4|datacraft-gallery-5|datacraft-gallery-6|datacraft-gallery-7|datacraft-gallery-8",
+      "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/Uqpto9OyuA0",
+      "demoType": "video",
+      "videoAssetId": {
+        "text": "datacraft-video",
+        "hyperlink": "#'ASSETS'!A58"
+      },
+      "thumbnailAssetId": {
+        "text": "datacraft-cover",
+        "hyperlink": "#'ASSETS'!A48"
+      },
+      "iconAssetId": {
+        "text": "datacraft-icon",
+        "hyperlink": "#'ASSETS'!A49"
+      },
+      "iconFit": "auto",
+      "iconScale": 1,
+      "order": 1,
       "enabled": "TRUE"
     }
   ],
   "projectStackEntries": [
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Unity 3D",
       "order": 1
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "C#",
       "order": 2
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "HLSL Shaders",
       "order": 3
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Motion Design",
       "order": 4
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Flask",
       "order": 2
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Llama 3",
       "order": 3
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Supabase",
       "order": 4
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "React + Vite",
       "order": 1
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Firebase",
       "order": 2
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Tailwind",
       "order": 3
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Framer Motion",
       "order": 4
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Python",
       "order": 1
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tesseract OCR",
       "order": 2
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Twitch API",
       "order": 3
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tkinter",
       "order": 4
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "PowerShell",
       "order": 1
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Batch",
       "order": 2
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "WMI/CIM",
       "order": 3
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "OPSEC",
       "order": 4
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "C# / .NET 8",
       "order": 1
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "ESP32 / Arduino",
       "order": 2
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "Firebase Realtime Database",
       "order": 3
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "Tailscale + Moonlight",
       "order": 4
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Unity 6",
+      "order": 1
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "C#",
+      "order": 2
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "UI Toolkit",
+      "order": 3
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "JSON / CSV",
+      "order": 4
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "UnityWebRequest",
+      "order": 5
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "UPM",
+      "order": 6
     }
   ],
   "projectArchEntries": [
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Unity Core",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "C# Systems",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "HLSL Shaders",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "1",
+      "project_id": {
+        "text": "1",
+        "hyperlink": "#'PROJECTS'!A9"
+      },
       "label": "Motion UI",
+      "workflow": "",
       "order": 4
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Outlook",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Python Backend",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Groq Llama 3",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "2",
+      "project_id": {
+        "text": "2",
+        "hyperlink": "#'PROJECTS'!A10"
+      },
       "label": "Web UI",
+      "workflow": "",
       "order": 4
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Serverless",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Event Listeners",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "PWA Cache",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "3",
+      "project_id": {
+        "text": "3",
+        "hyperlink": "#'PROJECTS'!A11"
+      },
       "label": "Reactive State",
+      "workflow": "",
       "order": 4
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Screen Capture",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Tesseract OCR",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Twitch API",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "4",
+      "project_id": {
+        "text": "4",
+        "hyperlink": "#'PROJECTS'!A12"
+      },
       "label": "Dashboard",
+      "workflow": "",
       "order": 4
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Background Polling",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "UAC Evasion",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "File-Lock Bypass",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "5",
+      "project_id": {
+        "text": "5",
+        "hyperlink": "#'PROJECTS'!A13"
+      },
       "label": "Encrypted Exfiltration",
+      "workflow": "",
       "order": 4
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "Windows Controller",
+      "workflow": "",
       "order": 1
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "Firebase Command Bus",
+      "workflow": "",
       "order": 2
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "ESP32 Wake-on-LAN",
+      "workflow": "",
       "order": 3
     },
     {
-      "project_id": "6",
+      "project_id": {
+        "text": "6",
+        "hyperlink": "#'PROJECTS'!A14"
+      },
       "label": "Sunshine + Moonlight",
+      "workflow": "",
       "order": 4
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Define typed templates",
+      "workflow": "Game data",
+      "order": 1
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Create linked instances",
+      "workflow": "Game data",
+      "order": 2
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Validate drafts",
+      "workflow": "Game data",
+      "order": 3
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Publish Project Data",
+      "workflow": "Game data",
+      "order": 4
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Read by stable ID",
+      "workflow": "Game data",
+      "order": 5
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Configure endpoint / paste JSON",
+      "workflow": "JSON APIs",
+      "order": 11
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Review C# preview",
+      "workflow": "JSON APIs",
+      "order": 12
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Generate DTOs & client",
+      "workflow": "JSON APIs",
+      "order": 13
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Integrate in gameplay",
+      "workflow": "JSON APIs",
+      "order": 14
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Save player progress",
+      "workflow": "Local saves",
+      "order": 21
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Write local JSON",
+      "workflow": "Local saves",
+      "order": 22
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Inspect & review in Files",
+      "workflow": "Local saves",
+      "order": 23
+    },
+    {
+      "project_id": {
+        "text": "7",
+        "hyperlink": "#'PROJECTS'!A15"
+      },
+      "label": "Load saved state",
+      "workflow": "Local saves",
+      "order": 24
     }
   ],
   "testimonialSourceEntries": [
@@ -728,7 +1189,10 @@
   "testimonialEntries": [
     {
       "id": "unity-progress-communication",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Indie Founder / First Delivery",
@@ -737,7 +1201,10 @@
       "starRating": "2",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-06-16T19:22:08Z",
-      "avatarAssetId": "testimonial-client8",
+      "avatarAssetId": {
+        "text": "testimonial-client8",
+        "hyperlink": "#'ASSETS'!A32"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -745,7 +1212,10 @@
     },
     {
       "id": "unity-fast-delivery",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Solo Developer / Tight Deadline",
@@ -754,7 +1224,10 @@
       "starRating": "3",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-02T16:25:00Z",
-      "avatarAssetId": "testimonial-client13",
+      "avatarAssetId": {
+        "text": "testimonial-client13",
+        "hyperlink": "#'ASSETS'!A40"
+      },
       "featured": "TRUE",
       "featuredOrder": 3,
       "highlighted": "FALSE",
@@ -762,7 +1235,10 @@
     },
     {
       "id": "unity-communication",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Indie Buyer / Feedback Loop",
@@ -771,7 +1247,10 @@
       "starRating": "4",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-05T20:42:58Z",
-      "avatarAssetId": "testimonial-client14",
+      "avatarAssetId": {
+        "text": "testimonial-client14",
+        "hyperlink": "#'ASSETS'!A41"
+      },
       "featured": "TRUE",
       "featuredOrder": 5,
       "highlighted": "FALSE",
@@ -779,7 +1258,10 @@
     },
     {
       "id": "unity-great-work",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Game Creator / Small Sprint",
@@ -788,7 +1270,10 @@
       "starRating": "5",
       "gigTitle": "create professional unity editor windows or game uis with uxml",
       "createdAt": "2024-07-21T14:05:57Z",
-      "avatarAssetId": "testimonial-client2",
+      "avatarAssetId": {
+        "text": "testimonial-client2",
+        "hyperlink": "#'ASSETS'!A26"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -796,7 +1281,10 @@
     },
     {
       "id": "unity-complex-ownership",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Indie Studio / Systems Owner",
@@ -805,7 +1293,10 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-07-29T16:57:35Z",
-      "avatarAssetId": "testimonial-client12",
+      "avatarAssetId": {
+        "text": "testimonial-client12",
+        "hyperlink": "#'ASSETS'!A39"
+      },
       "featured": "TRUE",
       "featuredOrder": 1,
       "highlighted": "TRUE",
@@ -813,7 +1304,10 @@
     },
     {
       "id": "unity-repeat-client",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Returning Buyer / Active Build",
@@ -822,7 +1316,10 @@
       "starRating": "5",
       "gigTitle": "create professional unity game uis or editor windows with ui toolkit",
       "createdAt": "2024-09-27T19:47:17Z",
-      "avatarAssetId": "testimonial-client15",
+      "avatarAssetId": {
+        "text": "testimonial-client15",
+        "hyperlink": "#'ASSETS'!A42"
+      },
       "featured": "TRUE",
       "featuredOrder": 7,
       "highlighted": "FALSE",
@@ -830,7 +1327,10 @@
     },
     {
       "id": "automation-seo-detail",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Local Brand / Image Library",
@@ -839,7 +1339,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for easy gallery managing",
       "createdAt": "2024-11-07T20:02:11Z",
-      "avatarAssetId": "testimonial-client5",
+      "avatarAssetId": {
+        "text": "testimonial-client5",
+        "hyperlink": "#'ASSETS'!A29"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -847,7 +1350,10 @@
     },
     {
       "id": "automation-exceeded-expectations",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Agency Owner / Client Handoff",
@@ -856,7 +1362,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-08T22:07:56Z",
-      "avatarAssetId": "testimonial-pack-leaf",
+      "avatarAssetId": {
+        "text": "testimonial-pack-leaf",
+        "hyperlink": "#'ASSETS'!A36"
+      },
       "featured": "TRUE",
       "featuredOrder": 2,
       "highlighted": "TRUE",
@@ -864,7 +1373,10 @@
     },
     {
       "id": "automation-gallery-spanish",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Photo Seller / Gallery Sorting",
@@ -873,7 +1385,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-09T18:29:07Z",
-      "avatarAssetId": "testimonial-client8",
+      "avatarAssetId": {
+        "text": "testimonial-client8",
+        "hyperlink": "#'ASSETS'!A32"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -881,7 +1396,10 @@
     },
     {
       "id": "automation-fiverr-credit",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Content Team / Process Cleanup",
@@ -890,7 +1408,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-11-19T14:13:23Z",
-      "avatarAssetId": "testimonial-pack-av",
+      "avatarAssetId": {
+        "text": "testimonial-pack-av",
+        "hyperlink": "#'ASSETS'!A37"
+      },
       "featured": "TRUE",
       "featuredOrder": 4,
       "highlighted": "TRUE",
@@ -898,7 +1419,10 @@
     },
     {
       "id": "automation-outstanding-work",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Shop Owner / Batch Delivery",
@@ -907,7 +1431,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-08T08:55:41Z",
-      "avatarAssetId": "testimonial-client3",
+      "avatarAssetId": {
+        "text": "testimonial-client3",
+        "hyperlink": "#'ASSETS'!A25"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -915,7 +1442,10 @@
     },
     {
       "id": "automation-communication-timelines",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "SEO Consultant / Revision Round",
@@ -924,7 +1454,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-12T19:03:03Z",
-      "avatarAssetId": "testimonial-pack-signature",
+      "avatarAssetId": {
+        "text": "testimonial-pack-signature",
+        "hyperlink": "#'ASSETS'!A38"
+      },
       "featured": "TRUE",
       "featuredOrder": 6,
       "highlighted": "TRUE",
@@ -932,7 +1465,10 @@
     },
     {
       "id": "automation-wonderful-details",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Media Archive / Detail Pass",
@@ -941,7 +1477,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for gallery and seo managing",
       "createdAt": "2024-12-15T18:18:51Z",
-      "avatarAssetId": "testimonial-client4",
+      "avatarAssetId": {
+        "text": "testimonial-client4",
+        "hyperlink": "#'ASSETS'!A28"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -949,7 +1488,10 @@
     },
     {
       "id": "automation-vigor",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Ops Support / Bulk Task",
@@ -958,7 +1500,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T09:56:00Z",
-      "avatarAssetId": "testimonial-client7",
+      "avatarAssetId": {
+        "text": "testimonial-client7",
+        "hyperlink": "#'ASSETS'!A31"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -966,7 +1511,10 @@
     },
     {
       "id": "automation-fast-turnaround",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Urgent Order / Quick Turnaround",
@@ -975,7 +1523,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-06T17:58:51Z",
-      "avatarAssetId": "testimonial-client6",
+      "avatarAssetId": {
+        "text": "testimonial-client6",
+        "hyperlink": "#'ASSETS'!A30"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -983,7 +1534,10 @@
     },
     {
       "id": "automation-highly-recommend",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Returning Buyer / Quick Fix",
@@ -992,7 +1546,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-30T18:59:30Z",
-      "avatarAssetId": "testimonial-client11",
+      "avatarAssetId": {
+        "text": "testimonial-client11",
+        "hyperlink": "#'ASSETS'!A35"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -1000,7 +1557,10 @@
     },
     {
       "id": "automation-nice-guy",
-      "sourceKey": "fiverr",
+      "sourceKey": {
+        "text": "fiverr",
+        "hyperlink": "#'TESTIMONIAL_SOURCES'!A9"
+      },
       "labelOverride": "",
       "clientName": "",
       "clientType": "Solo Operator / One-Off Request",
@@ -1009,7 +1569,10 @@
       "starRating": "5",
       "gigTitle": "edit photos and videos metadata for seo and gallery managing",
       "createdAt": "2025-01-31T10:10:16Z",
-      "avatarAssetId": "testimonial-client1",
+      "avatarAssetId": {
+        "text": "testimonial-client1",
+        "hyperlink": "#'ASSETS'!A27"
+      },
       "featured": "FALSE",
       "featuredOrder": "",
       "highlighted": "FALSE",
@@ -1523,6 +2086,127 @@
       "notes": "Project icon",
       "enabled": true,
       "status": "READY -> /assets/projects/remote-pc-bridge-icon.png"
+    },
+    {
+      "assetId": "datacraft-cover",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/cover.webp",
+      "targetPublicPath": "/assets/projects/datacraft/cover.webp",
+      "alt": "DataCraft: game data made visual, with the JSON Designer and Emberfall demo",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/cover.webp"
+    },
+    {
+      "assetId": "datacraft-icon",
+      "kind": "icon",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/symbol.svg",
+      "targetPublicPath": "/assets/projects/datacraft/symbol.svg",
+      "alt": "DataCraft original Ensamble symbol",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/symbol.svg"
+    },
+    {
+      "assetId": "datacraft-gallery-1",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/02-Visual-authoring.webp",
+      "targetPublicPath": "/assets/projects/datacraft/02-Visual-authoring.webp",
+      "alt": "Visual authoring: typed templates and fields in JSON Designer",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/02-Visual-authoring.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-2",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/03-Templates-instances.webp",
+      "targetPublicPath": "/assets/projects/datacraft/03-Templates-instances.webp",
+      "alt": "Templates and instances: reuse a schema for different weapons",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/03-Templates-instances.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-3",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/04-Template-references.webp",
+      "targetPublicPath": "/assets/projects/datacraft/04-Template-references.webp",
+      "alt": "Template references: link enemies to their weapon data",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/04-Template-references.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-4",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/05-Unity-integration.webp",
+      "targetPublicPath": "/assets/projects/datacraft/05-Unity-integration.webp",
+      "alt": "Unity integration: DataCraft docked in the Unity Editor",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/05-Unity-integration.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-5",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/06-API-workflow.webp",
+      "targetPublicPath": "/assets/projects/datacraft/06-API-workflow.webp",
+      "alt": "JSON APIs: configure endpoints and preview typed C#",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/06-API-workflow.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-6",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+      "targetPublicPath": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+      "alt": "Client to gameplay: use generated API clients in a game",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/07-Client-to-gameplay.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-7",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/08-Save-progress.webp",
+      "targetPublicPath": "/assets/projects/datacraft/08-Save-progress.webp",
+      "alt": "Save progress: inspect local JSON saves from gameplay",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/08-Save-progress.webp"
+    },
+    {
+      "assetId": "datacraft-gallery-8",
+      "kind": "image",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+      "targetPublicPath": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+      "alt": "Flexible workspace: wide, compact and docked Editor layouts",
+      "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft/09-Flexible-workspace.webp"
+    },
+    {
+      "assetId": "datacraft-video",
+      "kind": "video",
+      "mode": "existing_public",
+      "sourceValue": "/assets/projects/datacraft-demo.mp4",
+      "targetPublicPath": "/assets/projects/datacraft-demo.mp4",
+      "alt": "DataCraft published demonstration video",
+      "notes": "Original published YouTube demo Uqpto9OyuA0. Used to derive the light gallery preview and native modal video.",
+      "enabled": true,
+      "status": "READY -> /assets/projects/datacraft-demo.mp4"
     }
   ],
   "runtime": {
@@ -1991,6 +2675,105 @@
     },
     "projectSources": [
       {
+        "id": 7,
+        "title": "DataCraft",
+        "subtitle": "Visual JSON tools for Unity",
+        "problem": "Game data, API responses and player saves often live in scattered files and custom scripts. Unity teams need a visual workflow with a reliable path to gameplay.",
+        "solution": "I built a commercial Unity asset for typed templates, linked instances, JSON/CSV transfer, API-to-C# generation and local saves. Validation and explicit catalog publishing keep editable drafts, gameplay data and player progress separate.",
+        "stack": [
+          "Unity 6",
+          "C#",
+          "UI Toolkit",
+          "JSON / CSV",
+          "UnityWebRequest",
+          "UPM"
+        ],
+        "arch": [
+          "Define typed templates",
+          "Create linked instances",
+          "Validate drafts",
+          "Publish Project Data",
+          "Read by stable ID"
+        ],
+        "workflows": [
+          {
+            "title": "Game data",
+            "steps": [
+              "Define typed templates",
+              "Create linked instances",
+              "Validate drafts",
+              "Publish Project Data",
+              "Read by stable ID"
+            ]
+          },
+          {
+            "title": "JSON APIs",
+            "steps": [
+              "Configure endpoint / paste JSON",
+              "Review C# preview",
+              "Generate DTOs & client",
+              "Integrate in gameplay"
+            ]
+          },
+          {
+            "title": "Local saves",
+            "steps": [
+              "Save player progress",
+              "Write local JSON",
+              "Inspect & review in Files",
+              "Load saved state"
+            ]
+          }
+        ],
+        "githubLink": "",
+        "itchLink": "https://albjav12345.itch.io/datacraft",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": true,
+        "gallerySize": "feature",
+        "cardLabel": "Independent Unity asset",
+        "gallery": [
+          {
+            "src": "/assets/projects/datacraft/02-Visual-authoring.webp",
+            "alt": "Visual authoring: typed templates and fields in JSON Designer"
+          },
+          {
+            "src": "/assets/projects/datacraft/03-Templates-instances.webp",
+            "alt": "Templates and instances: reuse a schema for different weapons"
+          },
+          {
+            "src": "/assets/projects/datacraft/04-Template-references.webp",
+            "alt": "Template references: link enemies to their weapon data"
+          },
+          {
+            "src": "/assets/projects/datacraft/05-Unity-integration.webp",
+            "alt": "Unity integration: DataCraft docked in the Unity Editor"
+          },
+          {
+            "src": "/assets/projects/datacraft/06-API-workflow.webp",
+            "alt": "JSON APIs: configure endpoints and preview typed C#"
+          },
+          {
+            "src": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+            "alt": "Client to gameplay: use generated API clients in a game"
+          },
+          {
+            "src": "/assets/projects/datacraft/08-Save-progress.webp",
+            "alt": "Save progress: inspect local JSON saves from gameplay"
+          },
+          {
+            "src": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+            "alt": "Flexible workspace: wide, compact and docked Editor layouts"
+          }
+        ],
+        "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/Uqpto9OyuA0",
+        "demoType": "video",
+        "videoSource": "/assets/projects/datacraft-demo.mp4",
+        "thumbnail": "/assets/projects/datacraft/cover.webp",
+        "icon": "/assets/projects/datacraft/symbol.svg",
+        "iconFit": "auto",
+        "iconScale": 1
+      },
+      {
         "id": 1,
         "title": "Unity Interface Systems",
         "subtitle": "High-Fidelity Real-Time UX",
@@ -2008,39 +2791,21 @@
           "HLSL Shaders",
           "Motion UI"
         ],
+        "workflows": [],
         "githubLink": "https://github.com/Albjav12345/unity-interfaces",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
         "demoType": "video",
         "videoSource": "/assets/projects/visual-interfaces.mp4",
         "thumbnail": "/assets/projects/visual-interfaces.png",
         "icon": "/assets/projects/unity.webp",
         "iconFit": null,
         "iconScale": 1.3
-      },
-      {
-        "id": 2,
-        "title": "Smart Inbox Manager",
-        "subtitle": "Autonomous Corporate Email Triage",
-        "problem": "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
-        "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
-        "stack": [
-          "Python",
-          "Flask",
-          "Llama 3",
-          "Supabase"
-        ],
-        "arch": [
-          "Outlook",
-          "Python Backend",
-          "Groq Llama 3",
-          "Web UI"
-        ],
-        "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
-        "demoType": "video",
-        "videoSource": "/assets/projects/zero-touch-ai.mp4",
-        "thumbnail": "/assets/projects/zero-touch-ai.png",
-        "icon": "/assets/projects/outlook-icon.webp",
-        "iconFit": "auto",
-        "iconScale": 1.25
       },
       {
         "id": 3,
@@ -2060,13 +2825,55 @@
           "PWA Cache",
           "Reactive State"
         ],
+        "workflows": [],
         "githubLink": "https://github.com/Albjav12345/padel-sync",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
         "demoType": "video",
         "videoSource": "/assets/projects/padel-booking.mp4",
         "thumbnail": "/assets/projects/padel-booking.png",
         "icon": "/assets/projects/padel-booking-logo.png",
         "iconFit": null,
         "iconScale": null
+      },
+      {
+        "id": 2,
+        "title": "Smart Inbox Manager",
+        "subtitle": "Autonomous Corporate Email Triage",
+        "problem": "Sales and partnership inboxes become noisy fast, and teams lose time triaging the same messages manually.",
+        "solution": "I built a full-stack AI workflow that classifies incoming emails, drafts first replies, and keeps a human in control where it matters.",
+        "stack": [
+          "Python",
+          "Flask",
+          "Llama 3",
+          "Supabase"
+        ],
+        "arch": [
+          "Outlook",
+          "Python Backend",
+          "Groq Llama 3",
+          "Web UI"
+        ],
+        "workflows": [],
+        "githubLink": "https://github.com/Albjav12345/zero_touch_email_bot",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "wide",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
+        "demoType": "video",
+        "videoSource": "/assets/projects/zero-touch-ai.mp4",
+        "thumbnail": "/assets/projects/zero-touch-ai.png",
+        "icon": "/assets/projects/outlook-icon.webp",
+        "iconFit": "auto",
+        "iconScale": 1.25
       },
       {
         "id": 4,
@@ -2086,7 +2893,15 @@
           "Twitch API",
           "Dashboard"
         ],
+        "workflows": [],
         "githubLink": "https://github.com/Albjav12345/Fortnite-Lobby-Stream-Finder",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
         "demoType": "video",
         "videoSource": "/assets/projects/twitch-live.mp4",
         "thumbnail": "/assets/projects/twitch-live.png",
@@ -2112,7 +2927,15 @@
           "File-Lock Bypass",
           "Encrypted Exfiltration"
         ],
+        "workflows": [],
         "githubLink": "https://github.com/Albjav12345/Automated-USB-Exfiltration",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "half",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
         "demoType": "video",
         "videoSource": "/assets/projects/usb-extraction.mp4",
         "thumbnail": "/assets/projects/usb-extraction.png",
@@ -2138,7 +2961,15 @@
           "ESP32 Wake-on-LAN",
           "Sunshine + Moonlight"
         ],
+        "workflows": [],
         "githubLink": "https://github.com/Albjav12345/remote-pc-bridge",
+        "itchLink": "",
+        "assetStoreLink": "",
+        "assetStoreComingSoon": false,
+        "gallerySize": "half",
+        "cardLabel": "",
+        "gallery": [],
+        "demoEmbedUrl": "",
         "demoType": "video",
         "videoSource": "/assets/projects/remote-pc-bridge.mp4",
         "thumbnail": "/assets/projects/remote-pc-bridge.jpg",
@@ -3458,6 +4289,138 @@
         "enabled": true,
         "resolvedUrl": "/assets/projects/remote-pc-bridge-icon.png",
         "status": "READY -> /assets/projects/remote-pc-bridge-icon.png"
+      },
+      {
+        "assetId": "datacraft-cover",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/cover.webp",
+        "targetPublicPath": "/assets/projects/datacraft/cover.webp",
+        "alt": "DataCraft: game data made visual, with the JSON Designer and Emberfall demo",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/cover.webp",
+        "status": "READY -> /assets/projects/datacraft/cover.webp"
+      },
+      {
+        "assetId": "datacraft-icon",
+        "kind": "icon",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/symbol.svg",
+        "targetPublicPath": "/assets/projects/datacraft/symbol.svg",
+        "alt": "DataCraft original Ensamble symbol",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/symbol.svg",
+        "status": "READY -> /assets/projects/datacraft/symbol.svg"
+      },
+      {
+        "assetId": "datacraft-gallery-1",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/02-Visual-authoring.webp",
+        "targetPublicPath": "/assets/projects/datacraft/02-Visual-authoring.webp",
+        "alt": "Visual authoring: typed templates and fields in JSON Designer",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/02-Visual-authoring.webp",
+        "status": "READY -> /assets/projects/datacraft/02-Visual-authoring.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-2",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/03-Templates-instances.webp",
+        "targetPublicPath": "/assets/projects/datacraft/03-Templates-instances.webp",
+        "alt": "Templates and instances: reuse a schema for different weapons",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/03-Templates-instances.webp",
+        "status": "READY -> /assets/projects/datacraft/03-Templates-instances.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-3",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/04-Template-references.webp",
+        "targetPublicPath": "/assets/projects/datacraft/04-Template-references.webp",
+        "alt": "Template references: link enemies to their weapon data",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/04-Template-references.webp",
+        "status": "READY -> /assets/projects/datacraft/04-Template-references.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-4",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/05-Unity-integration.webp",
+        "targetPublicPath": "/assets/projects/datacraft/05-Unity-integration.webp",
+        "alt": "Unity integration: DataCraft docked in the Unity Editor",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/05-Unity-integration.webp",
+        "status": "READY -> /assets/projects/datacraft/05-Unity-integration.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-5",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/06-API-workflow.webp",
+        "targetPublicPath": "/assets/projects/datacraft/06-API-workflow.webp",
+        "alt": "JSON APIs: configure endpoints and preview typed C#",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/06-API-workflow.webp",
+        "status": "READY -> /assets/projects/datacraft/06-API-workflow.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-6",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+        "targetPublicPath": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+        "alt": "Client to gameplay: use generated API clients in a game",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/07-Client-to-gameplay.webp",
+        "status": "READY -> /assets/projects/datacraft/07-Client-to-gameplay.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-7",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/08-Save-progress.webp",
+        "targetPublicPath": "/assets/projects/datacraft/08-Save-progress.webp",
+        "alt": "Save progress: inspect local JSON saves from gameplay",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/08-Save-progress.webp",
+        "status": "READY -> /assets/projects/datacraft/08-Save-progress.webp"
+      },
+      {
+        "assetId": "datacraft-gallery-8",
+        "kind": "image",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+        "targetPublicPath": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+        "alt": "Flexible workspace: wide, compact and docked Editor layouts",
+        "notes": "Original DataCraft product artwork; web export. Demo uses the YouTube video embedded in the public itch.io listing.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft/09-Flexible-workspace.webp",
+        "status": "READY -> /assets/projects/datacraft/09-Flexible-workspace.webp"
+      },
+      {
+        "assetId": "datacraft-video",
+        "kind": "video",
+        "mode": "existing_public",
+        "sourceValue": "/assets/projects/datacraft-demo.mp4",
+        "targetPublicPath": "/assets/projects/datacraft-demo.mp4",
+        "alt": "DataCraft published demonstration video",
+        "notes": "Original published YouTube demo Uqpto9OyuA0. Used to derive the light gallery preview and native modal video.",
+        "enabled": true,
+        "resolvedUrl": "/assets/projects/datacraft-demo.mp4",
+        "status": "READY -> /assets/projects/datacraft-demo.mp4"
       }
     ]
   }
