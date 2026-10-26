@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
+import { networkInterfaces } from 'node:os'
 import { fileURLToPath } from 'node:url'
 
 import { generateProjectMedia } from './generate-project-media.mjs'
@@ -14,7 +15,8 @@ const rootDir = path.resolve(__dirname, '..')
 const viteBin = path.join(rootDir, 'node_modules', 'vite', 'bin', 'vite.js')
 
 const apiPort = Number(process.env.LOCAL_API_PORT || 4174)
-const viteHost = process.env.VITE_HOST || '127.0.0.1'
+const shareOnNetwork = process.argv.includes('--lan')
+const viteHost = process.env.VITE_HOST || (shareOnNetwork ? '0.0.0.0' : '127.0.0.1')
 const vitePort = Number(process.env.VITE_PORT || 5173)
 const proxyTarget = process.env.VITE_API_PROXY_TARGET || `http://127.0.0.1:${apiPort}`
 const useExternalWorkbookWatcher = process.env.EXTERNAL_WORKBOOK_WATCHER === '1'
@@ -199,6 +201,15 @@ try {
   }
   console.log(`[local-api] running on ${proxyTarget}`)
   console.log(`[dev] frontend target: http://${viteHost}:${vitePort}`)
+  if (shareOnNetwork) {
+    for (const [name, addresses] of Object.entries(networkInterfaces())) {
+      for (const address of addresses || []) {
+        if (address.family === 'IPv4' && !address.internal) {
+          console.log(`[dev] ${name}: http://${address.address}:${vitePort}`)
+        }
+      }
+    }
+  }
   console.log(`[dev] workbook live sync handled by Vite dev plugin: ${WORKBOOK_PATH}`)
 
   viteProcess = spawn(

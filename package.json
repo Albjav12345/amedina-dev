@@ -11,6 +11,7 @@
     "cv:render": "node scripts/render-cv-preview.mjs",
     "site:media": "node scripts/generate-site-media.mjs",
     "dev": "node scripts/dev.mjs",
+    "dev:lan": "node scripts/dev.mjs --lan",
     "vite:dev": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && vite",
     "build": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && node scripts/generate-cv-assets.mjs && vite build && node scripts/prune-build-media.mjs",
     "preview": "vite preview"

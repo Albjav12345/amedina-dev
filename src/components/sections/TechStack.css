@@ -1,64 +1,210 @@
-.stack-section {
-    padding: 4.5rem 0;
-    background-color: var(--bg-primary);
-}
-
-.stack-grid {
+.toolkit-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
 }
 
-.stack-group {
-    background: var(--bg-secondary);
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all var(--transition-fast);
-}
-
-.stack-group:hover {
-    border-color: rgba(69, 162, 158, 0.4);
-    transform: translateY(-5px);
-}
-
-.group-title {
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin-bottom: 1.5rem;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stack-items {
+.toolkit-card {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: 12px;
+    background: radial-gradient(ellipse at top right, rgb(0 255 153 / 3.5%), transparent 65%), rgb(13 14 18 / 90%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+    transition: border-color 420ms ease;
 }
 
-.stack-item {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+.toolkit-card__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 48px;
+    margin-bottom: 12px;
+}
+
+.toolkit-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    height: 40px;
+    border: 1px solid rgb(0 255 153 / 12%);
+    border-radius: 10px;
+    background: rgb(0 255 153 / 5%);
+    color: #00ff99;
+}
+
+.toolkit-card__header h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: -.035em;
+    color: #f3f4f6;
+}
+
+.toolkit-card__index {
+    align-self: flex-start;
+    margin-left: auto;
+    font: 11px var(--font-mono);
+    color: #66717d;
+}
+
+.toolkit-card__tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, 44px);
+    grid-auto-rows: 44px;
+    column-gap: 24px;
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+}
+
+.toolkit-card__tools li {
+    min-width: 0;
+    border-top: 1px solid rgb(255 255 255 / 6%);
+}
+
+.toolkit-skill {
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
+    height: 44px;
+    padding: 4px 0;
+    text-align: left;
+    color: #c0cad3;
+    transition: color 420ms ease;
 }
 
-.stack-item .dot {
-    width: 4px;
-    height: 4px;
-    background: var(--accent-cyan);
+button.toolkit-skill { cursor: pointer; }
+
+.toolkit-skill > span:nth-child(2) {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 18px;
+    overflow-wrap: anywhere;
+}
+
+.toolkit-skill--additional { color: #85909c; }
+.toolkit-skill[aria-pressed="true"],
+.toolkit-skill[aria-pressed="true"] .toolkit-card__tool-icon { color: #00ff99; }
+
+.toolkit-skill__dot {
+    flex: 0 0 3px;
+    height: 3px;
+    margin-left: auto;
     border-radius: 50%;
+    background: #00ff99;
+    opacity: .6;
 }
 
-@media (max-width: 960px) {
-    .stack-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+.toolkit-card__tool-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: #7b8794;
+    transition: color 420ms ease;
 }
 
-@media (max-width: 600px) {
-    .stack-grid {
-        grid-template-columns: 1fr;
-    }
+.toolkit-work {
+    margin-top: auto;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding-top: 12px;
+}
+
+.toolkit-work__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 36px;
+    margin-bottom: 8px;
+}
+
+.toolkit-work__heading > span:first-child {
+    font: 10px var(--font-mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #87939f;
+}
+
+.toolkit-work__navigation { display: flex; align-items: center; gap: 4px; }
+.toolkit-work__navigation > span { min-width: 36px; text-align: center; font: 10px var(--font-mono); color: #8e9ba7; }
+.toolkit-work__navigation button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    color: #b3bec9;
+    cursor: pointer;
+    transition: color 300ms ease, background-color 300ms ease;
+}
+.toolkit-work__navigation button:disabled { opacity: .25; cursor: default; }
+
+.toolkit-work__projects { height: 76px; }
+.toolkit-project {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    height: 100%;
+    padding: 10px;
+    border: 1px solid rgb(255 255 255 / 6%);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 1.5%);
+    transition: border-color 420ms ease, background-color 420ms ease;
+}
+
+.toolkit-project > img {
+    width: 64px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 4px;
+}
+
+.toolkit-project__copy { display: grid; gap: 4px; min-width: 0; }
+.toolkit-project__copy strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 13px; line-height: 17px; font-weight: 500; color: #e5e7eb; transition: color 420ms ease; }
+.toolkit-project__copy > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; line-height: 16px; color: #8e9ba7; }
+.toolkit-project > svg { flex-shrink: 0; margin-left: auto; color: #788592; transition: color 420ms ease; }
+
+.toolkit-card button:focus-visible,
+.toolkit-project:focus-visible { outline: 2px solid #00ff99; outline-offset: 3px; border-radius: 4px; }
+
+@media (hover: hover) and (pointer: fine) {
+    .toolkit-card:hover { border-color: rgb(0 255 153 / 23%); }
+    button.toolkit-skill:hover, button.toolkit-skill:hover .toolkit-card__tool-icon { color: #00ff99; }
+    .toolkit-project:hover { border-color: rgb(0 255 153 / 20%); background: rgb(0 255 153 / 3%); }
+    .toolkit-project:hover strong, .toolkit-project:hover > svg { color: #00ff99; }
+    .toolkit-work__navigation button:not(:disabled):hover { color: #00ff99; background: rgb(0 255 153 / 5%); }
+}
+
+@media (max-width: 767px) {
+    .toolkit-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .toolkit-card { padding: 20px; }
+    .toolkit-card__header { gap: 12px; }
+    .toolkit-card__header h3 { font-size: 16px; }
+    .toolkit-card__tools { column-gap: 16px; }
+    .toolkit-skill { gap: 8px; }
+    .toolkit-skill > span:nth-child(2) { font-size: 13px; }
+    .toolkit-project { gap: 10px; padding: 10px; }
+    .toolkit-project > img { width: 48px; height: 40px; }
+    .toolkit-project__copy strong { font-size: 12px; }
+}
+
+@media (max-width: 359px) {
+    .toolkit-card { padding: 16px; }
+    .toolkit-card__header h3 { font-size: 14px; }
+    .toolkit-card__tools { column-gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toolkit-card, .toolkit-card__tool-icon, .toolkit-skill,
+    .toolkit-project, .toolkit-project strong, .toolkit-project > svg { transition: none; }
 }

@@ -25,6 +25,8 @@ Important:
 
 Project presentation:
 
+- Stack project references are derived from the skills in `SKILL_ITEMS` and each project's `PROJECT_STACK` / `PROJECT_ARCH` labels. Titles and thumbnails come from the same project content used in the gallery. Label equivalences live in `src/utils/skillProjectEvidence.js`; skills without a documented match remain visible without a project filter.
+
 - About copy stays in `PROFILE` and `ABOUT_BIO`. `PROFILE.featuredProjectId` selects the project shown under the bio, and `featuredProjectLabel` supplies its caption.
 
 - `PROJECTS.gallerySize`: blank for a standard tile, `feature` for a large tile, `wide` for a landscape tile, or `half` for half a desktop row.

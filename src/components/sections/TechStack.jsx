@@ -1,224 +1,134 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { viewportConfig } from '../../utils/animations';
 import portfolioData from '../../data/portfolio.js';
-import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import { renderTechCategoryIcon, renderTechItemIcon } from './techStackIcons';
 import SectionHeading from '../common/SectionHeading';
+import ProjectReference from '../common/ProjectReference';
+import { getSkillProjectEvidence } from '../../utils/skillProjectEvidence';
+import './TechStack.css';
 
-const COLOR_STYLES = {
-    'electric-green': {
-        glow: 'rgba(0, 255, 153, 0.14)',
-        hoverText: 'group-hover:text-electric-green',
-        border: 'border-electric-green/10',
-        text: 'text-electric-green',
-    },
-    'electric-cyan': {
-        glow: 'rgba(102, 252, 241, 0.14)',
-        hoverText: 'group-hover:text-electric-cyan',
-        border: 'border-electric-cyan/10',
-        text: 'text-electric-cyan',
-    },
-};
+// Keep the toolkit still and readable, with no repeating icon timers.
+const staticIcons = { tier: 'low', allowAmbientMotion: false };
 
-// Internet-sourced backgrounds are pre-blurred local assets to avoid runtime blur cost.
-const TECH_CARD_BACKGROUNDS = {
-    'Core Development': {
-        image: '/assets/stack/tech-core.webp',
-        position: 'center 66%',
-        overlay:
-            'radial-gradient(circle at 78% 24%, rgba(255, 120, 90, 0.10) 0%, rgba(255, 120, 90, 0) 28%), linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 255, 153, 0.10) 100%)',
-    },
-    'AI & Vision Workflows': {
-        image: '/assets/stack/tech-ai.webp',
-        position: 'center 58%',
-        overlay:
-            'radial-gradient(circle at 18% 78%, rgba(240, 255, 140, 0.16) 0%, rgba(240, 255, 140, 0) 26%), linear-gradient(135deg, rgba(255, 96, 72, 0.14) 0%, rgba(0, 0, 0, 0.02) 42%, rgba(88, 166, 255, 0.14) 100%)',
-    },
-    'Frontend & Interactive Systems': {
-        image: '/assets/stack/tech-frontend.webp',
-        position: 'center 52%',
-        overlay:
-            'radial-gradient(circle at 52% 24%, rgba(88, 166, 255, 0.18) 0%, rgba(88, 166, 255, 0) 30%), linear-gradient(135deg, rgba(255, 220, 120, 0.08) 0%, rgba(0, 0, 0, 0) 42%, rgba(88, 166, 255, 0.14) 100%)',
-    },
-    'Infra & Delivery': {
-        image: '/assets/stack/tech-infra.webp',
-        position: 'center 60%',
-        overlay:
-            'radial-gradient(circle at 84% 16%, rgba(0, 255, 153, 0.18) 0%, rgba(0, 255, 153, 0) 24%), linear-gradient(135deg, rgba(0, 255, 153, 0.10) 0%, rgba(0, 0, 0, 0) 42%, rgba(255, 255, 255, 0.04) 100%)',
-    },
-};
+function ToolkitCategory({ category, index, projects, reducedMotion }) {
+    const [selectedSkill, setSelectedSkill] = useState(null);
+    const [activeProjectId, setActiveProjectId] = useState(null);
+    const evidence = getSkillProjectEvidence(category.items, projects);
+    const demonstratedSkills = new Set(evidence.flatMap(reference => reference.skills));
+    const matchingProjects = selectedSkill
+        ? evidence.filter(reference => reference.skills.includes(selectedSkill))
+        : evidence;
+    const activeProjectIndex = Math.max(0, matchingProjects.findIndex(reference => reference.project.id === activeProjectId));
+    const activeReference = matchingProjects[activeProjectIndex];
 
-const TECH_CARD_TITLE_LINES = {
-    'Core Development': ['Core', 'Development'],
-    'AI & Vision Workflows': ['AI & Vision', 'Workflows'],
-    'Frontend & Interactive Systems': ['Frontend &', 'UI Systems'],
-    'Infra & Delivery': ['Infra &', 'Delivery'],
-};
+    function selectSkill(skill) {
+        const nextSkill = selectedSkill === skill ? null : skill;
+        const nextProjects = nextSkill ? evidence.filter(reference => reference.skills.includes(nextSkill)) : evidence;
+        const currentProjectId = activeReference?.project.id;
+        setSelectedSkill(nextSkill);
+        // Keep the current project in place when it also demonstrates the next skill.
+        setActiveProjectId(nextProjects.some(reference => reference.project.id === currentProjectId)
+            ? currentProjectId : nextProjects[0]?.project.id ?? null);
+    }
 
-function getCardBackgroundStyle(title) {
-    const background = TECH_CARD_BACKGROUNDS[title] || TECH_CARD_BACKGROUNDS['Core Development'];
-
-    return {
-        shellStyle: {
-            backgroundColor: '#0f141a',
-            boxShadow: 'inset 0 -1px 0 rgba(5, 8, 12, 0.96), inset 0 -40px 48px rgba(5, 8, 12, 0.94), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 22px 54px rgba(0, 0, 0, 0.18)',
-        },
-        imageStyle: {
-            backgroundImage: `${background.overlay}, url("${background.image}")`,
-            backgroundPosition: `center, ${background.position}`,
-            backgroundRepeat: 'no-repeat, no-repeat',
-            backgroundSize: 'cover, cover',
-        },
-        bandStyle: {
-            backgroundImage: 'linear-gradient(180deg, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 42%, rgba(5, 8, 12, 0.32) 58%, rgba(5, 8, 12, 0.60) 74%, rgba(5, 8, 12, 0.88) 90%, rgba(5, 8, 12, 1) 100%)',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-        },
-        highlightStyle: {
-            backgroundImage: 'radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 26%), linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 42%)',
-            backgroundPosition: 'center, center',
-            backgroundRepeat: 'no-repeat, no-repeat',
-            backgroundSize: 'cover, cover',
-        },
-    };
+    return (
+        <motion.article
+            className="toolkit-card"
+            initial={reducedMotion ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportConfig}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            aria-labelledby={`toolkit-${category.id || index}`}
+        >
+            <header className="toolkit-card__header">
+                <span className="toolkit-card__icon" aria-hidden="true">
+                    {renderTechCategoryIcon(category.title, staticIcons, false)}
+                </span>
+                <h3 id={`toolkit-${category.id || index}`}>{category.title}</h3>
+                <span className="toolkit-card__index" aria-hidden="true">0{index + 1}</span>
+            </header>
+            <ul className="toolkit-card__tools">
+                {category.items.map(item => (
+                    <li key={item}>
+                        {demonstratedSkills.has(item) ? (
+                            <button
+                                type="button"
+                                className="toolkit-skill"
+                                aria-pressed={selectedSkill === item}
+                                aria-controls={`toolkit-work-${category.id || index}`}
+                                onClick={() => selectSkill(item)}
+                                title={`Show projects using ${item}`}
+                            >
+                                <span className="toolkit-card__tool-icon" aria-hidden="true">{renderTechItemIcon(item, staticIcons, false)}</span>
+                                <span>{item}</span>
+                                <span className="toolkit-skill__dot" aria-hidden="true" />
+                            </button>
+                        ) : (
+                            <span className="toolkit-skill toolkit-skill--additional">
+                                <span className="toolkit-card__tool-icon" aria-hidden="true">{renderTechItemIcon(item, staticIcons, false)}</span>
+                                <span>{item}</span>
+                            </span>
+                        )}
+                    </li>
+                ))}
+            </ul>
+            {evidence.length > 0 && (
+                <div className="toolkit-work" id={`toolkit-work-${category.id || index}`}>
+                    <div className="toolkit-work__heading">
+                        <span>In practice</span>
+                        <div className="toolkit-work__navigation" aria-label={`${category.title} project navigation`}>
+                            <button type="button" aria-label={`Previous ${category.title} project`} disabled={activeProjectIndex === 0}
+                                onClick={() => setActiveProjectId(matchingProjects[activeProjectIndex - 1].project.id)}>
+                                <ChevronLeft size={15} aria-hidden="true" />
+                            </button>
+                            <span>{activeProjectIndex + 1} / {matchingProjects.length}</span>
+                            <button type="button" aria-label={`Next ${category.title} project`} disabled={activeProjectIndex === matchingProjects.length - 1}
+                                onClick={() => setActiveProjectId(matchingProjects[activeProjectIndex + 1].project.id)}>
+                                <ChevronRight size={15} aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="toolkit-work__projects" aria-live="polite" aria-atomic="true">
+                        {activeReference && (
+                            <ProjectReference
+                                project={activeReference.project}
+                                className="toolkit-project"
+                                aria-label={`View ${activeReference.project.title} in the gallery. Uses ${activeReference.skills.join(', ')}.`}
+                            >
+                                <img src={activeReference.project.thumbnail} alt="" loading="lazy" width="80" height="60" />
+                                <span className="toolkit-project__copy">
+                                    <strong>{activeReference.project.title}</strong>
+                                    <span title={activeReference.skills.join(' · ')}>{activeReference.skills.join(' · ')}</span>
+                                </span>
+                                <ArrowUpRight size={15} aria-hidden="true" />
+                            </ProjectReference>
+                        )}
+                    </div>
+                </div>
+            )}
+        </motion.article>
+    );
 }
 
-const TechNode = ({ name, icon, color = 'electric-green', quality }) => {
-    const isLow = quality.tier === 'low' || !quality.allowAmbientMotion;
-    const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
-
-    return (
-        <motion.div
-            variants={isLow ? { hidden: { opacity: 0 }, visible: { opacity: 1 } } : {
-                hidden: { opacity: 0, scale: 0.8, y: 10 },
-                visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 20 } },
-            }}
-            whileHover={!isLow ? { y: -5, scale: 1.05 } : {}}
-            className="group relative flex flex-col items-center gap-2"
-        >
-            {/* The card image is already blurred; sampling it again for every icon is expensive. */}
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center border-white/5 relative overflow-hidden bg-dark-high/80">
-                {quality.tier !== 'low' && (
-                    <>
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `radial-gradient(circle, ${colorStyles.glow}, transparent 75%)` }}></div>
-                        <div className="absolute -inset-[1px] bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    </>
-                )}
-
-                <div className={`relative z-10 text-gray-400 ${colorStyles.hoverText} transition-colors duration-300 transform ${quality.tier !== 'low' ? 'group-hover:scale-110' : ''}`}>
-                    {icon}
-                </div>
-            </div>
-            <div className="flex flex-col items-center gap-0.5">
-                <span className="font-mono text-[8px] text-gray-500 group-hover:text-white uppercase tracking-wider transition-colors text-center px-1">
-                    {name}
-                </span>
-            </div>
-        </motion.div>
-    );
-};
-
-const NodeGroup = ({ title, items, index, color, quality, pageVisible }) => {
-    const cardRef = useRef(null);
-    const isInView = useInView(cardRef);
-    const iconsActive = isInView && pageVisible;
-    const colorStyles = COLOR_STYLES[color] || COLOR_STYLES['electric-green'];
-    const backgroundStyle = getCardBackgroundStyle(title);
-    const mobileTitleLines = TECH_CARD_TITLE_LINES[title] || [title];
-
-    const activeContainerVariants = quality.tier === 'low' || !quality.allowAmbientMotion ? {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-    } : {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
-    };
-
-    return (
-        <motion.div
-            ref={cardRef}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportConfig}
-            variants={activeContainerVariants}
-            custom={index}
-            className="group/stack-card stack-card-hoverable min-h-[272px] md:min-h-[296px] px-10 pt-10 pb-14 border border-white/5 relative overflow-hidden rounded-xl bg-dark-high/90"
-            style={backgroundStyle.shellStyle}
-        >
-            <div className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none">
-                <div className="stack-card-bg absolute inset-0" style={backgroundStyle.imageStyle}></div>
-                <div className="stack-card-band absolute inset-0" style={backgroundStyle.bandStyle}></div>
-                <div className="stack-card-highlight absolute inset-0" style={backgroundStyle.highlightStyle}></div>
-            </div>
-
-            <div className="relative z-10 flex items-center gap-4 border-l-2 border-white/5 pl-6">
-                <div className={`p-3 rounded-lg bg-black/40 border ${colorStyles.border} ${colorStyles.text} shadow-[0_0_20px_rgba(0,255,153,0.05)]`}>
-                    {renderTechCategoryIcon(title, quality, iconsActive)}
-                </div>
-                <div className="flex min-h-[3.75rem] flex-col justify-start md:min-h-0">
-                    <h3 className="font-mono text-sm font-bold uppercase tracking-[0.2em] text-white/90">
-                        <span className="block md:hidden leading-[1.35]">
-                            {mobileTitleLines.map((line) => (
-                                <span key={line} className="block min-h-[1.2em] whitespace-nowrap">
-                                    {line}
-                                </span>
-                            ))}
-                        </span>
-                        <span className="hidden md:block">
-                            {title}
-                        </span>
-                    </h3>
-                    <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest mt-1">Classification_Level_{index + 1}</span>
-                </div>
-            </div>
-
-            <div className="relative z-10 mt-10 flex flex-wrap gap-x-6 gap-y-8 justify-center lg:justify-start">
-                {items.map((item) => <TechNode key={item} name={item} color={color} icon={renderTechItemIcon(item, quality, iconsActive)} quality={quality} />)}
-            </div>
-
-            <span className="absolute bottom-6 right-6 text-[70px] font-mono font-bold text-white/[0.02] pointer-events-none select-none leading-none hidden md:block">
-                0{index + 1}
-            </span>
-        </motion.div>
-    );
-};
-
 const TechStack = () => {
-    const quality = useHardwareQuality();
-    const prefersReducedMotion = useReducedMotion();
-    const [pageVisible, setPageVisible] = useState(() => !document.hidden);
-    const stackQuality = { ...quality, allowAmbientMotion: quality.allowAmbientMotion && !prefersReducedMotion };
+    const reducedMotion = useReducedMotion();
     const { tech } = portfolioData.ui.sections;
     const { categories } = portfolioData.skills;
 
-    useEffect(() => {
-        const updateVisibility = () => setPageVisible(!document.hidden);
-        document.addEventListener('visibilitychange', updateVisibility);
-        return () => document.removeEventListener('visibilitychange', updateVisibility);
-    }, []);
-
     return (
-        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden section-padding render-optimize">
-            <div
-                className="absolute bottom-[10%] left-0 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] pointer-events-none opacity-45 -translate-x-1/2"
-                style={{ background: 'radial-gradient(circle, rgba(0, 255, 153, 0.22) 0%, transparent 70%)' }}
-            />
-
-            <div className="container mx-auto px-6 relative z-10">
-                <SectionHeading header={tech} />
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {categories.map((cat, i) => (
-                        <NodeGroup
-                            key={cat.title}
-                            title={cat.title}
-                            items={cat.items}
-                            index={i}
-                            quality={stackQuality}
-                            pageVisible={pageVisible}
-                            color={cat.color === 'electric-green' ? 'electric-green' : 'electric-cyan'}
+        <section id="tech-stack" className="py-20 md:py-32 relative overflow-hidden render-optimize">
+            <div className="container mx-auto px-6">
+                <SectionHeading header={tech} description="The tools behind the work. Select a highlighted skill to explore where I have used it." />
+                <div className="toolkit-grid">
+                    {categories.map((category, index) => (
+                        <ToolkitCategory
+                            key={category.id || category.title}
+                            category={category}
+                            index={index}
+                            projects={portfolioData.projects}
+                            reducedMotion={reducedMotion}
                         />
                     ))}
                 </div>
