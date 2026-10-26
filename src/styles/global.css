@@ -124,12 +124,13 @@
         will-change: transform;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
+        /* Keep the hover zoom inside the moving layer's raster bounds. */
+        padding-top: 14px;
+        padding-bottom: 12px;
     }
 
     .testimonial-marquee-shell {
         isolation: isolate;
-        padding-top: 14px;
-        padding-bottom: 12px;
         margin-top: -14px;
         margin-bottom: -12px;
     }
@@ -166,9 +167,11 @@
         transform: translateZ(0);
         backface-visibility: hidden;
         contain: layout style;
+        box-shadow: inset 0 0 0 1px transparent;
         transition:
             transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 420ms ease;
+            border-color 420ms ease,
+            box-shadow 420ms ease;
     }
 
     .testimonial-card::before {
@@ -199,7 +202,9 @@
 @media (hover: hover) and (pointer: fine) {
     .testimonial-card:hover {
         transform: translateZ(0) scale(1.015);
-        border-color: rgba(0, 255, 153, 0.23);
+        /* Draw the hairline inside the card so scaling cannot clip its top edge. */
+        border-color: transparent;
+        box-shadow: inset 0 0 0 1px rgba(0, 255, 153, 0.3);
     }
 
     .testimonial-card:hover::before {

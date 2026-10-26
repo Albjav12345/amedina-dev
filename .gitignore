@@ -11,6 +11,7 @@ node_modules
 public/assets/generated/projects
 dist
 dist-ssr
+/tmp/project-film-edit/
 *.local
 
 # Editor directories and files

@@ -9,6 +9,7 @@ import ffmpegPath from 'ffmpeg-static';
 import sharp from 'sharp';
 
 import { projectSources } from '../src/data/projectSources.js';
+import { withProjectFilmEdit } from './lib/project-film-edits.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -135,23 +136,24 @@ async function generateVideo(args, outputPath, sourceLabel) {
 }
 
 async function generatePreview(sourcePath, outputPath, project) {
+  const edited = project.editedPresentation;
   const previewFilter = [
-    `fps=${previewConfig.fps}`,
+    `fps=${edited ? 24 : previewConfig.fps}`,
     `scale=${previewConfig.maxWidth}:-2:flags=lanczos:force_original_aspect_ratio=decrease`,
     'pad=ceil(iw/2)*2:ceil(ih/2)*2',
   ].join(',');
 
   const args = [
     '-y',
-    '-ss', '0',
-    '-t', String(previewConfig.durationSeconds),
+    '-ss', String(project.previewStart || 0),
+    '-t', String(edited ? 6 : previewConfig.durationSeconds),
     '-i', sourcePath,
     '-map', '0:v:0',
     '-an',
     '-vf', previewFilter,
     '-c:v', 'libx264',
     '-preset', previewConfig.preset,
-    '-crf', String(previewConfig.crf),
+    '-crf', String(edited ? 27 : previewConfig.crf),
     '-maxrate', previewConfig.maxRate,
     '-bufsize', previewConfig.bufSize,
     '-pix_fmt', 'yuv420p',
@@ -176,7 +178,7 @@ async function generateModalVideo(sourcePath, outputPath, project) {
     '-vf', modalFilter,
     '-c:v', 'libx264',
     '-preset', modalConfig.preset,
-    '-crf', String(modalConfig.crf),
+    '-crf', String(project.editedPresentation ? 21 : modalConfig.crf),
     '-pix_fmt', 'yuv420p',
     '-movflags', '+faststart',
     '-c:a', 'aac',
@@ -273,6 +275,7 @@ function getDerivationSignature(project, sourceStats) {
     previewConfig.crf,
     modalConfig.maxWidth,
     modalConfig.crf,
+    ...(project.editedPresentation ? ['studio-v1', project.previewStart, 6, 24, 27, 21] : []),
   ].join(':');
 }
 
@@ -305,7 +308,8 @@ export async function generateProjectMedia() {
   const manifest = {};
   const activeOutputs = new Set();
 
-  for (const project of projectSources) {
+  for (const originalProject of projectSources) {
+    const project = withProjectFilmEdit(originalProject);
     const cacheEntry = cache[String(project.id)];
 
     if (!project.videoSource) {
@@ -356,6 +360,7 @@ export async function generateProjectMedia() {
       ...wallPosters.media,
       cardPreview: previewPublicPath,
       modalVideo: modalPublicPath,
+      ...(project.editedPresentation ? { presentation: 'studio' } : {}),
     };
 
     activeOutputs.add(previewPath);

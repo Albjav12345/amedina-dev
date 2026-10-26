@@ -7,39 +7,44 @@
     "modalVideo": "/assets/generated/projects/visual-interfaces.modal.mp4"
   },
   "2": {
-    "poster": "/assets/projects/zero-touch-ai.png",
-    "wallPoster": "/assets/generated/projects/2-zero-touch-ai.e0f3a4bef822.wall-567.webp",
-    "wallPosterSrcSet": "/assets/generated/projects/2-zero-touch-ai.e0f3a4bef822.wall-320.webp 320w, /assets/generated/projects/2-zero-touch-ai.e0f3a4bef822.wall-567.webp 567w",
-    "cardPreview": "/assets/generated/projects/zero-touch-ai.preview.mp4",
-    "modalVideo": "/assets/generated/projects/zero-touch-ai.modal.mp4"
+    "poster": "/assets/projects/refined/zero-touch-ai-studio-v4.webp",
+    "wallPoster": "/assets/generated/projects/2-zero-touch-ai-studio-v4.2869dca05254.wall-640.webp",
+    "wallPosterSrcSet": "/assets/generated/projects/2-zero-touch-ai-studio-v4.2869dca05254.wall-320.webp 320w, /assets/generated/projects/2-zero-touch-ai-studio-v4.2869dca05254.wall-640.webp 640w, /assets/generated/projects/2-zero-touch-ai-studio-v4.2869dca05254.wall-960.webp 960w",
+    "cardPreview": "/assets/generated/projects/zero-touch-ai-studio-v4.preview.mp4",
+    "modalVideo": "/assets/generated/projects/zero-touch-ai-studio-v4.modal.mp4",
+    "presentation": "studio"
   },
   "3": {
-    "poster": "/assets/projects/padel-booking.png",
-    "wallPoster": "/assets/generated/projects/3-padel-booking.c085a1e6cb43.wall-567.webp",
-    "wallPosterSrcSet": "/assets/generated/projects/3-padel-booking.c085a1e6cb43.wall-320.webp 320w, /assets/generated/projects/3-padel-booking.c085a1e6cb43.wall-567.webp 567w",
-    "cardPreview": "/assets/generated/projects/padel-booking.preview.mp4",
-    "modalVideo": "/assets/generated/projects/padel-booking.modal.mp4"
+    "poster": "/assets/projects/refined/padel-booking-studio-v6.webp",
+    "wallPoster": "/assets/generated/projects/3-padel-booking-studio-v6.1b303ea073fc.wall-640.webp",
+    "wallPosterSrcSet": "/assets/generated/projects/3-padel-booking-studio-v6.1b303ea073fc.wall-320.webp 320w, /assets/generated/projects/3-padel-booking-studio-v6.1b303ea073fc.wall-640.webp 640w, /assets/generated/projects/3-padel-booking-studio-v6.1b303ea073fc.wall-960.webp 960w",
+    "cardPreview": "/assets/generated/projects/padel-booking-studio-v6.preview.mp4",
+    "modalVideo": "/assets/generated/projects/padel-booking-studio-v6.modal.mp4",
+    "presentation": "studio"
   },
   "4": {
-    "poster": "/assets/projects/twitch-live.png",
-    "wallPoster": "/assets/generated/projects/4-twitch-live.0afb31c41b92.wall-567.webp",
-    "wallPosterSrcSet": "/assets/generated/projects/4-twitch-live.0afb31c41b92.wall-320.webp 320w, /assets/generated/projects/4-twitch-live.0afb31c41b92.wall-567.webp 567w",
-    "cardPreview": "/assets/generated/projects/twitch-live.preview.mp4",
-    "modalVideo": "/assets/generated/projects/twitch-live.modal.mp4"
+    "poster": "/assets/projects/refined/twitch-live-studio-v4.webp",
+    "wallPoster": "/assets/generated/projects/4-twitch-live-studio-v4.1ee40e2fa768.wall-640.webp",
+    "wallPosterSrcSet": "/assets/generated/projects/4-twitch-live-studio-v4.1ee40e2fa768.wall-320.webp 320w, /assets/generated/projects/4-twitch-live-studio-v4.1ee40e2fa768.wall-640.webp 640w, /assets/generated/projects/4-twitch-live-studio-v4.1ee40e2fa768.wall-960.webp 960w",
+    "cardPreview": "/assets/generated/projects/twitch-live-studio-v4.preview.mp4",
+    "modalVideo": "/assets/generated/projects/twitch-live-studio-v4.modal.mp4",
+    "presentation": "studio"
   },
   "5": {
-    "poster": "/assets/projects/usb-extraction.png",
-    "wallPoster": "/assets/generated/projects/5-usb-extraction.4092a592f5d0.wall-640.webp",
-    "wallPosterSrcSet": "/assets/generated/projects/5-usb-extraction.4092a592f5d0.wall-320.webp 320w, /assets/generated/projects/5-usb-extraction.4092a592f5d0.wall-640.webp 640w, /assets/generated/projects/5-usb-extraction.4092a592f5d0.wall-960.webp 960w",
-    "cardPreview": "/assets/generated/projects/usb-extraction.preview.mp4",
-    "modalVideo": "/assets/generated/projects/usb-extraction.modal.mp4"
+    "poster": "/assets/projects/refined/usb-extraction-studio-v4.webp",
+    "wallPoster": "/assets/generated/projects/5-usb-extraction-studio-v4.455fa7362908.wall-640.webp",
+    "wallPosterSrcSet": "/assets/generated/projects/5-usb-extraction-studio-v4.455fa7362908.wall-320.webp 320w, /assets/generated/projects/5-usb-extraction-studio-v4.455fa7362908.wall-640.webp 640w, /assets/generated/projects/5-usb-extraction-studio-v4.455fa7362908.wall-960.webp 960w",
+    "cardPreview": "/assets/generated/projects/usb-extraction-studio-v4.preview.mp4",
+    "modalVideo": "/assets/generated/projects/usb-extraction-studio-v4.modal.mp4",
+    "presentation": "studio"
   },
   "6": {
-    "poster": "/assets/projects/remote-pc-bridge.jpg",
-    "wallPoster": "/assets/generated/projects/6-remote-pc-bridge.7294fb7aafc5.wall-640.webp",
-    "wallPosterSrcSet": "/assets/generated/projects/6-remote-pc-bridge.7294fb7aafc5.wall-320.webp 320w, /assets/generated/projects/6-remote-pc-bridge.7294fb7aafc5.wall-640.webp 640w, /assets/generated/projects/6-remote-pc-bridge.7294fb7aafc5.wall-960.webp 960w",
-    "cardPreview": "/assets/generated/projects/remote-pc-bridge.preview.mp4",
-    "modalVideo": "/assets/generated/projects/remote-pc-bridge.modal.mp4"
+    "poster": "/assets/projects/refined/remote-pc-bridge-studio-v4.webp",
+    "wallPoster": "/assets/generated/projects/6-remote-pc-bridge-studio-v4.63fc27f6db73.wall-640.webp",
+    "wallPosterSrcSet": "/assets/generated/projects/6-remote-pc-bridge-studio-v4.63fc27f6db73.wall-320.webp 320w, /assets/generated/projects/6-remote-pc-bridge-studio-v4.63fc27f6db73.wall-640.webp 640w, /assets/generated/projects/6-remote-pc-bridge-studio-v4.63fc27f6db73.wall-960.webp 960w",
+    "cardPreview": "/assets/generated/projects/remote-pc-bridge-studio-v4.preview.mp4",
+    "modalVideo": "/assets/generated/projects/remote-pc-bridge-studio-v4.modal.mp4",
+    "presentation": "studio"
   },
   "7": {
     "poster": "/assets/projects/datacraft/cover.webp",

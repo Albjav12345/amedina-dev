@@ -20,6 +20,7 @@ function getRuntimeMedia(project) {
         cardPreview: derived.cardPreview || fallbackVideo,
         modalVideo: derived.modalVideo || fallbackVideo,
         masterVideo: fallbackVideo,
+        presentation: derived.presentation,
     };
 }
 

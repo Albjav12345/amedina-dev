@@ -987,15 +987,15 @@ const FeaturedProjects = () => {
                                         />
 
                                         <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
-                                        {!quality.simplePhysics && isSectionNearViewport && !selectedId && (
+                                        {project.media?.presentation !== 'studio' && !quality.simplePhysics && isSectionNearViewport && !selectedId && (
                                             <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
                                         )}
 
-                                        <div className="absolute top-4 left-4 flex gap-1 z-20">
+                                        {project.media?.presentation !== 'studio' && <div className="absolute top-4 left-4 flex gap-1 z-20">
                                             <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
                                             <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
                                             <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-                                        </div>
+                                        </div>}
                                     </div>
 
                                     {project.cardLabel && <span className="project-tile__badge"><span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />{project.cardLabel}</span>}
