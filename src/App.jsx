@@ -8,7 +8,7 @@ import portfolioData from './data/portfolio'
 // Eagerly loaded critical components for instant LCP/FCP
 import Hero from './components/sections/Hero'
 import Navbar from './components/layout/Navbar'
-import ParallaxGrid from './components/common/ParallaxGrid'
+import SectionBackdrops from './components/common/SectionBackdrops'
 import { Footer } from './components/layout/Footer'
 import {
     DEFAULT_SECTION_ID,
@@ -1165,7 +1165,7 @@ function App() {
 
     return (
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
-            <ParallaxGrid isFrozen={isControlOpen} />
+            <SectionBackdrops isFrozen={isControlOpen} />
             <Navbar isUiObscured={isControlUiLocked} />
             <div>
                 <main>

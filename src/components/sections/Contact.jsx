@@ -210,7 +210,7 @@ const Contact = () => {
 
                             <div className="space-y-4">
                                 <div className="space-y-2 group">
-                                    <label htmlFor="contact-name" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-name" className="text-[10px] font-mono uppercase tracking-widest text-gray-300 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
                                         <User className="w-3 h-3" /> {form.name.label}
                                     </label>
                                     <input
@@ -222,12 +222,12 @@ const Contact = () => {
                                         value={formState.name}
                                         onChange={(event) => updateField('name', event.target.value)}
                                         placeholder={form.name.placeholder}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-electric-green/50 focus:bg-white/[0.08] transition-all font-mono text-sm"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-white focus:outline-none focus:border-electric-green/50 focus:bg-white/[0.08] transition-all font-mono text-sm"
                                     />
                                 </div>
 
                                 <div className="space-y-2 group">
-                                    <label htmlFor="contact-email" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-cyan transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-email" className="text-[10px] font-mono uppercase tracking-widest text-gray-300 group-focus-within:text-electric-cyan transition-colors flex items-center gap-2">
                                         <Mail className="w-3 h-3" /> {form.email.label}
                                     </label>
                                     <input
@@ -239,12 +239,12 @@ const Contact = () => {
                                         value={formState.email}
                                         onChange={(event) => updateField('email', event.target.value)}
                                         placeholder={form.email.placeholder}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-electric-cyan/50 focus:bg-white/[0.08] transition-all font-mono text-sm"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-white focus:outline-none focus:border-electric-cyan/50 focus:bg-white/[0.08] transition-all font-mono text-sm"
                                     />
                                 </div>
 
                                 <div className="space-y-2 group">
-                                    <label htmlFor="contact-message" className="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
+                                    <label htmlFor="contact-message" className="text-[10px] font-mono uppercase tracking-widest text-gray-300 group-focus-within:text-electric-green transition-colors flex items-center gap-2">
                                         <MessageSquare className="w-3 h-3" /> {form.message.label}
                                     </label>
                                     <div className="rounded-xl border border-white/10 bg-white/5 pr-1.5 overflow-hidden transition-all focus-within:border-electric-green/50 focus-within:bg-white/[0.08]">
@@ -257,7 +257,7 @@ const Contact = () => {
                                             onChange={(event) => updateField('message', event.target.value)}
                                             onWheelCapture={containWheelOnOverflow}
                                             placeholder={form.message.placeholder}
-                                            className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-gray-600 focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto"
+                                            className="block w-full panel-scrollbar bg-transparent border-0 px-6 pt-6 pb-5 pr-9 text-white placeholder:text-white focus:outline-none transition-all font-mono text-sm leading-[1.7] resize-none overflow-y-auto"
                                         ></textarea>
                                     </div>
                                 </div>

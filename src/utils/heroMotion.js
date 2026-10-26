@@ -1,9 +1,9 @@
 import { DEFAULT_SECTION_ID, getSectionIdFromPathname } from './sectionRouting';
 import { subscribeScrollRuntime } from './scrollRuntime';
+import { getSceneExitFrame, getSceneExitProgress } from './scrollSceneMotion';
 
 const ENTRY_MS = 900;
 const MEDIA_TIMEOUT_MS = 900;
-const clamp = (value) => Math.min(Math.max(value, 0), 1);
 
 async function decodePreview(image) {
     if (!image.complete) {
@@ -110,14 +110,15 @@ export function createHeroMotion({ wall, section, isFrozen, isAppleTouch, onActi
         const reduced = motionQuery.matches;
         const progress = reduced
             ? Number(scrollY > viewportHeight * 0.42)
-            : clamp((scrollY - viewportHeight * 0.08) / (viewportHeight * 0.72));
+            : getSceneExitProgress(scrollY, viewportHeight);
         const nativeScroll = supportsNativeScroll && entryComplete && !reduced;
 
         if (!nativeScroll) {
-            setOpacity(entered ? 1 - progress : 0);
+            const exitFrame = getSceneExitFrame(progress, viewportHeight);
+            setOpacity(entered ? exitFrame.opacity : 0);
             const transform = reduced
                 ? 'none'
-                : `translate3d(0, ${progress * viewportHeight * 0.08}px, 0) scale(${1 - progress * 0.025})`;
+                : exitFrame.transform;
             if (wall.style.transform !== transform) wall.style.transform = transform;
         }
 
