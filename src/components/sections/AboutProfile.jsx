@@ -5,6 +5,7 @@ import { viewportConfig } from '../../utils/animations';
 import ProjectReference from '../common/ProjectReference';
 import SectionHeading from '../common/SectionHeading';
 import './EditorialSections.css';
+import './AboutProfile.css';
 
 const MotionProjectReference = motion.create(ProjectReference);
 
@@ -45,6 +46,59 @@ export default function AboutProfile({ header, profile, projects }) {
         updateLight();
         return () => observer.disconnect();
     }, []);
+    useEffect(() => {
+        if (reducedMotion) return undefined;
+        const grid = gridRef.current;
+        const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+        let activeCard;
+        let frame = 0;
+        let pointer;
+        const reset = () => {
+            window.cancelAnimationFrame(frame);
+            frame = 0;
+            if (!activeCard) return;
+            // Keep the light's last coordinates while its opacity fades out.
+            // Clearing them here snaps the still-visible glow to the CSS fallback.
+            activeCard.style.removeProperty('--portrait-tilt-x');
+            activeCard.style.removeProperty('--portrait-tilt-y');
+            activeCard = undefined;
+        };
+        const update = () => {
+            frame = 0;
+            const { card, x, y } = pointer;
+            if (activeCard !== card) reset();
+            activeCard = card;
+            const bounds = card.getBoundingClientRect();
+            const localX = x - bounds.left;
+            const localY = y - bounds.top;
+            card.style.setProperty('--pointer-x', `${localX}px`);
+            card.style.setProperty('--pointer-y', `${localY}px`);
+            if (card.classList.contains('about-editorial__portrait')) {
+                const horizontal = Math.max(-1, Math.min(1, localX / bounds.width * 2 - 1));
+                const vertical = Math.max(-1, Math.min(1, localY / bounds.height * 2 - 1));
+                card.style.setProperty('--portrait-tilt-x', `${-vertical * 2}deg`);
+                card.style.setProperty('--portrait-tilt-y', `${horizontal * 3}deg`);
+            }
+        };
+        const move = event => {
+            if (!finePointer.matches || event.pointerType !== 'mouse') return;
+            const card = event.target.closest('[data-about-surface]');
+            if (!card || card.parentElement !== grid) { reset(); return; }
+            pointer = { card, x: event.clientX, y: event.clientY };
+            if (!frame) frame = window.requestAnimationFrame(update);
+        };
+        grid.addEventListener('pointermove', move, { passive: true });
+        grid.addEventListener('pointerleave', reset);
+        finePointer.addEventListener('change', reset);
+        window.addEventListener('blur', reset);
+        return () => {
+            reset();
+            grid.removeEventListener('pointermove', move);
+            grid.removeEventListener('pointerleave', reset);
+            finePointer.removeEventListener('change', reset);
+            window.removeEventListener('blur', reset);
+        };
+    }, [reducedMotion]);
     return (
         <>
             <SectionHeading header={header} />
@@ -52,6 +106,7 @@ export default function AboutProfile({ header, profile, projects }) {
             <div ref={gridRef} className="about-editorial">
                 <motion.figure
                     className="about-editorial__portrait"
+                    data-about-surface
                     initial={reducedMotion ? false : { opacity: 0, y: 18 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={viewportConfig}
@@ -70,13 +125,22 @@ export default function AboutProfile({ header, profile, projects }) {
 
                 <motion.div
                     className="about-editorial__story"
+                    data-about-surface
                     initial={reducedMotion ? false : { opacity: 0, y: 18 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={viewportConfig}
                     transition={{ duration: 0.55, delay: 0.08 }}
                 >
                     <h3>{about.title}</h3>
-                    <div className="about-editorial__bio">{about.bio.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
+                    <div className="about-editorial__bio">{about.bio.map((paragraph, index) => (
+                        <motion.p
+                            key={index}
+                            initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={viewportConfig}
+                            transition={{ duration: .45, delay: .12 + index * .07 }}
+                        >{paragraph}</motion.p>
+                    ))}</div>
                     {featuredProject && (
                         <ProjectReference project={featuredProject} className="about-editorial__project">
                             <span>{about.featuredProjectLabel}:</span>
@@ -87,6 +151,7 @@ export default function AboutProfile({ header, profile, projects }) {
                 </motion.div>
                 <motion.div
                     className="about-editorial__details"
+                    data-about-surface
                     initial={reducedMotion ? false : { opacity: 0, y: 18 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={viewportConfig}
@@ -106,12 +171,15 @@ export default function AboutProfile({ header, profile, projects }) {
                     <MotionProjectReference
                         project={featuredProject}
                         className="about-editorial__project-card"
+                        data-about-surface
                         initial={reducedMotion ? false : { opacity: 0, y: 18 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={viewportConfig}
                         transition={{ duration: 0.55, delay: 0.18 }}
                     >
-                        <img src={featuredProject.thumbnail} alt="" width="600" height="400" loading="lazy" decoding="async" />
+                        <div className="about-editorial__project-cover">
+                            <img src={featuredProject.thumbnail} alt="" width="600" height="400" loading="lazy" decoding="async" />
+                        </div>
                         <span>
                             <small>{about.featuredProjectLabel}</small>
                             <strong>{featuredProject.title} <ArrowUpRight aria-hidden="true" /></strong>
