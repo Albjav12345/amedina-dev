@@ -15,10 +15,11 @@ function getRuntimeMedia(project) {
 
     return {
         poster: derived.poster || fallbackPoster,
+        demoPoster: derived.demoPoster || derived.poster || fallbackPoster,
         wallPoster: derived.wallPoster || derived.poster || fallbackPoster,
         wallPosterSrcSet: derived.wallPosterSrcSet || undefined,
         cardPreview: derived.cardPreview || fallbackVideo,
-        modalVideo: derived.modalVideo || fallbackVideo,
+        modalVideo: project.demoType === 'youtube' ? null : derived.modalVideo || fallbackVideo,
         masterVideo: fallbackVideo,
         presentation: derived.presentation,
     };

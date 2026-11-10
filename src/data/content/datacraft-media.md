@@ -2,8 +2,8 @@
 
 The project is maintained in `portfolio-master.xlsx` as project 7. Its copy follows the package README and the commercial listing rather than the older trailer planning documents.
 
-- Demo: the YouTube video already embedded in the [public itch.io listing](https://albjav12345.itch.io/datacraft), `Uqpto9OyuA0`. A local copy of that same published video is stored at `public/assets/projects/datacraft-demo.mp4` and registered as `datacraft-video` in ASSETS. No archived workprint has been substituted for the published demo.
-- Playback: `demoType=video` uses the native player. The existing media pipeline generates a silent 640 × 360, 18 fps, 4.2-second idle preview and a separate detail video up to 1280 pixels wide. The source MP4 is pruned from the production build; only the derived videos are served. The original YouTube embed URL remains in the workbook for reference or switching players later.
+- Demo: [Datacraft Video V2](https://youtu.be/zdBUlh_PtRc) plays through the YouTube embed configured in PROJECTS. The player starts when the visitor selects the play button on the supplied video poster.
+- Idle preview: `public/assets/projects/datacraft-demo-v2.mp4` is a silent gameplay clip from the supplied V2 recording, registered as `datacraft-video` in ASSETS. The media pipeline generates the 640 × 360, 18 fps, 4.2-second preview. The accompanying `datacraft-demo-v2.poster.webp` is the video cover used in the project detail and demo thumbnail.
 - Gallery cover: the author's supplied `DataCraft-Marketing-1950x1300.png`, from the Unity Asset Store marketing media dated 2026-10-22. Its WebP export replaces `cover.webp`; the workbook's `datacraft-cover` asset reference stays the same. Gallery cards use cover sizing to fill the media area without letterboxing, with the image anchored at the upper left to keep the brand visible on narrow screens.
 - Eight screenshots: `itch-release-20261023/03-Galeria/02-Visual-authoring.png` through `09-Flexible-workspace.png`, in the same order as the prepared commercial gallery.
 - Symbol: the original `DataCraft-symbol.svg` from the polished art direction's branding sources, copied without redrawing it.

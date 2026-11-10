@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-10T15:27:27.485Z",
+  "generatedAt": "2026-11-10T20:34:26.527Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -586,8 +586,8 @@
       "gallerySize": "feature",
       "cardLabel": "Independent Unity asset",
       "galleryAssetIds": "datacraft-gallery-1|datacraft-gallery-2|datacraft-gallery-3|datacraft-gallery-4|datacraft-gallery-5|datacraft-gallery-6|datacraft-gallery-7|datacraft-gallery-8",
-      "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/Uqpto9OyuA0",
-      "demoType": "video",
+      "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/zdBUlh_PtRc",
+      "demoType": "youtube",
       "videoAssetId": {
         "text": "datacraft-video",
         "hyperlink": "#'ASSETS'!A58"
@@ -2216,12 +2216,12 @@
       "assetId": "datacraft-video",
       "kind": "video",
       "mode": "existing_public",
-      "sourceValue": "/assets/projects/datacraft-demo.mp4",
-      "targetPublicPath": "/assets/projects/datacraft-demo.mp4",
-      "alt": "DataCraft published demonstration video",
-      "notes": "Original published YouTube demo Uqpto9OyuA0. Used to derive the light gallery preview and native modal video.",
+      "sourceValue": "/assets/projects/datacraft-demo-v2.mp4",
+      "targetPublicPath": "/assets/projects/datacraft-demo-v2.mp4",
+      "alt": "DataCraft V2 gallery preview",
+      "notes": "Silent gameplay clip from Datacraft Video V2 (zdBUlh_PtRc). The full demo plays on YouTube.",
       "enabled": true,
-      "status": "READY -> /assets/projects/datacraft-demo.mp4"
+      "status": "READY -> /assets/projects/datacraft-demo-v2.mp4"
     }
   ],
   "runtime": {
@@ -2795,9 +2795,9 @@
             "alt": "Flexible workspace: wide, compact and docked Editor layouts"
           }
         ],
-        "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/Uqpto9OyuA0",
-        "demoType": "video",
-        "videoSource": "/assets/projects/datacraft-demo.mp4",
+        "demoEmbedUrl": "https://www.youtube-nocookie.com/embed/zdBUlh_PtRc",
+        "demoType": "youtube",
+        "videoSource": "/assets/projects/datacraft-demo-v2.mp4",
         "thumbnail": "/assets/projects/datacraft/cover.webp",
         "icon": "/assets/projects/datacraft/symbol.svg",
         "iconFit": "auto",
@@ -4444,13 +4444,13 @@
         "assetId": "datacraft-video",
         "kind": "video",
         "mode": "existing_public",
-        "sourceValue": "/assets/projects/datacraft-demo.mp4",
-        "targetPublicPath": "/assets/projects/datacraft-demo.mp4",
-        "alt": "DataCraft published demonstration video",
-        "notes": "Original published YouTube demo Uqpto9OyuA0. Used to derive the light gallery preview and native modal video.",
+        "sourceValue": "/assets/projects/datacraft-demo-v2.mp4",
+        "targetPublicPath": "/assets/projects/datacraft-demo-v2.mp4",
+        "alt": "DataCraft V2 gallery preview",
+        "notes": "Silent gameplay clip from Datacraft Video V2 (zdBUlh_PtRc). The full demo plays on YouTube.",
         "enabled": true,
-        "resolvedUrl": "/assets/projects/datacraft-demo.mp4",
-        "status": "READY -> /assets/projects/datacraft-demo.mp4"
+        "resolvedUrl": "/assets/projects/datacraft-demo-v2.mp4",
+        "status": "READY -> /assets/projects/datacraft-demo-v2.mp4"
       }
     ]
   }

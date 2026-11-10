@@ -3,14 +3,16 @@ import { ArrowUpRight, Play, Images } from 'lucide-react';
 
 export default function ProjectMediaGallery({ project }) {
     const [selected, setSelected] = useState(0);
+    const [youtubePlaybackUrl, setYoutubePlaybackUrl] = useState(null);
     const hasDemo = project.demoType === 'video' || project.demoType === 'youtube';
     const screenshots = project.gallery || [];
     const items = [
-        ...(hasDemo ? [{ type: 'demo', label: 'Watch demo', src: project.media.poster }] : []),
+        ...(hasDemo ? [{ type: 'demo', label: 'Watch demo', src: project.media.demoPoster }] : []),
         ...screenshots.map((shot) => ({ ...shot, type: 'image', label: shot.alt })),
     ];
     const active = items[selected];
     const isDemo = active?.type === 'demo';
+    const isYoutubeDemo = isDemo && project.demoType === 'youtube';
     const image = active?.type === 'image' ? active : { src: project.media.poster || project.thumbnail, alt: `${project.title} preview` };
 
     return (
@@ -20,9 +22,28 @@ export default function ProjectMediaGallery({ project }) {
                 {items.length > 1 && <span>{String(selected + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>}
             </div>
             <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl">
-                {isDemo && project.demoType === 'youtube' ? (
+                {isYoutubeDemo && active.src && !youtubePlaybackUrl ? (
+                    <button
+                        type="button"
+                        className="group/demo relative block h-full w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-electric-cyan"
+                        aria-label={`Play ${project.title} demo on YouTube`}
+                        onClick={() => {
+                            const url = new URL(project.demoEmbedUrl);
+                            url.searchParams.set('autoplay', '1');
+                            url.searchParams.set('playsinline', '1');
+                            setYoutubePlaybackUrl(url.href);
+                        }}
+                    >
+                        <img src={active.src} alt="" className="block h-full w-full object-cover object-top" />
+                        <span className="absolute inset-0 grid place-items-center bg-black/10 transition-colors group-hover/demo:bg-black/20">
+                            <span className="grid size-14 place-items-center rounded-full border border-white/30 bg-black/80 text-white transition-transform group-hover/demo:scale-105 motion-reduce:transition-none">
+                                <Play className="size-5 fill-current" aria-hidden="true" />
+                            </span>
+                        </span>
+                    </button>
+                ) : isYoutubeDemo ? (
                     <iframe
-                        src={project.demoEmbedUrl}
+                        src={youtubePlaybackUrl || project.demoEmbedUrl}
                         title={`${project.title} demonstration`}
                         className="h-full w-full border-0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -30,7 +51,7 @@ export default function ProjectMediaGallery({ project }) {
                         allowFullScreen
                     />
                 ) : isDemo ? (
-                    <video src={project.media.modalVideo} poster={project.media.poster} controls preload="metadata" playsInline className="h-full w-full object-cover object-top" />
+                    <video src={project.media.modalVideo} poster={project.media.demoPoster} controls preload="metadata" playsInline className="h-full w-full object-cover object-top" />
                 ) : (
                     <a href={image.src} target="_blank" rel="noopener noreferrer" className="group/media block h-full w-full" aria-label={`Open full-size image: ${image.alt}`}>
                         <img src={image.src} alt={image.alt} className="block h-full w-full object-cover object-top" />
@@ -45,7 +66,10 @@ export default function ProjectMediaGallery({ project }) {
                             <button
                                 key={`${item.type}-${item.src}`}
                                 type="button"
-                                onClick={() => setSelected(index)}
+                                onClick={() => {
+                                    if (index !== selected) setYoutubePlaybackUrl(null);
+                                    setSelected(index);
+                                }}
                                 aria-label={item.label}
                                 aria-pressed={selected === index}
                                 className={`relative h-12 w-[72px] shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan ${selected === index ? 'border-electric-cyan' : 'border-transparent hover:border-white/40'}`}

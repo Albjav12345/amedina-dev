@@ -275,6 +275,7 @@ function getDerivationSignature(project, sourceStats) {
     previewConfig.crf,
     modalConfig.maxWidth,
     modalConfig.crf,
+    ...(project.demoType === 'youtube' ? ['preview-only'] : []),
     ...(project.editedPresentation ? ['studio-v1', project.previewStart, 6, 24, 27, 21] : []),
   ].join(':');
 }
@@ -287,13 +288,13 @@ async function outputsExist(cacheEntry) {
   const targets = [cacheEntry.previewPath, cacheEntry.modalPath, cacheEntry.posterPath].filter(Boolean);
   const checks = await Promise.all(targets.map((targetPath) => fileExists(targetPath)));
 
-  if (!checks.every(Boolean) || !cacheEntry.previewHash || !cacheEntry.modalHash) return false;
+  if (!checks.every(Boolean) || !cacheEntry.previewHash) return false;
 
   const [previewHash, modalHash] = await Promise.all([
     fileHash(cacheEntry.previewPath),
-    fileHash(cacheEntry.modalPath),
+    cacheEntry.modalPath ? fileHash(cacheEntry.modalPath) : null,
   ]);
-  return previewHash === cacheEntry.previewHash && modalHash === cacheEntry.modalHash;
+  return previewHash === cacheEntry.previewHash && modalHash === (cacheEntry.modalHash ?? null);
 }
 
 export async function generateProjectMedia() {
@@ -329,7 +330,9 @@ export async function generateProjectMedia() {
     const sourceStats = await fs.stat(sourcePath);
     const sourceStem = slugify(path.basename(project.videoSource, path.extname(project.videoSource)) || project.title);
     const previewPath = path.join(outputDir, `${sourceStem}.${previewConfig.suffix}.mp4`);
-    const modalPath = path.join(outputDir, `${sourceStem}.${modalConfig.suffix}.mp4`);
+    const modalPath = project.demoType === 'youtube' ? null : path.join(outputDir, `${sourceStem}.${modalConfig.suffix}.mp4`);
+    const demoPosterPath = project.videoSource.replace(/\.[^.]+$/, '.poster.webp');
+    const demoPoster = await fileExists(resolvePublicAsset(demoPosterPath)) ? demoPosterPath : null;
 
     let posterPublicPath = project.thumbnail || null;
     let posterPath = posterPublicPath ? resolvePublicAsset(posterPublicPath) : path.join(outputDir, `${sourceStem}.poster.jpg`);
@@ -339,7 +342,7 @@ export async function generateProjectMedia() {
 
     if (!outputsAreReady) {
       await generatePreview(sourcePath, previewPath, project);
-      await generateModalVideo(sourcePath, modalPath, project);
+      if (modalPath) await generateModalVideo(sourcePath, modalPath, project);
 
       if (!posterPublicPath || !(await fileExists(posterPath))) {
         posterPath = path.join(outputDir, `${sourceStem}.poster.jpg`);
@@ -352,7 +355,7 @@ export async function generateProjectMedia() {
     }
 
     const previewPublicPath = `/${toPosixPath(path.relative(publicDir, previewPath))}`;
-    const modalPublicPath = `/${toPosixPath(path.relative(publicDir, modalPath))}`;
+    const modalPublicPath = modalPath ? `/${toPosixPath(path.relative(publicDir, modalPath))}` : null;
     const wallPosters = await generateWallPosters(project, posterPublicPath, cacheEntry?.wallPosters);
 
     manifest[String(project.id)] = {
@@ -360,11 +363,12 @@ export async function generateProjectMedia() {
       ...wallPosters.media,
       cardPreview: previewPublicPath,
       modalVideo: modalPublicPath,
+      ...(demoPoster ? { demoPoster } : {}),
       ...(project.editedPresentation ? { presentation: 'studio' } : {}),
     };
 
     activeOutputs.add(previewPath);
-    activeOutputs.add(modalPath);
+    if (modalPath) activeOutputs.add(modalPath);
     wallPosters.cache?.variants.forEach((variant) => activeOutputs.add(variant.path));
     if (posterPublicPath && posterPath.startsWith(outputDir)) {
       activeOutputs.add(posterPath);
@@ -375,7 +379,7 @@ export async function generateProjectMedia() {
       previewPath,
       modalPath,
       previewHash: await fileHash(previewPath),
-      modalHash: await fileHash(modalPath),
+      modalHash: modalPath ? await fileHash(modalPath) : null,
       posterPath,
       posterPublicPath,
       wallPosters: wallPosters.cache,
