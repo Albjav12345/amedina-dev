@@ -123,6 +123,8 @@ export function createHeroMotion({ wall, section, isFrozen, isAppleTouch, onActi
         }
 
         const active = entered && progress < 1 && !reduced && !document.hidden && !isFrozen();
+        // Keep the mural's raster cache warm through the fade. Hiding its
+        // descendants forces every filtered/3D surface to be rebuilt on return.
         if (active !== lastActive) {
             lastActive = active;
             track.style.animationPlayState = active ? 'running' : 'paused';

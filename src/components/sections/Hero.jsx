@@ -15,7 +15,7 @@ const reveal = {
     animate: { opacity: 1, y: 0 },
 };
 
-const Hero = ({ isUiFrozen = false }) => {
+const Hero = ({ isUiFrozen = false, isBackdropFrozen = false }) => {
     const { hero } = portfolioData.ui;
     const [isTerminalExpanded, setIsTerminalExpanded] = React.useState(false);
     const [isAppleTouch] = React.useState(isAppleTouchDevice);
@@ -33,7 +33,7 @@ const Hero = ({ isUiFrozen = false }) => {
 
     return (
         <section id="home" className={`hero-reel-section${isAppleTouch ? ' hero-reel-section--apple-touch' : ''}`}>
-            <HeroProjectWall isFrozen={isUiFrozen || isTerminalExpanded} isAppleTouch={isAppleTouch} />
+            <HeroProjectWall isFrozen={isUiFrozen || isBackdropFrozen || isTerminalExpanded} isAppleTouch={isAppleTouch} />
 
             <div className="hero-reel-section__backdrop" aria-hidden="true" />
             <div className="hero-reel-section__glow" aria-hidden="true" />

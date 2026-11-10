@@ -4,6 +4,7 @@ import { X, Info } from 'lucide-react';
 import portfolioData from '../../data/portfolio';
 import { recordOpsRun } from '../../utils/opsTelemetry';
 import { dispatchSectionNavigation } from '../../utils/sectionRouting';
+import { isControlPanelEnabled } from '../../config/siteFeatures';
 
 const IDLE_PROMPTS = [
     'MATCH A ROLE TO REAL PROJECT EVIDENCE',
@@ -547,7 +548,7 @@ const InteractiveConsole = ({ onClose }) => {
             return;
         }
 
-        if (action === 'OPEN_CONTROL_PANEL') {
+        if (isControlPanelEnabled && action === 'OPEN_CONTROL_PANEL') {
             window.dispatchEvent(new CustomEvent('open-control-panel'));
             return;
         }

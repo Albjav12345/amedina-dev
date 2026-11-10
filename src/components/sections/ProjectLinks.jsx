@@ -15,13 +15,6 @@ export default function ProjectLinks({ project }) {
                     <span>Access repo</span>
                 </a>
             )}
-            {project.itchLink && (
-                <a href={project.itchLink} target="_blank" rel="noopener noreferrer" className="project-store-link project-store-link--active">
-                    <StoreIcon icon={siItchdotio} />
-                    <span>Get it on itch.io</span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                </a>
-            )}
             {project.assetStoreLink ? (
                 <a href={project.assetStoreLink} target="_blank" rel="noopener noreferrer" className="project-store-link">
                     <StoreIcon icon={siUnity} />
@@ -33,6 +26,13 @@ export default function ProjectLinks({ project }) {
                     <StoreIcon icon={siUnity} />
                     <span className="text-left">Unity Asset Store<span className="block mt-1 text-[9px] uppercase tracking-widest text-gray-500">Coming soon</span></span>
                 </button>
+            )}
+            {project.itchLink && (
+                <a href={project.itchLink} target="_blank" rel="noopener noreferrer" className="project-store-link project-store-link--itch">
+                    <StoreIcon icon={siItchdotio} />
+                    <span>Get it on itch.io</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
             )}
         </div>
     );

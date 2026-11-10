@@ -16,6 +16,7 @@ const viteBin = path.join(rootDir, 'node_modules', 'vite', 'bin', 'vite.js')
 
 const apiPort = Number(process.env.LOCAL_API_PORT || 4174)
 const shareOnNetwork = process.argv.includes('--lan')
+const productionPreview = process.argv.includes('--production')
 const viteHost = process.env.VITE_HOST || (shareOnNetwork ? '0.0.0.0' : '127.0.0.1')
 const vitePort = Number(process.env.VITE_PORT || 5173)
 const proxyTarget = process.env.VITE_API_PROXY_TARGET || `http://127.0.0.1:${apiPort}`
@@ -190,13 +191,19 @@ async function shutdown(code = 0) {
 }
 
 try {
-  const initialRefreshSucceeded = await refreshRuntimeFromWorkbook('startup')
-  if (!initialRefreshSucceeded) {
-    throw new Error('Initial workbook sync failed.')
+  if (productionPreview) {
+    if (!fs.existsSync(path.join(rootDir, 'dist', 'index.html'))) {
+      throw new Error('Production build missing. Run npm run build first.')
+    }
+  } else {
+    const initialRefreshSucceeded = await refreshRuntimeFromWorkbook('startup')
+    if (!initialRefreshSucceeded) {
+      throw new Error('Initial workbook sync failed.')
+    }
   }
   lastWorkbookSignature = readWorkbookSignature()
   apiServer = await startLocalApiServer({ port: apiPort })
-  if (useExternalWorkbookWatcher) {
+  if (useExternalWorkbookWatcher && !productionPreview) {
     watchWorkbookFile()
   }
   console.log(`[local-api] running on ${proxyTarget}`)
@@ -210,11 +217,13 @@ try {
       }
     }
   }
-  console.log(`[dev] workbook live sync handled by Vite dev plugin: ${WORKBOOK_PATH}`)
+  console.log(productionPreview
+    ? '[preview] serving compiled production build; use npm run preview:lan to rebuild after source edits'
+    : `[dev] workbook live sync handled by Vite dev plugin: ${WORKBOOK_PATH}`)
 
   viteProcess = spawn(
     process.execPath,
-    [viteBin, '--host', viteHost, '--port', String(vitePort), '--strictPort'],
+    [viteBin, ...(productionPreview ? ['preview'] : []), '--host', viteHost, '--port', String(vitePort), '--strictPort'],
     {
       cwd: rootDir,
       stdio: ['inherit', 'pipe', 'pipe'],

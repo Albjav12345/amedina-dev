@@ -63,12 +63,22 @@ const SmartThumbnail = ({ project, isAllowedToPlay = false, stagger = 0 }) => {
             return undefined;
         }
 
-        const playPromise = currentVideo.play?.();
-        if (playPromise?.catch) {
-            playPromise.catch(() => {});
-        }
+        let inViewport = true;
+        const syncPlayback = () => {
+            if (document.hidden || !inViewport) currentVideo.pause();
+            else currentVideo.play?.()?.catch(() => {});
+        };
+        const observer = new IntersectionObserver(([entry]) => {
+            inViewport = entry.isIntersecting;
+            syncPlayback();
+        });
+        observer.observe(currentVideo);
+        syncPlayback();
+        document.addEventListener('visibilitychange', syncPlayback);
 
         return () => {
+            document.removeEventListener('visibilitychange', syncPlayback);
+            observer.disconnect();
             currentVideo.pause();
         };
     }, [isAllowedToPlay, shouldMount]);

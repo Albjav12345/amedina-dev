@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
 import { Code2, ArrowUpRight, Terminal, X, Cpu, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
@@ -52,7 +52,76 @@ function areIdListsEqual(left, right) {
     return left.every((value, index) => value === right[index]);
 }
 
-const FeaturedProjects = () => {
+// Keep unrelated cards out of scroll-idle, playback and modal state commits.
+const ProjectTile = memo(function ProjectTile({
+    project, cardRefs, status, isElevatedCard, shouldHideGalleryCard,
+    useCompactProjectModal, isPlaying, stagger, showScan, onOpen, onViewportAction,
+}) {
+    return (
+        <motion.button
+            ref={(element) => { cardRefs.current[project.id] = element; }}
+            key={project.id}
+            type="button"
+            aria-label={`Open project: ${project.title}`}
+            layoutId={useCompactProjectModal ? undefined : `project-${project.id}`}
+            initial="below"
+            animate={status}
+            viewport={{ once: false, amount: 0.1, margin: "15% 0px 15% 0px" }}
+            onViewportEnter={(entry) => onViewportAction(project.id, true, entry)}
+            onViewportLeave={(entry) => onViewportAction(project.id, false, entry)}
+            variants={cardVariants}
+            onClick={(event) => onOpen(project.id, event.currentTarget)}
+            data-gallery-size={project.gallerySize || 'standard'}
+            data-gallery-hidden={shouldHideGalleryCard}
+            className={`project-tile project-tile--${project.gallerySize || 'standard'} gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/10 bg-dark-high/90'}`}
+            style={isElevatedCard ? { zIndex: 80 } : undefined}
+        >
+            <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <div className="project-tile__media relative w-full overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
+                    <SmartThumbnail
+                        project={project}
+                        isAllowedToPlay={isPlaying}
+                        stagger={stagger}
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
+                    {project.media?.presentation !== 'studio' && showScan && (
+                        <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
+                    )}
+
+                    {project.media?.presentation !== 'studio' && <div className="absolute top-4 left-4 flex gap-1 z-20">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
+                    </div>}
+                </div>
+
+                {project.cardLabel && <span className="project-tile__badge"><span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />{project.cardLabel}</span>}
+                <div className="project-tile__content flex flex-col justify-between flex-grow relative z-10">
+                    <div className="relative">
+                        <div className="flex items-start justify-between gap-3">
+                            <h3 className="project-tile__title font-bold text-white leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
+                            <ArrowUpRight className="project-tile__arrow shrink-0 text-gray-500 group-hover:text-electric-green transition-colors" aria-hidden="true" />
+                        </div>
+                        <p className="project-tile__subtitle text-gray-400 font-mono uppercase tracking-widest">{project.subtitle}</p>
+                    </div>
+
+                    <div className="project-tile__stack flex-wrap gap-2">
+                        {project.stack.slice(0, 3).map((tech) => (
+                            <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                {tech}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
+            </div>
+        </motion.button>
+    );
+});
+
+const FeaturedProjects = ({ onModalActivityChange }) => {
     const [selectedId, setSelectedId] = useState(null);
     const [elevatedCardId, setElevatedCardId] = useState(null);
     const [closingCardId, setClosingCardId] = useState(null);
@@ -95,10 +164,16 @@ const FeaturedProjects = () => {
     const mobileSheetOverlayOpacity = useTransform(mobileSheetY, [0, 260], [1, 0]);
     const isProjectTransitionActive = selectedId !== null || closingCardId !== null;
 
-    const stopMobileSheetAnimation = () => {
+    useLayoutEffect(() => {
+        onModalActivityChange?.(isProjectTransitionActive);
+    }, [isProjectTransitionActive, onModalActivityChange]);
+
+    useEffect(() => () => onModalActivityChange?.(false), [onModalActivityChange]);
+
+    const stopMobileSheetAnimation = useCallback(() => {
         mobileSheetAnimationRef.current?.stop?.();
         mobileSheetAnimationRef.current = null;
-    };
+    }, []);
 
     const runMobileSheetAnimation = (target, options) => {
         stopMobileSheetAnimation();
@@ -107,7 +182,7 @@ const FeaturedProjects = () => {
         return controls;
     };
 
-    const clearMobileSheetDrag = () => {
+    const clearMobileSheetDrag = useCallback(() => {
         mobileSheetDragCleanupRef.current?.();
         mobileSheetDragCleanupRef.current = null;
 
@@ -115,7 +190,7 @@ const FeaturedProjects = () => {
             window.cancelAnimationFrame(mobileSheetDragFrameRef.current);
             mobileSheetDragFrameRef.current = 0;
         }
-    };
+    }, []);
 
     useEffect(() => {
         const node = sectionRef.current;
@@ -144,7 +219,7 @@ const FeaturedProjects = () => {
     }, [quality.previewRootMarginPx]);
 
     useEffect(() => {
-        if (selectedId) {
+        if (isProjectTransitionActive) {
             setIsScrollIdle(false);
             return undefined;
         }
@@ -165,7 +240,7 @@ const FeaturedProjects = () => {
                 setIsScrollIdle(true);
             }, quality.previewIdleDelayMs);
         });
-    }, [quality.previewIdleDelayMs, selectedId]);
+    }, [quality.previewIdleDelayMs, isProjectTransitionActive]);
 
     useEffect(() => {
         return () => {
@@ -228,7 +303,7 @@ const FeaturedProjects = () => {
     }, [isMobileSheetClosingFromDrag, selectedId, useMobileProjectSheet]);
 
     useEffect(() => {
-        if (selectedId || !isSectionNearViewport || !isScrollIdle) {
+        if (isProjectTransitionActive || !isSectionNearViewport || !isScrollIdle) {
             if (allowedVideoIdsRef.current.length) {
                 allowedVideoIdsRef.current = [];
                 setAllowedVideoIds([]);
@@ -287,16 +362,17 @@ const FeaturedProjects = () => {
         };
 
         return subscribeScrollRuntime(updateOrchestration);
-    }, [cardStatus, isScrollIdle, isSectionNearViewport, quality.maxPreviewVideos, selectedId]);
+    }, [cardStatus, isScrollIdle, isSectionNearViewport, quality.maxPreviewVideos, isProjectTransitionActive]);
 
-    const handleViewportAction = (id, inView, entry) => {
+    const handleViewportAction = useCallback((id, inView, entry) => {
         if (inView) {
-            setCardStatus((prev) => ({ ...prev, [id]: 'visible' }));
+            setCardStatus((prev) => prev[id] === 'visible' ? prev : { ...prev, [id]: 'visible' });
         } else if (entry) {
             const isAbove = entry.boundingClientRect.top < 0;
-            setCardStatus((prev) => ({ ...prev, [id]: isAbove ? 'above' : 'below' }));
+            const status = isAbove ? 'above' : 'below';
+            setCardStatus((prev) => prev[id] === status ? prev : { ...prev, [id]: status });
         }
-    };
+    }, []);
 
     const { projects: projectsHeader } = portfolioData.ui.sections;
 
@@ -317,7 +393,7 @@ const FeaturedProjects = () => {
         : 'fixed md:absolute top-6 right-6 p-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white hover:bg-electric-green hover:text-dark-void z-[110] transition-all cursor-pointer';
     const modalShellClass = useCompactProjectModal
         ? `relative w-full max-w-[860px] mx-auto border border-white/10 rounded-2xl overflow-hidden flex flex-col h-auto min-h-[50vh] gpu-accelerated ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`
-        : `relative w-full ${useWideProjectLayout ? 'max-w-6xl' : 'max-w-[860px]'} mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col ${useWideProjectLayout ? 'lg:grid lg:grid-cols-2' : ''} ${useConstrainedWideProjectLayout ? 'max-h-[calc(100dvh-4rem)] lg:grid-rows-[auto_minmax(0,1fr)]' : ''} h-auto min-h-[50vh] gpu-accelerated layout-projection-surface my-8 ${useWideProjectLayout ? 'md:my-0' : 'md:my-auto'} ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`;
+        : `project-dialog-shared relative w-full ${useWideProjectLayout ? 'max-w-6xl' : 'max-w-[860px]'} mx-auto border border-white/10 md:rounded-2xl overflow-hidden flex flex-col ${useWideProjectLayout ? 'lg:grid lg:grid-cols-2' : ''} ${useConstrainedWideProjectLayout ? 'max-h-[calc(100dvh-4rem)] lg:grid-rows-[auto_minmax(0,1fr)]' : ''} h-auto min-h-[50vh] gpu-accelerated layout-projection-surface my-8 ${useWideProjectLayout ? 'md:my-0' : 'md:my-auto'} ${quality.allowBlur ? 'shadow-2xl' : 'shadow-[0_12px_40px_rgba(0,0,0,0.45)]'} ${quality.glassClass}`;
     const projectInfoPanelClass = useCompactProjectModal
         ? 'w-full p-6 flex flex-col order-2 border-b border-white/5'
         : `${useWideProjectLayout ? 'w-full lg:col-start-1 lg:row-start-1 lg:row-span-2' : 'w-full'} p-6 ${widePanelPadding} ${useWideProjectLayout ? 'md:overflow-y-auto custom-scrollbar' : ''} ${useConstrainedWideProjectLayout ? 'min-h-0' : ''} flex flex-col ${useWideProjectLayout ? 'order-2 lg:order-none border-b lg:border-b-0' : 'order-2 border-b'} border-white/5`;
@@ -429,7 +505,7 @@ const FeaturedProjects = () => {
     }, [elevatedCardId, useCompactProjectModal]);
 
 
-    const handleProjectOpen = (projectId, triggerElement) => {
+    const handleProjectOpen = useCallback((projectId, triggerElement) => {
         if (closeFrameRef.current !== null) {
             window.cancelAnimationFrame(closeFrameRef.current);
             closeFrameRef.current = null;
@@ -453,7 +529,7 @@ const FeaturedProjects = () => {
         setClosingCardId(null);
         setElevatedCardId(useCompactProjectModal ? null : projectId);
         setSelectedId(projectId);
-    };
+    }, [clearMobileSheetDrag, stopMobileSheetAnimation, useCompactProjectModal]);
 
     const handleProjectClose = async () => {
         if (!selectedId) {
@@ -511,6 +587,7 @@ const FeaturedProjects = () => {
             let stableFrames = 0;
             let lastTop = null;
             let targetY = null;
+            let nextScrollRetryAt = 0;
             const getCardTarget = card => {
                 // Layout offsets exclude the card's entrance transform.
                 let top = 0;
@@ -553,6 +630,16 @@ const FeaturedProjects = () => {
                     }
                 } else {
                     const rect = card.getBoundingClientRect();
+                    // Lazy section measurement / startup route restoration can
+                    // move the page after the first card scroll. Retry only
+                    // while the requested card remains entirely out of view.
+                    if (mode === 'open' && (rect.top >= innerHeight || rect.bottom <= 100)
+                        && performance.now() >= nextScrollRetryAt) {
+                        nextScrollRetryAt = performance.now() + 240;
+                        const target = Math.max(0, scrollY + rect.top - Math.max(100, (innerHeight - rect.height) / 2));
+                        if (window.lenis) window.lenis.scrollTo(target, { immediate: true, force: true });
+                        else window.scrollTo({ top: target, behavior: 'instant' });
+                    }
                     const arrived = mode !== 'focus' || Math.abs(scrollY - targetY) < 2;
                     stableFrames = arrived && rect.top < innerHeight && rect.bottom > 100 && (lastTop === null || Math.abs(rect.top - lastTop) < 1) ? stableFrames + 1 : 0;
                     lastTop = rect.top;
@@ -952,76 +1039,22 @@ const FeaturedProjects = () => {
                 />
 
                 <div className="projects-gallery">
-                    {projects.map((project) => {
-                        const isSelected = selectedId === project.id;
-                        const isAllowedToPlay = allowedVideoIds.includes(project.id);
-                        const currentStatus = isSelected ? "visible" : (cardStatus[project.id] || "below");
-                        const isElevatedCard = elevatedCardId === project.id;
-                        const shouldHideGalleryCard = !useMobileProjectSheet && isSelected;
-
-                        return (
-                            <motion.button
-                                ref={(element) => { cardRefs.current[project.id] = element; }}
-                                key={project.id}
-                                type="button"
-                                aria-label={`Open project: ${project.title}`}
-                                layoutId={useCompactProjectModal ? undefined : `project-${project.id}`}
-                                initial="below"
-                                animate={currentStatus}
-                                viewport={{ once: false, amount: 0.1, margin: "15% 0px 15% 0px" }}
-                                onViewportEnter={(entry) => handleViewportAction(project.id, true, entry)}
-                                onViewportLeave={(entry) => handleViewportAction(project.id, false, entry)}
-                                variants={cardVariants}
-                                onClick={(event) => handleProjectOpen(project.id, event.currentTarget)}
-                                data-gallery-size={project.gallerySize || 'standard'}
-                                data-gallery-hidden={shouldHideGalleryCard}
-                                className={`project-tile project-tile--${project.gallerySize || 'standard'} gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/10 bg-dark-high/90'}`}
-                                style={isElevatedCard ? { zIndex: 80 } : undefined}
-                            >
-                                <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                                    <div className="project-tile__media relative w-full overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
-                                        <SmartThumbnail
-                                            project={project}
-                                            isAllowedToPlay={isSectionNearViewport && isScrollIdle && !selectedId && isAllowedToPlay}
-                                            stagger={allowedVideoIds.indexOf(project.id)}
-                                        />
-
-                                        <div className="absolute inset-0 bg-gradient-to-t from-dark-high via-transparent to-transparent pointer-events-none group-hover:opacity-40 transition-opacity duration-700"></div>
-                                        {project.media?.presentation !== 'studio' && !quality.simplePhysics && isSectionNearViewport && !selectedId && (
-                                            <div className="absolute top-0 left-0 w-full h-[1px] bg-electric-green/10 shadow-[0_0_10px_rgba(0,255,153,0.3)] animate-scan pointer-events-none z-20"></div>
-                                        )}
-
-                                        {project.media?.presentation !== 'studio' && <div className="absolute top-4 left-4 flex gap-1 z-20">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500/30"></div>
-                                            <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/30"></div>
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500/30"></div>
-                                        </div>}
-                                    </div>
-
-                                    {project.cardLabel && <span className="project-tile__badge"><span className="h-1.5 w-1.5 rounded-full bg-electric-cyan" />{project.cardLabel}</span>}
-                                    <div className="project-tile__content flex flex-col justify-between flex-grow relative z-10">
-                                        <div className="relative">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <h3 className="project-tile__title font-bold text-white leading-tight group-hover:text-electric-green transition-colors">{project.title}</h3>
-                                                <ArrowUpRight className="project-tile__arrow shrink-0 text-gray-500 group-hover:text-electric-green transition-colors" aria-hidden="true" />
-                                            </div>
-                                            <p className="project-tile__subtitle text-gray-400 font-mono uppercase tracking-widest">{project.subtitle}</p>
-                                        </div>
-
-                                        <div className="project-tile__stack flex-wrap gap-2">
-                                            {project.stack.slice(0, 3).map((tech) => (
-                                                <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
-                                </div>
-                            </motion.button>
-                        );
-                    })}
+                    {projects.map((project) => (
+                        <ProjectTile
+                            key={project.id}
+                            project={project}
+                            cardRefs={cardRefs}
+                            status={selectedId === project.id ? 'visible' : (cardStatus[project.id] || 'below')}
+                            isElevatedCard={elevatedCardId === project.id}
+                            shouldHideGalleryCard={!useMobileProjectSheet && selectedId === project.id}
+                            useCompactProjectModal={useCompactProjectModal}
+                            isPlaying={isSectionNearViewport && isScrollIdle && !isProjectTransitionActive && allowedVideoIds.includes(project.id)}
+                            stagger={allowedVideoIds.indexOf(project.id)}
+                            showScan={!quality.simplePhysics && isSectionNearViewport && !isProjectTransitionActive}
+                            onOpen={handleProjectOpen}
+                            onViewportAction={handleViewportAction}
+                        />
+                    ))}
                 </div>
 
                 <div className="mt-12 md:mt-16 flex flex-col md:flex-row md:items-center md:justify-between gap-5 rounded-2xl border border-white/10 bg-white/[0.025] px-6 py-6 md:px-8">

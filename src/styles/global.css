@@ -107,6 +107,20 @@
         animation: shimmer 1.35s linear;
     }
 
+    .workflow-packet {
+        opacity: 0;
+        animation: workflow-packet-travel 1.5s ease-in-out infinite, workflow-packet-fade 1.5s ease-in-out infinite;
+    }
+
+    .workflow-diagram-viewport {
+        contain: layout paint style;
+    }
+
+    .workflow-diagram-viewport[data-active="false"] .workflow-packet,
+    .workflow-diagram-viewport[data-active="false"] .animate-ping {
+        animation-play-state: paused;
+    }
+
     .gpu-accelerated {
         transform: translateZ(0);
         backface-visibility: hidden;
@@ -261,6 +275,16 @@
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(0, 255, 153, 0);
     }
+}
+
+@keyframes workflow-packet-travel {
+    from { transform: translateX(0); }
+    to { transform: translateX(24px); }
+}
+
+@keyframes workflow-packet-fade {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
 }
 
 @keyframes scan {

@@ -1,5 +1,16 @@
 # Preview from another device
 
+For checking scroll/animation performance on the laptop, use the compiled build:
+
+```powershell
+npm run preview:lan
+```
+
+It uses the same port 5173, LAN/Tailscale addresses and local API as development,
+with production React and bundled modules. Stop the development server first if
+it is using that port. Source edits require restarting this command to rebuild.
+Use `dev:lan` below when you need automatic source/workbook updates.
+
 On the PC with the repository, run:
 
 ```powershell

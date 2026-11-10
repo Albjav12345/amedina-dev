@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-26T18:12:43.225Z",
+  "generatedAt": "2026-11-10T15:27:27.485Z",
   "navigationConfig": {
     "brandFirst": "AMEDINA",
     "brandLast": ".DEV",
@@ -581,8 +581,8 @@
       "solution": "I built a commercial Unity asset for typed templates, linked instances, JSON/CSV transfer, API-to-C# generation and local saves. Validation and explicit catalog publishing keep editable drafts, gameplay data and player progress separate.",
       "githubLink": "",
       "itchLink": "https://albjav12345.itch.io/datacraft",
-      "assetStoreLink": "",
-      "assetStoreComingSoon": "TRUE",
+      "assetStoreLink": "https://assetstore.unity.com/packages/tools/datacraft-visual-json-tools-7396611",
+      "assetStoreComingSoon": "FALSE",
       "gallerySize": "feature",
       "cardLabel": "Independent Unity asset",
       "galleryAssetIds": "datacraft-gallery-1|datacraft-gallery-2|datacraft-gallery-3|datacraft-gallery-4|datacraft-gallery-5|datacraft-gallery-6|datacraft-gallery-7|datacraft-gallery-8",
@@ -2757,8 +2757,8 @@
         ],
         "githubLink": "",
         "itchLink": "https://albjav12345.itch.io/datacraft",
-        "assetStoreLink": "",
-        "assetStoreComingSoon": true,
+        "assetStoreLink": "https://assetstore.unity.com/packages/tools/datacraft-visual-json-tools-7396611",
+        "assetStoreComingSoon": false,
         "gallerySize": "feature",
         "cardLabel": "Independent Unity asset",
         "gallery": [

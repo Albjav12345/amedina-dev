@@ -12,6 +12,8 @@
     "site:media": "node scripts/generate-site-media.mjs",
     "dev": "node scripts/dev.mjs",
     "dev:lan": "node scripts/dev.mjs --lan",
+    "preview:lan": "npm run build && node scripts/dev.mjs --lan --production",
+    "check:scroll": "node scripts/check-scroll-scenes.mjs",
     "vite:dev": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && vite",
     "build": "node scripts/sync-portfolio-content.mjs --runtime-only && node scripts/generate-site-media.mjs && node scripts/generate-project-media.mjs && node scripts/generate-cv-assets.mjs && vite build && node scripts/prune-build-media.mjs",
     "preview": "vite preview"

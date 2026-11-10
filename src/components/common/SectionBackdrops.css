@@ -48,6 +48,28 @@
         radial-gradient(ellipse at 38% 45%, transparent 20%, rgb(11 12 16 / 70%) 100%);
 }
 
+@keyframes section-scene-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes section-scene-travel {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(0, var(--scene-travel), 0) scale(.975); }
+}
+
+.section-backdrop--native {
+    animation: section-scene-fade linear both, section-scene-travel linear both;
+    animation-timing-function: linear(0, 1 var(--scene-entered), 1 var(--scene-leaving), 0), linear;
+    animation-timeline: scroll(root block), scroll(root block);
+    animation-range: var(--scene-fade-start) var(--scene-fade-end), var(--scene-travel-start) var(--scene-travel-end);
+    will-change: transform, opacity;
+}
+
+.section-backdrops[data-frozen="true"] .section-backdrop--native {
+    animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .section-backdrop { transform: none !important; will-change: auto !important; }
 }

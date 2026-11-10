@@ -31,12 +31,16 @@ export default function AboutProfile({ header, profile, projects }) {
         const grid = gridRef.current;
         const cards = Array.from(grid.children);
         const updateLight = () => {
-            const originX = grid.clientWidth * .92;
-            cards.forEach(card => {
-                card.style.setProperty('--card-light-x', `${originX - card.offsetLeft}px`);
-                card.style.setProperty('--card-light-y', `${-40 - card.offsetTop}px`);
-                card.style.setProperty('--card-light-width', `${grid.clientWidth * 1.25}px`);
-                card.style.setProperty('--card-light-height', `${Math.min(grid.clientHeight * 1.4, 800)}px`);
+            const width = grid.clientWidth;
+            const height = Math.min(grid.clientHeight * 1.4, 800);
+            // Read all geometry before writing inherited styles. Interleaving
+            // these forces a style/layout flush for every card on resize.
+            const positions = cards.map(card => ({ card, left: card.offsetLeft, top: card.offsetTop }));
+            positions.forEach(({ card, left, top }) => {
+                card.style.setProperty('--card-light-x', `${width * .92 - left}px`);
+                card.style.setProperty('--card-light-y', `${-40 - top}px`);
+                card.style.setProperty('--card-light-width', `${width * 1.25}px`);
+                card.style.setProperty('--card-light-height', `${height}px`);
             });
         };
         // A shared light origin, measured only when the layout changes.

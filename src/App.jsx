@@ -2,7 +2,7 @@ import React, { startTransition, useEffect, useLayoutEffect, Suspense, useRef, u
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import Lenis from 'lenis'
-import { isArchitectSectionEnabled } from './config/siteFeatures'
+import { isArchitectSectionEnabled, isControlPanelEnabled } from './config/siteFeatures'
 import portfolioData from './data/portfolio'
 
 // Eagerly loaded critical components for instant LCP/FCP
@@ -60,13 +60,22 @@ const ProjectArchitect = isArchitectSectionEnabled
     )
     : null
 
-const ControlPlane = React.lazy(() =>
-    loadControlPlaneModule().then(module => ({ default: module.ControlPlane }))
-)
+const ControlPlane = isControlPanelEnabled
+    ? React.lazy(() =>
+        loadControlPlaneModule().then(module => ({ default: module.ControlPlane }))
+    )
+    : null
 
 const SECTION_HEIGHT_CACHE_KEY = 'amedina.section-heights.v3'
 const ROUTE_RESTORE_DEADLINE_MS = 2400
 const ROUTE_RESTORE_LAYOUT_SETTLE_MS = 140
+
+// Vercel injects these endpoints on hosted domains. A LAN preview would
+// otherwise receive the SPA's HTML for the script URLs and throw parse errors.
+const previewHostname = typeof window === 'undefined' ? '' : window.location.hostname;
+const isLocalPreview = ['localhost', '127.0.0.1', '[::1]'].includes(previewHostname)
+    || /^(\d{1,3}\.){3}\d{1,3}$/.test(previewHostname)
+    || previewHostname.endsWith('.ts.net');
 
 const DEFAULT_SECTION_WRAPPER_HEIGHTS = {
     desktop: {
@@ -275,6 +284,7 @@ function App() {
         initialSectionId,
     )
     const [isControlOpen, setIsControlOpen] = useState(false);
+    const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isControlUiLocked, setIsControlUiLocked] = useState(false);
     const [shouldRenderControlPlane, setShouldRenderControlPlane] = useState(false);
     const [isControlLauncherPressed, setIsControlLauncherPressed] = useState(false);
@@ -426,6 +436,7 @@ function App() {
     };
 
     const openControlPanel = () => {
+        if (!isControlPanelEnabled) return
         setIsControlLauncherPressed(false)
         setShouldRenderControlPlane(true)
         setIsControlUiLocked(true)
@@ -433,6 +444,7 @@ function App() {
     }
 
     const preloadControlPlane = () => {
+        if (!isControlPanelEnabled) return
         void loadControlPlaneModule()
     }
 
@@ -844,6 +856,7 @@ function App() {
     }, [isControlOpen]);
 
     useEffect(() => {
+        if (!isControlPanelEnabled) return undefined;
         const openPanel = () => openControlPanel();
         const closePanel = () => closeControlPanel();
 
@@ -1165,17 +1178,17 @@ function App() {
 
     return (
         <div className="min-h-screen selection:bg-electric-green selection:text-dark-void overflow-x-hidden">
-            <SectionBackdrops isFrozen={isControlOpen} />
+            <SectionBackdrops isFrozen={isControlOpen || isProjectOpen} />
             <Navbar isUiObscured={isControlUiLocked} />
             <div>
                 <main>
-                    <Hero isUiFrozen={isControlOpen} />
+                    <Hero isUiFrozen={isControlOpen} isBackdropFrozen={isProjectOpen} />
 
                     {/* wrapper renders IMMEDIATELY -> Document has height -> Scroll is restored */}
                     <div id="about-wrapper" style={{ minHeight: mountedSectionMap.about ? undefined : `${sectionWrapperHeights.about}px` }}>
                         {renderedSectionMap.about ? (
                             <Suspense fallback={null}>
-                                <About isUiFrozen={isControlOpen} />
+                                <About isUiFrozen={isControlOpen || isProjectOpen} />
                             </Suspense>
                         ) : null}
                     </div>
@@ -1183,7 +1196,7 @@ function App() {
                     <div id="projects-wrapper" style={{ minHeight: mountedSectionMap.projects ? undefined : `${sectionWrapperHeights.projects}px` }}>
                         {renderedSectionMap.projects ? (
                             <Suspense fallback={null}>
-                                <FeaturedProjects />
+                                <FeaturedProjects onModalActivityChange={setIsProjectOpen} />
                             </Suspense>
                         ) : null}
                     </div>
@@ -1215,7 +1228,7 @@ function App() {
                     </div>
                 </main>
                 <Footer onOpenControlPanel={openControlPanel} />
-                {!isControlOpen ? (
+                {isControlPanelEnabled && !isControlOpen ? (
                     <button
                         type="button"
                         onClick={openControlPanel}
@@ -1241,7 +1254,7 @@ function App() {
                         </span>
                     </button>
                 ) : null}
-                {shouldRenderControlPlane ? (
+                {isControlPanelEnabled && ControlPlane && shouldRenderControlPlane ? (
                     <Suspense fallback={null}>
                         <ControlPlane
                             isOpen={isControlOpen}
@@ -1251,8 +1264,8 @@ function App() {
                     </Suspense>
                 ) : null}
             </div>
-            <Analytics />
-            <SpeedInsights />
+            {!isLocalPreview && <Analytics />}
+            {!isLocalPreview && <SpeedInsights />}
         </div>
     )
 }

@@ -188,13 +188,23 @@ const About = ({ isUiFrozen = false }) => {
     const mobileTestimonialsRef = useRef(null);
     const desktopMarqueeRef = useRef(null);
     const [mobileTestimonialIndex, setMobileTestimonialIndex] = useState(0);
-    const [hasDesktopMarqueePrimed, setHasDesktopMarqueePrimed] = useState(false);
     const isDesktopMarqueeInView = useInView(desktopMarqueeRef, {
         margin: desktopMarqueeViewportMargin,
         amount: 0.01,
     });
-    const shouldAnimateDesktopMarquee = !isUiFrozen && (hasDesktopMarqueePrimed || isDesktopMarqueeInView);
+    const shouldAnimateDesktopMarquee = !isUiFrozen && isDesktopMarqueeInView;
     const desktopMarqueeDuration = isLow ? 110 : 140;
+
+    useEffect(() => {
+        const track = desktopMarqueeRef.current?.querySelector('.testimonial-marquee-track');
+        if (!track) return undefined;
+        const syncPlayback = () => {
+            track.style.animationPlayState = shouldAnimateDesktopMarquee && !document.hidden ? 'running' : 'paused';
+        };
+        syncPlayback();
+        document.addEventListener('visibilitychange', syncPlayback);
+        return () => document.removeEventListener('visibilitychange', syncPlayback);
+    }, [shouldAnimateDesktopMarquee]);
 
     useEffect(() => {
         const container = mobileTestimonialsRef.current;
@@ -214,12 +224,6 @@ const About = ({ isUiFrozen = false }) => {
         container.addEventListener('scroll', handleScroll, { passive: true });
         return () => container.removeEventListener('scroll', handleScroll);
     }, [profileAbout.testimonials.length]);
-
-    useEffect(() => {
-        if (isDesktopMarqueeInView) {
-            setHasDesktopMarqueePrimed(true);
-        }
-    }, [isDesktopMarqueeInView]);
 
     return (
         <section id="about" className="editorial-section about-editorial-section">

@@ -8,8 +8,8 @@ The project is maintained in `portfolio-master.xlsx` as project 7. Its copy foll
 - Eight screenshots: `itch-release-20261023/03-Galeria/02-Visual-authoring.png` through `09-Flexible-workspace.png`, in the same order as the prepared commercial gallery.
 - Symbol: the original `DataCraft-symbol.svg` from the polished art direction's branding sources, copied without redrawing it.
 - Web images: WebP exports at up to 1920 pixels wide, preserving aspect ratios. The detail viewer uses `object-fit: contain`; full-size links open the web exports.
-- Store icons: itch.io and Unity SVG paths from the site's existing Simple Icons dependency. Unity Asset Store is marked “Coming soon” until its public product URL is available.
+- Store icons: itch.io and Unity SVG paths from the site's existing Simple Icons dependency. The DataCraft project links to its [Unity Asset Store listing](https://assetstore.unity.com/packages/tools/datacraft-visual-json-tools-7396611).
 
 All project-specific text is editable in the master workbook: PROJECTS holds the title, subtitle, problem/solution, card badge, store links and media references; PROJECT_STACK holds the technologies; PROJECT_ARCH holds workflow titles and steps; ASSETS holds paths, image captions and alternative text. Workflow groups are shown as tabs, preserving every step without stacking all the groups vertically. Shared UI labels and layout styles live in the React components and CSS.
 
-To activate the Unity listing later, fill `PROJECTS.assetStoreLink` and turn off `assetStoreComingSoon`, then run `npm run content:sync`.
+To update store availability, edit `PROJECTS.assetStoreLink` and `assetStoreComingSoon`, then run `npm run content:sync`.
