@@ -9,6 +9,11 @@
 .project-tile:hover { border-color: rgb(0 255 153 / 32%); box-shadow: 0 8px 40px rgb(0 255 153 / 5%); }
 .project-tile[data-gallery-hidden="true"] { pointer-events: none !important; border-color: transparent !important; box-shadow: none !important; }
 .project-tile > div { min-height: 0; }
+.project-tile:focus-within { border-color: rgb(0 255 153 / 55%); }
+.project-tile__open:focus-visible { outline: 2px solid #00ff99; outline-offset: -3px; border-radius: inherit; }
+.project-tile__footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.project-tile__docs { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 6px; min-height: 32px; padding: 6px 9px; margin-left: auto; border: 1px solid rgb(255 255 255 / 12%); border-radius: 6px; color: #c0cbd1; font: 10px var(--font-mono); transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease; }
+.project-tile__docs:is(:hover, :focus-visible) { color: #00ff99; background: rgb(0 255 153 / 5%); border-color: rgb(0 255 153 / 32%); outline-color: #00ff99; }
 /* The fixed scrim already blurs the page. Repeating that pass inside the
    shared-layout shell makes the GPU filter a changing-size surface each frame.
    Keep the glass color/opacity and the single full-screen backdrop blur. */
@@ -34,6 +39,15 @@
 a.project-store-link { color: rgb(var(--store-link-accent)); background-color: rgb(var(--store-link-accent) / 8%); border-color: rgb(var(--store-link-accent) / 35%); }
 a.project-store-link:is(:hover, :focus-visible) { background-color: rgb(var(--store-link-accent) / 14%); border-color: rgb(var(--store-link-accent) / 55%); outline-color: rgb(var(--store-link-accent)); }
 .project-store-link--soon { color: #9ca3af; cursor: default; }
+.project-documentation-link { display: flex; align-items: center; gap: 12px; flex: 1 1 100%; min-height: 64px; padding: 14px 16px; border: 1px solid rgb(255 255 255 / 12%); border-radius: 8px; background: rgb(255 255 255 / 2%); color: #aebfc5; transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease; }
+.project-documentation-link__title { display: block; color: #e8edf5; font: 11px var(--font-mono); }
+.project-documentation-link__description { display: block; margin-top: 5px; color: #9ca3af; font-size: 11px; line-height: 1.5; }
+.project-documentation-link:is(:hover, :focus-visible) { color: #00ff99; background: rgb(0 255 153 / 4%); border-color: rgb(0 255 153 / 32%); outline-color: #00ff99; }
+
+@media (max-width: 767px) {
+    .project-tile--feature.project-tile--documented .project-tile__media { height: 70%; }
+    .project-tile--documented .project-tile__stack { min-width: 0; margin-top: 0; }
+}
 
 @media (min-width: 768px) {
     .projects-gallery { grid-auto-rows: 320px; gap: 20px; }
@@ -62,5 +76,5 @@ a.project-store-link:is(:hover, :focus-visible) { background-color: rgb(var(--st
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .project-tile, .project-store-link { transition: none; }
+    .project-tile, .project-store-link, .project-tile__docs, .project-documentation-link { transition: none; }
 }

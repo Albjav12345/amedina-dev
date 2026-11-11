@@ -523,6 +523,7 @@ Project presentation:
 - \`PROJECTS.gallerySize\`: blank for a standard tile, \`feature\` for a large tile, \`wide\` for a landscape tile, or \`half\` for half a desktop row.
 - \`PROJECTS.cardLabel\`: optional badge text on the gallery tile.
 - \`githubLink\`, \`itchLink\`, and \`assetStoreLink\` are optional. Set \`assetStoreComingSoon\` to TRUE while a Unity listing is pending, then add its public URL when available.
+- \`documentationLink\` optionally adds a documentation shortcut to the gallery tile and a guides / API reference link in the project details.
 - \`galleryAssetIds\` lists ASSETS ids in display order, separated by \`|\`. ASSETS.alt supplies the image descriptions and captions.
 - For YouTube demos, choose \`demoType=youtube\` and put the privacy-enhanced embed URL in \`demoEmbedUrl\`. Local videos still use \`videoAssetId\`.
 - \`videoAssetId\` points to the source video in ASSETS. The media pipeline derives a silent 640px gallery preview and a separate 1280px detail video; these generated files should not be edited by hand. Choose \`demoType=video\` to use the native detail player. A YouTube embed can also retain a local video asset for the idle preview.
@@ -2484,6 +2485,7 @@ function getSheetDefinitions(masterData, resolvedAssets) {
             { key: 'order', header: 'order', width: 10, required: true, validation: { type: 'whole', operator: 'greaterThan', formulae: [0] } },
             { key: 'enabled', header: 'enabled', width: 12, required: true, validation: { lookup: 'booleanValues' } },
             { key: 'rowStatus', header: 'rowStatus', width: 20, generated: true },
+            { key: 'documentationLink', header: 'documentationLink', width: 60, wrap: true },
         ],
     });
 
@@ -3179,6 +3181,7 @@ export async function loadCurrentSourceContent() {
             githubLink: project.githubLink,
             itchLink: project.itchLink ?? '',
             assetStoreLink: project.assetStoreLink ?? '',
+            documentationLink: project.documentationLink ?? '',
             assetStoreComingSoon: project.assetStoreComingSoon ?? false,
             gallerySize: project.gallerySize ?? '',
             cardLabel: project.cardLabel ?? '',
@@ -3751,6 +3754,10 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 throw new Error(`PROJECTS.gallerySize for "${entry.id}" must be feature, wide, half, or blank.`);
             }
             const demoEmbedUrl = asString(entry.demoEmbedUrl);
+            const documentationLink = asString(entry.documentationLink);
+            if (documentationLink && !/^https?:\/\//i.test(documentationLink)) {
+                throw new Error(`PROJECTS.documentationLink for "${entry.id}" must be an HTTP(S) URL or blank.`);
+            }
             if (demoType === 'youtube' && !/^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{11}$/.test(demoEmbedUrl)) {
                 throw new Error(`PROJECTS.demoEmbedUrl for "${entry.id}" must be a YouTube privacy-enhanced embed URL.`);
             }
@@ -3779,6 +3786,7 @@ function buildRuntimeContent(masterData, resolvedAssets) {
                 githubLink: asString(entry.githubLink),
                 itchLink: asString(entry.itchLink),
                 assetStoreLink: asString(entry.assetStoreLink),
+                documentationLink,
                 assetStoreComingSoon: parseBoolean(entry.assetStoreComingSoon, false),
                 gallerySize,
                 cardLabel: asString(entry.cardLabel),

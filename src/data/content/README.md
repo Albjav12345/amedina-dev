@@ -32,6 +32,7 @@ Project presentation:
 - `PROJECTS.gallerySize`: blank for a standard tile, `feature` for a large tile, `wide` for a landscape tile, or `half` for half a desktop row.
 - `PROJECTS.cardLabel`: optional badge text on the gallery tile.
 - `githubLink`, `itchLink`, and `assetStoreLink` are optional. Set `assetStoreComingSoon` to TRUE while a Unity listing is pending, then add its public URL when available.
+- `documentationLink` optionally adds a documentation shortcut to the gallery tile and a guides / API reference link in the project details.
 - `galleryAssetIds` lists ASSETS ids in display order, separated by `|`. ASSETS.alt supplies the image descriptions and captions.
 - For YouTube demos, choose `demoType=youtube` and put the privacy-enhanced embed URL in `demoEmbedUrl`. Local videos still use `videoAssetId`.
 - `videoAssetId` points to the source video in ASSETS. The media pipeline derives a silent 640px gallery preview and a separate 1280px detail video; these generated files should not be edited by hand. Choose `demoType=video` to use the native detail player. A YouTube embed can also retain a local video asset for the idle preview.

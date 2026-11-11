@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
-import { Code2, ArrowUpRight, Terminal, X, Cpu, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
+import { BookOpen, Code2, ArrowUpRight, Terminal, X, Cpu, Zap, Box, Brain, Layers, Globe } from 'lucide-react';
 import ProjectWorkflows from './ProjectWorkflows';
 import { useHardwareQuality } from '../../hooks/useHardwareQuality';
 import useMediaQuery from '../../hooks/useMediaQuery';
@@ -58,11 +58,9 @@ const ProjectTile = memo(function ProjectTile({
     useCompactProjectModal, isPlaying, stagger, showScan, onOpen, onViewportAction,
 }) {
     return (
-        <motion.button
+        <motion.article
             ref={(element) => { cardRefs.current[project.id] = element; }}
             key={project.id}
-            type="button"
-            aria-label={`Open project: ${project.title}`}
             layoutId={useCompactProjectModal ? undefined : `project-${project.id}`}
             initial="below"
             animate={status}
@@ -70,13 +68,18 @@ const ProjectTile = memo(function ProjectTile({
             onViewportEnter={(entry) => onViewportAction(project.id, true, entry)}
             onViewportLeave={(entry) => onViewportAction(project.id, false, entry)}
             variants={cardVariants}
-            onClick={(event) => onOpen(project.id, event.currentTarget)}
             data-gallery-size={project.gallerySize || 'standard'}
             data-gallery-hidden={shouldHideGalleryCard}
-            className={`project-tile project-tile--${project.gallerySize || 'standard'} gpu-accelerated layout-projection-surface cursor-pointer group relative flex flex-col overflow-hidden rounded-xl border text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-green focus-visible:ring-offset-4 focus-visible:ring-offset-dark-void ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/10 bg-dark-high/90'}`}
+            className={`project-tile project-tile--${project.gallerySize || 'standard'} ${project.documentationLink ? 'project-tile--documented' : ''} gpu-accelerated layout-projection-surface group relative flex flex-col overflow-hidden rounded-xl border text-left ${shouldHideGalleryCard ? 'border-transparent bg-transparent' : 'border-white/10 bg-dark-high/90'}`}
             style={isElevatedCard ? { zIndex: 80 } : undefined}
         >
-            <div className={`relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <button
+                type="button"
+                aria-label={`Open project: ${project.title}`}
+                onClick={(event) => onOpen(project.id, event.currentTarget)}
+                className="project-tile__open absolute inset-0 cursor-pointer"
+            />
+            <div className={`pointer-events-none relative flex h-full flex-col ${shouldHideGalleryCard ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="project-tile__media relative w-full overflow-hidden bg-black/40 border-b border-white/10 group-hover:border-electric-green/20 transition-colors">
                     <SmartThumbnail
                         project={project}
@@ -106,18 +109,27 @@ const ProjectTile = memo(function ProjectTile({
                         <p className="project-tile__subtitle text-gray-400 font-mono uppercase tracking-widest">{project.subtitle}</p>
                     </div>
 
-                    <div className="project-tile__stack flex-wrap gap-2">
-                        {project.stack.slice(0, 3).map((tech) => (
-                            <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
-                                {tech}
-                            </span>
-                        ))}
+                    <div className="project-tile__footer">
+                        <div className="project-tile__stack flex-wrap gap-2">
+                            {project.stack.slice(0, 3).map((tech) => (
+                                <span key={tech} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[8px] font-mono text-gray-500">
+                                    {tech}
+                                </span>
+                            ))}
+                        </div>
+                        {project.documentationLink && (
+                            <a href={project.documentationLink} target="_blank" rel="noopener noreferrer" className="project-tile__docs" style={{ pointerEvents: status === 'visible' && !shouldHideGalleryCard ? 'auto' : 'none' }} tabIndex={status === 'visible' && !shouldHideGalleryCard ? 0 : -1} aria-label={`${project.title} documentation (opens in a new tab)`}>
+                                <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                                <span>Docs</span>
+                                <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                            </a>
+                        )}
                     </div>
                 </div>
 
                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-electric-green/5 blur-3xl rounded-full group-hover:bg-electric-green/10 transition-colors duration-500"></div>
             </div>
-        </motion.button>
+        </motion.article>
     );
 });
 
@@ -649,8 +661,9 @@ const FeaturedProjects = ({ onModalActivityChange }) => {
                         url.searchParams.delete('focus');
                         window.history.replaceState(window.history.state, '', url);
                         setRequestedProjectId(null);
-                        if (mode === 'focus') card.focus({ preventScroll: true });
-                        else handleProjectOpen(project.id, card);
+                        const trigger = card.querySelector('.project-tile__open');
+                        if (mode === 'focus') trigger?.focus({ preventScroll: true });
+                        else handleProjectOpen(project.id, trigger);
                         return;
                     }
                 }

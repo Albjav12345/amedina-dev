@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, ArrowUpRight } from 'lucide-react';
+import { BookOpen, Github, ArrowUpRight } from 'lucide-react';
 import { siItchdotio, siUnity } from 'simple-icons';
 
 function StoreIcon({ icon }) {
@@ -32,6 +32,16 @@ export default function ProjectLinks({ project }) {
                     <StoreIcon icon={siItchdotio} />
                     <span>Get it on itch.io</span>
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+            )}
+            {project.documentationLink && (
+                <a href={project.documentationLink} target="_blank" rel="noopener noreferrer" className="project-documentation-link">
+                    <BookOpen className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    <span className="min-w-0 flex-1">
+                        <span className="project-documentation-link__title">Documentation</span>
+                        <span className="project-documentation-link__description">Setup, guides &amp; API reference</span>
+                    </span>
+                    <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                 </a>
             )}
         </div>
